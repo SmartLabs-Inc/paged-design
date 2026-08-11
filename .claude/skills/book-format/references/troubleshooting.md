@@ -90,6 +90,24 @@ h1, h2, h3, h4 { break-after: avoid; }     // never leave a heading alone at the
 figure, .box, table { break-inside: avoid; }
 ```
 
+### A label is stranded at the foot of a page
+
+The defaults give `h1`–`h6` `break-after: avoid`, but a paragraph styled to look
+like a heading — a tracked-out label such as `LEARNING OBJECTIVES`, an eyebrow,
+a callout label — is still a paragraph, and will happily sit alone at the foot
+of a page with the thing it introduces overleaf. Name those classes explicitly:
+
+```scss
+.label,
+.chapter-eyebrow,
+.callout-label {
+    break-after: avoid;
+}
+```
+
+`check-layout.js` reports these under "Headings and labels stranded at the foot
+of a page", so the whole class of problem is caught rather than spotted by eye.
+
 `break-after: avoid` on headings is the single most valuable rule. If a stubborn
 paragraph still breaks badly, add `class="keep-together"` in the HTML and style
 it `break-inside: avoid` — but use it sparingly; too many unbreakable blocks

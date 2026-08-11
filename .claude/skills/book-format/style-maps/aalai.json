@@ -3,7 +3,7 @@
   "description": "Anti-Aging & Longevity Academic Institute textbook. Authors write in the AALAI Word template and apply the AALAI paragraph styles; shaded one-cell tables become callouts, and the fill colour chooses which kind.",
   "defaults": {
     "component": "chapter",
-    "leading": "title-page"
+    "leading": "cover"
   },
   "styles": {
     "AALAI Label": {

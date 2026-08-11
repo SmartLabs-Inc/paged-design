@@ -679,6 +679,11 @@ function main () {
     let html = parts.concat(component.blocks).join('\n')
     html = html.replace(/(fnref|fn)-((?:footnote|endnote)-\d+)-PENDING\b/g, '$1-$2-' + id)
 
+    // A cover is a fixed composition, not flowing text: its lines are styled
+    // by position. Number them so the theme can target each one with a plain
+    // class — Paged.js discards :nth-of-type during pagination.
+    if (component.type === 'cover') html = numberCoverLines(html)
+
     const notes = renderNotes(noteState, id, footnotes, endnotes, context)
     if (notes) html += '\n' + notes
     noteState.order = []
@@ -740,6 +745,17 @@ function renderNotes (noteState, componentId, footnotes, endnotes, context) {
   })
 
   return '<div class="footnotes">\n  <ol>\n' + items.join('\n') + '\n  </ol>\n</div>'
+}
+
+// Add cover-line-1, cover-line-2 … to each paragraph of a cover, keeping any
+// classes the paragraph already carries.
+function numberCoverLines (html) {
+  let line = 0
+  return html.replace(/<p(\s+class="([^"]*)")?>/g, function (match, attribute, classes) {
+    line += 1
+    const all = (classes ? classes + ' ' : '') + 'cover-line-' + line
+    return '<p class="' + all + '">'
+  })
 }
 
 function lowercaseKeys (object) {

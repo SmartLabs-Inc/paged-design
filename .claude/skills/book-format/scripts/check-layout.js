@@ -2,7 +2,7 @@
 
 // Paginate a book with Paged.js and report layout problems that are invisible
 // in the source HTML: overflow, bad chapter openings, widows, orphans,
-// stranded headings and unintended blanks.
+// stranded headings and labels, and unintended blanks.
 //
 //   node check-layout.js --content content/my-book --theme my-theme
 
@@ -125,14 +125,28 @@ function collectReport () {
       }
     })
 
-    // A heading as the last thing on a page has nothing under it.
-    const children = Array.prototype.slice.call(area.querySelectorAll(
-      'h1, h2, h3, h4, h5, h6'
-    ))
-    children.forEach(function (heading) {
-      const rect = heading.getBoundingClientRect()
-      if (box.bottom - rect.bottom > rect.height * 1.5) return
-      report.strandedHeadings.push({ page: number, element: describe(heading) })
+    // Anything that introduces what follows it — a heading, or a paragraph
+    // styled as a label — must not be the last thing on a page.
+    //
+    // The test is structural, not geometric: what matters is that nothing
+    // follows it on this page, however much white space is left underneath.
+    // A forced break can strand a label halfway up an otherwise empty page.
+    const everything = Array.prototype.slice.call(area.querySelectorAll('*'))
+    const introducers = everything.filter(function (element) {
+      return element.matches(
+        'h1, h2, h3, h4, h5, h6, .label, .callout-label, .chapter-eyebrow, ' +
+        '.chapter-subtitle, .standfirst, caption'
+      )
+    })
+
+    introducers.forEach(function (element) {
+      const position = everything.indexOf(element)
+      const somethingFollows = everything.slice(position + 1).some(function (later) {
+        if (element.contains(later)) return false
+        return (later.textContent || '').trim() !== '' || later.tagName === 'IMG'
+      })
+      if (somethingFollows) return
+      report.strandedHeadings.push({ page: number, element: describe(element) })
     })
   })
 
@@ -237,7 +251,8 @@ function summarise (report, expectedSide) {
   section('Widows (one line carried to the top of a page)', report.widows,
     function (entry) { return 'p' + entry.page + '  ' + entry.element })
 
-  section('Headings stranded at the foot of a page', report.strandedHeadings,
+  section('Headings and labels stranded at the foot of a page',
+    report.strandedHeadings,
     function (entry) { return 'p' + entry.page + '  ' + entry.element })
 
   section('Links with no target (these print no page number)',

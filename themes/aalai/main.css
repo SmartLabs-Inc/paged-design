@@ -4529,9 +4529,86 @@ h5, h6 {
   line-height: 34px;
   margin: 0 0 17px 0; }
 
-p {
+p,
+li,
+td,
+th {
   orphans: 2;
   widows: 2; }
+
+.label,
+.chapter-eyebrow,
+.callout-label,
+.chapter-subtitle,
+.standfirst {
+  break-after: avoid; }
+
+.figure-caption,
+.table-caption,
+.source {
+  break-before: avoid; }
+
+.objectives li:first-child,
+.takeaways li:first-child,
+ol li:first-child,
+ul li:first-child {
+  break-after: avoid; }
+
+.cover .callout-dark {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  padding: 68px 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center; }
+
+.cover p {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9.5px;
+  line-height: 13.6px;
+  text-indent: 0;
+  color: #FFFFFF;
+  text-align: center;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  max-width: 40ch;
+  margin: 0 0 17px 0; }
+
+.cover .cover-line-1 {
+  font-size: 13px;
+  color: #B79A5B;
+  margin-bottom: 34px; }
+
+.cover .cover-line-2 {
+  margin-bottom: 85px; }
+
+.cover .cover-line-3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 30px;
+  line-height: 37.4px;
+  letter-spacing: 0;
+  text-transform: none;
+  max-width: 20ch;
+  margin-bottom: 34px; }
+
+.cover .cover-line-4 {
+  font-size: 8.5px;
+  max-width: 46ch;
+  margin-bottom: 119px; }
+
+.cover .cover-line-5 {
+  font-size: 8.5px;
+  max-width: 46ch;
+  margin-bottom: 0; }
+
+.cover .gold {
+  color: #B79A5B; }
 
 .chapter-eyebrow {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -4719,7 +4796,17 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin: 17px 0;
+  break-inside: auto; }
+
+thead {
+  display: table-header-group;
+  break-after: avoid; }
+
+tr {
   break-inside: avoid; }
+
+tbody tr:first-child {
+  break-after: avoid; }
 
 th {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
