@@ -16,7 +16,7 @@ if (args.help || args._.length === 0) {
     'Usage: node new-theme.js <name> [--from <theme>] [--title "Display Name"]',
     '',
     '  <name>    Directory name for the new theme (lowercase, no spaces).',
-    '  --from    Theme to copy. Default: template.',
+    '  --from    Theme to copy. Default: beatrix.',
     '  --title   Name shown in the demo site’s theme switcher.',
     '',
     'Copies the source theme, rewrites its theme.json, and compiles the CSS.'
@@ -26,7 +26,7 @@ if (args.help || args._.length === 0) {
 
 const root = requireRepoRoot()
 const name = slugify(args._[0])
-const from = args.from || 'template'
+const from = args.from || 'beatrix'
 const title = args.title || args._[0]
   .replace(/[-_]+/g, ' ')
   .replace(/\b\w/g, function (c) { return c.toUpperCase() })

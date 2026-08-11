@@ -1,0 +1,127 @@
+// _variables.scss — AALAI Textbook
+//
+// Anti-Aging & Longevity Academic Institute textbook design.
+// Measurements follow the 7×10in InDesign prototype.
+//
+// Everything vertical derives from $baseline-grid-unit so that text lines up
+// across a spread. Sizes are in px because Paged.js renders px accurately;
+// the pt equivalent is noted where it helps.
+
+// Baseline grid
+// -------------
+
+$baseline-grid-unit: 17px; // ~12.75pt
+
+// Page setup
+// ----------
+
+$page-width: 177.8mm;  // 7in
+$page-height: 254mm;   // 10in
+$margin-top: $baseline-grid-unit * 3;
+$margin-bottom: $baseline-grid-unit * 3;
+$margin-inside: 20mm;
+$margin-outside: 14mm;
+
+// Set these before sending anything to a printer, and confirm the trim first.
+// $bleed: 3mm;
+// $trim: 3mm;
+// $colorspace: cmyk;
+
+$sidebar-position: none;
+
+// Palette
+// -------
+// Taken from the prototype. Every colour in the design is one of these.
+
+$color-navy: #0D2035;        // headings, dark panels
+$color-teal: #137C7A;        // the accent: labels, rules, numbers
+$color-gold: #B79A5B;        // institute mark, chapter rule
+$color-text-main: #17202A;   // body text
+$color-mid: #66717C;         // captions, running feet
+$color-tint: #EAF3F3;        // callout wash
+$color-panel: #F4F6F7;       // table zebra, neutral panels
+$color-pale: #EEF3F7;        // figure placeholders
+
+// Evidence-classification colours
+$color-established: #23806C;
+$color-supported: #315E91;
+$color-emerging: #D49B38;
+$color-experimental: #66717C;
+
+$color-text-secondary: $color-mid;
+$color-light: $color-panel;
+$color-accent: $color-teal;
+$color-links: $color-teal;
+
+// Type
+// ----
+// Georgia and Aptos are what the Word template specifies. Both fall back to
+// widely available faces; for production, embed the real font files locally
+// rather than relying on what a machine happens to have.
+
+$font-text-main: Georgia, "Times New Roman", serif;
+$font-display-main: Georgia, "Times New Roman", serif;
+$font-text-secondary: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+$font-display-secondary: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
+$font-size-default: 12px;        // ~9pt body
+$font-size-small: 9.5px;         // captions, table cells
+$font-size-label: 9px;           // tracked-out labels
+$line-height-default: $baseline-grid-unit;
+$text-align-default: start;      // ragged right — safer for technical prose
+
+$font-size-smaller: 0.8;
+$font-size-larger: 1.4;
+
+// Paragraphs
+// ----------
+// Textbook convention: spaced, not indented, so scannable reference prose
+// reads well and callouts can interrupt the flow cleanly.
+
+$paragraphs: spaced;
+$text-indent: 0;
+$text-spacing: $baseline-grid-unit;
+
+// Page breaks
+// -----------
+
+$chapters-start-on: recto;
+$frontmatter-page-numbers: lower-roman;
+
+// Chapter openers start well down the page, as in the prototype.
+$start-depth: $baseline-grid-unit * 3;
+
+// Running heads and feet
+// ----------------------
+// Nothing runs across the top. Along the foot: the institute on the inside,
+// the running chapter title in the centre, the folio on the outside.
+// Change $institute for another imprint.
+
+$institute: "Anti-Aging & Longevity Academic Institute";
+
+$verso-bottom-left: counter(page);
+$verso-bottom: string(h2-text, start);
+$verso-bottom-right: $institute;
+
+$recto-bottom-left: $institute;
+$recto-bottom: string(h2-text, start);
+$recto-bottom-right: counter(page);
+
+$verso-bottom-left-frontmatter: counter(page, lower-roman);
+$verso-bottom-frontmatter: normal;
+$recto-bottom-frontmatter: normal;
+$recto-bottom-right-frontmatter: counter(page, lower-roman);
+
+// Detail
+// ------
+
+$rule-thickness: 0.5pt;
+$border-radius: 0;
+$hyphenation: auto;
+
+// Theme-specific
+// --------------
+
+$label-tracking: 0.14em;
+$box-padding: $baseline-grid-unit ($baseline-grid-unit * 0.9);
+$chapter-rule-width: 16.5mm;

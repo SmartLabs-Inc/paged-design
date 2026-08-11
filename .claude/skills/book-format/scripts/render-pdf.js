@@ -20,7 +20,7 @@ if (args.help || !args.content) {
     '',
     '  --content <dir>   Directory holding the book’s index.html,',
     '                    e.g. content/my-book.',
-    '  --theme <name>    Theme to render with. Default: template.',
+    '  --theme <name>    Theme to render with. Default: beatrix.',
     '  --out <file>      Output PDF. Default: <content>/<dir-name>.pdf.',
     '  --timeout <ms>    How long to wait for pagination. Default: 300000.',
     '  --no-build        Skip rebuilding the theme CSS first.',
@@ -38,7 +38,7 @@ async function main () {
   const root = requireRepoRoot()
   const contentDir = path.resolve(args.content)
   const indexFile = path.join(contentDir, 'index.html')
-  const theme = args.theme || 'template'
+  const theme = args.theme || 'beatrix'
 
   if (!fs.existsSync(indexFile)) {
     console.error('No index.html in ' + args.content)

@@ -24,8 +24,10 @@ The skill documents the markup contract, every theme variable, the theme library
 
 | Script | What it does |
 | --- | --- |
+| `docx-to-book.js` | Convert a Word manuscript to book HTML by mapping its named paragraph styles; `--dump-styles` reports what a document uses |
+| `make-word-template.js` | Generate a Word authoring template containing exactly the styles a style map understands |
 | `md-to-book.js` | Convert a Markdown manuscript to book HTML, with generated title, copyright and contents pages, footnotes, and book typography |
-| `new-theme.js` | Scaffold a theme from `template` or any existing theme |
+| `new-theme.js` | Scaffold a theme from `beatrix` or any existing theme |
 | `build-css.js` | Compile one theme or all of them, with `--watch` |
 | `render-pdf.js` | Render book HTML to a paginated PDF with headless Chromium and Paged.js |
 | `check-layout.js` | Report overflow, widows, orphans, stranded headings, wrong-side chapter openings, and broken cross-references |
@@ -33,9 +35,23 @@ The skill documents the markup contract, every theme variable, the theme library
 Each script takes `--help`. `render-pdf.js` and `check-layout.js` need [Playwright](https://playwright.dev) (`npm install -g playwright`); the rest need only what `npm install` already provides.
 
 ```bash
+# From Word, using a style map
+node .claude/skills/book-format/scripts/docx-to-book.js --src book.docx --out content/my-book --map aalai
+
+# …or from Markdown
 node .claude/skills/book-format/scripts/md-to-book.js --src manuscript/ --out content/my-book
+
 node .claude/skills/book-format/scripts/render-pdf.js --content content/my-book --theme beatrix
 ```
+
+### Writing in Word
+
+Authors write and lightly format in Word; the layout reads the **named
+paragraph styles** they applied, never the manual formatting. A style map in
+`.claude/skills/book-format/style-maps/` says what each style becomes, so the
+same manuscript always lands the same way. `make-word-template.js` generates a
+Word file that already contains those styles. See
+[`references/word-authoring.md`](.claude/skills/book-format/references/word-authoring.md).
 
 ## Develop new themes
 

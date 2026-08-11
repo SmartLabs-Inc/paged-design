@@ -12,6 +12,7 @@ trying to make them work.
 | `leader(" ")` in TOC entries | Not supported | The default TOC uses `target-counter` with `float: right` instead of dot leaders |
 | `counter-reset: page N` | Resets to 1 only | Use `page-1` on the first numbered component and let numbering run |
 | Non-Chrome browsers | Broken pagination | Preview and render in Chrome/Chromium only |
+| `::before` / `::after` content on ordinary elements | Dropped during pagination | Draw rules and ornaments with a background gradient or a border. `target-counter` in margin boxes and TOC entries still works |
 
 ## CSS that silently does nothing
 
@@ -32,6 +33,22 @@ the class is not even visible in dev tools. Flatten the selector.
 splitting content across pages, so a direct-child relationship in the source
 HTML is usually not a direct-child relationship after pagination. Use descendant
 selectors.
+
+**Generated content vanished.** A `::after { content: "" }` rule that draws a
+rule or ornament renders as `content: none` after pagination — Paged.js rewrites
+generated content for margin boxes and discards the rest. The reliable
+substitute is a background gradient sized and positioned where the ornament
+goes:
+
+```scss
+.chapter-subtitle {
+    padding-bottom: 1.5em;
+    background-image: linear-gradient($gold, $gold);
+    background-repeat: no-repeat;
+    background-size: 16.5mm 1.5pt;   // the rule's size
+    background-position: left bottom 0.5em;
+}
+```
 
 **You forgot to rebuild.** The browser loads `themes/<theme>/main.css`. Editing
 `.scss` changes nothing until `node js/build.js` (or `npm start`, which watches)

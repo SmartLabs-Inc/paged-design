@@ -21,7 +21,7 @@ if (args.help || !args.content) {
     'Usage: node check-layout.js --content <dir> [--theme <name>] [options]',
     '',
     '  --content <dir>  Directory holding the book’s index.html.',
-    '  --theme <name>   Theme to check. Default: template.',
+    '  --theme <name>   Theme to check. Default: beatrix.',
     '  --json           Emit the report as JSON.',
     '  --strict         Exit non-zero if any problem is found.',
     '  --timeout <ms>   How long to wait for pagination. Default: 300000.',
@@ -271,7 +271,7 @@ async function main () {
   const root = requireRepoRoot()
   const contentDir = path.resolve(args.content)
   const indexFile = path.join(contentDir, 'index.html')
-  const theme = args.theme || 'template'
+  const theme = args.theme || 'beatrix'
 
   if (!fs.existsSync(indexFile)) {
     console.error('No index.html in ' + args.content)

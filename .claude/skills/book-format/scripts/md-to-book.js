@@ -13,6 +13,12 @@
 const fs = require('fs')
 const path = require('path')
 const { parseArgs, slugify } = require('./common')
+const book = require('./lib/book')
+
+const titleLevel = book.titleLevel
+const titleClass = book.titleClass
+const indentBlock = book.indentBlock
+const uniqueId = book.createIdRegistry()
 
 const args = parseArgs(process.argv)
 
@@ -31,7 +37,7 @@ if (args.help || !args.src || !args.out) {
     '  --no-smart        Leave straight quotes, -- and ... as typed.',
     '  --standalone      Link the theme CSS directly instead of loading the',
     '                    demo site’s pager.js (use --theme to name the theme).',
-    '  --theme <name>    Theme for --standalone output. Default: template.',
+    '  --theme <name>    Theme for --standalone output. Default: beatrix.',
     '',
     'book.json keys (all optional):',
     '  title, subtitle, author, contributors, publisher, publisherUrl,',
@@ -459,13 +465,6 @@ function renderMarkdown (source, context) {
   return output
 }
 
-function indentBlock (text, indent) {
-  const pad = indent || '  '
-  return String(text).split('\n').map(function (line) {
-    return line.trim() === '' ? line : pad + line
-  }).join('\n')
-}
-
 // renderMarkdown leaves headings as objects so callers can shift their levels.
 // Everywhere else, flatten them to HTML at the level they were written.
 function blocksToHtml (blocks, context, shift) {
@@ -497,49 +496,9 @@ function parseFrontMatter (text) {
   return { data, body: text.slice(match[0].length) }
 }
 
-const TYPE_CLASSES = {
-  cover: 'cover',
-  'half-title': 'half-title-page',
-  'previous-publications': 'previous-publications-page',
-  frontispiece: 'frontispiece-page',
-  'title-page': 'title-page',
-  copyright: 'copyright-page',
-  contents: 'contents-page',
-  dedication: 'dedication-page',
-  epigraph: 'epigraph-page',
-  frontmatter: 'frontmatter',
-  part: 'part-page',
-  chapter: 'chapter',
-  endmatter: 'endmatter'
-}
-
-const FRONTMATTER_TYPES = [
-  'cover', 'half-title', 'previous-publications', 'frontispiece', 'title-page',
-  'copyright', 'contents', 'dedication', 'epigraph', 'frontmatter'
-]
-
-// Heading level a component's own title is rendered at.
-function titleLevel (type) {
-  if (type === 'chapter') return 2
-  return 1
-}
-
 // ---------------------------------------------------------------------------
 // Component assembly
 // ---------------------------------------------------------------------------
-
-const usedIds = {}
-
-function uniqueId (candidate) {
-  let id = candidate || 'section'
-  let suffix = 2
-  while (usedIds[id]) {
-    id = candidate + '-' + suffix
-    suffix += 1
-  }
-  usedIds[id] = true
-  return id
-}
 
 function newContext () {
   const footnoteOrder = []
@@ -617,9 +576,7 @@ function componentFromSource (source, defaults) {
   const numberSpan = parsed.data.number
     ? '<span class="chapter-number">' + parsed.data.number + '</span> '
     : ''
-  const headingClass = (type === 'frontmatter' || type === 'endmatter')
-    ? ' class="heading-2"'
-    : ''
+  const headingClass = titleClass(type)
   const heading = title
     ? '<h' + target + headingClass + ' id="' + id + '">' + numberSpan +
       renderInline(title, context) + '</h' + target + '>'
@@ -633,221 +590,9 @@ function componentFromSource (source, defaults) {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Generated frontmatter components
-// ---------------------------------------------------------------------------
-
+// Render a short run of Markdown for a generated frontmatter page.
 function inlineOnly (text) {
-  const context = newContext()
-  return renderInline(String(text), context)
-}
-
-function makeCover (meta) {
-  return {
-    type: 'cover',
-    id: uniqueId('cover'),
-    title: null,
-    body: '<p class="cover"><img src="' + meta.cover + '" alt="' +
-      (meta.title || '') + '" class="cover" /></p>'
-  }
-}
-
-function makeHalfTitle (meta) {
-  return {
-    type: 'half-title',
-    id: uniqueId('half-title-page'),
-    title: 'Half-title page',
-    tocSkip: true,
-    firstNumbered: true,
-    body: '<p class="title-page-title">' + inlineOnly(meta.title || '') + '</p>'
-  }
-}
-
-function makePreviousPublications (meta) {
-  const id = uniqueId('previous-publications')
-  const items = meta.previousPublications.map(function (line) {
-    return '<p>' + inlineOnly(line) + '</p>'
-  })
-  return {
-    type: 'previous-publications',
-    id,
-    title: 'Also by the author',
-    body: ['<h1 class="heading-2" id="' + id + '">Also by the author</h1>']
-      .concat(items).join('\n')
-  }
-}
-
-function makeTitlePage (meta) {
-  const id = uniqueId('title-page-title')
-  const parts = ['<p class="title-page-title" id="' + id + '">' +
-    inlineOnly(meta.title || '') + '</p>']
-  if (meta.subtitle) {
-    parts.push('<p class="title-page-subtitle">' + inlineOnly(meta.subtitle) + '</p>')
-  }
-  if (meta.author) {
-    parts.push('<p class="title-page-author">' + inlineOnly(meta.author) + '</p>')
-  }
-  if (meta.contributors) {
-    parts.push('<p class="title-page-contributors">' +
-      inlineOnly(meta.contributors) + '</p>')
-  }
-  if (meta.publisher) {
-    const name = inlineOnly(meta.publisher)
-    parts.push('<p class="title-page-publisher">' +
-      (meta.publisherUrl
-        ? '<a href="' + meta.publisherUrl + '">' + name + '</a>'
-        : name) + '</p>')
-  }
-  if (meta.publisherLogo) {
-    parts.push('<p class="title-page-logo"><img src="' + meta.publisherLogo +
-      '" alt="' + inlineOnly(meta.publisher || 'Publisher') + '" /></p>')
-  }
-  return {
-    type: 'title-page',
-    id,
-    title: 'Title page',
-    tocSkip: true,
-    body: parts.join('\n')
-  }
-}
-
-function makeCopyright (meta) {
-  const id = uniqueId('copyright')
-  const parts = ['<h1 class="non-printing" id="' + id + '">Copyright</h1>']
-  parts.push('<p><em>' + inlineOnly(meta.title || '') + '</em>' +
-    (meta.copyright ? '<br />\n' + inlineOnly(meta.copyright) : '') + '</p>')
-  if (meta.isbn) {
-    parts.push([
-      '<p class="identifiers">',
-      '  <span class="identifier">',
-      '    <span class="identifier-scheme">ISBN</span>:',
-      '    <span class="identifier-id">' + meta.isbn + '</span>',
-      '  </span>',
-      '</p>'
-    ].join('\n'))
-  }
-  const rights = [].concat(meta.rights || [])
-  rights.forEach(function (line) {
-    parts.push('<p>' + inlineOnly(line) + '</p>')
-  })
-  return {
-    type: 'copyright',
-    id,
-    title: 'Copyright',
-    body: parts.join('\n')
-  }
-}
-
-function makeDedication (meta) {
-  const id = uniqueId('dedication')
-  return {
-    type: 'dedication',
-    id,
-    title: 'Dedication',
-    body: '<p class="dedication" id="' + id + '">' +
-      inlineOnly(meta.dedication) + '</p>'
-  }
-}
-
-function makeEpigraph (meta) {
-  const id = uniqueId('epigraph')
-  const epigraph = typeof meta.epigraph === 'string'
-    ? { text: meta.epigraph }
-    : meta.epigraph
-  const parts = ['<p class="epigraph" id="' + id + '">' +
-    inlineOnly(epigraph.text) + '</p>']
-  if (epigraph.source) {
-    parts.push('<p class="source">' + inlineOnly(epigraph.source) + '</p>')
-  }
-  return { type: 'epigraph', id, title: 'Epigraph', body: parts.join('\n') }
-}
-
-function makeContents (components) {
-  const id = uniqueId('contents')
-  const entries = components.filter(function (component) {
-    return component.title && !component.tocSkip && component.type !== 'contents'
-  }).map(function (component) {
-    const classes = ['toc-entry-title']
-    if (FRONTMATTER_TYPES.indexOf(component.type) > -1) {
-      classes.push('frontmatter-entry')
-    }
-    if (component.type === 'part') classes.push('toc-entry-part')
-    return [
-      '  <li class="' + classes.join(' ') + '">',
-      '    <a href="#' + component.id + '">',
-      '      <span class="toc-entry-text">' + component.title + '</span>',
-      '    </a>',
-      '  </li>'
-    ].join('\n')
-  })
-
-  return {
-    type: 'contents',
-    id,
-    title: 'Contents',
-    tocSkip: true,
-    body: [
-      '<h1 class="heading-2" id="' + id + '">Contents</h1>',
-      '<ol class="toc-list">',
-      entries.join('\n'),
-      '</ol>'
-    ].join('\n')
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Page assembly
-// ---------------------------------------------------------------------------
-
-function renderComponent (component, bookClass) {
-  const classes = [bookClass, TYPE_CLASSES[component.type] || 'chapter']
-  if (component.firstNumbered) classes.push('page-1')
-  const header = component.title
-    ? ' data-header="' + component.title.replace(/<[^>]+>/g, '')
-      .replace(/"/g, '&quot;') + '"'
-    : ''
-  return [
-    '    <div class="' + classes.join(' ') + '"' + header + '>',
-    '        <div>',
-    '            <div>',
-    indentBlock(component.body, '                '),
-    '            </div>',
-    '        </div>',
-    '    </div>'
-  ].join('\n')
-}
-
-function renderDocument (components, meta, bookClass) {
-  const head = [
-    '<!DOCTYPE html>',
-    '<html lang="' + (meta.lang || 'en') + '">',
-    '',
-    '<head>',
-    '    <title>' + (meta.title || bookClass) + '</title>',
-    '    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />',
-    '    <meta name="viewport" content="width=device-width, initial-scale=1">'
-  ]
-
-  if (args.standalone) {
-    head.push('')
-    head.push('    <link rel="stylesheet" type="text/css" href="' +
-      (args.css || '../../themes/' + (args.theme || 'template') + '/main.css') + '">')
-    head.push('    <script src="../../js/vendor/paged.polyfill.js"></script>')
-  } else {
-    head.push('')
-    head.push('    <!-- Loads the theme, waits for MathJax, then runs Paged.js. -->')
-    head.push('    <script src="../../js/pager.js"></script>')
-  }
-
-  head.push('</head>')
-  head.push('')
-  head.push('<body>')
-
-  const body = components.map(function (component) {
-    return renderComponent(component, bookClass)
-  })
-
-  return head.concat(body, ['</body>', '', '</html>', '']).join('\n')
+  return renderInline(String(text), newContext())
 }
 
 // ---------------------------------------------------------------------------
@@ -951,81 +696,22 @@ function main () {
     return componentFromSource(item, { type: args.type })
   })
 
-  // Only generate the standard frontmatter a source file has not supplied.
-  const suppliedTypes = fileComponents.map(function (c) { return c.type })
-  const generated = []
-  function addIfMissing (type, factory) {
-    if (suppliedTypes.indexOf(type) > -1) return
-    const component = factory()
-    if (component) generated.push(component)
-  }
-
-  addIfMissing('cover', function () { return meta.cover ? makeCover(meta) : null })
-  addIfMissing('half-title', function () {
-    return meta.title ? makeHalfTitle(meta) : null
-  })
-  addIfMissing('previous-publications', function () {
-    return meta.previousPublications && meta.previousPublications.length
-      ? makePreviousPublications(meta)
-      : null
-  })
-  addIfMissing('title-page', function () {
-    return meta.title ? makeTitlePage(meta) : null
-  })
-  addIfMissing('copyright', function () {
-    return (meta.copyright || meta.isbn || meta.rights) ? makeCopyright(meta) : null
-  })
-  addIfMissing('dedication', function () {
-    return meta.dedication ? makeDedication(meta) : null
-  })
-  addIfMissing('epigraph', function () {
-    return meta.epigraph ? makeEpigraph(meta) : null
-  })
-
-  // Order: generated frontmatter first, then the source files in order,
-  // with any file-supplied frontmatter kept where the author put it.
-  const ordering = ['cover', 'half-title', 'previous-publications',
-    'frontispiece', 'title-page', 'copyright', 'dedication', 'epigraph']
-  generated.sort(function (a, b) {
-    return ordering.indexOf(a.type) - ordering.indexOf(b.type)
-  })
-
-  const components = generated.concat(fileComponents)
-
-  // The contents page needs the full list, so build it last and splice it in
-  // after the copyright page (or at the top of the frontmatter).
-  if (meta.contents !== false && suppliedTypes.indexOf('contents') === -1) {
-    const contents = makeContents(components)
-    const afterCopyright = components.findIndex(function (component) {
-      return component.type === 'copyright'
-    })
-    const insertAt = afterCopyright > -1
-      ? afterCopyright + 1
-      : components.findIndex(function (component) {
-        return FRONTMATTER_TYPES.indexOf(component.type) === -1
-      })
-    components.splice(insertAt > -1 ? insertAt : components.length, 0, contents)
-  }
-
-  // Number pages from the first frontmatter component that carries content.
-  const firstNumbered = components.find(function (component) {
-    return component.type !== 'cover'
-  })
-  if (firstNumbered) firstNumbered.firstNumbered = true
+  // Generate whatever standard frontmatter the source did not supply itself,
+  // then order everything and build the contents page.
+  const components = book.assemble(fileComponents, meta, uniqueId, inlineOnly)
 
   fs.mkdirSync(outDir, { recursive: true })
   copyAssets(source, outDir)
 
-  const html = renderDocument(components, meta, bookClass)
+  const html = book.renderDocument(components, meta, bookClass, {
+    standalone: args.standalone,
+    theme: args.theme,
+    css: args.css
+  })
   const outFile = path.join(outDir, 'index.html')
   fs.writeFileSync(outFile, html)
 
-  console.log('Wrote ' + path.relative(process.cwd(), outFile) +
-    ' (' + components.length + ' page components)')
-  components.forEach(function (component) {
-    console.log('  ' + (TYPE_CLASSES[component.type] || component.type).padEnd(28) +
-      (component.title || ''))
-  })
+  book.report(components, path.relative(process.cwd(), outFile))
   console.log([
     '',
     'Next:',
@@ -1035,7 +721,7 @@ function main () {
     '  2. If frontmatter titles should look like chapter titles, add to your',
     '     theme’s _styles.scss:  .heading-2 { @include h2(); }',
     '  3. Preview:  npm start  →  http://localhost:5000/' +
-      path.relative(process.cwd(), outFile).split(path.sep).join('/') + '?theme=template'
+      path.relative(process.cwd(), outFile).split(path.sep).join('/') + '?theme=beatrix'
   ].join('\n'))
 }
 

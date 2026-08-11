@@ -1,11 +1,14 @@
 # The shipped themes
 
-Nine themes live in `themes/`. Pick the closest starting point and adapt it —
+Ten themes live in `themes/`. Pick the closest starting point and adapt it —
 starting from `template` is only worth it when nothing else is close.
+
+`beatrix` is the default: it is what `new-theme.js`, `render-pdf.js` and
+`check-layout.js` assume when no theme is named.
 
 Themes are not universal. Each was written against a particular HTML structure.
 The five Ketida themes target the class names a Ketida/Coko export produces
-(`section.component-body.chapter` and friends); the four generic themes target
+(`section.component-body.chapter` and friends); the five generic themes target
 the class names in `references/markup.md`. Using a theme against different HTML
 means overriding `_selectors.scss` — see the end of that file.
 
@@ -44,6 +47,27 @@ margins (24 mm outside, 15 mm inside). 129 × 198 mm, PT Serif on ZCOOL KuaiLe,
 9 pt on 14 pt, justified. Preview with `content/little-brother`.
 
 Start here for: zines, manifestos, anything that should look loud.
+
+### `aalai`
+
+A 7 × 10in academic textbook for scientific and clinical reference works,
+built to an InDesign prototype. Navy `#0D2035` and teal `#137C7A` with a gold
+accent; Georgia for text and headings, a grotesque sans for labels and
+apparatus; spaced paragraphs, ragged right, hyphenated.
+
+Beyond the usual book features it styles a component set textbooks need:
+chapter eyebrow and gold rule, learning objectives, tinted and dark callouts
+with labels, an evidence table with a navy header and zebra rows,
+evidence-classification chips (`.level-established` through
+`.level-experimental`), side-by-side panels from single-row Word tables, figure
+placeholders, and chapter-summary takeaways.
+
+Pairs with the `aalai` style map, so a Word manuscript written against the AALAI
+template converts and lays out with no hand-tagging. Preview with
+`content/aalai-sample`.
+
+Start here for: textbooks, clinical or scientific reference works, anything with
+heavy apparatus and a house style to match.
 
 ## Ketida / textbook themes
 

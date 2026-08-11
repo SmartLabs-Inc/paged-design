@@ -41,7 +41,30 @@ components* — one per cover, title page, chapter, etc. — each carrying a cla
 the theme styles (`chapter`, `title-page`, `copyright-page`, …). Put it in
 `content/<book-slug>/index.html` so the preview server and theme switcher find it.
 
-From Markdown:
+**From Word** — the usual route when authors are not developers. The converter
+reads the manuscript's named paragraph styles and a style map decides what each
+one becomes, so nothing depends on how the author formatted the text by hand:
+
+```bash
+# Always look first: what styles does this manuscript actually use?
+node .claude/skills/book-format/scripts/docx-to-book.js --src book.docx --dump-styles
+
+node .claude/skills/book-format/scripts/docx-to-book.js \
+  --src book.docx --out content/my-book --map aalai
+```
+
+Bold, italic, super/subscript, footnotes, images, hyperlinks, lists and tables
+all carry through. Shaded one-cell tables become callout boxes, and the fill
+colour picks which kind. Read `references/word-authoring.md` before writing or
+editing a style map — it documents every key and the conventions authors follow.
+
+To give authors a Word file that already contains the right styles:
+
+```bash
+node .claude/skills/book-format/scripts/make-word-template.js --map aalai --out Template.docx
+```
+
+**From Markdown:**
 
 ```bash
 node .claude/skills/book-format/scripts/md-to-book.js \
@@ -52,25 +75,23 @@ It converts each `.md` file to one page component, generates cover, title,
 copyright, and contents pages from `book.json`, applies book typography
 (curly quotes, en/em dashes, ellipses), and wires up footnotes.
 
-From `.docx`, convert first, then treat as Markdown or HTML:
-
-```bash
-soffice --headless --convert-to html --outdir /tmp/conv manuscript.docx
-```
-
-Then **read `references/markup.md` and hand-tag the semantic features** the
-converter cannot infer: epigraphs, pull quotes, sources, boxes, dedications,
-figure captions. This tagging is what makes a design look designed — do not
-skip it. Markdown can carry the tags inline as `{.epigraph}` attributes.
+Either way, **read `references/markup.md` and hand-tag whatever the source did
+not mark**: epigraphs, pull quotes, sources, boxes, dedications, figure
+captions. A manuscript written against a house template needs almost none of
+this; a hand-formatted one needs a lot. This tagging is what makes a design look
+designed — do not skip it. Markdown can carry the tags inline as `{.epigraph}`
+attributes.
 
 ### 2. Choose a theme
 
-Nine themes ship in `themes/`. See `references/themes.md` for what each looks
-like and which to start from. `template` (shown as "Vanilla") is the neutral
-baseline; copy it when the design is new.
+Ten themes ship in `themes/`. See `references/themes.md` for what each looks
+like and which to start from. **`beatrix` is the default** and the right
+starting point for most books; `template` (shown as "Vanilla") is the neutral
+baseline when a design needs to start from nothing.
 
 ```bash
-node .claude/skills/book-format/scripts/new-theme.js my-theme --from template
+node .claude/skills/book-format/scripts/new-theme.js my-theme            # from beatrix
+node .claude/skills/book-format/scripts/new-theme.js my-theme --from aalai
 ```
 
 ### 3. Design the theme
@@ -145,6 +166,9 @@ non-zero when anything is found, for use in a build.
   your elements.
 - **Never link to web fonts in production.** A remote font update reflows the
   whole book. Save font files into the project and `@font-face` them locally.
+- **`::after` content does not survive pagination.** Paged.js discards generated
+  content on ordinary elements. Draw rules and ornaments with a background
+  gradient or a border instead.
 - **Set `$bleed`/`$trim` before generating anything a printer will accept**, and
   confirm the trim size with the printer first.
 - **Rebuild CSS after every Sass edit** — the browser loads `main.css`, not
@@ -154,6 +178,9 @@ non-zero when anything is found, for use in a build.
 
 Read these when the task reaches them; they are not needed up front.
 
+- `references/word-authoring.md` — how authors write in Word, what survives the
+  conversion, and every key a style map understands. Read before converting a
+  `.docx` or editing a map.
 - `references/markup.md` — the book HTML contract: every page-component class
   and feature class, with examples. Read before writing or tagging book HTML.
 - `references/variables.md` — every theme variable, grouped, with effects.
