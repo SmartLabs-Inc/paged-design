@@ -326,7 +326,7 @@ h6 {
   @top-left-corner {
     content: normal; }
   @bottom-center {
-    content: string(h2-text, start); }
+    content: string(h2-text, first); }
   @bottom-left {
     content: counter(page); }
   @bottom-right {
@@ -348,7 +348,7 @@ h6 {
   @top-left-corner {
     content: normal; }
   @bottom-center {
-    content: string(h2-text, start); }
+    content: string(h2-text, first); }
   @bottom-left {
     content: "Anti-Aging & Longevity Academic Institute"; }
   @bottom-right {

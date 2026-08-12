@@ -100,11 +100,11 @@ $start-depth: $baseline-grid-unit * 3;
 $institute: "Anti-Aging & Longevity Academic Institute";
 
 $verso-bottom-left: counter(page);
-$verso-bottom: string(h2-text, start);
+$verso-bottom: string(h2-text, first);
 $verso-bottom-right: $institute;
 
 $recto-bottom-left: $institute;
-$recto-bottom: string(h2-text, start);
+$recto-bottom: string(h2-text, first);
 $recto-bottom-right: counter(page);
 
 $verso-bottom-left-frontmatter: counter(page, lower-roman);
