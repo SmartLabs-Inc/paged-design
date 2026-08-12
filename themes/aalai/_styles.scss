@@ -432,8 +432,17 @@ table {
     break-inside: auto;
 }
 
-// Move the whole table to the next page rather than split it.
-table.keep-together {
+// Keep a block whole: move it to the next page rather than split it. On a
+// table it stops rows orphaning without their header, since Paged.js does not
+// repeat one. On a wrapper div it holds a heading, its lead-in sentence and
+// the table they introduce together.
+//
+// A wrapper is the only reliable way to express keep-with-next here. Chaining
+// `break-after: avoid` on the heading to `break-before: avoid` on the table
+// does not work: Paged.js honors the second and ignores the first, so the
+// paragraph moves to the next page and the heading is left behind — worse than
+// the split it was meant to prevent. Verified by rendering both ways.
+.keep-together {
     break-inside: avoid;
 }
 
@@ -593,24 +602,29 @@ blockquote {
 // Running feet
 // ---------------------------------------------------------------------------
 
+// Set at 9.5px rather than the 7px a print designer reaches for by habit.
+// A folio nobody can read is decoration, and this book is read by clinicians
+// who are themselves the age the book is about.
+$foot-size: 9.5px;
+
 @page {
     @bottom-left {
         font-family: $font-text-secondary;
-        font-size: 7px;
-        letter-spacing: 0.08em;
-        color: $color-mid;
+        font-size: $foot-size;
+        letter-spacing: 0.06em;
+        color: $color-foot;
     }
     @bottom-right {
         font-family: $font-text-secondary;
-        font-size: 7px;
-        letter-spacing: 0.08em;
-        color: $color-mid;
+        font-size: $foot-size;
+        letter-spacing: 0.06em;
+        color: $color-foot;
     }
     @bottom-center {
         font-family: $font-text-secondary;
-        font-size: 7px;
-        letter-spacing: 0.08em;
-        color: $color-mid;
+        font-size: $foot-size;
+        letter-spacing: 0.06em;
+        color: $color-foot;
     }
 }
 
@@ -811,4 +825,40 @@ blockquote {
     @bottom-left { content: normal; }
     @bottom-center { content: normal; }
     @bottom-right { content: normal; }
+}
+
+// ---------------------------------------------------------------------------
+// Intentionally blank pages
+// ---------------------------------------------------------------------------
+// Chapters open on a recto, so the fragmenter inserts a blank verso wherever a
+// chapter would otherwise land on a left page. In a bound book that reads as
+// craft. In a PDF someone scrolls through it reads as a bug — a page that
+// failed to render — so it has to say what it is.
+//
+// Paged.js discards generated content on elements it fragments, but these
+// pseudo-elements hang off its own page container, which exists only after
+// pagination is finished. They survive.
+
+.pagedjs_blank_page .pagedjs_page_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagedjs_blank_page .pagedjs_page_content::before {
+    content: "◈";
+    display: block;
+    color: $color-gold;
+    font-size: 13px;
+    line-height: 1;
+    margin-bottom: ($baseline-grid-unit / 1.5);
+}
+
+.pagedjs_blank_page .pagedjs_page_content::after {
+    content: "This page is intentionally blank";
+    display: block;
+    @include label();
+    font-size: 8px;
+    color: $color-mid;
 }

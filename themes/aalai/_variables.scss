@@ -37,7 +37,10 @@ $color-navy: #0D2035;        // headings, dark panels
 $color-teal: #137C7A;        // the accent: labels, rules, numbers
 $color-gold: #B79A5B;        // institute mark, chapter rule
 $color-text-main: #17202A;   // body text
-$color-mid: #66717C;         // captions, running feet
+$color-mid: #66717C;         // captions
+$color-foot: #4A5560;        // running feet — darker than captions, because a
+                             // folio is read at arm's length and often by
+                             // someone who is not reaching for their glasses
 $color-tint: #EAF3F3;        // callout wash
 $color-panel: #F4F6F7;       // table zebra, neutral panels
 $color-pale: #EEF3F7;        // figure placeholders
@@ -93,17 +96,23 @@ $start-depth: $baseline-grid-unit * 3;
 
 // Running heads and feet
 // ----------------------
-// Nothing runs across the top. Along the foot: the institute on the inside,
-// the running chapter title in the center, the folio on the outside.
-// Change $institute for another imprint.
+// Nothing runs across the top. Along the foot: the folio on the outside and
+// the running chapter title in the center.
+//
+// The institute name used to sit in the inside slot and has been dropped. A
+// margin box gets roughly a third of the text width, and at a foot size large
+// enough to actually read, forty-one characters wrap to two lines. Given the
+// choice between a legible foot and a third element repeating a name already
+// on the cover and the title page, the foot wins. $institute is still used on
+// the title page.
 
 $institute: "Anti-Aging & Longevity Academic Institute";
 
 $verso-bottom-left: counter(page);
 $verso-bottom: string(h2-text, first);
-$verso-bottom-right: $institute;
+$verso-bottom-right: normal;
 
-$recto-bottom-left: $institute;
+$recto-bottom-left: normal;
 $recto-bottom: string(h2-text, first);
 $recto-bottom-right: counter(page);
 

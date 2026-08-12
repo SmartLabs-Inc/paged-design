@@ -330,7 +330,7 @@ h6 {
   @bottom-left {
     content: counter(page); }
   @bottom-right {
-    content: "Anti-Aging & Longevity Academic Institute"; }
+    content: normal; }
   @bottom-left-corner {
     content: normal; }
   @bottom-right-corner {
@@ -350,7 +350,7 @@ h6 {
   @bottom-center {
     content: string(h2-text, first); }
   @bottom-left {
-    content: "Anti-Aging & Longevity Academic Institute"; }
+    content: normal; }
   @bottom-right {
     content: counter(page); }
   @bottom-left-corner {
@@ -4798,7 +4798,7 @@ table {
   margin: 17px 0;
   break-inside: auto; }
 
-table.keep-together {
+.keep-together {
   break-inside: avoid; }
 
 thead {
@@ -4941,19 +4941,19 @@ blockquote {
 @page {
   @bottom-left {
     font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    font-size: 7px;
-    letter-spacing: 0.08em;
-    color: #66717C; }
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    color: #4A5560; }
   @bottom-right {
     font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    font-size: 7px;
-    letter-spacing: 0.08em;
-    color: #66717C; }
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    color: #4A5560; }
   @bottom-center {
     font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    font-size: 7px;
-    letter-spacing: 0.08em;
-    color: #66717C; } }
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    color: #4A5560; } }
 
 .sidenote {
   float: right;
@@ -5152,11 +5152,11 @@ blockquote {
   @bottom-center {
     content: string(h2-text, first); }
   @bottom-right {
-    content: "Anti-Aging & Longevity Academic Institute"; } }
+    content: normal; } }
 
 @page endmatter:right {
   @bottom-left {
-    content: "Anti-Aging & Longevity Academic Institute"; }
+    content: normal; }
   @bottom-center {
     content: string(h2-text, first); }
   @bottom-right {
@@ -5169,3 +5169,31 @@ blockquote {
     content: normal; }
   @bottom-right {
     content: normal; } }
+
+.pagedjs_blank_page .pagedjs_page_content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; }
+
+.pagedjs_blank_page .pagedjs_page_content::before {
+  content: "◈";
+  display: block;
+  color: #B79A5B;
+  font-size: 13px;
+  line-height: 1;
+  margin-bottom: 11.33333px; }
+
+.pagedjs_blank_page .pagedjs_page_content::after {
+  content: "This page is intentionally blank";
+  display: block;
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 0 0 8.5px 0;
+  text-indent: 0;
+  font-size: 8px;
+  color: #66717C; }
