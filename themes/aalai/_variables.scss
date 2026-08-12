@@ -31,7 +31,7 @@ $sidebar-position: none;
 
 // Palette
 // -------
-// Taken from the prototype. Every colour in the design is one of these.
+// Taken from the prototype. Every color in the design is one of these.
 
 $color-navy: #0D2035;        // headings, dark panels
 $color-teal: #137C7A;        // the accent: labels, rules, numbers
@@ -42,7 +42,7 @@ $color-tint: #EAF3F3;        // callout wash
 $color-panel: #F4F6F7;       // table zebra, neutral panels
 $color-pale: #EEF3F7;        // figure placeholders
 
-// Evidence-classification colours
+// Evidence-classification colors
 $color-established: #23806C;
 $color-supported: #315E91;
 $color-emerging: #D49B38;
@@ -94,7 +94,7 @@ $start-depth: $baseline-grid-unit * 3;
 // Running heads and feet
 // ----------------------
 // Nothing runs across the top. Along the foot: the institute on the inside,
-// the running chapter title in the centre, the folio on the outside.
+// the running chapter title in the center, the folio on the outside.
 // Change $institute for another imprint.
 
 $institute: "Anti-Aging & Longevity Academic Institute";

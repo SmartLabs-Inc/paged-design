@@ -179,7 +179,7 @@ and replaced by a generated "(page N)" reference.
 
 The default selector is `figure, .figure`, so a `<figure>` element, a
 `<div class="figure">`, or a `<blockquote class="figure">` all work. Any `<p>`
-inside is styled as a caption — centred, unindented, one step smaller.
+inside is styled as a caption — centered, unindented, one step smaller.
 
 ```html
 <figure id="figure-1">
@@ -241,7 +241,7 @@ semantics wrong. Read the text and tag:
 - A repeated phrase already in the body text, set large → `.pullquote`.
 - A "Note:", "Tip:", or "Case study" block → `.box`.
 - Standalone images with a caption → `<figure>` + `.figure-caption`.
-- Anything already in the frontmatter (preface, acknowledgements) → a
+- Anything already in the frontmatter (preface, acknowledgments) → a
   `frontmatter` component, not a `chapter`.
 
 Getting this wrong is invisible in the browser and obvious in the PDF.

@@ -38,7 +38,7 @@
     font-variant: small-caps;
 }
 
-// Run colours the Word converter preserves.
+// Run colors the Word converter preserves.
 .accent { color: $color-teal; }
 .gold { color: $color-gold; }
 .muted { color: $color-mid; }
@@ -162,7 +162,7 @@ ul li:first-child {
 }
 
 // text-align has to be set explicitly: the default p rule sets `start`, which
-// beats the centring inherited from the flex container.
+// beats the centering inherited from the flex container.
 .cover p {
     @include sans-small();
     color: #FFFFFF;
@@ -390,7 +390,7 @@ ul li:first-child {
     margin: 0;
 }
 
-// An evidence-classification chip: a fixed-width coloured label beside its
+// An evidence-classification chip: a fixed-width colored label beside its
 // explanation.
 .level {
     padding: ($baseline-grid-unit / 2) ($baseline-grid-unit / 2);
@@ -416,13 +416,25 @@ ul li:first-child {
 // Tables
 // ---------------------------------------------------------------------------
 
-// A table long enough to need two pages breaks between rows and repeats its
-// header, rather than being held together until it overflows the page.
+// A table long enough to need two pages breaks between rows rather than being
+// held together until it overflows the page.
+//
+// Caveat worth knowing before you rely on it: `display: table-header-group` is
+// the CSS that repeats a header on each page a table continues onto, and
+// Paged.js does not implement it. A split table's second page carries rows with
+// no header. Put `.keep-together` on any table short enough to fit one page and
+// you avoid the problem entirely; for one genuinely longer than a page, repeat
+// the header by hand in a second table.
 table {
     width: 100%;
     border-collapse: collapse;
     margin: $baseline-grid-unit 0;
     break-inside: auto;
+}
+
+// Move the whole table to the next page rather than split it.
+table.keep-together {
+    break-inside: avoid;
 }
 
 thead {
@@ -600,4 +612,203 @@ blockquote {
         letter-spacing: 0.08em;
         color: $color-mid;
     }
+}
+
+// ---------------------------------------------------------------------------
+// Side callouts
+// ---------------------------------------------------------------------------
+// A short remark set beside the running text rather than interrupting it.
+// Floated into the outer third so long passages stay readable while the
+// commentary sits alongside.
+
+.sidenote {
+    float: right;
+    clear: right;
+    width: 34%;
+    margin: 0 0 $baseline-grid-unit ($baseline-grid-unit * 1.2);
+    padding-left: ($baseline-grid-unit / 1.5);
+    border-left: 2pt solid $color-teal;
+    break-inside: avoid;
+}
+
+.sidenote p {
+    @include sans-small();
+    font-size: 8.5px;
+    color: $color-text-main;
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+}
+
+.sidenote p:last-child {
+    margin-bottom: 0;
+}
+
+.sidenote-label {
+    @include label();
+    font-size: 7.5px;
+    margin-bottom: ($baseline-grid-unit / 3);
+}
+
+// A figure of the same weight, sitting in the margin.
+.sidenote .figure-caption {
+    color: $color-mid;
+}
+
+// ---------------------------------------------------------------------------
+// Process steps
+// ---------------------------------------------------------------------------
+// The production stages, each with an icon. Laid out as a row on wide runs and
+// stacked when there is not room, so the sequence reads either way.
+
+.process {
+    display: flex;
+    gap: ($baseline-grid-unit / 1.5);
+    margin: ($baseline-grid-unit * 1.5) 0;
+    break-inside: avoid;
+    align-items: stretch;
+}
+
+.step {
+    flex: 1 1 0;
+    background-color: $color-tint;
+    padding: $baseline-grid-unit ($baseline-grid-unit / 1.5);
+    display: flex;
+    flex-direction: column;
+    break-inside: avoid;
+}
+
+.step-icon {
+    display: block;
+    width: 26px;
+    height: 26px;
+    margin-bottom: ($baseline-grid-unit / 1.5);
+    color: $color-teal;
+}
+
+.step-number {
+    @include label();
+    font-size: 7px;
+    color: $color-gold;
+    margin-bottom: ($baseline-grid-unit / 4);
+}
+
+.step-title {
+    @include label();
+    font-size: 8px;
+    color: $color-navy;
+    margin-bottom: ($baseline-grid-unit / 3);
+}
+
+.step p {
+    @include sans-small();
+    font-size: 8px;
+    margin: 0;
+}
+
+// A single wide step, used where one stage needs more explanation.
+.step-wide {
+    background-color: $color-panel;
+}
+
+// ---------------------------------------------------------------------------
+// Deliverable pillars
+// ---------------------------------------------------------------------------
+// Four things being bought, each announced by a number and a name.
+
+.pillar {
+    background-color: $color-panel;
+    padding: $baseline-grid-unit;
+    margin: 0 0 ($baseline-grid-unit / 1.5) 0;
+    border-left: 3pt solid $color-teal;
+    break-inside: avoid;
+}
+
+.pillar-number {
+    @include label();
+    font-size: 7.5px;
+    color: $color-gold;
+    margin-bottom: ($baseline-grid-unit / 4);
+}
+
+.pillar-title {
+    font-family: $font-display-main;
+    font-size: 15px;
+    color: $color-navy;
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+    text-indent: 0;
+}
+
+.pillar p {
+    @include sans-small();
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+}
+
+.pillar p:last-child {
+    margin-bottom: 0;
+}
+
+// The two rules above set font-size on every `p` inside a pillar, which is one
+// step more specific than the class on the title. Scope the title to win.
+.pillar .pillar-number {
+    @include label();
+    font-size: 7.5px;
+    color: $color-gold;
+    margin-bottom: ($baseline-grid-unit / 4);
+}
+
+.pillar .pillar-title {
+    font-family: $font-display-main;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.25;
+    color: $color-navy;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    text-indent: 0;
+}
+
+// Same collision inside steps and side callouts.
+.step .step-number {
+    @include label();
+    font-size: 7px;
+    color: $color-gold;
+}
+
+.step .step-title {
+    @include label();
+    font-size: 8px;
+    color: $color-navy;
+}
+
+.sidenote .sidenote-label {
+    @include label();
+    font-size: 7.5px;
+    color: $color-navy;
+    margin-bottom: ($baseline-grid-unit / 3);
+}
+
+// ---------------------------------------------------------------------------
+// Running feet on endmatter
+// ---------------------------------------------------------------------------
+// The defaults define margin boxes for `chapter` and `frontmatter` pages only.
+// `.endmatter` is assigned its own named page with no boxes at all, so an
+// appendix, a bibliography or an index prints with no folio. A reference book
+// cannot ship that way: the index is the one part readers navigate by number.
+//
+// Mirrors @page chapter, so back matter numbers continuously with the body.
+
+@page endmatter:left {
+    @bottom-left { content: $verso-bottom-left; }
+    @bottom-center { content: $verso-bottom; }
+    @bottom-right { content: $verso-bottom-right; }
+}
+
+@page endmatter:right {
+    @bottom-left { content: $recto-bottom-left; }
+    @bottom-center { content: $recto-bottom; }
+    @bottom-right { content: $recto-bottom-right; }
+}
+
+@page endmatter:blank {
+    @bottom-left { content: normal; }
+    @bottom-center { content: normal; }
+    @bottom-right { content: normal; }
 }

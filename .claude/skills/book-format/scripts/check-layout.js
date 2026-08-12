@@ -202,7 +202,7 @@ function collectReport () {
   return report
 }
 
-function summarise (report, expectedSide) {
+function summarize (report, expectedSide) {
   const lines = []
   const problems = []
 
@@ -341,7 +341,7 @@ async function main () {
   if (args.json) {
     console.log(JSON.stringify(report, null, 2))
   } else {
-    const summary = summarise(report, side === 'auto' ? null : side)
+    const summary = summarize(report, side === 'auto' ? null : side)
     console.log('\n' + relativePath + ' · theme “' + theme +
       '” · chapters start on ' + side + '\n')
     console.log(summary.text)

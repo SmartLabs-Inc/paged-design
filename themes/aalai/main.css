@@ -4798,6 +4798,9 @@ table {
   margin: 17px 0;
   break-inside: auto; }
 
+table.keep-together {
+  break-inside: avoid; }
+
 thead {
   display: table-header-group;
   break-after: avoid; }
@@ -4951,3 +4954,218 @@ blockquote {
     font-size: 7px;
     letter-spacing: 0.08em;
     color: #66717C; } }
+
+.sidenote {
+  float: right;
+  clear: right;
+  width: 34%;
+  margin: 0 0 17px 20.4px;
+  padding-left: 11.33333px;
+  border-left: 2pt solid #137C7A;
+  break-inside: avoid; }
+
+.sidenote p {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9.5px;
+  line-height: 13.6px;
+  text-indent: 0;
+  font-size: 8.5px;
+  color: #17202A;
+  margin: 0 0 5.66667px 0; }
+
+.sidenote p:last-child {
+  margin-bottom: 0; }
+
+.sidenote-label {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 0 0 8.5px 0;
+  text-indent: 0;
+  font-size: 7.5px;
+  margin-bottom: 5.66667px; }
+
+.sidenote .figure-caption {
+  color: #66717C; }
+
+.process {
+  display: flex;
+  gap: 11.33333px;
+  margin: 25.5px 0;
+  break-inside: avoid;
+  align-items: stretch; }
+
+.step {
+  flex: 1 1 0;
+  background-color: #EAF3F3;
+  padding: 17px 11.33333px;
+  display: flex;
+  flex-direction: column;
+  break-inside: avoid; }
+
+.step-icon {
+  display: block;
+  width: 26px;
+  height: 26px;
+  margin-bottom: 11.33333px;
+  color: #137C7A; }
+
+.step-number {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 0 0 8.5px 0;
+  text-indent: 0;
+  font-size: 7px;
+  color: #B79A5B;
+  margin-bottom: 4.25px; }
+
+.step-title {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 0 0 8.5px 0;
+  text-indent: 0;
+  font-size: 8px;
+  color: #0D2035;
+  margin-bottom: 5.66667px; }
+
+.step p {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9.5px;
+  line-height: 13.6px;
+  text-indent: 0;
+  font-size: 8px;
+  margin: 0; }
+
+.step-wide {
+  background-color: #F4F6F7; }
+
+.pillar {
+  background-color: #F4F6F7;
+  padding: 17px;
+  margin: 0 0 11.33333px 0;
+  border-left: 3pt solid #137C7A;
+  break-inside: avoid; }
+
+.pillar-number {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 0 0 8.5px 0;
+  text-indent: 0;
+  font-size: 7.5px;
+  color: #B79A5B;
+  margin-bottom: 4.25px; }
+
+.pillar-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  color: #0D2035;
+  margin: 0 0 5.66667px 0;
+  text-indent: 0; }
+
+.pillar p {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9.5px;
+  line-height: 13.6px;
+  text-indent: 0;
+  margin: 0 0 5.66667px 0; }
+
+.pillar p:last-child {
+  margin-bottom: 0; }
+
+.pillar .pillar-number {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 0 0 8.5px 0;
+  text-indent: 0;
+  font-size: 7.5px;
+  color: #B79A5B;
+  margin-bottom: 4.25px; }
+
+.pillar .pillar-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: #0D2035;
+  margin: 0 0 8.5px 0;
+  text-indent: 0; }
+
+.step .step-number {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 0 0 8.5px 0;
+  text-indent: 0;
+  font-size: 7px;
+  color: #B79A5B; }
+
+.step .step-title {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 0 0 8.5px 0;
+  text-indent: 0;
+  font-size: 8px;
+  color: #0D2035; }
+
+.sidenote .sidenote-label {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 0 0 8.5px 0;
+  text-indent: 0;
+  font-size: 7.5px;
+  color: #0D2035;
+  margin-bottom: 5.66667px; }
+
+@page endmatter:left {
+  @bottom-left {
+    content: counter(page); }
+  @bottom-center {
+    content: string(h2-text, first); }
+  @bottom-right {
+    content: "Anti-Aging & Longevity Academic Institute"; } }
+
+@page endmatter:right {
+  @bottom-left {
+    content: "Anti-Aging & Longevity Academic Institute"; }
+  @bottom-center {
+    content: string(h2-text, first); }
+  @bottom-right {
+    content: counter(page); } }
+
+@page endmatter:blank {
+  @bottom-left {
+    content: normal; }
+  @bottom-center {
+    content: normal; }
+  @bottom-right {
+    content: normal; } }

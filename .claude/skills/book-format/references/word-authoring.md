@@ -25,7 +25,7 @@ node .claude/skills/book-format/scripts/check-layout.js --content content/my-boo
 
 Step 1 is not optional on a manuscript you have not seen before. `--dump-styles`
 prints every paragraph style in the document with a use count, sample text, and
-the shading colours it uses — everything needed to write or correct a map.
+the shading colors it uses — everything needed to write or correct a map.
 
 After converting, the script lists any style it had no mapping for. Those
 paragraphs still appear, as plain body text; the list tells you what the map is
@@ -43,8 +43,8 @@ Applied automatically, no styles needed:
 - **lists** made with Word's bullet and numbering buttons
 - **tables**, including merged cells
 
-Ignored on purpose: manual font changes, manual sizes, manual colours (unless
-the map assigns a meaning to a specific colour), page breaks, section breaks,
+Ignored on purpose: manual font changes, manual sizes, manual colors (unless
+the map assigns a meaning to a specific color), page breaks, section breaks,
 headers and footers. The theme decides all of those.
 
 ## Giving Word structure the layout can read
@@ -65,14 +65,14 @@ chapter. Body text needs no style at all — leave it as *Normal*.
 
 ### Callout boxes
 
-Insert a **1×1 table** and shade the cell. The fill colour chooses the kind of
+Insert a **1×1 table** and shade the cell. The fill color chooses the kind of
 box, through the map's `fills` section:
 
 | Fill | Becomes |
 | --- | --- |
 | `EAF3F3` | `.callout` — the standard tinted box |
 | `0D2035` | `.callout.callout-dark` — navy, white text |
-| `F4F6F7` | `.panel` — neutral grey |
+| `F4F6F7` | `.panel` — neutral gray |
 | `EEF3F7` | `.figure-placeholder` — where art will go |
 
 Inside the box, an all-bold first line automatically becomes the box's label,

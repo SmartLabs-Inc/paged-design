@@ -1,3 +1,6 @@
 .sass-cache/
 node_modules
 package-lock.json
+
+# Client proposals carry pricing and terms. Kept out of the repository.
+content/proposal-*/

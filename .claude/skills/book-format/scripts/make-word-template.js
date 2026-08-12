@@ -196,7 +196,7 @@ function main () {
   // template looks in Word — the book's real design lives in the theme.
   const navy = '0D2035'
   const teal = '137C7A'
-  const grey = '66717C'
+  const gray = '66717C'
   const serif = 'Georgia'
   const sans = 'Aptos'
 
@@ -226,9 +226,9 @@ function main () {
     ['AALAIPull', 'AALAI Pull',
       { font: serif, size: 12.5, color: navy, after: 120 }],
     ['AALAICaption', 'AALAI Caption',
-      { font: sans, size: 7.5, color: grey, after: 120 }],
+      { font: sans, size: 7.5, color: gray, after: 120 }],
     ['AALAISource', 'AALAI Source',
-      { font: sans, size: 7.5, color: grey, after: 120 }],
+      { font: sans, size: 7.5, color: gray, after: 120 }],
     ['AALAIReference', 'AALAI Reference',
       { font: sans, size: 8, after: 60, indent: 340 }]
   ]
@@ -284,7 +284,7 @@ function main () {
     paragraph(null,
       'A callout is a one-cell table with a shaded background. Insert a 1×1 ' +
       'table, shade the cell, then style the first line AALAI Callout Label ' +
-      'and the rest AALAI Callout. The shading colour chooses the kind of box:'),
+      'and the rest AALAI Callout. The shading color chooses the kind of box:'),
     calloutTable(calloutFill, [
       paragraph('AALAICalloutLabel', 'CLINICAL APPLICATION'),
       paragraph('AALAICallout',

@@ -165,15 +165,15 @@ function renderRun (run, context) {
       html = '<span class="small-caps">' + html + '</span>'
     }
 
-    // A character style, or a run colour, can carry meaning the author
+    // A character style, or a run color, can carry meaning the author
     // applied deliberately — let the map turn it into a class.
     const runStyle = docx.value(properties, 'w:rStyle')
     const runClass = runStyle && context.runStyles[runStyle.toLowerCase()]
     if (runClass) html = '<span class="' + runClass + '">' + html + '</span>'
 
-    const colour = docx.value(properties, 'w:color')
-    const colourClass = colour && context.runColours[colour.toUpperCase()]
-    if (colourClass) html = '<span class="' + colourClass + '">' + html + '</span>'
+    const color = docx.value(properties, 'w:color')
+    const colorClass = color && context.runColors[color.toUpperCase()]
+    if (colorClass) html = '<span class="' + colorClass + '">' + html + '</span>'
   }
 
   return html
@@ -607,7 +607,7 @@ function main () {
     lookup: createStyleLookup(styleMap, documentStyles),
     fills: styleMap.fills || {},
     runStyles: lowercaseKeys(styleMap.runStyles || {}),
-    runColours: uppercaseKeys(styleMap.runColors || styleMap.runColours || {}),
+    runColors: uppercaseKeys(styleMap.runColors || {}),
     relationships,
     numbering,
 

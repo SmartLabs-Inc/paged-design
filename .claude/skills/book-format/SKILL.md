@@ -55,7 +55,7 @@ node .claude/skills/book-format/scripts/docx-to-book.js \
 
 Bold, italic, super/subscript, footnotes, images, hyperlinks, lists and tables
 all carry through. Shaded one-cell tables become callout boxes, and the fill
-colour picks which kind. Read `references/word-authoring.md` before writing or
+color picks which kind. Read `references/word-authoring.md` before writing or
 editing a style map — it documents every key and the conventions authors follow.
 
 To give authors a Word file that already contains the right styles:

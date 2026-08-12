@@ -96,7 +96,7 @@ $recto-<position>-frontmatter  # right-hand frontmatter pages
 
 `<position>` is one of: `top`, `top-left`, `top-right`, `top-left-corner`,
 `top-right-corner`, `bottom`, `bottom-left`, `bottom-right`,
-`bottom-left-corner`, `bottom-right-corner`. (`top`/`bottom` mean the centre
+`bottom-left-corner`, `bottom-right-corner`. (`top`/`bottom` mean the center
 box.)
 
 Values:
@@ -114,7 +114,7 @@ Values:
 Increment `h1-text` to `h2-text`…`h6-text` for lower levels. Use
 `string(h1-text, …)`, not `element()`.
 
-Defaults put a page number bottom-centre on every page and nothing else. A
+Defaults put a page number bottom-center on every page and nothing else. A
 conventional book design is:
 
 ```scss
@@ -128,23 +128,23 @@ $recto-bottom: normal;
 
 Chapter-opening and standalone pages suppress their margin boxes automatically.
 
-## Colour and rules
+## Color and rules
 
 | Variable | Default |
 | --- | --- |
 | `$color-text-main` | `black` |
 | `$color-text-secondary` | `darkgrey` |
 | `$color-light` | `#eee` |
-| `$color-mid` | `grey` |
+| `$color-mid` | `gray` |
 | `$color-accent` | `#C74F32` |
 | `$color-links` | `inherit` |
 | `$border-radius` | `0.1em` |
 | `$rule-thickness` | `0.5pt` |
 | `$text-divider` | `""` | Generated content for `hr`, e.g. `"❦"` |
 
-For print, set `$colorspace: cmyk` and express colours the printer expects. A
-one-colour book should use `black` and greys only — a "black" that is actually
-`#222` prints as four-colour grey.
+For print, set `$colorspace: cmyk` and express colors the printer expects. A
+one-color book should use `black` and grays only — a "black" that is actually
+`#222` prints as four-color gray.
 
 ## Layout details
 

@@ -158,9 +158,9 @@ Chromium uses the `@page size` rather than the default paper size. If a printer
 reports the wrong trim, check `$page-width`/`$page-height`, and remember that
 `$bleed` adds to the physical page.
 
-### Colours look wrong at the printer
+### Colors look wrong at the printer
 
-Set `$colorspace: cmyk` and use colours the printer specified. Browser-generated
+Set `$colorspace: cmyk` and use colors the printer specified. Browser-generated
 PDFs are RGB by default; a print shop may need conversion regardless — ask them
 before generating the final file.
 
