@@ -4,3 +4,7 @@ package-lock.json
 
 # Client proposals carry pricing and terms. Kept out of the repository.
 content/proposal-*/
+
+# Deal files carry client names, fees and terms. The template they fill in is
+# committed; the values are not. `proposals/example-deal.json` is the exception.
+.claude/skills/book-format/proposals/deals/

@@ -157,6 +157,22 @@ page number in the TOC). Fix what it finds — see `references/troubleshooting.m
 — then re-render. `--json` gives the machine-readable report; `--strict` exits
 non-zero when anything is found, for use in a build.
 
+## Client proposals
+
+A proposal set in the same design, at the same trim, as the book it is selling
+is its own sample chapter. The last one that shipped is kept as a template; a
+deal file supplies the names, dates and money.
+
+```bash
+node .claude/skills/book-format/scripts/make-proposal.js --example > deals/acme.json
+node .claude/skills/book-format/scripts/make-proposal.js --deal deals/acme.json
+```
+
+Render it with **`aalai-screen`**, not `aalai` — a proposal is read on screen,
+and the print theme leaves blank versos that a scrolling reader takes for a
+rendering failure. Deal files and built proposals are both gitignored; client
+fees do not belong in the repository. See `references/proposals.md`.
+
 ## Rules that matter
 
 - **Chrome only.** Paged.js does not paginate correctly in other engines.
@@ -168,7 +184,21 @@ non-zero when anything is found, for use in a build.
   whole book. Save font files into the project and `@font-face` them locally.
 - **`::after` content does not survive pagination.** Paged.js discards generated
   content on ordinary elements. Draw rules and ornaments with a background
-  gradient or a border instead.
+  gradient or a border instead. Pseudo-elements on Paged.js's own page
+  containers do survive, because those exist only after pagination — that is
+  how `.pagedjs_blank_page` gets its "intentionally blank" notice.
+- **`break-before: recto` is not overridable from the document.** Paged.js
+  resolves it from the stylesheet rather than the cascade, so a more specific
+  selector changes nothing. Recto-versus-continuous is a compile-time choice:
+  make a theme variant, as `aalai-screen` does for `aalai`.
+- **Keep-with-next cannot be chained.** Pairing `break-after: avoid` on a
+  heading with `break-before: avoid` on the table it introduces makes things
+  worse: Paged.js honors the second and ignores the first, moving the lead-in
+  paragraph and stranding the heading alone. Wrap the group in a
+  `break-inside: avoid` div instead.
+- **`<thead>` does not repeat across a page break.** Paged.js has no
+  implementation of `display: table-header-group`. Keep a table on one page, or
+  repeat the header by hand.
 - **Set `$bleed`/`$trim` before generating anything a printer will accept**, and
   confirm the trim size with the printer first.
 - **Rebuild CSS after every Sass edit** — the browser loads `main.css`, not
@@ -185,6 +215,8 @@ Read these when the task reaches them; they are not needed up front.
   and feature class, with examples. Read before writing or tagging book HTML.
 - `references/variables.md` — every theme variable, grouped, with effects.
   Read before designing a theme.
-- `references/themes.md` — the nine shipped themes and when to pick each.
+- `references/themes.md` — the shipped themes and when to pick each.
+- `references/proposals.md` — building a client proposal from a deal file, and
+  how to change the template without breaking a document you already sent.
 - `references/troubleshooting.md` — Paged.js limitations and fixes for
   overflow, widows, orphans, bad breaks, and missing running heads.

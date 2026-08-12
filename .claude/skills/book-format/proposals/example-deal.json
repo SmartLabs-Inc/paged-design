@@ -1,0 +1,146 @@
+{
+  "slug": "client-slug",
+  "client": {
+    "salutation": "Dr. Jane Example",
+    "familiar": "Dr. Example",
+    "signatory": "Jane Example, MD"
+  },
+  "studio": {
+    "name": "Wow Is Me, Inc.",
+    "shortName": "Wow Is Me",
+    "signatory": "Adryenn Ashley",
+    "signatoryTitle": "Chief Executive Officer"
+  },
+  "imprint": {
+    "name": "Anti-Aging & Longevity Academic Institute",
+    "short": "AALAI",
+    "parent": "Disrupt"
+  },
+  "book": {
+    "title": "The Working Title of the Book",
+    "chapterCount": "four",
+    "extentShort": "nearly 500-page",
+    "extentSentence": "Four large chapters with subsections, approximately 500 pages, at 7 × 10in.",
+    "trim": "7 × 10in",
+    "trimShort": "7 × 10"
+  },
+  "fee": {
+    "total": "$00,000",
+    "totalWords": "Some thousand dollars",
+    "p1": "$00,000",
+    "p2": "$0,000",
+    "p3": "$0,000"
+  },
+  "delivery": {
+    "city": "The City",
+    "eventMonth": "October",
+    "calendarMonths": "October and November"
+  },
+  "dates": {
+    "proposal": "2026-08-09",
+    "validUntil": "2026-08-13",
+    "start": "2026-08-10",
+    "printer": "2026-09-18",
+    "delivery": "2026-10-06"
+  },
+  "schedule": {
+    "weeks": "eight",
+    "weeksWithArticle": "an eight-week",
+    "book": [
+      {
+        "weeks": [
+          1
+        ],
+        "what": "Contract and deposit. Manuscript intake. Design locked against the AALAI prototype. Interviews begin."
+      },
+      {
+        "weeks": [
+          2
+        ],
+        "what": "First chapter composed and sent as a proof, so the design is settled on real pages rather than a sample."
+      },
+      {
+        "weeks": [
+          3
+        ],
+        "what": "Full manuscript composed. Ghostwritten passages start coming back to you for approval."
+      },
+      {
+        "weeks": [
+          4
+        ],
+        "what": "Complete first proof of all four chapters in your hands. Illustration placement finalized."
+      },
+      {
+        "weeks": [
+          5
+        ],
+        "what": "Your corrections applied. Humanized passages woven in. Index compiled against real pagination."
+      },
+      {
+        "weeks": [
+          6
+        ],
+        "dates": "Sep 14&#8202;–&#8202;18",
+        "what": "Final proof, sign-off, press-ready files to the printer <strong>Friday, September 18</strong>."
+      },
+      {
+        "weeks": [
+          7,
+          8
+        ],
+        "dates": "Sep 21&#8202;–&#8202;Oct 2",
+        "what": "Print, bind, and freight. Print managed on your behalf."
+      },
+      {
+        "dates": "Oct 5&#8202;–&#8202;6",
+        "what": "Books delivered in San Francisco."
+      }
+    ],
+    "launch": [
+      {
+        "weeks": [
+          1,
+          2
+        ],
+        "what": "Brand positioning. Recorded interviews for both the book and your bio, hooks, and story material."
+      },
+      {
+        "weeks": [
+          3
+        ],
+        "what": "Media-ready bio, positioning statement, and visual identity delivered. On-camera setup session: backdrop, lighting, wardrobe, framing."
+      },
+      {
+        "weeks": [
+          4
+        ],
+        "what": "Press release, press kit, excerpts, sample questions and hooks assembled. Pitch pack built."
+      },
+      {
+        "weeks": [
+          5
+        ],
+        "what": "Testimonial requests go out with the pitch pack. Second session on camera to confirm the setup holds."
+      },
+      {
+        "weeks": [
+          6
+        ],
+        "what": "Pre-release pitching begins. Podcast outreach through my network. Social series scheduled."
+      },
+      {
+        "weeks": [
+          7,
+          8
+        ],
+        "dates": "Sep 21&#8202;–&#8202;Oct 2",
+        "what": "Bookings confirmed and briefed. Testimonials collected and placed. Launch sequence goes live."
+      },
+      {
+        "dates": "Oct 6 onward",
+        "what": "You arrive in San Francisco a published author with a booked calendar."
+      }
+    ]
+  }
+}
