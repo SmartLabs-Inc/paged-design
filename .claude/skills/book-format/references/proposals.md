@@ -110,17 +110,48 @@ asset, and the example carries placeholder values only.
 
 ## Verifying a template change
 
-After editing the template, rebuild a deal you have already sent and diff it
-against what went out:
+Two checks, and the second one is not optional.
+
+**1. Round-trip a deal you have already sent** and diff it against what went
+out. Identical output means the edit changed only what you intended.
 
 ```bash
 node .claude/skills/book-format/scripts/make-proposal.js \
-  --deal .claude/skills/book-format/proposals/deals/grinberg.json --out /tmp/rt
-diff -u content/proposal-grinberg/index.html /tmp/rt/index.html
+  --deal .claude/skills/book-format/proposals/deals/<sent-deal>.json --out /tmp/rt
+diff -u content/proposal-<slug>/index.html /tmp/rt/index.html
 ```
 
-Identical output means the edit changed only what you intended. This is how
-the template was built in the first place — derived from the shipped document
-by substitution, then round-tripped until the diff was empty. It caught six
+This is how the template was built — derived from the shipped document by
+substitution, then round-tripped until the diff was empty. It caught six
 defects on the first pass, including a salutation using the client's full name
 where the letter wants the short form, and `a eight-week schedule`.
+
+**2. Build the example deal and check it for traces of a real client.**
+
+```bash
+node .claude/skills/book-format/scripts/make-proposal.js \
+  --deal .claude/skills/book-format/proposals/example-deal.json --out /tmp/rt-x
+grep -i "<real client surname>" /tmp/rt-x/index.html   # must find nothing
+```
+
+The round-trip alone **cannot** catch a value left hardcoded in the template,
+because a hardcoded string that equals the right answer for the reference deal
+produces a byte-identical diff. That is not hypothetical: the cover carried
+`Prepared for Dr. Alexander Grinberg` as literal text for the template's whole
+first life. Every round-trip passed. Every proposal for a different client
+would have gone out with the wrong name on the cover.
+
+Building a *second, deliberately different* deal is what exposes it. Do this
+before sharing the template with anyone, and after any edit to the cover, the
+letter, or a signature block — the places a name is most likely to be typed
+rather than tokenized.
+
+## Honorifics and non-breaking spaces
+
+`Dr. Jane Example` in a deal file carries a non-breaking space after the
+honorific, so a line break can never leave `Dr.` stranded at the end of a line.
+
+It lives in the value rather than the template because the template cannot
+reach inside a substituted string, and because which honorific is used — or
+whether there is one at all — is a per-deal fact. Copy the pattern when you
+write a new deal file. `escapeHtml` passes the character through untouched.
