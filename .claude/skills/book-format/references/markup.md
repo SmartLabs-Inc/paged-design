@@ -209,6 +209,41 @@ Also styled by default: `.margin-box` (any element pushed into the margin),
 `.dedication` (a paragraph), `.dialogue` (a `<dl>`), `.bibliography` (a list),
 `.glossary` (a list), `.index` / `.reference-index` (a list), `.code` (inline).
 
+### Checklists and schedules
+
+AALAI only. For a document the reader has to act on — a development checklist,
+an onboarding pack, an intake form — rather than one they only read.
+
+```html
+<div class="week">
+  <p class="week-number">Week 03</p>
+  <p class="week-dates">August 24&#8202;–&#8202;30</p>
+
+  <p class="list-label list-label-you">Yours</p>
+  <ul class="checklist">
+    <li>Something only the reader can do.</li>
+  </ul>
+
+  <p class="list-label">Ours</p>
+  <ul class="ours">
+    <li>Something someone else is doing in the same period.</li>
+  </ul>
+</div>
+```
+
+`.checklist` draws a box; `.ours` draws a dash and sets the text in the muted
+gray. **Put a box only on what the reader themselves must do.** Boxing both
+lists is tidier and worse: a reader scanning for their own obligations then has
+to read every line to find out which ones are theirs.
+
+The box is drawn with a border rather than set as ☐ (U+2610). The glyph is
+missing from most text faces, so it would fall back to whatever the system
+substitutes — a different size and weight, varying page to page.
+
+`.week` keeps a block whole and rules it off from the next. A week split across
+a page break reads as two half-weeks and the items below the fold get missed.
+Expect a short page wherever a block will not fit; that is the rule working.
+
 ### Cross-references
 
 ```html
@@ -216,6 +251,11 @@ Also styled by default: `.margin-box` (any element pushed into the margin),
 <a href="https://example.com" class="show-url">Example</a>  <!-- appends the URL -->
 <a href="#fig-1" class="cross-reference">Figure 1</a>
 ```
+
+Section and figure numbers typed into prose (“see Section 04”) are **not**
+checked by `check-layout.js` — it validates `href` anchors, not English. If you
+renumber sections, grep every `Section [0-9]` in the document and confirm each
+one by hand against the heading it names.
 
 ### Copyright page
 

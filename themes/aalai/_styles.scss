@@ -289,6 +289,108 @@ ul li:first-child {
 }
 
 // ---------------------------------------------------------------------------
+// Checklists
+// ---------------------------------------------------------------------------
+//
+// Two list forms that look deliberately unalike, because they ask different
+// things of the reader.
+//
+// `.checklist` carries a box, and is only ever used for what the reader
+// themselves has to do. `.ours` carries a dash, and is what someone else is
+// doing in the same period. Putting a box on both would be tidier and worse:
+// a reader scanning for their own obligations would have to read every line to
+// find out which ones are theirs. With boxes on one list only, the page answers
+// that question before it is read.
+//
+// The box is drawn with a border rather than set as ☐ (U+2610), because the
+// glyph is missing from most text faces and would silently fall back to
+// whatever the system substitutes — a different size, a different weight, and
+// different from page to page.
+
+.checklist,
+.ours {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 $baseline-grid-unit 0;
+}
+
+.checklist li,
+.ours li {
+    @include sans-small();
+    position: relative;
+    padding-left: $baseline-grid-unit;
+    margin-bottom: ($baseline-grid-unit / 2);
+    break-inside: avoid;
+}
+
+.checklist li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 2.5px;
+    width: 8px;
+    height: 8px;
+    border: $rule-thickness solid $color-teal;
+}
+
+.ours li {
+    color: $color-mid;
+}
+
+.ours li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6.5px;
+    width: 8px;
+    border-top: $rule-thickness solid $color-mid;
+}
+
+// A week of the schedule: its dates, what the reader owes, and what we are
+// doing alongside. Held on one page — a week split across a spread is read as
+// two half-weeks, and the reader misses the items below the fold.
+.week {
+    break-inside: avoid;
+    margin-bottom: $baseline-grid-unit;
+    padding-bottom: ($baseline-grid-unit / 2);
+    border-bottom: $rule-thickness solid $color-panel;
+}
+
+.week-number {
+    @include label();
+    color: $color-gold;
+    margin-bottom: 2px;
+    break-after: avoid;
+}
+
+.week-dates {
+    font-family: $font-display-main;
+    font-size: 15px;
+    color: $color-navy;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    text-indent: 0;
+    break-after: avoid;
+}
+
+// The heading above each of the two lists. Deliberately quieter than a
+// `.label` so a week reads as one block rather than three stacked sections.
+.list-label {
+    font-family: $font-text-secondary;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+    color: $color-mid;
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+    text-indent: 0;
+    break-after: avoid;
+}
+
+.list-label-you {
+    color: $color-teal;
+}
+
+// ---------------------------------------------------------------------------
 // Callouts and panels
 // ---------------------------------------------------------------------------
 

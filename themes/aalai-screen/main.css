@@ -4670,6 +4670,84 @@ ul li:first-child {
   color: #137C7A;
   margin-right: 0.6em; }
 
+.checklist,
+.ours {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 17px 0; }
+
+.checklist li,
+.ours li {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9.5px;
+  line-height: 13.6px;
+  text-indent: 0;
+  position: relative;
+  padding-left: 17px;
+  margin-bottom: 8.5px;
+  break-inside: avoid; }
+
+.checklist li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2.5px;
+  width: 8px;
+  height: 8px;
+  border: 0.5pt solid #137C7A; }
+
+.ours li {
+  color: #66717C; }
+
+.ours li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6.5px;
+  width: 8px;
+  border-top: 0.5pt solid #66717C; }
+
+.week {
+  break-inside: avoid;
+  margin-bottom: 17px;
+  padding-bottom: 8.5px;
+  border-bottom: 0.5pt solid #F4F6F7; }
+
+.week-number {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 0 0 8.5px 0;
+  text-indent: 0;
+  color: #B79A5B;
+  margin-bottom: 2px;
+  break-after: avoid; }
+
+.week-dates {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  color: #0D2035;
+  margin: 0 0 8.5px 0;
+  text-indent: 0;
+  break-after: avoid; }
+
+.list-label {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #66717C;
+  margin: 0 0 5.66667px 0;
+  text-indent: 0;
+  break-after: avoid; }
+
+.list-label-you {
+  color: #137C7A; }
+
 .callout,
 .panel {
   background-color: #EAF3F3;

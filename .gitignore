@@ -2,8 +2,12 @@
 node_modules
 package-lock.json
 
-# Client proposals carry pricing and terms. Kept out of the repository.
+# Client work carries names, pricing, terms and schedules. Kept out of the
+# repository — the design and the tooling are the reusable asset, not the
+# documents built from them.
 content/proposal-*/
+content/checklist-*/
+content/client-*/
 
 # Deal files carry client names, fees and terms. The template they fill in is
 # committed; the values are not. `proposals/example-deal.json` is the exception.
