@@ -4529,6 +4529,12 @@ h5, h6 {
   line-height: 34px;
   margin: 0 0 17px 0; }
 
+.endmatter {
+  break-before: recto; }
+
+p {
+  font-weight: 400; }
+
 p,
 li,
 td,

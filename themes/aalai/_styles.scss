@@ -98,6 +98,39 @@ h5, h6 {
 
 // ---------------------------------------------------------------------------
 // Body text and page breaks
+
+// An appendix, a bibliography or an index begins on a fresh page.
+//
+// The defaults give `.endmatter` its own named page but no break to reach it,
+// so end matter runs on from whatever preceded it — an appendix opening
+// halfway down the last page of a chapter, with its eyebrow stranded at the
+// foot and its title overleaf. Chapters and part pages already break; this is
+// the one division that was left out.
+//
+// Driven by the same variable as chapters so the screen variant, which sets it
+// to `auto`, is free to ask for a plain page break instead of a recto and the
+// blank verso that comes with it.
+.endmatter {
+    break-before: $chapters-start-on;
+}
+
+// A paragraph states its own weight instead of inheriting one.
+//
+// This looks redundant and is not. Paged.js rebuilds formatting elements when
+// it carries content across a page break, and can leave the paragraphs that
+// follow nested inside a `<strong>` that belonged to the previous page. It was
+// found in a real manuscript: the source parses clean — an HTML parser finds no
+// `<p>` inside a `<strong>` anywhere — while the paginated DOM had eighteen
+// consecutive paragraphs inside one, and the whole page came out bold.
+//
+// Nothing in the markup is wrong, so nothing in the markup can fix it. Naming
+// the weight here stops the inheritance at the paragraph; `strong` still sets
+// its own, so run-in bold leads are unaffected. Component paragraphs that carry
+// a class (`.callout-label`, `.step-title`, `.pillar-title`) set weight in
+// their own rules and outrank this one.
+p {
+    font-weight: 400;
+}
 // ---------------------------------------------------------------------------
 
 // Never leave one line of a paragraph behind, or carry one over alone.
