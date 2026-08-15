@@ -69,6 +69,37 @@ template converts and lays out with no hand-tagging. Preview with
 Start here for: textbooks, clinical or scientific reference works, anything with
 heavy apparatus and a house style to match.
 
+### `aalai-6x9`
+
+The same design at 6 × 9in, the standard trade and academic trim and the one a
+short-run digital printer quotes cheapest. Palette, type scale, components and
+running feet are all inherited; only the geometry and two component layouts
+differ. Preview with `content/aalai-6x9-sample`, a specimen chapter that
+exercises every component in the design.
+
+Text width lands at 117 mm, about 68 characters a line. That measure is what
+forces the two changes:
+
+- **The side callout tucks into the text.** At 7 × 10in `.sidenote` floats right
+  at 34% and the text runs past it in a 95 mm column. The same float here leaves
+  77 mm — near forty characters — which cannot rag or hyphenate cleanly. So the
+  note stops floating and becomes an inset block, stepped in from both edges,
+  keeping the teal rule. Both edges, not just the left: one indent would leave a
+  full-measure line of small type running to eighty-odd characters, worse than
+  the float it replaced.
+- **The process row wraps two by two.** Four steps across 117 mm gives each 27 mm,
+  narrower than the words inside them.
+
+A trap this theme demonstrates: `.columns > *` sets `flex` on every child at one
+class of specificity, so a bare `.level` rule tying the evidence chip to a fixed
+width is decided by file order, not intent — and it lost silently until the page
+was rendered and looked at. Scoped selectors (`.columns > .level`) cannot be
+reordered into failure. Same failure mode as `.pillar p` beating `.pillar-title`
+in the print theme.
+
+Start here for: the same house design on a trade-sized book, or any AALAI title
+where 7 × 10in is more page than the content needs.
+
 ## Ketida / textbook themes
 
 These five target Ketida platform HTML and preview with

@@ -1,0 +1,42 @@
+// _variables.scss — AALAI Textbook (6 × 9in)
+//
+// Only the page geometry changes. Palette, type scale, paragraph treatment,
+// running feet and every component variable are inherited from `aalai`.
+
+// Page setup
+// ----------
+// 6 × 9in — the standard trade and academic trim, and what a short-run digital
+// printer quotes cheapest.
+
+$page-width: 152.4mm;   // 6in
+$page-height: 228.6mm;  // 9in
+
+// Margins
+// -------
+// Scaled from the 7 × 10in theme rather than re-invented, so a spread keeps
+// the same proportions of ink to paper.
+//
+// The inside margin stays the larger of the two because it is the one the
+// binding eats. On a perfect-bound book of this extent the gutter swallows
+// several millimetres before the reader can flatten the page, and text set too
+// close to it disappears into the spine.
+//
+// Text width lands at 117.4mm — about 68 characters a line at the inherited
+// 12px body. Comfortable, and the reason the side callout has to be re-laid:
+// there is no longer a third of the measure to give away.
+
+$margin-inside: 20mm;
+$margin-outside: 15mm;
+$margin-top: $baseline-grid-unit * 2.5;
+$margin-bottom: $baseline-grid-unit * 2.5;
+
+// Chapter openers
+// ---------------
+// The opener drops less far down a shorter page. Three baseline units on a
+// 10in page is the same gesture as two and a half on a 9in one; keeping the
+// literal measurement would eat a disproportionate share of the shorter page.
+
+$start-depth: $baseline-grid-unit * 2.5;
+
+// The rule under a chapter eyebrow, scaled with the trim.
+$chapter-rule-width: 14mm;
