@@ -48,43 +48,43 @@ table {
 
 body {
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 12px;
-  line-height: 17px; }
+  font-size: 14.5px;
+  line-height: 20px; }
 
 h1 {
-  font-size: 48px;
-  line-height: 51px;
-  margin: 34px 0 17px 0;
+  font-size: 58px;
+  line-height: 60px;
+  margin: 40px 0 20px 0;
   break-after: avoid;
   break-inside: avoid; }
 
 h2 {
-  font-size: 30px;
-  line-height: 34px;
-  margin: 34px 0 17px 0;
+  font-size: 36.25px;
+  line-height: 40px;
+  margin: 40px 0 20px 0;
   break-after: avoid;
   break-inside: avoid; }
 
 h3 {
-  font-size: 16.8px;
-  margin: 17px 0 0 0;
+  font-size: 20.3px;
+  margin: 20px 0 0 0;
   break-after: avoid;
   break-inside: avoid; }
 
 h4 {
   font-weight: bold;
-  margin: 17px 0 0 0;
+  margin: 20px 0 0 0;
   break-after: avoid;
   break-inside: avoid; }
 
 h5 {
   font-style: italic;
-  margin: 17px 0 0 0;
+  margin: 20px 0 0 0;
   break-after: avoid;
   break-inside: avoid; }
 
 h6 {
-  margin: 17px 0 0 0;
+  margin: 20px 0 0 0;
   break-after: avoid;
   break-inside: avoid; }
 
@@ -93,30 +93,30 @@ h6 {
 
 p {
   text-align: start;
-  margin-bottom: 17px; }
+  margin-bottom: 20px; }
 
 ol {
-  margin-top: 17px;
-  margin-bottom: 17px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   margin-left: 0;
   list-style: decimal; }
 
 ul {
-  margin-top: 17px;
-  margin-bottom: 17px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   margin-left: 0;
   list-style: disc; }
 
 dl {
-  margin: 17px 0; }
+  margin: 20px 0; }
   dl dt {
     display: block;
     float: left;
     font-weight: bold;
-    margin-right: 6px; }
+    margin-right: 7.25px; }
 
 blockquote {
-  padding: 17px 0; }
+  padding: 20px 0; }
   blockquote + blockquote {
     padding-top: 0; }
   h1 + blockquote, h2 + blockquote, h3 + blockquote,
@@ -149,7 +149,7 @@ hr {
   border: 0;
   font-family: Georgia, "Times New Roman", serif;
   text-align: center;
-  margin: 17px 0; }
+  margin: 20px 0; }
   hr:after {
     content: ""; }
 
@@ -165,14 +165,14 @@ img {
   pdf-page-colorspace: rgb; }
 
 @page :left {
-  margin-top: 42.5px;
-  margin-bottom: 42.5px;
+  margin-top: 50px;
+  margin-bottom: 50px;
   margin-left: 15mm;
   margin-right: 20mm; }
 
 @page :right {
-  margin-top: 42.5px;
-  margin-bottom: 42.5px;
+  margin-top: 50px;
+  margin-bottom: 50px;
   margin-left: 20mm;
   margin-right: 15mm; }
 
@@ -185,31 +185,31 @@ img {
   break-before: page;
   text-align: center; }
   .previous-publications-page h1 {
-    font-size: 16.8px;
-    margin: 17px 0 0 0;
+    font-size: 20.3px;
+    margin: 20px 0 0 0;
     break-after: avoid;
     break-inside: avoid; }
   .previous-publications-page h2 {
     font-weight: bold;
-    margin: 17px 0 0 0;
+    margin: 20px 0 0 0;
     break-after: avoid;
     break-inside: avoid; }
   .previous-publications-page h3 {
     font-style: italic;
-    margin: 17px 0 0 0;
+    margin: 20px 0 0 0;
     break-after: avoid;
     break-inside: avoid; }
   .previous-publications-page h4 {
-    margin: 17px 0 0 0;
+    margin: 20px 0 0 0;
     break-after: avoid;
     break-inside: avoid; }
   .previous-publications-page h5 {
-    margin: 17px 0 0 0;
+    margin: 20px 0 0 0;
     break-after: avoid;
     break-inside: avoid; }
   .previous-publications-page p {
     text-align: center;
-    margin-bottom: 17px; }
+    margin-bottom: 20px; }
     .previous-publications-page p + p {
       text-indent: 0; }
 
@@ -228,48 +228,48 @@ img {
 .contents-page {
   break-before: recto;
   page: contents-page h1;
-  page-font-size: 30px;
-  page-line-height: 34px;
-  page-margin: 34px 0 17px 0;
+  page-font-size: 36.25px;
+  page-line-height: 40px;
+  page-margin: 40px 0 20px 0;
   page-break-after: avoid;
   page-break-inside: avoid; }
   .contents-page h2 {
-    font-size: 16.8px;
-    margin: 17px 0 0 0;
+    font-size: 20.3px;
+    margin: 20px 0 0 0;
     break-after: avoid;
     break-inside: avoid; }
   .contents-page h3 {
     font-weight: bold;
-    margin: 17px 0 0 0;
+    margin: 20px 0 0 0;
     break-after: avoid;
     break-inside: avoid; }
   .contents-page h4 {
     font-style: italic;
-    margin: 17px 0 0 0;
+    margin: 20px 0 0 0;
     break-after: avoid;
     break-inside: avoid; }
   .contents-page h5 {
-    margin: 17px 0 0 0;
+    margin: 20px 0 0 0;
     break-after: avoid;
     break-inside: avoid; }
 
 .copyright-page {
   page: copyright;
   break-before: verso;
-  font-size: 9.6px;
-  line-height: 13.6px;
+  font-size: 11.6px;
+  line-height: 16px;
   position: absolute;
   bottom: 0; }
   .copyright-page p {
     text-align: initial;
-    margin-bottom: 17px; }
+    margin-bottom: 20px; }
     .copyright-page p + p {
       text-indent: 0; }
   .copyright-page h1, .copyright-page h2, .copyright-page h3, .copyright-page h4, .copyright-page h5, .copyright-page h6 {
-    font-size: 12px;
+    font-size: 14.5px;
     font-weight: bold;
     font-style: normal;
-    margin: 17px 0 0 0; }
+    margin: 20px 0 0 0; }
     .copyright-page h1 em, .copyright-page h2 em, .copyright-page h3 em, .copyright-page h4 em, .copyright-page h5 em, .copyright-page h6 em {
       font-style: italic; }
   .copyright-page h1[id="copyright"] {
@@ -278,12 +278,12 @@ img {
 .dedication-page {
   page: dedication;
   break-before: page;
-  margin-top: 42.5px; }
+  margin-top: 50px; }
 
 .epigraph-page {
   page: epigraph;
   break-before: page;
-  margin-top: 42.5px; }
+  margin-top: 50px; }
 
 .part-page {
   page: part;
@@ -3692,7 +3692,7 @@ h6 {
 
 .bibliography {
   list-style-type: none;
-  margin: 17px 0;
+  margin: 20px 0;
   padding: 0;
   text-indent: 0; }
   .bibliography li {
@@ -3703,8 +3703,8 @@ h6 {
 
 .box {
   border: 0.5pt solid #66717C;
-  margin: 17px 0;
-  padding: 17px;
+  margin: 20px 0;
+  padding: 20px;
   text-indent: 0; }
   .box + p {
     text-indent: 0; }
@@ -3723,18 +3723,18 @@ h6 {
 
 code, .code {
   font-family: "Inconsolata", monospace;
-  line-height: 17px;
+  line-height: 20px;
   white-space: pre-wrap;
   background-color: #F4F6F7;
   padding: 0.1em 0.3em;
   border-radius: 0;
-  font-size: 9.6px; }
+  font-size: 11.6px; }
 
 pre {
   background-color: #F4F6F7;
   border-radius: 0;
-  margin: 17px 0;
-  padding: 8.5px; }
+  margin: 20px 0;
+  padding: 10px; }
   pre code {
     padding: 0; }
   pre + p {
@@ -4014,7 +4014,7 @@ div.cover {
   text-align: center; }
   .dedication + p {
     text-indent: 0;
-    margin-top: 17px; }
+    margin-top: 20px; }
 
 .dialogue dt {
   clear: inside;
@@ -4041,12 +4041,12 @@ div.cover {
       font-style: normal; }
     .epigraph + [class*=source] + p {
       text-indent: 0;
-      margin-top: 17px; }
+      margin-top: 20px; }
 
 figure, .figure {
   clear: both;
   float: bottom;
-  margin: 17px 0;
+  margin: 20px 0;
   break-inside: avoid;
   background-color: inherit;
   font-size: inherit;
@@ -4061,7 +4061,7 @@ figure, .figure {
     page-break-before: avoid;
     text-align: center;
     text-indent: 0;
-    font-size: 9.6px; }
+    font-size: 11.6px; }
   figure img, figure p img, .figure img, .figure p img {
     width: auto;
     max-width: 100%;
@@ -4087,22 +4087,22 @@ p, ul, ol, dl {
   hyphenate-lines: 2; }
 
 p > img:only-child {
-  margin-top: 17px;
-  margin-left: -17px;
-  margin-bottom: 17px;
+  margin-top: 20px;
+  margin-left: -20px;
+  margin-bottom: 20px;
   max-width: 100%;
   margin-left: 0; }
 
 p + p > img:first-child {
-  margin-top: 17px;
-  margin-left: -17px;
-  margin-bottom: 17px;
+  margin-top: 20px;
+  margin-left: -20px;
+  margin-bottom: 20px;
   max-width: 100%; }
 
 .index, .reference-index {
   columns: 2;
-  font-size: 9.6px;
-  margin: 17px 0 0 0; }
+  font-size: 11.6px;
+  margin: 20px 0 0 0; }
   .index ul, .index ol, .reference-index ul, .reference-index ol {
     margin: 0; }
   .index li, .reference-index li {
@@ -4116,10 +4116,10 @@ p + p > img:first-child {
     font-size: 0; }
     .index a::before, .reference-index a::before {
       content: target-counter(attr(href), page);
-      font-size: 9.6px; }
+      font-size: 11.6px; }
     .index a::after, .reference-index a::after {
       content: ", ";
-      font-size: 9.6px; }
+      font-size: 11.6px; }
     .index a:last-of-type::after, .reference-index a:last-of-type::after {
       content: normal; }
 
@@ -4127,9 +4127,9 @@ p + p > img:first-child {
   box-sizing: border-box;
   clear: both;
   float: right;
-  font-size: 9.6px;
+  font-size: 11.6px;
   font-style: inherit;
-  margin: 0 0 17px 0;
+  margin: 0 0 20px 0;
   text-align: left;
   text-indent: 0;
   width: 35%;
@@ -4162,9 +4162,9 @@ p + p > img:first-child {
   line-height: inherit; }
 
 .footnotes {
-  margin: 17px 0 0 0;
-  font-size: 9.6px;
-  line-height: 13.6px; }
+  margin: 20px 0 0 0;
+  font-size: 11.6px;
+  line-height: 16px; }
 
 .reversefootnote {
   visibility: hidden; }
@@ -4175,11 +4175,11 @@ p + p > img:first-child {
 
 @page {
   @footnotes {
-    margin-top: 17px;
-    font-size: 9.6px; } }
+    margin-top: 20px;
+    font-size: 11.6px; } }
 
 blockquote + .source {
-  padding: 17px 0;
+  padding: 20px 0;
   font-style: italic;
   text-indent: 0;
   page-break-before: avoid;
@@ -4197,7 +4197,7 @@ blockquote + .source {
     text-indent: 0; }
 
 blockquote > .source {
-  padding: 17px 0;
+  padding: 20px 0;
   font-style: italic;
   text-indent: 0;
   page-break-before: avoid;
@@ -4213,14 +4213,14 @@ blockquote > .source {
     font-style: normal; }
 
 .pullquote {
-  padding: 17px 0;
-  font-size: 26.4px;
-  line-height: 34px; }
+  padding: 20px 0;
+  font-size: 31.9px;
+  line-height: 40px; }
 
 table {
   border-collapse: collapse;
-  margin: 17px 0;
-  font-size: 9.6px;
+  margin: 20px 0;
+  font-size: 11.6px;
   width: 100%;
   max-width: 100%; }
   table ul, table ol {
@@ -4244,7 +4244,7 @@ th, td {
     text-align: left; }
 
 .table-caption {
-  margin: 17px 0;
+  margin: 20px 0;
   font-style: italic;
   text-indent: 0; }
   .table-caption em {
@@ -4254,7 +4254,7 @@ th, td {
 
 .half-title-page,
 .title-page {
-  margin: 42.5px auto 0 auto;
+  margin: 50px auto 0 auto;
   text-align: center; }
   .half-title-page p,
   .title-page p {
@@ -4267,28 +4267,28 @@ th, td {
   .title-page .title-page-title {
     font-weight: bold;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: 23.52px;
+    font-size: 28.42px;
     line-height: 1.1;
     margin: 0;
     string-set: book-title content(); }
   .half-title-page .title-page-subtitle,
   .title-page .title-page-subtitle {
     font-family: Georgia, "Times New Roman", serif;
-    font-size: 16.8px;
+    font-size: 20.3px;
     line-height: 1.1;
-    margin: 17px 0 0 0;
+    margin: 20px 0 0 0;
     string-set: book-subtitle content(); }
   .half-title-page .title-page-author,
   .title-page .title-page-author {
-    font-size: 16.8px;
-    line-height: 23.8px;
-    margin: 68px 0;
+    font-size: 20.3px;
+    line-height: 28px;
+    margin: 80px 0;
     string-set: book-author content(); }
   .half-title-page .title-page-contributors,
   .title-page .title-page-contributors {
-    font-size: 12px;
-    line-height: 17px;
-    margin: 68px 0 17px 0; }
+    font-size: 14.5px;
+    line-height: 20px;
+    margin: 80px 0 20px 0; }
   .half-title-page .title-page-publisher,
   .title-page .title-page-publisher {
     position: absolute;
@@ -4331,9 +4331,9 @@ th, td {
       content: target-counter(attr(href), page, lower-roman);
       float: right; }
   p + .toc-list, p + #markdown-toc {
-    margin-top: 17px; }
+    margin-top: 20px; }
   .toc-list + p, #markdown-toc + p {
-    margin-top: 17px; }
+    margin-top: 20px; }
 
 /* CSS for Paged.js interface – v0.4 */
 /* https://gitlab.coko.foundation/pagedjs/interface-polyfill/-/blob/master/interface.css */
@@ -4471,12 +4471,12 @@ th, td {
 
 .label {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0; }
 
 .small-caps {
@@ -4500,34 +4500,34 @@ h1, h2, h3, h4, h5, h6 {
 
 h2 {
   font-size: 27px;
-  line-height: 34px;
-  margin: 0 0 8.5px 0; }
+  line-height: 40px;
+  margin: 0 0 10px 0; }
 
 h3 {
   font-size: 17px;
-  line-height: 25.5px;
-  margin: 25.5px 0 8.5px 0; }
+  line-height: 30px;
+  margin: 30px 0 10px 0; }
 
 h4 {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 11.5px;
   font-weight: 700;
   color: #137C7A;
-  line-height: 17px;
-  margin: 17px 0 4.25px 0; }
+  line-height: 20px;
+  margin: 20px 0 5px 0; }
 
 h5, h6 {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10px;
   font-weight: 700;
   color: #0D2035;
-  line-height: 17px;
-  margin: 17px 0 0 0; }
+  line-height: 20px;
+  margin: 20px 0 0 0; }
 
 .heading-2 {
   font-size: 27px;
-  line-height: 34px;
-  margin: 0 0 17px 0; }
+  line-height: 40px;
+  margin: 0 0 20px 0; }
 
 .endmatter {
   break-before: recto; }
@@ -4567,7 +4567,7 @@ ul li:first-child {
   bottom: 0;
   left: 0;
   margin: 0;
-  padding: 68px 34px;
+  padding: 80px 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -4576,37 +4576,37 @@ ul li:first-child {
 
 .cover p {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
   color: #FFFFFF;
   text-align: center;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   max-width: 40ch;
-  margin: 0 0 17px 0; }
+  margin: 0 0 20px 0; }
 
 .cover .cover-line-1 {
   font-size: 13px;
   color: #B79A5B;
-  margin-bottom: 34px; }
+  margin-bottom: 40px; }
 
 .cover .cover-line-2 {
-  margin-bottom: 85px; }
+  margin-bottom: 100px; }
 
 .cover .cover-line-3 {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 30px;
-  line-height: 37.4px;
+  line-height: 44px;
   letter-spacing: 0;
   text-transform: none;
   max-width: 20ch;
-  margin-bottom: 34px; }
+  margin-bottom: 40px; }
 
 .cover .cover-line-4 {
   font-size: 8.5px;
   max-width: 46ch;
-  margin-bottom: 119px; }
+  margin-bottom: 140px; }
 
 .cover .cover-line-5 {
   font-size: 8.5px;
@@ -4618,52 +4618,52 @@ ul li:first-child {
 
 .chapter-eyebrow {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
-  margin-bottom: 17px; }
+  margin-bottom: 20px; }
 
 .chapter-subtitle,
 .chapter h2 + p {
   font-style: italic;
   font-size: 15px;
   color: #0D2035;
-  line-height: 20.4px;
-  margin-bottom: 17px; }
+  line-height: 24px;
+  margin-bottom: 20px; }
 
 .chapter-subtitle {
-  padding-bottom: 25.5px;
+  padding-bottom: 30px;
   background-image: linear-gradient(#B79A5B, #B79A5B);
   background-repeat: no-repeat;
   background-size: 14mm 1.5pt;
-  background-position: left bottom 8.5px; }
+  background-position: left bottom 10px; }
 
 .standfirst {
   font-style: italic;
   color: #17202A;
-  margin-bottom: 17px; }
+  margin-bottom: 20px; }
 
 .objectives,
 .takeaways {
   list-style: none;
   counter-reset: objective;
   padding: 0;
-  margin: 0 0 17px 0; }
+  margin: 0 0 20px 0; }
 
 .objectives li,
 .takeaways li {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
   counter-increment: objective;
   position: relative;
-  padding-left: 27.2px;
-  margin-bottom: 8.5px;
+  padding-left: 32px;
+  margin-bottom: 10px;
   break-inside: avoid; }
 
 .objectives li::before,
@@ -4683,17 +4683,17 @@ ul li:first-child {
 .ours {
   list-style: none;
   padding: 0;
-  margin: 0 0 17px 0; }
+  margin: 0 0 20px 0; }
 
 .checklist li,
 .ours li {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
   position: relative;
-  padding-left: 17px;
-  margin-bottom: 8.5px;
+  padding-left: 20px;
+  margin-bottom: 10px;
   break-inside: avoid; }
 
 .checklist li::before {
@@ -4718,18 +4718,18 @@ ul li:first-child {
 
 .week {
   break-inside: avoid;
-  margin-bottom: 17px;
-  padding-bottom: 8.5px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
   border-bottom: 0.5pt solid #F4F6F7; }
 
 .week-number {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
   color: #B79A5B;
   margin-bottom: 2px;
@@ -4739,7 +4739,7 @@ ul li:first-child {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 15px;
   color: #0D2035;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
   break-after: avoid; }
 
@@ -4750,7 +4750,7 @@ ul li:first-child {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #66717C;
-  margin: 0 0 5.66667px 0;
+  margin: 0 0 6.66667px 0;
   text-indent: 0;
   break-after: avoid; }
 
@@ -4761,7 +4761,7 @@ ul li:first-child {
 .panel {
   background-color: #EAF3F3;
   padding: 17px 15.3px;
-  margin: 17px 0;
+  margin: 20px 0;
   break-inside: avoid; }
 
 .panel {
@@ -4770,10 +4770,10 @@ ul li:first-child {
 .callout p,
 .panel p {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
-  margin: 0 0 5.66667px 0; }
+  margin: 0 0 6.66667px 0; }
 
 .callout p:last-child,
 .panel p:last-child {
@@ -4781,12 +4781,12 @@ ul li:first-child {
 
 .callout-label {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
   font-size: 8.5px; }
 
@@ -4807,7 +4807,7 @@ ul li:first-child {
 .callout-accent .pullquote {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 12.5px;
-  line-height: 17px;
+  line-height: 20px;
   font-style: normal;
   color: #FFFFFF;
   margin: 0;
@@ -4815,15 +4815,15 @@ ul li:first-child {
 
 .figure-placeholder {
   background-color: #EEF3F7;
-  padding: 34px 17px;
-  margin: 17px 0;
+  padding: 40px 20px;
+  margin: 20px 0;
   text-align: center;
   break-inside: avoid; }
 
 .figure-placeholder p {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
   color: #66717C;
   margin: 0; }
@@ -4835,8 +4835,8 @@ ul li:first-child {
 
 .columns {
   display: flex;
-  gap: 8.5px;
-  margin: 17px 0;
+  gap: 10px;
+  margin: 20px 0;
   break-inside: avoid;
   align-items: stretch; }
 
@@ -4845,7 +4845,7 @@ ul li:first-child {
   margin: 0; }
 
 .level {
-  padding: 8.5px 8.5px;
+  padding: 10px 10px;
   background-color: #66717C;
   flex: 0 0 26%;
   display: flex;
@@ -4853,12 +4853,12 @@ ul li:first-child {
 
 .level p {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
   color: #FFFFFF;
   font-size: 8px;
@@ -4879,7 +4879,7 @@ ul li:first-child {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 17px 0;
+  margin: 20px 0;
   break-inside: auto; }
 
 .keep-together {
@@ -4897,8 +4897,8 @@ tbody tr:first-child {
 
 th {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
   background-color: #0D2035;
   color: #FFFFFF;
@@ -4907,16 +4907,16 @@ th {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   text-align: left;
-  padding: 8.5px 5.66667px;
+  padding: 10px 6.66667px;
   vertical-align: middle; }
 
 td {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
   font-size: 9px;
-  padding: 8.5px 5.66667px;
+  padding: 10px 6.66667px;
   vertical-align: top;
   border: 0; }
 
@@ -4926,15 +4926,15 @@ tbody tr:nth-child(odd) td {
 .table-caption,
 .figure-caption {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
   color: #66717C;
-  margin-top: 5.66667px;
+  margin-top: 6.66667px;
   break-before: avoid; }
 
 figure {
-  margin: 17px 0; }
+  margin: 20px 0; }
 
 figure img {
   max-width: 100%;
@@ -4943,43 +4943,43 @@ figure img {
 .pullquote {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 14px;
-  line-height: 22.1px;
+  line-height: 26px;
   color: #0D2035;
-  margin: 17px 0;
+  margin: 20px 0;
   text-indent: 0; }
 
 blockquote {
-  margin: 17px 0;
-  padding-left: 17px;
+  margin: 20px 0;
+  padding-left: 20px;
   border-left: 2pt solid #EAF3F3; }
 
 .source {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
   color: #66717C;
   break-before: avoid; }
 
 .reference {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
   color: #17202A;
-  padding-left: 17px;
-  text-indent: -17px;
-  margin-bottom: 5.66667px; }
+  padding-left: 20px;
+  text-indent: -20px;
+  margin-bottom: 6.66667px; }
 
 .footnotes {
-  margin-top: 34px;
-  padding-top: 8.5px;
+  margin-top: 40px;
+  padding-top: 10px;
   border-top: 0.5pt solid #66717C; }
 
 .footnotes p {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
   color: #17202A; }
 
@@ -4990,9 +4990,9 @@ blockquote {
 .title-page-title {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 26px;
-  line-height: 34px;
+  line-height: 40px;
   color: #0D2035;
-  margin-bottom: 17px;
+  margin-bottom: 20px;
   text-indent: 0; }
 
 .title-page-subtitle {
@@ -5013,10 +5013,10 @@ blockquote {
 
 .toc-list li {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
-  margin-bottom: 5.66667px; }
+  margin-bottom: 6.66667px; }
 
 .toc-entry-part > a {
   font-weight: 700;
@@ -5043,49 +5043,49 @@ blockquote {
   float: right;
   clear: right;
   width: 34%;
-  margin: 0 0 17px 20.4px;
-  padding-left: 11.33333px;
+  margin: 0 0 20px 24px;
+  padding-left: 13.33333px;
   border-left: 2pt solid #137C7A;
   break-inside: avoid; }
 
 .sidenote p {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
   font-size: 8.5px;
   color: #17202A;
-  margin: 0 0 5.66667px 0; }
+  margin: 0 0 6.66667px 0; }
 
 .sidenote p:last-child {
   margin-bottom: 0; }
 
 .sidenote-label {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
   font-size: 7.5px;
-  margin-bottom: 5.66667px; }
+  margin-bottom: 6.66667px; }
 
 .sidenote .figure-caption {
   color: #66717C; }
 
 .process {
   display: flex;
-  gap: 11.33333px;
-  margin: 25.5px 0;
+  gap: 13.33333px;
+  margin: 30px 0;
   break-inside: avoid;
   align-items: stretch; }
 
 .step {
   flex: 1 1 0;
   background-color: #EAF3F3;
-  padding: 17px 11.33333px;
+  padding: 20px 13.33333px;
   display: flex;
   flex-direction: column;
   break-inside: avoid; }
@@ -5094,39 +5094,39 @@ blockquote {
   display: block;
   width: 26px;
   height: 26px;
-  margin-bottom: 11.33333px;
+  margin-bottom: 13.33333px;
   color: #137C7A; }
 
 .step-number {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
   font-size: 7px;
   color: #B79A5B;
-  margin-bottom: 4.25px; }
+  margin-bottom: 5px; }
 
 .step-title {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
   font-size: 8px;
   color: #0D2035;
-  margin-bottom: 5.66667px; }
+  margin-bottom: 6.66667px; }
 
 .step p {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
   font-size: 8px;
   margin: 0; }
@@ -5136,53 +5136,53 @@ blockquote {
 
 .pillar {
   background-color: #F4F6F7;
-  padding: 17px;
-  margin: 0 0 11.33333px 0;
+  padding: 20px;
+  margin: 0 0 13.33333px 0;
   border-left: 3pt solid #137C7A;
   break-inside: avoid; }
 
 .pillar-number {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
   font-size: 7.5px;
   color: #B79A5B;
-  margin-bottom: 4.25px; }
+  margin-bottom: 5px; }
 
 .pillar-title {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 15px;
   color: #0D2035;
-  margin: 0 0 5.66667px 0;
+  margin: 0 0 6.66667px 0;
   text-indent: 0; }
 
 .pillar p {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.5px;
-  line-height: 13.6px;
+  font-size: 11.5px;
+  line-height: 16px;
   text-indent: 0;
-  margin: 0 0 5.66667px 0; }
+  margin: 0 0 6.66667px 0; }
 
 .pillar p:last-child {
   margin-bottom: 0; }
 
 .pillar .pillar-number {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
   font-size: 7.5px;
   color: #B79A5B;
-  margin-bottom: 4.25px; }
+  margin-bottom: 5px; }
 
 .pillar .pillar-title {
   font-family: Georgia, "Times New Roman", serif;
@@ -5190,45 +5190,45 @@ blockquote {
   font-weight: 400;
   line-height: 1.25;
   color: #0D2035;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0; }
 
 .step .step-number {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
   font-size: 7px;
   color: #B79A5B; }
 
 .step .step-title {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
   font-size: 8px;
   color: #0D2035; }
 
 .sidenote .sidenote-label {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
   font-size: 7.5px;
   color: #0D2035;
-  margin-bottom: 5.66667px; }
+  margin-bottom: 6.66667px; }
 
 @page endmatter:left {
   @bottom-left {
@@ -5266,18 +5266,18 @@ blockquote {
   color: #B79A5B;
   font-size: 13px;
   line-height: 1;
-  margin-bottom: 11.33333px; }
+  margin-bottom: 13.33333px; }
 
 .pagedjs_blank_page .pagedjs_page_content::after {
   content: "This page is intentionally blank";
   display: block;
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #137C7A;
-  margin: 0 0 8.5px 0;
+  margin: 0 0 10px 0;
   text-indent: 0;
   font-size: 8px;
   color: #66717C; }
@@ -5286,13 +5286,13 @@ blockquote {
   float: none;
   clear: both;
   width: auto;
-  margin: 17px 25.5px 17px 25.5px;
-  padding-left: 11.33333px;
+  margin: 20px 30px 20px 30px;
+  padding-left: 13.33333px;
   border-left: 2pt solid #137C7A;
   break-inside: avoid; }
 
 .sidenote p {
-  font-size: 9.5px; }
+  font-size: 11.5px; }
 
 .process {
   flex-wrap: wrap; }
