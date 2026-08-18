@@ -1,6 +1,6 @@
 # The shipped themes
 
-Ten themes live in `themes/`. Pick the closest starting point and adapt it —
+Thirteen themes live in `themes/`. Pick the closest starting point and adapt it —
 starting from `template` is only worth it when nothing else is close.
 
 `beatrix` is the default: it is what `new-theme.js`, `render-pdf.js` and
@@ -66,8 +66,15 @@ Pairs with the `aalai` style map, so a Word manuscript written against the AALAI
 template converts and lays out with no hand-tagging. Preview with
 `content/aalai-sample`.
 
-Start here for: textbooks, clinical or scientific reference works, anything with
-heavy apparatus and a house style to match.
+Start here for: short and mid-length textbooks, sample chapters, proposals and
+specimens — anything where the design system matters more than the extent.
+
+Know before you pick it for a long book: the body sets 9 pt across a 5.66in
+column, which measures out at a median of **109 characters a line** on real
+manuscript text. A book sets 60 to 70. At that measure the type is doing the
+work of an A4 report, and a long reference work set in it reads as a Word
+document no matter what components are on the page. `aalai-textbook` is the
+same design with that fixed.
 
 ### `aalai-6x9`
 
@@ -160,3 +167,62 @@ is what populates the demo site's theme switcher. A theme without a `theme.json`
 compiles but does not appear in the switcher.
 
 Add the theme to the gallery in `index.html` if it should show on the demo site.
+
+### `aalai-textbook`
+
+The AALAI design at 7 × 10in again, rebuilt for a long reference work rather
+than a specimen. Palette, components and style map are inherited from `aalai`;
+what changes is the grid and the apparatus. Built against a 430-page clinical
+reference of 333 entries.
+
+**The grid.** 11 pt body on a 4.56in column — a measured median of 67 characters
+a line, against the parent's 109. The outer margin is deliberately large (40 mm
+against 22 mm at the spine): it buys the short measure, gives the running side
+tab somewhere to live, and the white band down the fore-edge is what reads as
+"laid out" before a word is read. Expect roughly 1.6× the parent's page count
+for the same text; that is the type being the right size, not the book growing.
+
+**The apparatus**, all of it added on top of `aalai`:
+
+- **`.entry`** — a card for the unit a reader looks things up by: a teal rule
+  down the side, the name in sans, and a number badge counted within the topic.
+  A rule and not a tinted box, because three hundred tinted boxes is a grey
+  book; the tints stay for callouts, where they still mean something.
+- **`.part-title` / `.section-head` / `.apparatus-head`** — a manuscript that
+  uses `h2` for both the part and the sections inside it loses its top two
+  levels at a stroke. These separate them; `.section-head` takes a page break,
+  `.apparatus-head` (References and the like) deliberately does not.
+- **`.part-contents`** — the part opener lists its sections with entry counts,
+  read off the manuscript at build time so they cannot drift.
+- **A fore-edge thumb index** — a coloured tab in a page margin box, a different
+  colour and vertical slot for each part, so the closed book carries a staircase
+  down its edge. This needs a named page per part (`.chapter.part-3`), because a
+  margin box cannot know which chapter it is on, and a named page does not
+  inherit `@page chapter`'s content — the `part-page` mixin restates it.
+- **Running heads** — the topic across the top outside, the part along the foot.
+- **`.cite`** — reference marks raised and reduced instead of set inline at body
+  size.
+- **`.table-figure`** — a table with a counted caption above it.
+
+Three things this theme learned the hard way, all verified by rendering:
+
+- **Do not border and pad a container that fragments.** The entry card's rule
+  was first drawn on the `.entry` wrapper. Paged.js splits a paragraph inside a
+  bordered, padded box into its internal column set and then reports the
+  paragraph as running 1,672 px past the trim — a word-level diff of the
+  paginated text against the source shows nothing is actually lost, but every
+  false report buries a real overflow in `check-layout`'s output. Thirty-three
+  entries tripped it. Bordering the children instead leaves no fragmenting box
+  and the page looks identical.
+- **Paged.js does not resolve `attr()` inside `string-set`.** Stamping the part
+  name onto a `title` attribute and reading `string(h2-title, first)` gave an
+  empty foot on every page. A zero-size `h1` carrying the part name works: an
+  element that is not laid out never sets its string, so `display: none` is not
+  an option.
+- **A page margin box gets a third of the text width and no more.** At this
+  measure that is about 145 px, and a running head in tracked-out capitals
+  wrapped onto a second line and crowded the text block. Mixed case at 7.5 pt
+  fits.
+
+Start here for: long clinical or scientific reference works, textbooks with an
+entry structure, anything over about 200 pages in the AALAI house style.

@@ -1,0 +1,93 @@
+// _variables.scss — AALAI Textbook, designed 7 × 10in
+//
+// The trim, palette, running feet and every component variable are inherited
+// from `aalai`. What changes here is the grid, and the grid is the whole
+// difference between a reference document and a textbook.
+
+// Type and measure
+// ----------------
+// The parent theme sets a nine-point body across a 5.66in column. Measured in
+// the browser over 4,202 lines of the real manuscript, that runs to a median
+// of 109 characters a line.
+//
+// A book sets 60 to 70. A textbook, which is scanned as much as read, can
+// carry 70 to 75. One hundred and nine is not a long measure, it is a
+// different medium: it is the setting of an A4 report, and it is why pages of
+// this book read as a Word document no matter what is drawn on them. The eye
+// loses the return sweep and every page looks like an undifferentiated slab.
+//
+// Two things fix it together, and neither works alone. The type comes up to
+// eleven point, and the column comes in to 4.56in. That lands at about 72
+// characters — long enough to keep a technical sentence on few enough lines,
+// short enough to read.
+
+$baseline-grid-unit: 21px;       // ~15.75pt leading
+$font-size-default: 14.7px;      // ~11pt body
+$font-size-small: 11.5px;        // captions, table cells, panels
+$font-size-label: 9.5px;         // tracked-out labels
+$line-height-default: $baseline-grid-unit;
+$text-spacing: $baseline-grid-unit * 0.7;
+
+// Margins
+// -------
+// The outer margin is deliberately large — 40mm against 22mm at the spine.
+//
+// This is the move that makes the page look designed rather than filled. It
+// buys the short measure above, it gives the running side tab somewhere to
+// live, and the white band down the outside edge is what the eye reads as
+// "this was laid out" before it reads a single word. The parent theme's 14mm
+// outer margin is a document margin: it is set to use the paper, and using all
+// the paper is what a report does.
+//
+// The spine margin stays smaller than the outer one and is still the larger of
+// the two once binding is accounted for: a perfect-bound book of this extent
+// loses several millimetres into the gutter before the reader can flatten it.
+
+$margin-inside: 22mm;
+$margin-outside: 40mm;
+$margin-top: $baseline-grid-unit * 2.5;
+$margin-bottom: $baseline-grid-unit * 3;
+
+// Chapter openers
+// ---------------
+$start-depth: $baseline-grid-unit * 3;
+$chapter-rule-width: 20mm;
+
+// Textbook apparatus
+// ------------------
+// Sizes for the pieces added in _styles.scss. Kept here so the whole grid can
+// be retuned from one file.
+
+$entry-rule: 2.5pt;              // the coloured spine down an entry card
+$entry-pad: $baseline-grid-unit * 0.75;
+$tab-width: 9mm;                 // the part tab on the outside edge
+$icon-size: 20px;                // the circled component markers
+
+// Running heads
+// -------------
+// The parent theme puts nothing across the top and the part title along the
+// foot. That is right for a book read front to back and wrong for one that is
+// scanned: a reader hunting an entry needs to know which topic the spread is
+// in without reading back to the last heading.
+//
+// The topic goes in the outside top slot, where a thumbing reader's eye lands.
+// The foot keeps the folio and the part title, so a page identifies itself at
+// both ends.
+
+// `first`, not `start`: a page that opens a new topic must name the new one.
+// With `start` the head reported the topic carried in from the previous page,
+// so a spread beginning "Tissue Repair and Wound Healing" was labelled "What
+// Are Peptides?" — the one heading on the page it could not be.
+$verso-top-left: string(h3-text, first);
+$recto-top-right: string(h3-text, first);
+
+// The foot names the part, not the section. The section is already across the
+// top, and `string(h2-text)` gave the section there too, because the part title
+// and the section heads are both h2 in this manuscript.
+//
+// The part name is carried by an h1 the build emits at the head of each part —
+// set to zero size in _styles.scss, so it is a string source and nothing else.
+// Reading it from a title attribute was tried first and produced an empty foot
+// on every page: Paged.js does not resolve `attr()` inside `string-set`.
+$verso-bottom: string(h1-text, first);
+$recto-bottom: string(h1-text, first);
