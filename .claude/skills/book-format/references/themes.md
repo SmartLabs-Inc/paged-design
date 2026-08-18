@@ -170,17 +170,17 @@ Add the theme to the gallery in `index.html` if it should show on the demo site.
 
 ### `aalai-textbook`
 
-The AALAI design at 7 × 10in again, rebuilt for a long reference work rather
-than a specimen. Palette, components and style map are inherited from `aalai`;
-what changes is the grid and the apparatus. Built against a 430-page clinical
-reference of 333 entries.
+The AALAI design at 7 × 10in again, rebuilt for a long illustrated reference
+work rather than a specimen. Palette, components and style map are inherited
+from `aalai`; what changes is the grid and the apparatus. Built against a
+285-page clinical reference of 333 entries and 87 figures.
 
-**The grid.** 11 pt body on a 4.56in column — a measured median of 67 characters
-a line, against the parent's 109. The outer margin is deliberately large (40 mm
-against 22 mm at the spine): it buys the short measure, gives the running side
-tab somewhere to live, and the white band down the fore-edge is what reads as
-"laid out" before a word is read. Expect roughly 1.6× the parent's page count
-for the same text; that is the type being the right size, not the book growing.
+**The grid.** Two columns, justified, 10 pt body — a measured median of 50
+characters a line, against the parent's 109 in one wide column. Two columns are
+what a reference textbook is set in and the reason is the measure: a single
+column fixes a 109-character line by shortening it and spends a great deal of
+paper doing so, while two columns fix it by using the width the trim already
+has. The same text ran 432 pages in one column and 285 in two.
 
 **The apparatus**, all of it added on top of `aalai`:
 
@@ -188,6 +188,11 @@ for the same text; that is the type being the right size, not the book growing.
   down the side, the name in sans, and a number badge counted within the topic.
   A rule and not a tinted box, because three hundred tinted boxes is a grey
   book; the tints stay for callouts, where they still mean something.
+- **`.figure` / `.figure-slot` / `.figure-brief`** — a sized empty box for a
+  picture that does not exist yet, with the commissioning brief printed under
+  the caption and carried on the figure element as `data-alt`, ready to become
+  the `img` alt attribute. Slots come in three sizes: part opener, spanning,
+  and single column.
 - **`.part-title` / `.section-head` / `.apparatus-head`** — a manuscript that
   uses `h2` for both the part and the sections inside it loses its top two
   levels at a stroke. These separate them; `.section-head` takes a page break,
@@ -204,25 +209,51 @@ for the same text; that is the type being the right size, not the book growing.
   size.
 - **`.table-figure`** — a table with a counted caption above it.
 
-Three things this theme learned the hard way, all verified by rendering:
+**What spans the columns and what does not.** Running prose is in the column;
+anything a reader is meant to stop at goes across the page — shaded boxes,
+tables, figures, pull quotes and every heading above the entry. Those only read
+as breaks if they are wider than what surrounds them. The panel grids
+(`.columns`, `.process`) are the exception and stack inside one column instead:
+left spanning, each pathway entry of the cross-reference chapter filled a fifth
+of a page and pushed the rest to the next, and thirty-nine consecutive pages
+came out four-fifths empty.
+
+Six things this theme learned the hard way, all verified by rendering or by
+measuring in the browser:
 
 - **Do not border and pad a container that fragments.** The entry card's rule
   was first drawn on the `.entry` wrapper. Paged.js splits a paragraph inside a
   bordered, padded box into its internal column set and then reports the
-  paragraph as running 1,672 px past the trim — a word-level diff of the
-  paginated text against the source shows nothing is actually lost, but every
-  false report buries a real overflow in `check-layout`'s output. Thirty-three
-  entries tripped it. Bordering the children instead leaves no fragmenting box
-  and the page looks identical.
+  paragraph as running past the trim. Bordering the children instead leaves no
+  fragmenting box and the page looks identical.
+- **Chromium here cannot hyphenate.** `hyphens: auto` is inert without a
+  hyphenation dictionary, and a headless container has none — measured
+  directly: a narrow box of long words is exactly the same height with
+  `hyphens: auto` as with `hyphens: none`. Justified text at fifty characters
+  needs hyphenation or it opens rivers, so the break opportunities are put in
+  the document as soft hyphens at build time. That is the better answer anyway:
+  a print book's line breaks must not depend on which machine made the PDF.
+- **Do not hyphenate an HTML entity.** A soft hyphen inside `&middot;` stops it
+  being an entity, and it prints as literal text.
 - **Paged.js does not resolve `attr()` inside `string-set`.** Stamping the part
   name onto a `title` attribute and reading `string(h2-title, first)` gave an
   empty foot on every page. A zero-size `h1` carrying the part name works: an
   element that is not laid out never sets its string, so `display: none` is not
   an option.
-- **A page margin box gets a third of the text width and no more.** At this
-  measure that is about 145 px, and a running head in tracked-out capitals
-  wrapped onto a second line and crowded the text block. Mixed case at 7.5 pt
-  fits.
+- **A page margin box gets a third of the text width and no more**, so a
+  running head in tracked-out capitals wraps. Mixed case at 7.5 pt fits.
+- **`break-after: avoid` works at a column break and not at a page break.** The
+  columns are native CSS multicol laid out by the browser; it is Paged.js's own
+  page fragmentation that ignores it. Entry headings, standfirsts and table
+  captions are held to what follows them on that basis, and the handful that
+  still strand are stranding at page boundaries.
+
+A trap it repeats from the 6 × 9in theme: the default theme centres every
+paragraph inside a figure (`figure p, .figure p`), which at one class and one
+element outranks a bare `.figure-brief` — so the commissioning note set centred
+while the rule said left, and it lost silently until the page was rendered.
+Scoping to `.figure > .figure-brief` fixes it. Same failure mode as
+`.columns > *` beating `.level`.
 
 Start here for: long clinical or scientific reference works, textbooks with an
 entry structure, anything over about 200 pages in the AALAI house style.

@@ -6,45 +6,51 @@
 
 // Type and measure
 // ----------------
-// The parent theme sets a nine-point body across a 5.66in column. Measured in
-// the browser over 4,202 lines of the real manuscript, that runs to a median
-// of 109 characters a line.
+// Two columns, justified, at ten point. This is how a reference textbook is
+// set, and the reason is the measure.
 //
-// A book sets 60 to 70. A textbook, which is scanned as much as read, can
-// carry 70 to 75. One hundred and nine is not a long measure, it is a
-// different medium: it is the setting of an A4 report, and it is why pages of
-// this book read as a Word document no matter what is drawn on them. The eye
-// loses the return sweep and every page looks like an undifferentiated slab.
+// The parent theme sets nine point across a single 5.66in column: measured in
+// the browser over 4,202 lines of the real manuscript, a median of 109
+// characters a line. A book sets 60 to 70. One hundred and nine is not a long
+// measure, it is a different medium — the setting of an A4 report — and it is
+// why pages of this book read as a Word document no matter what is drawn on
+// them.
 //
-// Two things fix it together, and neither works alone. The type comes up to
-// eleven point, and the column comes in to 4.56in. That lands at about 72
-// characters — long enough to keep a technical sentence on few enough lines,
-// short enough to read.
+// A single column fixes that by shortening the line, and costs a great deal of
+// paper doing it. Two columns fix it by using the width the trim already has:
+// each column carries about 44 characters, and the page holds two of them. The
+// same text that ran 432 pages set in one wide column comes in under 300.
+//
+// Justified, because at 44 characters a ragged edge on technical prose leaves
+// holes the eye reads as paragraph breaks. Hyphenation is on and is not
+// optional at this measure.
 
-$baseline-grid-unit: 21px;       // ~15.75pt leading
-$font-size-default: 14.7px;      // ~11pt body
-$font-size-small: 11.5px;        // captions, table cells, panels
-$font-size-label: 9.5px;         // tracked-out labels
+$baseline-grid-unit: 17px;       // ~12.75pt leading
+$font-size-default: 12.8px;      // ~9.6pt body
+$font-size-small: 10.5px;        // captions, table cells, panels
+$font-size-label: 8.5px;         // tracked-out labels
 $line-height-default: $baseline-grid-unit;
-$text-spacing: $baseline-grid-unit * 0.7;
+$text-spacing: $baseline-grid-unit * 0.55;
+$text-align-default: justify;
+$hyphenation: auto;
+
+// The column set
+// --------------
+$column-count: 2;
+$column-gap: 5mm;
 
 // Margins
 // -------
-// The outer margin is deliberately large — 40mm against 22mm at the spine.
+// Nearly even, as a two-column page wants: the columns supply the internal
+// white space that a single-column page has to buy with margin. The outer
+// margin is the wider of the two because it carries the fore-edge thumb tab
+// and is the edge a reader's thumb covers.
 //
-// This is the move that makes the page look designed rather than filled. It
-// buys the short measure above, it gives the running side tab somewhere to
-// live, and the white band down the outside edge is what the eye reads as
-// "this was laid out" before it reads a single word. The parent theme's 14mm
-// outer margin is a document margin: it is set to use the paper, and using all
-// the paper is what a report does.
-//
-// The spine margin stays smaller than the outer one and is still the larger of
-// the two once binding is accounted for: a perfect-bound book of this extent
-// loses several millimetres into the gutter before the reader can flatten it.
+// Text block lands at 139.8mm, which divides into two columns of 67.4mm —
+// about 46 characters inside an entry card, 48 in plain running text.
 
-$margin-inside: 22mm;
-$margin-outside: 40mm;
+$margin-inside: 17mm;
+$margin-outside: 21mm;
 $margin-top: $baseline-grid-unit * 2.5;
 $margin-bottom: $baseline-grid-unit * 3;
 
@@ -59,9 +65,9 @@ $chapter-rule-width: 20mm;
 // be retuned from one file.
 
 $entry-rule: 2.5pt;              // the coloured spine down an entry card
-$entry-pad: $baseline-grid-unit * 0.75;
+$entry-pad: $baseline-grid-unit * 0.5;
 $tab-width: 9mm;                 // the part tab on the outside edge
-$icon-size: 20px;                // the circled component markers
+$icon-size: 17px;                // the circled component markers
 
 // Running heads
 // -------------

@@ -10,6 +10,50 @@
 // where does it end, and how sure is anyone about it.
 
 // ---------------------------------------------------------------------------
+// The column set
+// ---------------------------------------------------------------------------
+// Two columns for running text; anything that is not running text spans them.
+//
+// The columns go on the chapter's inner wrapper rather than on the page,
+// because Paged.js paginates by flowing the content through its own column
+// mechanism and a second one declared on the page area fights it. Declared on
+// an element inside the flow it composes correctly — verified by rendering, and
+// the same route the default theme's own `.index` component takes.
+//
+// The index is excluded because it is already a two-column component; nesting
+// the two gave four columns of about 100px, which is a list of fragments.
+
+.chapter > div > div,
+.frontmatter > div > div,
+.endmatter:not(.index) > div > div {
+    column-count: $column-count;
+    column-gap: $column-gap;
+    column-fill: auto;
+}
+
+// What breaks the columns. The rule of the design: running prose is in the
+// column, and everything a reader is meant to stop at is across the page.
+// Shaded boxes, tables, figures, pull quotes, panel grids and every heading
+// above the entry — those are the visual breaks, and they only read as breaks
+// if they are wider than what surrounds them.
+.part-title,
+.part-count,
+.part-contents,
+.section-head,
+.apparatus-head,
+.table-figure,
+.figure-span,
+.callout,
+.callout-dark,
+.callout-accent,
+.pullquote,
+.pillar,
+.objectives,
+.takeaways {
+    column-span: all;
+}
+
+// ---------------------------------------------------------------------------
 // Counters
 // ---------------------------------------------------------------------------
 // Entries are numbered inside their topic, and tables inside their part.
@@ -44,7 +88,7 @@
 }
 
 .part-title {
-    font-size: 36px;
+    font-size: 34px;
     line-height: $baseline-grid-unit * 2;
     margin: 0 0 ($baseline-grid-unit / 2) 0;
     padding-bottom: ($baseline-grid-unit / 2);
@@ -65,7 +109,7 @@
 
 .section-head {
     break-before: page;
-    font-size: 24px;
+    font-size: 21px;
     line-height: $baseline-grid-unit * 1.5;
     color: $color-navy;
     margin: 0 0 $baseline-grid-unit 0;
@@ -77,7 +121,7 @@
 // take a page break or set at section size.
 .apparatus-head {
     break-before: auto;
-    font-size: 14px;
+    font-size: 12px;
     font-family: $font-display-secondary;
     font-weight: 700;
     letter-spacing: $label-tracking;
@@ -95,7 +139,7 @@
 // it is also what the running head reports, so it is given a rule of its own.
 
 h3 {
-    font-size: 19px;
+    font-size: 15.5px;
     line-height: $baseline-grid-unit * 1.3;
     margin: ($baseline-grid-unit * 1.5) 0 ($baseline-grid-unit / 2) 0;
 }
@@ -109,7 +153,7 @@ h3::after {
 }
 
 h4 {
-    font-size: 12.5px;
+    font-size: 10.5px;
     margin: ($baseline-grid-unit * 1.2) 0 ($baseline-grid-unit / 3) 0;
 }
 
@@ -152,9 +196,15 @@ h4 {
     margin-bottom: 0;
 }
 
+// `break-after: avoid` is honoured here, unlike at a page break. The columns
+// are native CSS multicol laid out by the browser, so a column break obeys the
+// ordinary break properties; it is Paged.js's own page fragmentation that
+// ignores break-after. Without it an entry heading strands at the foot of a
+// column with its text in the next one.
 .entry > h5 {
+    break-after: avoid;
     font-family: $font-display-secondary;
-    font-size: 12.5px;
+    font-size: 11px;
     font-style: normal;
     font-weight: 700;
     color: $color-navy;
@@ -168,12 +218,12 @@ h4 {
 .entry > h5::before {
     content: counter(entry);
     display: inline-block;
-    min-width: 15px;
-    padding: 1px 4px 2px 4px;
-    margin-right: 7px;
+    min-width: 13px;
+    padding: 1px 3px 2px 3px;
+    margin-right: 6px;
     background-color: $color-teal;
     color: #FFFFFF;
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-align: center;
@@ -191,7 +241,11 @@ h4 {
 // author wrote; setting it apart gives the reader somewhere to land after a
 // page break and before the entries start.
 
+// Held to what follows it. This is a column break as often as a page break —
+// the columns are native multicol, so break-after is honoured at a column
+// boundary even though Paged.js ignores it at a page boundary.
 .standfirst {
+    break-after: avoid;
     font-size: $font-size-default * 1.1;
     line-height: $baseline-grid-unit * 1.2;
     color: $color-navy;
@@ -242,7 +296,7 @@ a.cite {
 .callout::before {
     content: "!";
     position: absolute;
-    top: ($baseline-grid-unit * 0.7);
+    top: ($baseline-grid-unit * 0.6);
     left: -($icon-size / 2);
     width: $icon-size;
     height: $icon-size;
@@ -279,7 +333,10 @@ a.cite {
     margin: ($baseline-grid-unit * 1.2) 0;
 }
 
+// A table caption sits above its table and must not be the last thing in a
+// column. Held to it — a column break honours break-after.
 .table-figure > .table-caption {
+    break-after: avoid;
     counter-increment: figure;
     @include label();
     font-size: 9px;
@@ -383,7 +440,7 @@ a.cite {
 .part-contents li {
     counter-increment: partsection;
     font-family: $font-display-secondary;
-    font-size: 13px;
+    font-size: 12px;
     line-height: $baseline-grid-unit;
     color: $color-navy;
     padding: ($baseline-grid-unit / 3) 0 ($baseline-grid-unit / 3) 0;
@@ -679,4 +736,134 @@ $part-tabs:
     padding: 0;
     margin: 0 0 $baseline-grid-unit 0;
     text-align: left;
+}
+
+
+// ---------------------------------------------------------------------------
+// Figures
+// ---------------------------------------------------------------------------
+// The book ships with no pictures and eighty-seven places that want one. Each
+// is a box at the exact size the finished image has to be, with its number and
+// kind inside it and the commissioning brief printed underneath.
+//
+// The box is drawn as apparatus, not as art: a rule and a wash, so nobody
+// mistakes a proof for a design that is finished. When a picture arrives the
+// slot and the brief are deleted and an <img> takes their place, carrying the
+// brief as its alt text — the figure element already holds it in data-alt.
+
+.figure {
+    margin: ($baseline-grid-unit * 0.9) 0 ($baseline-grid-unit * 1.1) 0;
+    break-inside: avoid;
+}
+
+.figure-slot {
+    background-color: $color-pale;
+    border: 0.75pt dashed $color-supported;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: ($baseline-grid-unit / 2);
+}
+
+.figure-slot-id {
+    @include label();
+    font-size: 10px;
+    color: $color-supported;
+    margin: 0 0 ($baseline-grid-unit / 4) 0;
+}
+
+.figure-slot-size {
+    @include sans-small();
+    font-size: 8px;
+    color: $color-mid;
+    margin: 0;
+}
+
+.figure > .figure-caption {
+    @include label();
+    font-size: 8px;
+    color: $color-navy;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 700;
+    line-height: $baseline-grid-unit * 0.7;
+    margin: ($baseline-grid-unit / 3) 0 0 0;
+    text-align: left;
+}
+
+// The commissioning note. Marked as production apparatus by an em rule and the
+// muted grey, so a reader flipping the proof can see at a glance that it is not
+// part of the book.
+//
+// Scoped as a child of the figure, not left bare. The default theme centres
+// every paragraph inside a figure (`figure p, .figure p`), which at one class
+// and one element outranks a bare `.figure-brief` — so the note set centred
+// while the rule said left, and it lost silently until the page was rendered.
+// The same collision as `.columns > *` against `.level` in the 6 × 9in theme.
+.figure > .figure-brief {
+    @include sans-small();
+    font-size: 7.5px;
+    line-height: $baseline-grid-unit * 0.6;
+    color: $color-mid;
+    border-left: 1.5pt solid $color-emerging;
+    padding-left: ($baseline-grid-unit / 3);
+    margin: ($baseline-grid-unit / 3) 0 0 0;
+    text-align: left;
+    hyphens: none;
+}
+
+.figure > .figure-brief::before {
+    content: "To make or acquire  ";
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+    color: $color-emerging;
+}
+
+// A `<code>` run in the reference lists carries strings with no break
+// opportunity — regulatory category names, file identifiers — and at 67mm a
+// column has none to spare.
+code,
+kbd,
+samp {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
+    hyphens: none;
+}
+
+// ---------------------------------------------------------------------------
+// Panel grids in a two-column page
+// ---------------------------------------------------------------------------
+// The cross-reference chapter sets each pathway as a 2 × 2 grid of panels and
+// each dependency chain as a row of process steps. Both were laid out for a
+// single wide column. Left spanning both columns here they fit one to a page:
+// thirty-nine consecutive pages with four small boxes at the top and four
+// fifths of the sheet empty.
+//
+// So they stack instead. Each panel takes the full width of one text column —
+// 67mm, wider than it had as one of two side-by-side panels on a single-column
+// page — and the set flows down the column with everything else.
+
+.columns,
+.process {
+    display: flex;
+    flex-wrap: wrap;
+    gap: ($baseline-grid-unit / 2);
+    break-inside: avoid;
+}
+
+.columns > *,
+.process > .step {
+    flex: 1 1 100%;
+    margin: 0;
+}
+
+// The evidence chip keeps its own size rather than stretching to the column.
+.columns > .level {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    padding: ($baseline-grid-unit / 4) ($baseline-grid-unit / 2);
 }

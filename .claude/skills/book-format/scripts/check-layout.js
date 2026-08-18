@@ -97,10 +97,52 @@ function collectReport () {
       const rect = element.getBoundingClientRect()
       if (rect.width === 0 && rect.height === 0) return
 
-      // Measure the layout box. A client rect can union boxes an element
-      // never occupies as one piece, which reads as enormous false overflow.
-      const right = rect.left + (element.offsetWidth || rect.width)
-      const bottom = rect.top + (element.offsetHeight || rect.height)
+      // Measure the fragments that are actually on this page.
+      //
+      // Paged.js paginates by flowing content through a wide multi-column box
+      // and clipping it to the sheet: the part of a paragraph destined for the
+      // next page is laid out far to the right and never painted. So a
+      // paragraph carried over has two border boxes — one on the page, one out
+      // in the clipped region — and getBoundingClientRect, offsetWidth and a
+      // naive max over getClientRects all report the union. That reads as a
+      // paragraph running a thousand pixels past the trim when the text is
+      // complete and inside the page.
+      //
+      // getClientRects gives the fragments; the sheet gives the clip. Keep
+      // only the fragments that intersect what is painted, and measure those.
+      // Real overflow still shows, because a fragment that sticks out past the
+      // text area is itself on the page.
+      const clip = (function () {
+        let node = element.parentElement
+        while (node) {
+          if (getComputedStyle(node).overflow === 'hidden') {
+            return node.getBoundingClientRect()
+          }
+          node = node.parentElement
+        }
+        return null
+      })()
+
+      let right = rect.left + (element.offsetWidth || rect.width)
+      let bottom = rect.top + (element.offsetHeight || rect.height)
+      const fragments = element.getClientRects()
+      if (fragments.length) {
+        let widest = -Infinity
+        let lowest = -Infinity
+        for (let i = 0; i < fragments.length; i++) {
+          const fragment = fragments[i]
+          if (fragment.width === 0 && fragment.height === 0) continue
+          if (clip && (fragment.left >= clip.right || fragment.right <= clip.left ||
+                       fragment.top >= clip.bottom || fragment.bottom <= clip.top)) {
+            continue
+          }
+          widest = Math.max(widest, fragment.right)
+          lowest = Math.max(lowest, fragment.bottom)
+        }
+        if (widest === -Infinity) return
+        right = widest
+        bottom = lowest
+      }
       const overflowsRight = right - box.right > 2
       const overflowsBottom = bottom - box.bottom > 2
       if (!overflowsRight && !overflowsBottom) return
