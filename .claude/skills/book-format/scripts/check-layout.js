@@ -175,6 +175,11 @@ function collectReport () {
     // A forced break can strand a label halfway up an otherwise empty page.
     const everything = Array.prototype.slice.call(area.querySelectorAll('*'))
     const introducers = everything.filter(function (element) {
+      // Something with no height introduces nothing and cannot be stranded.
+      // Themes carry zero-size headings whose only job is to set a string for
+      // a running head; reporting those as stranded buries the real ones.
+      const size = element.getBoundingClientRect()
+      if (size.height < 1) return false
       return element.matches(
         'h1, h2, h3, h4, h5, h6, .label, .callout-label, .chapter-eyebrow, ' +
         '.chapter-subtitle, .standfirst, caption'

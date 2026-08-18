@@ -165,16 +165,16 @@ img {
   pdf-page-colorspace: rgb; }
 
 @page :left {
-  margin-top: 42.5px;
-  margin-bottom: 51px;
-  margin-left: 21mm;
-  margin-right: 17mm; }
+  margin-top: 68px;
+  margin-bottom: 76.5px;
+  margin-left: 25mm;
+  margin-right: 20mm; }
 
 @page :right {
-  margin-top: 42.5px;
-  margin-bottom: 51px;
-  margin-left: 17mm;
-  margin-right: 21mm; }
+  margin-top: 68px;
+  margin-bottom: 76.5px;
+  margin-left: 20mm;
+  margin-right: 25mm; }
 
 .frontmatter {
   page: frontmatter;
@@ -320,7 +320,7 @@ h6 {
   @top-right {
     content: normal; }
   @top-left {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @top-right-corner {
     content: normal; }
   @top-left-corner {
@@ -340,7 +340,7 @@ h6 {
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @top-left {
     content: normal; }
   @top-right-corner {
@@ -5289,6 +5289,8 @@ blockquote {
   column-gap: 5mm;
   column-fill: auto; }
 
+.chapter-eyebrow,
+.chapter-subtitle,
 .part-title,
 .part-count,
 .part-contents,
@@ -5462,7 +5464,8 @@ a.cite {
 .table-figure {
   margin: 20.4px 0; }
 
-.table-figure > .table-caption {
+.table-figure caption.table-caption {
+  caption-side: top;
   break-after: avoid;
   counter-increment: figure;
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -5475,9 +5478,10 @@ a.cite {
   text-indent: 0;
   font-size: 9px;
   color: #66717C;
+  text-align: left;
   margin: 0 0 5.66667px 0; }
 
-.table-figure > .table-caption::before {
+.table-figure caption.table-caption::before {
   content: "Table " counter(figure) " · ";
   color: #137C7A; }
 
@@ -5592,7 +5596,7 @@ a.uri,
 
 @page part1:left {
   @top-left {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @top-center {
     content: normal; }
   @top-right {
@@ -5614,7 +5618,7 @@ a.uri,
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @bottom-left {
     content: normal; }
   @bottom-center {
@@ -5651,7 +5655,7 @@ a.uri,
 
 @page part2:left {
   @top-left {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @top-center {
     content: normal; }
   @top-right {
@@ -5673,7 +5677,7 @@ a.uri,
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @bottom-left {
     content: normal; }
   @bottom-center {
@@ -5710,7 +5714,7 @@ a.uri,
 
 @page part3:left {
   @top-left {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @top-center {
     content: normal; }
   @top-right {
@@ -5732,7 +5736,7 @@ a.uri,
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @bottom-left {
     content: normal; }
   @bottom-center {
@@ -5769,7 +5773,7 @@ a.uri,
 
 @page part4:left {
   @top-left {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @top-center {
     content: normal; }
   @top-right {
@@ -5791,7 +5795,7 @@ a.uri,
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @bottom-left {
     content: normal; }
   @bottom-center {
@@ -5828,7 +5832,7 @@ a.uri,
 
 @page part5:left {
   @top-left {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @top-center {
     content: normal; }
   @top-right {
@@ -5850,7 +5854,7 @@ a.uri,
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @bottom-left {
     content: normal; }
   @bottom-center {
@@ -5887,7 +5891,7 @@ a.uri,
 
 @page part6:left {
   @top-left {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @top-center {
     content: normal; }
   @top-right {
@@ -5909,7 +5913,7 @@ a.uri,
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h3-text, first); }
+    content: string(h6-text, first); }
   @bottom-left {
     content: normal; }
   @bottom-center {
@@ -6133,3 +6137,210 @@ samp {
   flex: 0 0 auto;
   align-self: flex-start;
   padding: 4.25px 8.5px; }
+
+@page {
+  @top-left {
+    white-space: nowrap;
+    overflow: hidden; }
+  @top-right {
+    white-space: nowrap;
+    overflow: hidden; } }
+
+.run-head {
+  font-size: 0;
+  line-height: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; }
+
+.frontmatter > div > div,
+.endmatter:not(.index) > div > div {
+  column-fill: balance; }
+
+.frontmatter h2,
+.endmatter h2,
+.frontmatter > div > div > p:first-of-type,
+.endmatter > div > div > p:first-of-type {
+  column-span: all; }
+
+.frontmatter > div > div > h2,
+.endmatter > div > div > h2 {
+  font-size: 26px;
+  line-height: 25.5px;
+  color: #0D2035;
+  margin: 0 0 8.5px 0;
+  padding-bottom: 8.5px;
+  border-bottom: 2pt solid #137C7A; }
+
+.frontmatter > div > div > p:first-of-type,
+.endmatter > div > div > p:first-of-type {
+  font-size: 14.336px;
+  line-height: 20.4px;
+  font-style: italic;
+  color: #0D2035;
+  margin-bottom: 17px; }
+
+.references,
+.references p,
+.references li,
+.index,
+.index li,
+.index p,
+.chapter ol li,
+.chapter ul li {
+  text-align: left; }
+
+.tight table td,
+.tight table th {
+  padding-top: 3.4px;
+  padding-bottom: 3.4px;
+  line-height: 13.26px; }
+
+.tight p,
+.tight li {
+  line-height: 14.45px; }
+
+.keep-together {
+  break-after: avoid; }
+
+.keep-together.spans {
+  column-span: all; }
+
+.keep-together.spans .standfirst {
+  margin-bottom: 8.5px; }
+
+.references > div > div {
+  column-fill: auto; }
+
+.references ol {
+  font-size: 10.5px;
+  line-height: 13.26px;
+  margin: 0 0 17px 0;
+  padding-left: 18.7px; }
+
+.references li {
+  margin: 0 0 5.66667px 0;
+  text-indent: 0;
+  break-inside: avoid; }
+
+.reference-part {
+  column-span: all;
+  font-size: 17px;
+  color: #0D2035;
+  margin: 20.4px 0 5.66667px 0;
+  padding-top: 5.66667px;
+  border-top: 2pt solid #137C7A; }
+
+.reference-part::after {
+  content: none; }
+
+.reference-section {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #66717C;
+  margin: 11.9px 0 4.25px 0;
+  break-after: avoid; }
+
+.references a.uri {
+  font-size: 9.66px;
+  color: #66717C;
+  text-decoration: none; }
+
+.index-locators {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 8.5px;
+  color: #137C7A;
+  white-space: nowrap; }
+
+.index-locators::before {
+  content: "  "; }
+
+.label,
+.callout-label,
+.chapter-eyebrow,
+.part-count,
+.figure-slot-id,
+.figure-slot-size,
+.step-number,
+.step-title,
+.reference-section,
+.table-caption,
+.level p,
+.index-locators {
+  text-align: left;
+  hyphens: none; }
+
+.pagedjs_margin-top-left .pagedjs_margin-content,
+.pagedjs_margin-top-right .pagedjs_margin-content,
+.pagedjs_margin-top-center .pagedjs_margin-content {
+  white-space: nowrap;
+  overflow: hidden; }
+
+.part-panel {
+  column-span: all;
+  background-color: #F4F6F7;
+  border: 0.5pt solid #EAF3F3;
+  padding: 17px 18.7px;
+  margin: 20.4px 0 0 0;
+  break-inside: avoid; }
+
+.part-panel-label {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 0 0 8.5px 0;
+  text-indent: 0;
+  font-size: 10px;
+  color: #137C7A;
+  margin: 0 0 5.66667px 0;
+  padding-left: 23.8px;
+  position: relative;
+  line-height: 17px; }
+
+.part-panel-label::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2pt solid #137C7A;
+  background-color: #FFFFFF; }
+
+.part-panel .part-count {
+  font-size: 8.5px;
+  color: #66717C;
+  margin: 0 0 8.5px 0; }
+
+.part-panel .part-contents li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0; }
+
+.part-panel .part-contents li {
+  border-bottom: 0.5pt solid #EAF3F3; }
+
+.needs-copy {
+  column-span: all;
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9px;
+  line-height: 12.75px;
+  color: #D49B38;
+  border-left: 1.5pt solid #D49B38;
+  padding-left: 8.5px;
+  margin: 0 0 8.5px 0;
+  text-align: left;
+  hyphens: none; }
+
+.needs-copy::before {
+  content: "To write  ";
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase; }

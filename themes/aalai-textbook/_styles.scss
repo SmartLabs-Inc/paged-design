@@ -36,6 +36,8 @@
 // Shaded boxes, tables, figures, pull quotes, panel grids and every heading
 // above the entry — those are the visual breaks, and they only read as breaks
 // if they are wider than what surrounds them.
+.chapter-eyebrow,
+.chapter-subtitle,
 .part-title,
 .part-count,
 .part-contents,
@@ -333,18 +335,26 @@ a.cite {
     margin: ($baseline-grid-unit * 1.2) 0;
 }
 
-// A table caption sits above its table and must not be the last thing in a
-// column. Held to it — a column break honours break-after.
-.table-figure > .table-caption {
+// The caption is the table's own <caption> element rather than a paragraph
+// above it. A paragraph can be left at the foot of a column while its table
+// starts the next one — break-after: avoid holds it at a column break and not
+// at a page break — but a <caption> is part of the table's box and cannot be
+// separated from it at all.
+//
+// Only a captioned table takes a number, so an uncaptioned one cannot silently
+// advance the count.
+.table-figure caption.table-caption {
+    caption-side: top;
     break-after: avoid;
     counter-increment: figure;
     @include label();
     font-size: 9px;
     color: $color-mid;
+    text-align: left;
     margin: 0 0 ($baseline-grid-unit / 3) 0;
 }
 
-.table-figure > .table-caption::before {
+.table-figure caption.table-caption::before {
     content: "Table " counter(figure) " · ";
     color: $color-teal;
 }
@@ -866,4 +876,320 @@ samp {
     flex: 0 0 auto;
     align-self: flex-start;
     padding: ($baseline-grid-unit / 4) ($baseline-grid-unit / 2);
+}
+
+// ---------------------------------------------------------------------------
+// Running head, one line only
+// ---------------------------------------------------------------------------
+// The string is shortened at build time; this stops anything that still runs
+// long from taking a second line and pushing into the text block.
+
+@page {
+    @top-left { white-space: nowrap; overflow: hidden; }
+    @top-right { white-space: nowrap; overflow: hidden; }
+}
+
+// The zero-size heading that carries the shortened string. Present in the flow
+// because an element that is not laid out never sets its string.
+.run-head {
+    font-size: 0;
+    line-height: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+// ---------------------------------------------------------------------------
+// Front and back matter as full-width sections
+// ---------------------------------------------------------------------------
+// A disclaimer, a methodology note or a list of abbreviations is a section in
+// its own right, not a topic inside one. Its title and its standfirst run the
+// full width of the text block, the body sits in two columns beneath, and the
+// columns are balanced so the two sides end level — a ragged pair of columns
+// at the end of a short section reads as an accident.
+
+.frontmatter > div > div,
+.endmatter:not(.index) > div > div {
+    column-fill: balance;
+}
+
+.frontmatter h2,
+.endmatter h2,
+.frontmatter > div > div > p:first-of-type,
+.endmatter > div > div > p:first-of-type {
+    column-span: all;
+}
+
+.frontmatter > div > div > h2,
+.endmatter > div > div > h2 {
+    font-size: 26px;
+    line-height: $baseline-grid-unit * 1.5;
+    color: $color-navy;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    padding-bottom: ($baseline-grid-unit / 2);
+    border-bottom: 2pt solid $color-teal;
+}
+
+.frontmatter > div > div > p:first-of-type,
+.endmatter > div > div > p:first-of-type {
+    font-size: $font-size-default * 1.12;
+    line-height: $baseline-grid-unit * 1.2;
+    font-style: italic;
+    color: $color-navy;
+    margin-bottom: $baseline-grid-unit;
+}
+
+// ---------------------------------------------------------------------------
+// Apparatus is not justified
+// ---------------------------------------------------------------------------
+// Reference entries and index entries are lists of unlike things, most of them
+// shorter than a line. Justified, the short ones stretch to the measure and the
+// column fills with white gaps between words that are not sentences.
+
+.references,
+.references p,
+.references li,
+.index,
+.index li,
+.index p,
+.chapter ol li,
+.chapter ul li {
+    text-align: left;
+}
+
+// ---------------------------------------------------------------------------
+// Tightening a section that just overspills
+// ---------------------------------------------------------------------------
+// A list that runs four lines onto a second page wastes a leaf and reads as a
+// mistake. Where a section is within a few lines of fitting, the leading comes
+// in rather than the page count going up. Applied by the build, which measures
+// the overspill rather than guessing at it.
+
+.tight table td,
+.tight table th {
+    padding-top: ($baseline-grid-unit / 5);
+    padding-bottom: ($baseline-grid-unit / 5);
+    line-height: $baseline-grid-unit * 0.78;
+}
+
+.tight p,
+.tight li {
+    line-height: $baseline-grid-unit * 0.85;
+}
+
+// ---------------------------------------------------------------------------
+// A heading group that introduces a full-width block
+// ---------------------------------------------------------------------------
+// A topic head and its standfirst set in a 64mm column above a table that runs
+// the full 133mm reads as though the two belong to different pages. Where the
+// build sees a heading group immediately followed by a spanning table or
+// figure, it marks the group and the group spans too.
+
+// Held to whatever follows as well as to itself, so a topic heading and its
+// lead do not end a page with the entries overleaf.
+.keep-together {
+    break-after: avoid;
+}
+
+.keep-together.spans {
+    column-span: all;
+}
+
+.keep-together.spans .standfirst {
+    margin-bottom: ($baseline-grid-unit / 2);
+}
+
+// ---------------------------------------------------------------------------
+// References at the back
+// ---------------------------------------------------------------------------
+// Set small, ragged and in two columns. A reference is looked up, not read, so
+// the type comes down a size and the entries are left ranged — justified, a
+// two-line citation stretches its first line to the measure and the column
+// fills with gaps between words that are not a sentence.
+
+.references > div > div {
+    column-fill: auto;
+}
+
+.references ol {
+    font-size: $font-size-small;
+    line-height: $baseline-grid-unit * 0.78;
+    margin: 0 0 $baseline-grid-unit 0;
+    padding-left: ($baseline-grid-unit * 1.1);
+}
+
+.references li {
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+    text-indent: 0;
+    break-inside: avoid;
+}
+
+// The part a group of sources belongs to, across the page.
+.reference-part {
+    column-span: all;
+    font-size: 17px;
+    color: $color-navy;
+    margin: ($baseline-grid-unit * 1.2) 0 ($baseline-grid-unit / 3) 0;
+    padding-top: ($baseline-grid-unit / 3);
+    border-top: 2pt solid $color-teal;
+}
+
+.reference-part::after {
+    content: none;
+}
+
+// The section inside it, in the column with its list.
+.reference-section {
+    font-family: $font-display-secondary;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+    color: $color-mid;
+    margin: ($baseline-grid-unit * 0.7) 0 ($baseline-grid-unit / 4) 0;
+    break-after: avoid;
+}
+
+.references a.uri {
+    font-size: $font-size-small * 0.92;
+    color: $color-mid;
+    text-decoration: none;
+}
+
+// ---------------------------------------------------------------------------
+// Index locators
+// ---------------------------------------------------------------------------
+// The page numbers are found after the book is paginated and written back into
+// the index, so they are real folios and not a promise to search the e-book.
+
+.index-locators {
+    font-family: $font-text-secondary;
+    font-size: 8.5px;
+    color: $color-teal;
+    white-space: nowrap;
+}
+
+.index-locators::before {
+    content: "  ";
+}
+
+// ---------------------------------------------------------------------------
+// Nothing tracked-out is ever justified
+// ---------------------------------------------------------------------------
+// A label is a few words in capitals with letter-spacing already added. Asked
+// to justify, it puts the rest of the measure into the word gaps: "ADVANCED
+// THERAPEUTICS KNOWLEDGE BASE" came out with two inches between the words.
+
+.label,
+.callout-label,
+.chapter-eyebrow,
+.part-count,
+.figure-slot-id,
+.figure-slot-size,
+.step-number,
+.step-title,
+.reference-section,
+.table-caption,
+.level p,
+.index-locators {
+    text-align: left;
+    hyphens: none;
+}
+
+// ---------------------------------------------------------------------------
+// The running head really is one line
+// ---------------------------------------------------------------------------
+// Setting white-space on the @top-left box is not enough: Paged.js paints the
+// generated content into a `.pagedjs_margin-content` element inside it, and
+// that is what wraps.
+
+.pagedjs_margin-top-left .pagedjs_margin-content,
+.pagedjs_margin-top-right .pagedjs_margin-content,
+.pagedjs_margin-top-center .pagedjs_margin-content {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+// ---------------------------------------------------------------------------
+// The part opener panel
+// ---------------------------------------------------------------------------
+// What is in the part, set as a panel with a mark and a rule under every line —
+// the shape a textbook uses for its objectives box, which is what this is: the
+// reader's contract for the next eighty pages.
+
+.part-panel {
+    column-span: all;
+    background-color: $color-panel;
+    border: $rule-thickness solid $color-tint;
+    padding: $baseline-grid-unit ($baseline-grid-unit * 1.1);
+    margin: ($baseline-grid-unit * 1.2) 0 0 0;
+    break-inside: avoid;
+}
+
+.part-panel-label {
+    @include label();
+    font-size: 10px;
+    color: $color-teal;
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+    padding-left: ($baseline-grid-unit * 1.4);
+    position: relative;
+    line-height: $baseline-grid-unit;
+}
+
+// The mark beside the label, drawn rather than set: a ring in the accent, the
+// same weight as the rules under the rows.
+.part-panel-label::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2pt solid $color-teal;
+    background-color: #FFFFFF;
+}
+
+.part-panel .part-count {
+    font-size: 8.5px;
+    color: $color-mid;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+}
+
+.part-panel .part-contents li:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.part-panel .part-contents li {
+    border-bottom: $rule-thickness solid $color-tint;
+}
+
+// ---------------------------------------------------------------------------
+// Copy the author still owes
+// ---------------------------------------------------------------------------
+// The same idea as a figure slot: the design needs a subtitle and a standfirst
+// on every part opener, the manuscript has neither, and an empty page is worse
+// than a marked one. Set in the gold used for production notes so nobody
+// mistakes it for text.
+
+.needs-copy {
+    column-span: all;
+    font-family: $font-text-secondary;
+    font-size: 9px;
+    line-height: $baseline-grid-unit * 0.75;
+    color: $color-emerging;
+    border-left: 1.5pt solid $color-emerging;
+    padding-left: ($baseline-grid-unit / 2);
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    text-align: left;
+    hyphens: none;
+}
+
+.needs-copy::before {
+    content: "To write  ";
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
 }

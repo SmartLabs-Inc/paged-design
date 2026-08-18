@@ -184,6 +184,20 @@ has. The same text ran 432 pages in one column and 285 in two.
 
 **The apparatus**, all of it added on top of `aalai`:
 
+- **Full-width section openers.** A disclaimer or a methodology note is a
+  section in its own right: its title and standfirst run the whole text block
+  and the body sits in two balanced columns beneath. A heading group that
+  introduces a full-width table spans too — a topic head set in a 64mm column
+  above a table running the full 133mm reads as belonging to a different page.
+- **`.part-panel`** — the part opener carries its contents as a ruled panel with
+  a mark beside the label, the shape a textbook uses for its objectives box.
+  `.needs-copy` marks the subtitle and standfirst the manuscript does not have,
+  the same way a figure slot marks a missing picture.
+- **`.tight`** — a leading reduction the build applies where it measures that a
+  section overspills its last page by a little. Applied by measurement, not by
+  eye: mark, re-render, and keep the mark only where the section really did come
+  in shorter.
+
 - **`.entry`** — a card for the unit a reader looks things up by: a teal rule
   down the side, the name in sans, and a number badge counted within the topic.
   A rule and not a tinted box, because three hundred tinted boxes is a grey
@@ -207,7 +221,20 @@ has. The same text ran 432 pages in one column and 285 in two.
 - **Running heads** — the topic across the top outside, the part along the foot.
 - **`.cite`** — reference marks raised and reduced instead of set inline at body
   size.
-- **`.table-figure`** — a table with a counted caption above it.
+- **`.table-figure`** — a table whose caption is the table's own `<caption>`
+  element, so it cannot be left at the foot of a column while the table starts
+  the next one.
+- **Back matter that works.** Reference lists are collected out of the chapters
+  into one section at the back, grouped by the part and section they came from
+  so no number in the text changes. The index gets real page numbers, found by
+  paginating the book, reading the text of every page, and writing the folios
+  back — including roman folios where a term lands in the front matter.
+  Neither is justified: they are lists of unlike things, most of them shorter
+  than a line, and justified the short ones stretch to the measure.
+- **Structure plates** — one per peptide topic rather than one per entry: every
+  molecule of a therapeutic area drawn to one scale so they can be compared,
+  which is the point of grouping them. Three hundred single structures would be
+  a third of the book.
 
 **What spans the columns and what does not.** Running prose is in the column;
 anything a reader is meant to stop at goes across the page — shaded boxes,
@@ -244,9 +271,20 @@ measuring in the browser:
   running head in tracked-out capitals wraps. Mixed case at 7.5 pt fits.
 - **`break-after: avoid` works at a column break and not at a page break.** The
   columns are native CSS multicol laid out by the browser; it is Paged.js's own
-  page fragmentation that ignores it. Entry headings, standfirsts and table
-  captions are held to what follows them on that basis, and the handful that
-  still strand are stranding at page boundaries.
+  page fragmentation that ignores it. Entry headings and standfirsts are held to
+  what follows them on that basis, and the handful that still strand are
+  stranding at page boundaries. Where a break must never happen — a table and
+  its caption — use structure rather than a hint: a `<caption>` is part of the
+  table's box and cannot be separated from it at all.
+- **A page margin box wraps inside a `.pagedjs_margin-content`.** Setting
+  `white-space: nowrap` on the `@top-left` box does nothing; Paged.js paints the
+  generated content into a child element and that is what wraps. Set it there,
+  and shorten the string at build time as well — a box a third of the text block
+  wide holds about 28 characters at 7.5pt, and clipping a title mid-word is not
+  a fix.
+- **Nothing tracked-out is ever justified.** A label is a few words in capitals
+  with letter-spacing already added; asked to justify, it puts the rest of the
+  measure into the word gaps.
 
 A trap it repeats from the 6 × 9in theme: the default theme centres every
 paragraph inside a figure (`figure p, .figure p`), which at one class and one

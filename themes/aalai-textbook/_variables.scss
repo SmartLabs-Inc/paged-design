@@ -46,13 +46,19 @@ $column-gap: 5mm;
 // margin is the wider of the two because it carries the fore-edge thumb tab
 // and is the edge a reader's thumb covers.
 //
-// Text block lands at 139.8mm, which divides into two columns of 67.4mm —
-// about 46 characters inside an entry card, 48 in plain running text.
+// Text block lands at 132.8mm, which divides into two columns of 63.9mm.
+//
+// Widened from 17/21mm after looking at a proof: at that size the outer
+// column sat about eight millimetres off the trim, which is inside the
+// tolerance a short-run printer will guarantee and reads as crowded even when
+// it prints correctly. The head and foot margins were worse — eleven and
+// thirteen millimetres on a ten-inch page, where eighteen and twenty are
+// normal — and the running head had nowhere to sit above the text block.
 
-$margin-inside: 17mm;
-$margin-outside: 21mm;
-$margin-top: $baseline-grid-unit * 2.5;
-$margin-bottom: $baseline-grid-unit * 3;
+$margin-inside: 20mm;
+$margin-outside: 25mm;
+$margin-top: $baseline-grid-unit * 4;
+$margin-bottom: $baseline-grid-unit * 4.5;
 
 // Chapter openers
 // ---------------
@@ -84,8 +90,16 @@ $icon-size: 17px;                // the circled component markers
 // With `start` the head reported the topic carried in from the previous page,
 // so a spread beginning "Tissue Repair and Wound Healing" was labelled "What
 // Are Peptides?" — the one heading on the page it could not be.
-$verso-top-left: string(h3-text, first);
-$recto-top-right: string(h3-text, first);
+// The running head reads a short form of the topic, not the topic itself.
+//
+// A page margin box gets a third of the text width — about 165px here — and
+// half the topic titles in this book are longer than that, so the head wrapped
+// to two lines and crowded the first line of text. There is no way to shorten
+// a string in CSS, so the build emits a shortened form as a zero-size h6 ahead
+// of each topic and the head reads that. Titles are cut at a natural break —
+// before " and ", " for ", a colon — rather than truncated mid-phrase.
+$verso-top-left: string(h6-text, first);
+$recto-top-right: string(h6-text, first);
 
 // The foot names the part, not the section. The section is already across the
 // top, and `string(h2-text)` gave the section there too, because the part title
