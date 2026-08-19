@@ -911,7 +911,7 @@ samp {
 
 .frontmatter > div > div,
 .endmatter:not(.index) > div > div {
-    column-fill: balance;
+    column-fill: auto;
 }
 
 .frontmatter h2,
@@ -992,8 +992,30 @@ samp {
     break-after: avoid;
 }
 
+// A spanning heading resets the column flow, so whatever was still running when
+// it arrived is left in the first column with the second one empty beside it.
+// Two lines carried over from the previous page, sitting alone above a
+// full-width heading, read as a footnote that fell off the page before.
+//
+// Two fixes were tried and rejected before the one below. Forcing the group to
+// start a page moved the table but left the two lines alone on a page of their
+// own, which is worse. Balancing the columns spread every short page across two
+// half-height columns and put a fifth of the book's pages more than a fifth
+// empty — measured, 42 such pages became 66.
+//
+// What works is upstream: the block before the group is held whole, so it
+// cannot split and leave a remnant on the spanning group's page. See
+// `.hold-whole`.
 .keep-together.spans {
     column-span: all;
+}
+
+// The block immediately before a spanning heading group, held so it cannot
+// break across the page boundary and strand a line or two above the heading.
+// A block taller than a column is beyond helping and the browser will break it
+// anyway, which is the right fallback.
+.hold-whole {
+    break-inside: avoid;
 }
 
 .keep-together.spans .standfirst {

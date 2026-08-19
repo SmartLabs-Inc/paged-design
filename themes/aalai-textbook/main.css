@@ -6156,7 +6156,7 @@ samp {
 
 .frontmatter > div > div,
 .endmatter:not(.index) > div > div {
-  column-fill: balance; }
+  column-fill: auto; }
 
 .frontmatter h2,
 .endmatter h2,
@@ -6206,6 +6206,9 @@ samp {
 
 .keep-together.spans {
   column-span: all; }
+
+.hold-whole {
+  break-inside: avoid; }
 
 .keep-together.spans .standfirst {
   margin-bottom: 8.5px; }
