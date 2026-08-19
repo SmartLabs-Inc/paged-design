@@ -6074,7 +6074,8 @@ a.uri,
   color: #66717C;
   margin: 0; }
 
-.figure > .figure-caption {
+.figure > .figure-caption,
+.figure-side > .figure-caption {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
@@ -6092,7 +6093,8 @@ a.uri,
   margin: 5.66667px 0 0 0;
   text-align: left; }
 
-.figure > .figure-brief {
+.figure > .figure-brief,
+.figure-side > .figure-brief {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
@@ -6106,7 +6108,8 @@ a.uri,
   text-align: left;
   hyphens: none; }
 
-.figure > .figure-brief::before {
+.figure > .figure-brief::before,
+.figure-side > .figure-brief::before {
   content: "To make or acquire  ";
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -6347,3 +6350,121 @@ samp {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase; }
+
+.split {
+  column-span: all;
+  display: flex;
+  gap: 11.9px;
+  align-items: flex-start;
+  break-inside: avoid;
+  margin: 17px 0; }
+
+.split > * {
+  margin-top: 0;
+  margin-bottom: 0; }
+
+.split-60-40 > *:first-child {
+  flex: 0 0 calc(60% - 5.95px); }
+
+.split-60-40 > *:last-child {
+  flex: 1 1 auto; }
+
+.split-40-60 > *:first-child {
+  flex: 0 0 calc(40% - 5.95px); }
+
+.split-40-60 > *:last-child {
+  flex: 1 1 auto; }
+
+.split-50-50 > * {
+  flex: 1 1 0; }
+
+.split-aside {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5px;
+  line-height: 13.6px;
+  text-indent: 0;
+  color: #66717C;
+  text-align: left;
+  hyphens: none; }
+
+.split-aside .figure-slot-id,
+.split-aside p:first-child {
+  margin-top: 0; }
+
+.band {
+  column-span: all;
+  background-color: #EAF3F3;
+  padding: 17px 20.4px;
+  margin: 20.4px 0;
+  break-inside: avoid; }
+
+.band-dark {
+  background-color: #0D2035; }
+
+.band p {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  line-height: 22.1px;
+  color: #0D2035;
+  text-align: left;
+  margin: 0; }
+
+.band > .callout-label {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 0 0 8.5px 0;
+  text-indent: 0;
+  font-size: 8px;
+  color: #137C7A;
+  margin: 0 0 5.66667px 0; }
+
+.band-dark > .callout-label {
+  color: #B79A5B; }
+
+.band-dark p {
+  color: #FFFFFF; }
+
+.band .callout-label {
+  color: #137C7A; }
+
+.band-dark .callout-label {
+  color: #B79A5B; }
+
+.figure-side {
+  display: flex;
+  flex-direction: column; }
+
+.figure-side > .figure-caption {
+  margin-top: 0; }
+
+.facets {
+  column-span: all;
+  break-inside: avoid;
+  margin: 20.4px 0; }
+
+.facets > h4 {
+  margin-top: 0; }
+
+.facet-grid {
+  display: grid;
+  gap: 8.5px;
+  align-items: stretch; }
+
+.facet-across-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.facet-across-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.facet-across-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.facet-grid > .panel {
+  margin: 0; }
+
+.facets > .band {
+  margin-bottom: 0; }

@@ -791,7 +791,8 @@ $part-tabs:
     margin: 0;
 }
 
-.figure > .figure-caption {
+.figure > .figure-caption,
+.figure-side > .figure-caption {
     @include label();
     font-size: 8px;
     color: $color-navy;
@@ -812,7 +813,8 @@ $part-tabs:
 // and one element outranks a bare `.figure-brief` — so the note set centred
 // while the rule said left, and it lost silently until the page was rendered.
 // The same collision as `.columns > *` against `.level` in the 6 × 9in theme.
-.figure > .figure-brief {
+.figure > .figure-brief,
+.figure-side > .figure-brief {
     @include sans-small();
     font-size: 7.5px;
     line-height: $baseline-grid-unit * 0.6;
@@ -824,7 +826,8 @@ $part-tabs:
     hyphens: none;
 }
 
-.figure > .figure-brief::before {
+.figure > .figure-brief::before,
+.figure-side > .figure-brief::before {
     content: "To make or acquire  ";
     font-weight: 700;
     letter-spacing: $label-tracking;
@@ -1214,4 +1217,180 @@ samp {
     font-weight: 700;
     letter-spacing: $label-tracking;
     text-transform: uppercase;
+}
+
+// ---------------------------------------------------------------------------
+// Block layout patterns
+// ---------------------------------------------------------------------------
+// A page grid is one decision; how a given block sits on it is another, and
+// they are not the same decision. The two-column flow above is the page grid.
+// These are the shapes a block can take inside it, and which one a block gets
+// depends on what the block is — a chart with a legend wants a different split
+// from a paragraph with a side note, and neither wants the whole page changed
+// around it.
+//
+// Every pattern is measured off the same text block, so a 60/40 in one place
+// lines up with a 60/40 anywhere else and with the column edges besides.
+
+$split-gutter: $baseline-grid-unit * 0.7;
+$text-block: $page-width - $margin-inside - $margin-outside;
+
+// --- Two parts, sixty and forty --------------------------------------------
+// The pattern the client picked out of the mockups: a chart beside its legend,
+// a figure beside its caption, a statement beside the evidence for it. It
+// spans the page grid because at 64mm a column has no room to split.
+
+.split {
+    column-span: all;
+    display: flex;
+    gap: $split-gutter;
+    align-items: flex-start;
+    break-inside: avoid;
+    margin: $baseline-grid-unit 0;
+}
+
+.split > * {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.split-60-40 > *:first-child { flex: 0 0 calc(60% - #{$split-gutter / 2}); }
+.split-60-40 > *:last-child  { flex: 1 1 auto; }
+
+.split-40-60 > *:first-child { flex: 0 0 calc(40% - #{$split-gutter / 2}); }
+.split-40-60 > *:last-child  { flex: 1 1 auto; }
+
+.split-50-50 > * { flex: 1 1 0; }
+
+// The lighter half of a split reads as apparatus rather than as a second
+// argument: smaller, ranged left, and never justified.
+.split-aside {
+    @include sans-small();
+    color: $color-mid;
+    text-align: left;
+    hyphens: none;
+}
+
+.split-aside .figure-slot-id,
+.split-aside p:first-child {
+    margin-top: 0;
+}
+
+// --- A band across the page -------------------------------------------------
+// One statement, full width, tinted. Used where the page needs a stop rather
+// than another paragraph.
+
+.band {
+    column-span: all;
+    background-color: $color-tint;
+    padding: $baseline-grid-unit ($baseline-grid-unit * 1.2);
+    margin: ($baseline-grid-unit * 1.2) 0;
+    break-inside: avoid;
+}
+
+.band-dark {
+    background-color: $color-navy;
+}
+
+.band p {
+    font-family: $font-display-main;
+    font-size: $font-size-default * 1.25;
+    line-height: $baseline-grid-unit * 1.3;
+    color: $color-navy;
+    text-align: left;
+    margin: 0;
+}
+
+// A band that names itself. The label is apparatus — what kind of statement
+// this is — so it is set small and tracked out above the statement, not at
+// the statement's size.
+.band > .callout-label {
+    @include label();
+    font-size: 8px;
+    color: $color-teal;
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+}
+
+.band-dark > .callout-label {
+    color: $color-gold;
+}
+
+// The band carries no counter badge. `.callout::before` hangs a circled mark
+// off the left edge; a band has no border for it to hang from and no margin
+// reserved for it, so it would sit on the page edge.
+
+.band-dark p {
+    color: #FFFFFF;
+}
+
+.band .callout-label {
+    color: $color-teal;
+}
+
+.band-dark .callout-label {
+    color: $color-gold;
+}
+
+// --- A figure beside its caption --------------------------------------------
+// The 60/40 applied to the thing it was drawn for. The slot holds its stated
+// size; the caption and the commissioning note stack in the narrow half rather
+// than under the box, which is both how the reference mockups set a chart and
+// how the block gets shorter — the note is four or five lines of small sans
+// that were costing full-measure depth under every spanning figure.
+//
+// Only spanning figures take it. A one-column figure has no width to divide,
+// and the two that want the whole measure — the part opener and the structure
+// plates, which are read across — keep it.
+
+.figure-side {
+    display: flex;
+    flex-direction: column;
+}
+
+.figure-side > .figure-caption {
+    margin-top: 0;
+}
+
+// --- A parallel set, seen at once -------------------------------------------
+// Where the content is four facets of one thing rather than four items in a
+// list, the set spans the measure and lays out as a grid, so the reader
+// compares across it instead of down it. The block carries its heading and its
+// closing band, which is what makes it one thing on the page.
+//
+// This is deliberately narrow in scope. Panels in running text still stack one
+// to a text column — spanning every panel in the book was tried and put four
+// small boxes at the top of thirty-nine near-empty pages.
+
+.facets {
+    column-span: all;
+    break-inside: avoid;
+    margin: ($baseline-grid-unit * 1.2) 0;
+}
+
+.facets > h4 {
+    margin-top: 0;
+}
+
+.facet-grid {
+    display: grid;
+    gap: ($baseline-grid-unit / 2);
+    align-items: stretch;
+}
+
+// How many cells across. Set by the pass that builds the block, from what the
+// content is: facets are compared two by two, phases run in the order they
+// happen, and six of those go three and three rather than six across, where
+// each cell is 22mm and every second word breaks.
+.facet-across-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.facet-across-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.facet-across-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.facet-grid > .panel {
+    margin: 0;
+}
+
+// The band closes the block, so it sits tight under the grid rather than
+// keeping the margin it has when it stands alone in the flow.
+.facets > .band {
+    margin-bottom: 0;
 }

@@ -245,6 +245,36 @@ left spanning, each pathway entry of the cross-reference chapter filled a fifth
 of a page and pushed the rest to the next, and thirty-nine consecutive pages
 came out four-fifths empty.
 
+**Block patterns, chosen by what the content is.** A page grid is one decision;
+how a particular block sits on it is another, and the second is content
+dependent. The theme carries a small set of patterns measured off the same text
+block, so a 60/40 in one place lines up with a 60/40 anywhere else, and the
+build pass assigns them by content type rather than applying one everywhere:
+
+| Pattern | Assigned to | Why |
+| --- | --- | --- |
+| `.split-60-40` | a spanning figure and its caption | a chart beside its legend: the caption and commissioning note stack in the narrow half instead of running full measure under the box, which is both how a reference sets a chart and about 25mm shorter a figure |
+| `.split-40-60`, `.split-50-50` | available, unassigned | the same grid at other ratios |
+| `.band` | the statement that closes a sequence | a protocol's integration requirement, a chain's outcome. Tinted, full width, no border and no counter badge — it is the line the list adds up to, not another item in it |
+| `.facets` + `.facet-grid` | a parallel set with a heading and a closing band | four facets of one protocol, or the ordered phases of one chain. The reader compares across the set, so the set has to be visible at once |
+| the two-column flow | running prose, entries, panels in text | unchanged, and the great majority of the book |
+
+`.facet-across-N` sets how many cells go across, from the content: facets are
+compared two by two, four phases run in one row of four, and six phases run
+three and three — six across is 22mm a cell, where every second word breaks.
+
+Two things the split figure needed. The caption and brief move into a
+`.figure-side` wrapper, so the selectors that beat the parent theme's
+`figure p` centring have to be rescoped to the grandchild as well
+(`.figure-side > .figure-brief`) or the note silently centres again. And the
+size printed inside the slot is recomputed for the narrow half — a slot that
+says 139.8mm while sitting in 82.3mm commissions the wrong picture.
+
+What keeps the whole measure: the part opener, which is a banner, and the
+structure plates, which are grids read across. Both are figures, both span, and
+neither takes the split — which is the point. The pattern goes where the content
+calls for it.
+
 Six things this theme learned the hard way, all verified by rendering or by
 measuring in the browser:
 
