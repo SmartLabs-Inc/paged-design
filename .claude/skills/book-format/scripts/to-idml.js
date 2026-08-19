@@ -43,6 +43,8 @@ if (args.help || !args.content) {
     '                   route: File > Place it into a frame you have drawn.',
     '  --docx <file>    Also write a styled Word file. Every layout application',
     '                   imports one: InDesign, Affinity, Quark and Canva.',
+    '  --spec <file>    Also write the measurements and style sheet needed to',
+    '                   build the template by hand in InDesign.',
     '  --pages <n>      Pages of threaded frames to build. Default: 320.',
     '  --theme <name>   Theme whose page size, margins and columns to use.',
     '                   Default: beatrix.',
@@ -124,10 +126,21 @@ function readTheme (name) {
   const right = side('right')
   const left = side('left')
 
-  // Columns: the theme sets them on the chapter's inner wrapper. A theme that
-  // sets none is a single-column book.
-  const cols = css.match(/column-count:\s*(\d+)[^}]*?column-gap:\s*([\d.]+\w*)/)
-  const gapOnly = css.match(/column-gap:\s*([\d.]+\w*)/)
+  // Columns, read off the chapter flow specifically and not off the first
+  // column-count in the file. Themes set columns on the index and the
+  // reference list too, and taking the first match reported a 60/40 book —
+  // one text column with a margin column beside it — as an even two-column
+  // grid, which is a template built wrong from the first number.
+  const flow = css.match(/\.chapter\s*>\s*div\s*>\s*div[^{]*\{([^}]*)\}/)
+  const flowRule = flow ? flow[1] : ''
+  const countIn = rule => (rule.match(/column-count:\s*(\d+)/) || [])[1]
+  const gapIn = rule => (rule.match(/column-gap:\s*([\d.]+\w*)/) || [])[1]
+  const count = countIn(flowRule) || countIn(css) || '1'
+  const gap = gapIn(flowRule) || gapIn(css)
+
+  // A reserved margin column shows up as padding on the flow, applied on
+  // Paged.js's own page class so it can sit on the outside edge.
+  const reserve = css.match(/\.pagedjs_(?:right|left)_page\s+\.chapter\s*>\s*div\s*>\s*div[^{]*\{[^}]*padding-(?:right|left):\s*([\d.]+\w*)/)
 
   // Body type, so the styles below are set at the theme's scale and not at the
   // one they were written against. Only the base size and leading are read;
@@ -162,8 +175,9 @@ function readTheme (name) {
     top: (right && right.top) || 40,
     bottom: (right && right.bottom) || 50,
     facing: !!(left && right),
-    columns: cols ? Number(cols[1]) : 1,
-    gutter: cols ? cssLength(cols[2]) : (gapOnly ? cssLength(gapOnly[1]) : 12)
+    columns: Number(count),
+    gutter: gap ? cssLength(gap) : 12,
+    reserved: reserve ? cssLength(reserve[1]) : 0
   }
 }
 
@@ -178,6 +192,10 @@ const M_TOP = THEME.top
 const M_BOTTOM = THEME.bottom
 const COLUMNS = THEME.columns
 const GUTTER = THEME.gutter
+// The margin column an asymmetric grid holds back for apparatus. Zero on an
+// even grid.
+const RESERVED = THEME.reserved
+const SIDE_COLUMN = RESERVED ? RESERVED - GUTTER : 0
 const FACING = THEME.facing
 
 const FRAME_W = PAGE_W - M_INSIDE - M_OUTSIDE
@@ -1080,6 +1098,127 @@ function wordDocx (paragraphs) {
 }
 
 // ---------------------------------------------------------------------------
+// Template specification
+// ---------------------------------------------------------------------------
+// The numbers a designer needs to build the master pages and the style sheet
+// by hand in InDesign, written out of the theme rather than typed, so the
+// document and the export cannot drift apart.
+//
+// The style names matter more than any of the measurements. When the styles in
+// the InDesign template carry the same names this exporter emits, placing the
+// text maps every one of them automatically. That is the contract between the
+// two halves of the job: the template is built once, natively, and the text
+// arrives already tagged.
+
+function specSheet () {
+  const mm = v => (v / MM).toFixed(1) + ' mm'
+  const pt = v => v.toFixed(2) + ' pt'
+  const row = cells => '| ' + cells.join(' | ') + ' |'
+
+  const out = ['# ' + docTitle + ' — InDesign template specification', '',
+    'Generated from the `' + themeName + '` theme. Every number is what the',
+    'rendered book actually uses.', '',
+    '## Document setup', '',
+    row(['Setting', 'Value']),
+    row(['---', '---']),
+    row(['Trim', mm(PAGE_W) + ' × ' + mm(PAGE_H) + '  (' + (PAGE_W / 72).toFixed(2) + ' × ' + (PAGE_H / 72).toFixed(2) + ' in)']),
+    row(['Facing pages', FACING ? 'yes' : 'no']),
+    row(['Margin — inside', mm(M_INSIDE) + '  (' + pt(M_INSIDE) + ')']),
+    row(['Margin — outside', mm(M_OUTSIDE) + '  (' + pt(M_OUTSIDE) + ')']),
+    row(['Margin — top', mm(M_TOP) + '  (' + pt(M_TOP) + ')']),
+    row(['Margin — bottom', mm(M_BOTTOM) + '  (' + pt(M_BOTTOM) + ')']),
+    row(['Text block', mm(FRAME_W) + ' × ' + mm(FRAME_H)]),
+    row(['Grid', SIDE_COLUMN
+      ? 'asymmetric — one text column with a margin column beside it'
+      : COLUMNS + (COLUMNS === 1 ? ' column' : ' even columns')]),
+    row(['Gutter', mm(GUTTER) + '  (' + pt(GUTTER) + ')']),
+    row(['Text column', mm(SIDE_COLUMN ? FRAME_W - RESERVED : COL_W) +
+      '  (' + pt(SIDE_COLUMN ? FRAME_W - RESERVED : COL_W) + ')']),
+    SIDE_COLUMN
+      ? row(['Margin column', mm(SIDE_COLUMN) + '  (' + pt(SIDE_COLUMN) +
+          '), on the outside edge'])
+      : null,
+    row(['Baseline grid', pt(BASELINE_LEADING * LEAD_SCALE) + ', first line at ' + pt(M_TOP)]),
+    row(['Text face', FONT_SERIF]),
+    row(['Label face', FONT_SANS]),
+    '',
+    '## Colour swatches', '',
+    row(['Name', 'RGB', 'Hex']),
+    row(['---', '---', '---'])]
+
+  // Only the optional row is dropped. Filtering on truthiness took the blank
+  // lines with it and ran the markdown tables into the headings after them.
+  const clean = out.filter(line => line !== null)
+  out.length = 0
+  clean.forEach(l => out.push(l))
+
+  COLORS.forEach(function (c) {
+    out.push(row([c[0], c[1].join(', '),
+      '#' + c[1].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase()]))
+  })
+
+  out.push('', '## Paragraph styles', '',
+    'Build these with exactly these names. The text arrives tagged with them.', '',
+    row(['Style', 'Face', 'Size / leading', 'Space before / after', 'Alignment', 'Colour', 'Starts']),
+    row(['---', '---', '---', '---', '---', '---', '---']))
+
+  PARA_STYLES.forEach(function (entry) {
+    const s = entry[1]
+    const face = (s.bold && s.italic) ? 'Bold Italic' : s.bold ? 'Bold' : s.italic ? 'Italic' : 'Regular'
+    out.push(row([
+      entry[0],
+      (s.font || FONT_SERIF) + ' ' + face,
+      (s.size * PX * SIZE_SCALE).toFixed(1) + ' / ' + (s.leading * PX * LEAD_SCALE).toFixed(1) + ' pt',
+      ((s.spaceBefore || 0) * PX * LEAD_SCALE).toFixed(1) + ' / ' + ((s.space || 0) * PX * LEAD_SCALE).toFixed(1) + ' pt',
+      s.align === 'LeftJustified' ? 'Justified, last line left' : 'Left',
+      s.color ? s.color.replace('Color/', '') : 'Black',
+      s.start ? s.start.replace('Next', 'new ').toLowerCase() : (s.keep ? 'keep with next' : '—')
+    ]))
+  })
+
+  out.push('', '## Character styles', '',
+    row(['Style', 'What it marks', 'Setting']),
+    row(['---', '---', '---']))
+  const WHAT = {
+    Citation: 'reference marks in the text',
+    Bold: 'bold runs the author set',
+    Italic: 'italic runs the author set',
+    'Index Locator': 'page numbers in the index',
+    URL: 'links in the reference lists'
+  }
+  CHAR_STYLES.forEach(function (entry) {
+    const s = entry[1]
+    const bits = []
+    if (s.size) bits.push((s.size * PX * SIZE_SCALE).toFixed(1) + ' pt')
+    if (s.superscript) bits.push('superscript')
+    if (s.bold) bits.push('bold')
+    if (s.italic) bits.push('italic')
+    if (s.color) bits.push(s.color.replace('Color/', ''))
+    if (s.font) bits.push(s.font)
+    out.push(row([entry[0], WHAT[entry[0]] || '', bits.join(', ') || 'inherits']))
+  })
+
+  out.push('',
+    '## Master pages', '',
+    '- **Running head**, outside edge of the top margin: the current topic,',
+    '  ' + FONT_SANS + ' 7.5 pt, AALAI Teal, one line. In InDesign this is a text',
+    '  variable or a running header (paragraph style) set to Topic Head.',
+    '- **Folio**, outside edge of the bottom margin, with the part name centred',
+    '  beside it. Type > Insert Special Character > Markers > Current Page Number.',
+    '- **Thumb tab**, outside edge: a ' + mm(7 * MM) + ' block, ' + mm(34 * MM) + ' deep, in a',
+    '  different swatch and a different vertical position for each part, so the',
+    '  closed book carries a staircase down its fore-edge.',
+    '',
+    '## Why the names matter', '',
+    'Place the exported `.icml` or `.docx` into this template and InDesign maps',
+    'each incoming style to the one of the same name. Nothing has to be tagged by',
+    'hand. Rename a style here and that mapping breaks for that style only — the',
+    'text still arrives, it just arrives unstyled.', '')
+
+  return out.join('\n')
+}
+
+// ---------------------------------------------------------------------------
 // Structural check
 // ---------------------------------------------------------------------------
 // InDesign cannot be run from here, so the package is checked against what the
@@ -1198,6 +1337,12 @@ storyFiles.forEach(s => entries.push({ name: 'Stories/Story_' + s.self + '.xml',
 const check = validate(entries)
 fs.writeFileSync(idmlOut, writeZip(entries))
 
+if (args.spec) {
+  const specOut = path.resolve(root, args.spec)
+  fs.writeFileSync(specOut, specSheet())
+  console.log('Wrote ' + path.relative(root, specOut))
+}
+
 if (args.docx) {
   const docxOut = path.resolve(root, args.docx)
   fs.writeFileSync(docxOut, wordDocx(paragraphs))
@@ -1235,8 +1380,12 @@ console.log('  body ' + round(BASELINE_SIZE * SIZE_SCALE) + 'pt on ' +
 console.log('  fonts asked for: ' + FONT_SERIF + ' and ' + FONT_SANS +
   ' — InDesign flags either one it cannot find; --serif and --sans change them')
 console.log('  theme ' + themeName + ': ' + round(PAGE_W / MM) + ' × ' + round(PAGE_H / MM) +
-  'mm, ' + (FACING ? 'facing pages' : 'single pages') + ', ' + COLUMNS +
-  (COLUMNS === 1 ? ' column' : ' columns') + ', ' + PAGES + ' pages of threaded frames')
+  'mm, ' + (FACING ? 'facing pages' : 'single pages') + ', ' +
+  (SIDE_COLUMN
+    ? 'one text column of ' + round((FRAME_W - RESERVED) / MM) + 'mm with a ' +
+      round(SIDE_COLUMN / MM) + 'mm margin column'
+    : COLUMNS + (COLUMNS === 1 ? ' column' : ' columns')) +
+  ', ' + PAGES + ' pages of threaded frames')
 console.log('  paragraphs: ' + paragraphs.length + ' in ' + byStyle.length + ' styles')
 byStyle.slice(0, 8).forEach(function (name) {
   console.log('    ' + String(read.counts[name]).padStart(6) + '  ' + name)

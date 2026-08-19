@@ -1,6 +1,6 @@
 # The shipped themes
 
-Thirteen themes live in `themes/`. Pick the closest starting point and adapt it —
+Fourteen themes live in `themes/`. Pick the closest starting point and adapt it —
 starting from `template` is only worth it when nothing else is close.
 
 `beatrix` is the default: it is what `new-theme.js`, `render-pdf.js` and
@@ -295,3 +295,38 @@ Scoping to `.figure > .figure-brief` fixes it. Same failure mode as
 
 Start here for: long clinical or scientific reference works, textbooks with an
 entry structure, anything over about 200 pages in the AALAI house style.
+
+### `aalai-6040`
+
+The AALAI apparatus on an asymmetric grid: one text column at sixty per cent of
+the text block, and a margin column at forty beside it carrying the callouts,
+the figures and the entry names. Inherits everything from `aalai-textbook` and
+then undoes the even two columns.
+
+The margin column is not white space. On this manuscript it holds the name of
+every entry, which is the thing that appears on every page — the text column
+carries the argument unbroken and the margin becomes a column of names a reader
+can run a finger down. Without that the grid does not pay for itself here: a
+hundred figures across four hundred pages would leave two fifths of the paper
+empty, which is worse than an even two-column page rather than better.
+
+Measured: 87.5mm text column, about 62 characters at ten point, against 47 in
+two even columns. It costs paper — the same book runs 315 pages set in two
+columns and 429 set this way. That is the trade, and it is the client's.
+
+Three things worth knowing if you adapt it:
+
+- **A margin column is a float with a negative margin, not a second column.**
+  CSS multi-column cannot make columns of different widths, so the flow gets a
+  padding on the outside edge and the apparatus floats into it. Both have to be
+  mirrored on Paged.js's own `.pagedjs_left_page` / `.pagedjs_right_page`
+  classes, because the outside edge changes side at every turn.
+- **Things that break out do it with a negative margin** on the outside edge:
+  full-width tables, part titles and section heads reclaim the margin column
+  for their own width and the text closes back over them.
+- **The index and the reference list keep two even columns of their own.** They
+  are look-up tables, not argument, and the margin has nothing to add to them.
+
+Start here for: a reference work whose apparatus is heavy enough to fill a
+margin column on most spreads, or a design that wants a wide measure for
+continuous prose.
