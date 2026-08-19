@@ -25,12 +25,42 @@ produces.
 
     node to-idml.js --content content/my-book --theme my-theme --out My-Book.idml
 
+## Which application, and which file
+
+| | InDesign | Affinity Publisher | QuarkXPress | Canva |
+|---|---|---|---|---|
+| IDML | opens it — the format is Adobe's own | imports it | imports it | no |
+| Styled `.docx` | places it | places it | places it | imports it |
+| Tagged Text | places it | no | Quark has its own dialect | no |
+| Threaded text, masters, folios | yes | yes | yes | **no** |
+
+**Canva cannot do a book.** Not "does it worse" — it has no threaded text
+frames, so long copy cannot flow; no master pages, so no running heads; no
+automatic folios, which kills a page-numbered index; no facing pages with
+mirrored margins; and no paragraph styles in the typographic sense. Its import
+also needs a *public* HTTPS URL, which is not somewhere unreleased client work
+belongs.
+
+**Affinity Publisher and QuarkXPress both import IDML** and both have the
+machinery. If either one's importer objects to a generated package, open the
+IDML in InDesign first and export IDML from there: that launders it through
+Adobe's own writer, which every third-party importer was built against.
+
 ## Two ways in, and when to use each
 
 **IDML — a whole document.** Page size, margins, columns, a master spread,
 threaded text frames on every page, and the full style sheet. Open it and there
 is a book. Use this when InDesign is taking over from the HTML and there is no
 InDesign template yet.
+
+**A styled `.docx` — the route that does not depend on anyone's IDML.** Every
+one of those applications imports a Word file and maps its named styles to
+their own. It carries the page size, mirrored margins and column count in its
+section properties, and the styles arrive named for design roles. It is the
+most portable of the four and the one to reach for when a package is being
+refused and nobody can say why.
+
+    node to-idml.js --content content/my-book --theme my-theme --docx My-Book.docx
 
 **ICML — the text alone.** An InCopy story: the same paragraphs with the same
 styles, and nothing else. Place it into a template somebody has already built.

@@ -170,6 +170,11 @@ InDesign opens it directly and File > Save As writes the `.indd`. Add `--icml`
 instead when the design already exists on the InDesign side and only the text
 is moving.
 
+`--docx` writes a styled Word file instead — the route every layout
+application accepts (InDesign, Affinity Publisher, QuarkXPress and Canva all
+import one), and the one to use when an IDML is being refused. `--tagged`
+writes InDesign Tagged Text.
+
 Page size, margins, columns and body type are read from the theme's compiled
 CSS, so the InDesign document matches the PDF. Tables arrive as tab-separated
 paragraphs, figure slots as styled paragraphs, and the running head is not on

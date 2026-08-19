@@ -41,6 +41,8 @@ if (args.help || !args.content) {
     '  --icml <file>    Also write an InCopy story for placing in a template.',
     '  --tagged <file>  Also write InDesign Tagged Text — the most forgiving',
     '                   route: File > Place it into a frame you have drawn.',
+    '  --docx <file>    Also write a styled Word file. Every layout application',
+    '                   imports one: InDesign, Affinity, Quark and Canva.',
     '  --pages <n>      Pages of threaded frames to build. Default: 320.',
     '  --theme <name>   Theme whose page size, margins and columns to use.',
     '                   Default: beatrix.',
@@ -361,15 +363,6 @@ function readParagraphs (source) {
       if (!text.trim() && !(para && para.runs.length)) continue
       const charStyle = stack.slice().reverse()
         .map(s => characterStyleFor(s.tag, s.cls)).find(Boolean) || null
-      // Two spans butted together in the markup are two columns on the page —
-      // a contents line and its entry count — and run together in a stream of
-      // text they read as one word: "Tissue Repair41 entries". A tab is what
-      // InDesign uses to hold them apart.
-      if (para && para.runs.length && charStyle !== para.runs[para.runs.length - 1].style &&
-          !/\s$/.test(para.runs[para.runs.length - 1].text) && !/^\s/.test(text) &&
-          (charStyle === 'Index Locator' || para.style === 'Contents Entry')) {
-        para.runs.push({ text: '\t', style: null })
-      }
       if (cell) cell.push(text)
       else if (para) para.runs.push({ text: text, style: charStyle })
       continue
@@ -416,6 +409,17 @@ function readParagraphs (source) {
       else if (para) para.runs.push({ text: ' ', style: null })
       continue
     }
+    // Two spans butted together in the markup are two columns on the page — a
+    // contents line and its entry count, an index entry and its folios — and
+    // run together in a stream of text they read as one word: "Tissue
+    // Repair41 entries". A tab is what a layout application uses to hold them
+    // apart, and it goes in when the second element opens, because that is the
+    // only moment the boundary exists. Keying it off a change of character
+    // style missed the contents lines, where both halves are plain.
+    if (/part-contents-count|index-locators/.test(cls) && para && para.runs.length) {
+      para.runs.push({ text: '\t', style: null })
+    }
+
     if (tag === 'thead') { inHead = true; continue }
     if (tag === 'tr') { row = []; continue }
     if (tag === 'td' || tag === 'th') { cell = []; continue }
@@ -944,6 +948,138 @@ function taggedText (paragraphs) {
 }
 
 // ---------------------------------------------------------------------------
+// Word, as the universal way in
+// ---------------------------------------------------------------------------
+// Every page-layout application imports a styled .docx: InDesign, Affinity
+// Publisher, QuarkXPress, and Canva. None of them agrees with any other about
+// IDML, and only InDesign wrote the format in the first place.
+//
+// So this is the route that does not depend on my reading of somebody else's
+// spec. The styles arrive as named Word styles, which each of those
+// applications maps to its own on import, and the text is text — not glyphs at
+// coordinates, which is what a PDF is and why importing one puts spaces inside
+// words.
+
+const TWIP = 20                      // twentieths of a point
+const HALFPT = 2
+
+function wordStyleXml (id, name, s, kind) {
+  const rPr = ['<w:rPr>',
+    '<w:rFonts w:ascii="' + esc(s.font || FONT_SERIF) + '" w:hAnsi="' + esc(s.font || FONT_SERIF) + '"/>',
+    s.bold ? '<w:b/>' : '',
+    s.italic ? '<w:i/>' : '',
+    s.caps ? '<w:caps/>' : '',
+    s.superscript ? '<w:vertAlign w:val="superscript"/>' : '',
+    s.size ? '<w:sz w:val="' + Math.round(s.size * PX * SIZE_SCALE * HALFPT) + '"/>' : '',
+    s.track ? '<w:spacing w:val="' + Math.round(s.track / 1000 * (s.size || 12) * PX * SIZE_SCALE * TWIP) + '"/>' : '',
+    s.color ? '<w:color w:val="' + wordColor(s.color) + '"/>' : '',
+    '</w:rPr>'].join('')
+
+  if (kind === 'character') {
+    return '<w:style w:type="character" w:styleId="' + esc(id) + '">' +
+      '<w:name w:val="' + esc(name) + '"/><w:qFormat/>' + rPr + '</w:style>'
+  }
+
+  const pPr = ['<w:pPr>',
+    '<w:spacing w:before="' + Math.round((s.spaceBefore || 0) * PX * LEAD_SCALE * TWIP) + '"' +
+      ' w:after="' + Math.round((s.space || 0) * PX * LEAD_SCALE * TWIP) + '"' +
+      ' w:line="' + Math.round((s.leading || 17) * PX * LEAD_SCALE * TWIP) + '" w:lineRule="exact"/>',
+    s.align === 'LeftJustified' ? '<w:jc w:val="both"/>' : '',
+    s.indent ? '<w:ind w:left="' + Math.round(s.indent * PX * SIZE_SCALE * TWIP) + '"' +
+      (s.hang ? ' w:hanging="' + Math.round(s.indent * PX * SIZE_SCALE * TWIP) + '"' : '') + '/>' : '',
+    s.keep ? '<w:keepNext/>' : '',
+    '<w:keepLines/>',
+    s.start ? '<w:pageBreakBefore/>' : '',
+    '</w:pPr>'].join('')
+
+  return '<w:style w:type="paragraph" w:styleId="' + esc(id) + '">' +
+    '<w:name w:val="' + esc(name) + '"/><w:basedOn w:val="Normal"/><w:qFormat/>' +
+    pPr + rPr + '</w:style>'
+}
+
+function wordColor (ref) {
+  const name = ref.replace(/^Color\//, '')
+  const found = COLORS.find(c => c[0] === name)
+  if (!found) return '000000'
+  return found[1].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase()
+}
+
+function styleId (name) { return name.replace(/[^A-Za-z0-9]/g, '') }
+
+function wordDocx (paragraphs) {
+  const NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" ' +
+    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"'
+
+  const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<w:styles ' + NS + '>' +
+    '<w:docDefaults><w:rPrDefault><w:rPr>' +
+    '<w:rFonts w:ascii="' + esc(FONT_SERIF) + '" w:hAnsi="' + esc(FONT_SERIF) + '"/>' +
+    '<w:sz w:val="' + Math.round(BASELINE_SIZE * SIZE_SCALE * HALFPT) + '"/>' +
+    '</w:rPr></w:rPrDefault></w:docDefaults>' +
+    '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style>' +
+    PARA_STYLES.map(s => wordStyleXml(styleId(s[0]), s[0], s[1], 'paragraph')).join('') +
+    CHAR_STYLES.map(s => wordStyleXml(styleId(s[0]), s[0], s[1], 'character')).join('') +
+    '</w:styles>'
+
+  const body = paragraphs.map(function (p) {
+    const runs = p.runs.filter(r => r.text).map(function (run) {
+      const rPr = run.style
+        ? '<w:rPr><w:rStyle w:val="' + styleId(run.style) + '"/></w:rPr>'
+        : ''
+      // xml:space="preserve" or Word eats the leading and trailing spaces that
+      // hold two runs apart.
+      return '<w:r>' + rPr + '<w:t xml:space="preserve">' + esc(run.text) + '</w:t></w:r>'
+    }).join('')
+    return '<w:p><w:pPr><w:pStyle w:val="' + styleId(p.style) + '"/></w:pPr>' + runs + '</w:p>'
+  }).join('')
+
+  const twips = pt => Math.round(pt * TWIP)
+  const section = '<w:sectPr>' +
+    '<w:pgSz w:w="' + twips(PAGE_W) + '" w:h="' + twips(PAGE_H) + '"/>' +
+    '<w:pgMar w:top="' + twips(M_TOP) + '" w:right="' + twips(M_OUTSIDE) + '"' +
+      ' w:bottom="' + twips(M_BOTTOM) + '" w:left="' + twips(M_INSIDE) + '"' +
+      ' w:header="720" w:footer="720" w:gutter="0"/>' +
+    (COLUMNS > 1 ? '<w:cols w:num="' + COLUMNS + '" w:space="' + twips(GUTTER) + '"/>' : '') +
+    '</w:sectPr>'
+
+  const document = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<w:document ' + NS + '><w:body>' + body + section + '</w:body></w:document>'
+
+  const REL = 'xmlns="http://schemas.openxmlformats.org/package/2006/relationships"'
+  const OFF = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
+
+  return writeZip([
+    { name: '[Content_Types].xml',
+      data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+        '<Default Extension="xml" ContentType="application/xml"/>' +
+        '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+        '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>' +
+        '<Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>' +
+        '</Types>' },
+    { name: '_rels/.rels',
+      data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships ' + REL + '>' +
+        '<Relationship Id="rId1" Type="' + OFF + '/officeDocument" Target="word/document.xml"/>' +
+        '</Relationships>' },
+    { name: 'word/_rels/document.xml.rels',
+      data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships ' + REL + '>' +
+        '<Relationship Id="rId1" Type="' + OFF + '/styles" Target="styles.xml"/>' +
+        '<Relationship Id="rId2" Type="' + OFF + '/settings" Target="settings.xml"/>' +
+        '</Relationships>' },
+    { name: 'word/document.xml', data: document },
+    { name: 'word/styles.xml', data: styles },
+    // Mirrored margins, so the inside margin stays at the spine on both sides.
+    { name: 'word/settings.xml',
+      data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:settings ' + NS + '>' +
+        (FACING ? '<w:mirrorMargins/>' : '') +
+        '<w:defaultTabStop w:val="720"/>' +
+        '<w:characterSpacingControl w:val="doNotCompress"/>' +
+        '</w:settings>' }
+  ])
+}
+
+// ---------------------------------------------------------------------------
 // Structural check
 // ---------------------------------------------------------------------------
 // InDesign cannot be run from here, so the package is checked against what the
@@ -1061,6 +1197,12 @@ storyFiles.forEach(s => entries.push({ name: 'Stories/Story_' + s.self + '.xml',
 
 const check = validate(entries)
 fs.writeFileSync(idmlOut, writeZip(entries))
+
+if (args.docx) {
+  const docxOut = path.resolve(root, args.docx)
+  fs.writeFileSync(docxOut, wordDocx(paragraphs))
+  console.log('Wrote ' + path.relative(root, docxOut))
+}
 
 if (args.tagged) {
   const taggedOut = path.resolve(root, args.tagged)
