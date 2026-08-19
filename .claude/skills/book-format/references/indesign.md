@@ -3,13 +3,37 @@
 ## Never import the PDF
 
 The first thing anyone tries is placing the PDF, and it is the one route that
-cannot work. A PDF holds glyphs at coordinates, not words. Any PDF-to-text
-import has to infer where the spaces are from the gaps between glyphs, and in
-justified text set with tracking the gaps inside a word are often wider than
-the gaps between words — so the import puts spaces in the middle of words, by
-the thousand, and there is no way to repair it by hand.
+cannot work. Measured on a 315-page book rendered here against a six-page
+prototype that did import cleanly:
 
-Export the IDML instead. It is real text with real styles.
+| | the prototype | a book rendered by this skill |
+|---|---|---|
+| written by | ReportLab | Chromium / Skia |
+| text drawn as | 117 literal strings, 30 characters each | 665,231 glyph-id draws, about one glyph each |
+| space characters in the file | 378 | **none** |
+| fonts | the base 14, not embedded | 27 embedded subsets |
+
+The prototype's content stream says "draw the words `Anti-Aging &` here". A
+Chromium-rendered book says "draw glyph `004B` at x=574.78, y=925", six hundred
+and sixty-five thousand times. There are no spaces in it at all — a space is
+the gap between two coordinates.
+
+So an importer has to invent every word boundary from those gaps. In justified
+text the gaps between words vary line by line, and in tracked-out labels the
+gaps *inside* a word are wider than the gaps between words, so it guesses wrong
+constantly. That is where "thousands of spaces in the middle of words" comes
+from, and it cannot be repaired by hand.
+
+None of this makes the PDF a bad PDF. Embedded subset fonts, real kerning and
+justified measure are what a press-ready file is supposed to have — the
+prototype imports well precisely because it is set in unembedded Helvetica and
+Times with no justification, which is to say it is not typeset. A good print
+PDF and a good source document are different artifacts. Export IDML or a
+styled `.docx` for the second one.
+
+One consolation: the rendered PDF does carry ToUnicode maps for all 27 fonts,
+so copy-and-paste and search work correctly. It is only the word boundaries
+that are guesswork.
 
 ## `.indd` cannot be written from outside InDesign
 
