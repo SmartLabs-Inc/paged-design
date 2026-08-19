@@ -157,6 +157,26 @@ page number in the TOC). Fix what it finds — see `references/troubleshooting.m
 — then re-render. `--json` gives the machine-readable report; `--strict` exits
 non-zero when anything is found, for use in a build.
 
+### 7. Hand off to InDesign, if a designer is taking over
+
+```bash
+node .claude/skills/book-format/scripts/to-idml.js \
+  --content content/my-book --theme my-theme --out My-Book.idml
+```
+
+`.indd` cannot be written from outside InDesign — the format is closed and
+Adobe ships no writer for it. **IDML** is the published interchange format:
+InDesign opens it directly and File > Save As writes the `.indd`. Add `--icml`
+instead when the design already exists on the InDesign side and only the text
+is moving.
+
+Page size, margins, columns and body type are read from the theme's compiled
+CSS, so the InDesign document matches the PDF. Tables arrive as tab-separated
+paragraphs, figure slots as styled paragraphs, and the running head is not on
+the master; the exporter lists those at the end of every run. Every package is
+checked structurally before it is written, but InDesign is the only real test.
+See `references/indesign.md`.
+
 ## Client proposals
 
 A proposal set in the same design, at the same trim, as the book it is selling
@@ -220,3 +240,5 @@ Read these when the task reaches them; they are not needed up front.
   how to change the template without breaking a document you already sent.
 - `references/troubleshooting.md` — Paged.js limitations and fixes for
   overflow, widows, orphans, bad breaks, and missing running heads.
+- `references/indesign.md` — the InDesign handoff: why `.indd` cannot be
+  written here, IDML against ICML, what survives the move and what does not.
