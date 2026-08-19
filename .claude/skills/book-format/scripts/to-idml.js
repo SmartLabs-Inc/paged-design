@@ -39,9 +39,13 @@ if (args.help || !args.content) {
     '  --content <dir>  Directory holding the book’s index.html.',
     '  --out <file>     Write an IDML document. Default: <book>.idml.',
     '  --icml <file>    Also write an InCopy story for placing in a template.',
+    '  --tagged <file>  Also write InDesign Tagged Text — the most forgiving',
+    '                   route: File > Place it into a frame you have drawn.',
     '  --pages <n>      Pages of threaded frames to build. Default: 320.',
     '  --theme <name>   Theme whose page size, margins and columns to use.',
     '                   Default: beatrix.',
+    '  --serif <font>   Override the text face. Default: the theme\'s.',
+    '  --sans <font>    Override the label face. Default: the theme\'s.',
     '  --title <text>   Document title. Default: the book’s <title>.',
     '',
     'InDesign cannot be scripted from here, so the package is checked against',
@@ -129,11 +133,26 @@ function readTheme (name) {
   // design and stops a pocket novel arriving set at a textbook's size.
   const body = css.match(/body\s*\{[^}]*font-family:[^;]*;\s*font-size:\s*([\d.]+\w*)[^}]*line-height:\s*([\d.]+\w*)/)
   const fonts = css.match(/body\s*\{[^}]*font-family:\s*([^;]+);/)
+  // The secondary face — what the theme uses for labels and apparatus. Taken
+  // by how often each family is asked for, not by which is mentioned first:
+  // "first family that is not the body face" picked Inconsolata out of the
+  // AALAI theme, a code face used by exactly one rule, over the sans used by
+  // sixty of them.
+  const counts = {}
+  css.replace(/font-family:\s*([^;}]+)/g, function (m, stack) {
+    const first = stack.split(',')[0].replace(/["']/g, '').trim()
+    if (first && !/^(inherit|serif|sans-serif|monospace)$/.test(first)) {
+      counts[first] = (counts[first] || 0) + 1
+    }
+    return m
+  })
+  const families = Object.keys(counts).sort((a, b) => counts[b] - counts[a])
 
   return {
     bodySize: body ? cssLength(body[1]) : null,
     bodyLeading: body ? cssLength(body[2]) : null,
     bodyFont: fonts ? fonts[1].split(',')[0].replace(/["']/g, '').trim() : null,
+    families: families,
     width: cssLength(size[1]),
     height: cssLength(size[2]),
     inside: right ? right.left : (left ? left.right : 20 * MM),
@@ -183,8 +202,9 @@ const LEAD_SCALE = THEME.bodyLeading ? THEME.bodyLeading / BASELINE_LEADING : 1
 // design uses for labels and apparatus and is a reasonable default elsewhere.
 // Both are names InDesign has to be able to resolve on the machine that opens
 // the file — a missing font is flagged there, not here.
-const FONT_SERIF = THEME.bodyFont || 'Georgia'
-const FONT_SANS = 'Aptos'
+const FONT_SERIF = args.serif || THEME.bodyFont || 'Georgia'
+const FONT_SANS = args.sans ||
+  THEME.families.filter(f => f !== (THEME.bodyFont || ''))[0] || 'Arial'
 
 const NAVY = 'Color/AALAI Navy'
 const TEAL = 'Color/AALAI Teal'
@@ -195,10 +215,10 @@ const BLACK = 'Color/Black'
 // size and leading in px, as the theme states them; converted on the way out.
 const PARA_STYLES = [
   ['Body', { font: FONT_SERIF, size: 12.8, leading: 17, align: 'LeftJustified', space: 9.4, hyphen: true }],
-  ['Part Eyebrow', { font: FONT_SANS, size: 11, leading: 17, caps: true, track: 220, color: GOLD, bold: true, space: 8 }],
-  ['Part Title', { font: FONT_SERIF, size: 34, leading: 40, color: NAVY, space: 8, keep: true }],
+  ['Part Eyebrow', { font: FONT_SANS, size: 11, leading: 17, caps: true, track: 220, color: GOLD, bold: true, space: 8, start: 'NextOddPage' }],
+  ['Part Title', { font: FONT_SERIF, size: 34, leading: 40, color: NAVY, space: 8, keep: true, start: 'NextOddPage' }],
   ['Part Subtitle', { font: FONT_SERIF, size: 15, leading: 20, italic: true, color: NAVY, space: 8 }],
-  ['Section Head', { font: FONT_SERIF, size: 21, leading: 26, color: NAVY, spaceBefore: 20, space: 10, keep: true, startPage: true }],
+  ['Section Head', { font: FONT_SERIF, size: 21, leading: 26, color: NAVY, spaceBefore: 20, space: 10, keep: true, start: 'NextPage' }],
   ['Apparatus Head', { font: FONT_SANS, size: 12, leading: 17, caps: true, track: 140, bold: true, color: MID, spaceBefore: 20, space: 6, keep: true }],
   ['Topic Head', { font: FONT_SERIF, size: 15.5, leading: 22, color: NAVY, spaceBefore: 22, space: 6, keep: true }],
   ['Subtopic Head', { font: FONT_SANS, size: 10.5, leading: 17, bold: true, color: TEAL, spaceBefore: 18, space: 4, keep: true }],
@@ -208,13 +228,14 @@ const PARA_STYLES = [
   ['Callout Label', { font: FONT_SANS, size: 8.5, leading: 14, caps: true, track: 140, bold: true, color: TEAL, space: 3 }],
   ['Callout', { font: FONT_SANS, size: 10.5, leading: 14, space: 6 }],
   ['Contents Entry', { font: FONT_SANS, size: 12, leading: 20, color: NAVY, space: 4 }],
-  ['Table Head', { font: FONT_SANS, size: 8, leading: 14, caps: true, track: 140, bold: true, color: BLACK, space: 2 }],
-  ['Table Cell', { font: FONT_SANS, size: 10.5, leading: 14, space: 2 }],
+  ['Table Head', { font: FONT_SANS, size: 8, leading: 14, caps: true, track: 140, bold: true, color: BLACK, space: 2, tabs: true }],
+  ['Table Cell', { font: FONT_SANS, size: 10.5, leading: 14, space: 2, tabs: true }],
+  ['Contents Entry Tabbed', { font: FONT_SANS, size: 12, leading: 20, color: NAVY, space: 4, tabs: true }],
   ['Table Caption', { font: FONT_SANS, size: 9, leading: 14, caps: true, track: 140, bold: true, color: MID, spaceBefore: 12, space: 3, keep: true }],
   ['Figure Caption', { font: FONT_SANS, size: 8, leading: 13, bold: true, color: NAVY, space: 3 }],
   ['Figure Slot', { font: FONT_SANS, size: 10, leading: 16, caps: true, track: 140, bold: true, color: 'Color/AALAI Supported', spaceBefore: 12, space: 3, keep: true }],
   ['Production Note', { font: FONT_SANS, size: 7.5, leading: 12, color: GOLD, space: 10 }],
-  ['Reference Part', { font: FONT_SERIF, size: 17, leading: 24, color: NAVY, spaceBefore: 20, space: 6, keep: true }],
+  ['Reference Part', { font: FONT_SERIF, size: 17, leading: 24, color: NAVY, spaceBefore: 20, space: 6, keep: true, start: 'NextPage' }],
   ['Reference Section', { font: FONT_SANS, size: 9.5, leading: 14, caps: true, track: 140, bold: true, color: MID, spaceBefore: 12, space: 4, keep: true }],
   ['Reference', { font: FONT_SANS, size: 10.5, leading: 13.3, space: 6, indent: 14, hang: true }],
   ['Index Letter', { font: FONT_SANS, size: 13, leading: 17, bold: true, color: TEAL, spaceBefore: 14, space: 4, keep: true }],
@@ -340,6 +361,15 @@ function readParagraphs (source) {
       if (!text.trim() && !(para && para.runs.length)) continue
       const charStyle = stack.slice().reverse()
         .map(s => characterStyleFor(s.tag, s.cls)).find(Boolean) || null
+      // Two spans butted together in the markup are two columns on the page —
+      // a contents line and its entry count — and run together in a stream of
+      // text they read as one word: "Tissue Repair41 entries". A tab is what
+      // InDesign uses to hold them apart.
+      if (para && para.runs.length && charStyle !== para.runs[para.runs.length - 1].style &&
+          !/\s$/.test(para.runs[para.runs.length - 1].text) && !/^\s/.test(text) &&
+          (charStyle === 'Index Locator' || para.style === 'Contents Entry')) {
+        para.runs.push({ text: '\t', style: null })
+      }
       if (cell) cell.push(text)
       else if (para) para.runs.push({ text: text, style: charStyle })
       continue
@@ -371,14 +401,37 @@ function readParagraphs (source) {
     const selfClosing = /\/$/.test(attrs) || VOID.test(tag)
     if (!selfClosing) stack.push({ tag: tag, cls: cls })
 
-    if (tag === 'br' && para) { para.runs.push({ text: ' ', style: null }); continue }
+    // A <br> is a line break the author put in, and it carries meaning: table
+    // headers are written "Cellular<br>Stress" and cells list two things one
+    // per line. Dropped, the words either side fuse — "CELLULARSTRESS",
+    // "Cell-cycle arrestEpigenetic remodeling" — which is what a table looked
+    // like on arrival in InDesign. Inside a cell there was no paragraph open
+    // to receive it, so it went nowhere at all.
+    //
+    // It becomes a space rather than a forced line break: the break was a
+    // layout decision made for a 64mm column, and it should not survive into a
+    // document that will be re-composed.
+    if (tag === 'br') {
+      if (cell) cell.push(' ')
+      else if (para) para.runs.push({ text: ' ', style: null })
+      continue
+    }
     if (tag === 'thead') { inHead = true; continue }
     if (tag === 'tr') { row = []; continue }
     if (tag === 'td' || tag === 'th') { cell = []; continue }
 
     if (BLOCK.test(tag)) {
       flush()
-      const style = paragraphStyleFor(tag, cls, stack.slice(0, -1))
+      // A paragraph that is the whole content of a list item takes the list
+      // item's style, not its own. The index is written <li><p>Term</p></li>
+      // and without this the <p> wins: 596 of the book's 599 index entries
+      // came out as body text, which reads as correct until you look at the
+      // three that did not.
+      const parent = stack[stack.length - 2]
+      const carrier = (tag === 'p' && parent && parent.tag === 'li') ? parent : null
+      const style = carrier
+        ? paragraphStyleFor('li', carrier.cls, stack.slice(0, -2))
+        : paragraphStyleFor(tag, cls, stack.slice(0, -1))
       para = style ? { style: style, runs: [] } : null
     }
   }
@@ -427,12 +480,27 @@ function paragraphStyleXml (name, s) {
     'FirstLineIndent="' + round(s.hang ? -(s.indent || 0) * PX * SIZE_SCALE : 0) + '"',
     'KeepWithNext="' + (s.keep ? 1 : 0) + '"',
     'KeepLinesTogether="true"', 'KeepFirstLines="2"', 'KeepLastLines="2"']
-  if (s.startPage) bits.push('StartParagraph="NextPage"')
+  if (s.start) bits.push('StartParagraph="' + s.start + '"')
   const face = s.bold && s.italic ? 'Bold Italic' : s.bold ? 'Bold' : s.italic ? 'Italic' : 'Regular'
+  // Tab stops across the text column, so a table that arrives as tab-separated
+  // paragraphs reads as columns before anyone converts it. Without these the
+  // cells land on InDesign's default half-inch stops and run into each other,
+  // which is most of what makes an imported table look broken.
+  const tabs = s.tabs
+    ? '<TabList type="list">' + [0.28, 0.55, 0.75, 0.9].map(function (fraction) {
+      return '<ListItem type="record">' +
+        '<Alignment type="enumeration">LeftAlign</Alignment>' +
+        '<AlignmentCharacter type="string">.</AlignmentCharacter>' +
+        '<Leader type="string"></Leader>' +
+        '<Position type="unit">' + round(FRAME_W / COLUMNS * fraction) + '</Position>' +
+        '</ListItem>'
+    }).join('') + '</TabList>'
+    : ''
   const props = [
     '<Properties>',
     '<AppliedFont type="string">' + esc(s.font || FONT_SERIF) + '</AppliedFont>',
     s.color ? '<FillColor type="object">' + esc(s.color) + '</FillColor>' : '',
+    tabs,
     '</Properties>'
   ].join('')
   return '<ParagraphStyle ' + bits.join(' ') + ' FontStyle="' + face + '">' + props + '</ParagraphStyle>'
@@ -790,6 +858,92 @@ function backingStoryXml () {
 
 
 // ---------------------------------------------------------------------------
+// InDesign Tagged Text
+// ---------------------------------------------------------------------------
+// The third way in, and the most forgiving one. A plain-text file where every
+// paragraph is prefixed with <ParaStyle:Name> and every run with
+// <CharStyle:Name>, imported with File > Place into a frame that already
+// exists. It carries no page geometry at all, which is exactly why it is
+// robust: there is almost nothing in it for InDesign to object to.
+//
+// Worth having as the fallback because the failure mode of a hand-built IDML
+// is "will not open", and the failure mode of tagged text is at worst "a style
+// name I have to map".
+
+const TAG_ATTRS = {
+  size: v => '<cSize:' + v.toFixed(4) + '>',
+  leading: v => '<cLeading:' + v.toFixed(4) + '>',
+  font: v => '<cFont:' + v + '>',
+  face: v => '<cTypeface:' + v + '>',
+  align: v => '<pTextAlignment:' + v + '>',
+  space: v => '<pSpaceAfter:' + v.toFixed(4) + '>',
+  spaceBefore: v => '<pSpaceBefore:' + v.toFixed(4) + '>',
+  caps: () => '<cCase:AllCaps>',
+  track: v => '<cTracking:' + v + '>',
+  indent: v => '<pLeftIndent:' + v.toFixed(4) + '>',
+  hang: v => '<pFirstLineIndent:' + v.toFixed(4) + '>',
+  superscript: () => '<cPosition:Superscript>',
+  color: v => '<cColor:' + v.replace(/^Color\//, '') + '>'
+}
+
+function taggedEscape (text) {
+  return String(text).replace(CONTROL, '')
+    .replace(/\\/g, '\\\\').replace(/</g, '\\<').replace(/>/g, '\\>')
+}
+
+function taggedDefinition (kind, name, s) {
+  const bits = []
+  if (s.font) bits.push(TAG_ATTRS.font(s.font))
+  const face = s.bold && s.italic ? 'Bold Italic' : s.bold ? 'Bold' : s.italic ? 'Italic' : 'Regular'
+  bits.push(TAG_ATTRS.face(face))
+  if (s.size) bits.push(TAG_ATTRS.size(s.size * PX * SIZE_SCALE))
+  if (s.leading) bits.push(TAG_ATTRS.leading(s.leading * PX * LEAD_SCALE))
+  if (s.align) bits.push(TAG_ATTRS.align(s.align))
+  if (s.space) bits.push(TAG_ATTRS.space(s.space * PX * LEAD_SCALE))
+  if (s.spaceBefore) bits.push(TAG_ATTRS.spaceBefore(s.spaceBefore * PX * LEAD_SCALE))
+  if (s.caps) bits.push(TAG_ATTRS.caps())
+  if (s.track) bits.push(TAG_ATTRS.track(s.track))
+  if (s.indent) {
+    bits.push(TAG_ATTRS.indent(s.indent * PX * SIZE_SCALE))
+    if (s.hang) bits.push(TAG_ATTRS.hang(-s.indent * PX * SIZE_SCALE))
+  }
+  if (s.superscript) bits.push(TAG_ATTRS.superscript())
+  if (s.color) bits.push(TAG_ATTRS.color(s.color))
+  return '<Define' + kind + 'Style:' + name + '=' + bits.join('') + '>'
+}
+
+function taggedText (paragraphs) {
+  const lines = ['<UNICODE-WIN>', '<Version:13><FeatureSet:InDesign-Roman>']
+
+  // Colours have to be declared before a style can name one.
+  lines.push('<ColorTable:=<Black:COLOR:CMYK:Process:0,0,0,1>' +
+    COLORS.map(function (c) {
+      const rgb = c[1].map(v => (v / 255).toFixed(6)).join(',')
+      return '<' + c[0] + ':COLOR:RGB:Process:' + rgb + '>'
+    }).join('') + '>')
+
+  PARA_STYLES.forEach(s => lines.push(taggedDefinition('Para', s[0], s[1])))
+  CHAR_STYLES.forEach(s => lines.push(taggedDefinition('Char', s[0], s[1])))
+
+  paragraphs.forEach(function (p) {
+    let line = '<ParaStyle:' + p.style + '>'
+    p.runs.forEach(function (run) {
+      if (!run.text) return
+      line += run.style
+        ? '<CharStyle:' + run.style + '>' + taggedEscape(run.text) + '<CharStyle:>'
+        : taggedEscape(run.text)
+    })
+    lines.push(line)
+  })
+
+  // UTF-16LE with a byte-order mark, which is what <UNICODE-WIN> declares.
+  return Buffer.concat([
+    Buffer.from([0xFF, 0xFE]),
+    Buffer.from(lines.join('\r\n') + '\r\n', 'utf16le')
+  ])
+}
+
+// ---------------------------------------------------------------------------
 // Structural check
 // ---------------------------------------------------------------------------
 // InDesign cannot be run from here, so the package is checked against what the
@@ -908,6 +1062,12 @@ storyFiles.forEach(s => entries.push({ name: 'Stories/Story_' + s.self + '.xml',
 const check = validate(entries)
 fs.writeFileSync(idmlOut, writeZip(entries))
 
+if (args.tagged) {
+  const taggedOut = path.resolve(root, args.tagged)
+  fs.writeFileSync(taggedOut, taggedText(paragraphs))
+  console.log('Wrote ' + path.relative(root, taggedOut))
+}
+
 if (icmlOut) {
   fs.writeFileSync(icmlOut, [HEAD,
     '<?aid style="50" type="snippet" readerVersion="6.0" featureSet="257" product="18.0(51)" ?>',
@@ -930,6 +1090,8 @@ if (icmlOut) console.log('Wrote ' + path.relative(root, icmlOut))
 console.log('')
 console.log('  body ' + round(BASELINE_SIZE * SIZE_SCALE) + 'pt on ' +
   round(BASELINE_LEADING * LEAD_SCALE) + 'pt ' + FONT_SERIF)
+console.log('  fonts asked for: ' + FONT_SERIF + ' and ' + FONT_SANS +
+  ' — InDesign flags either one it cannot find; --serif and --sans change them')
 console.log('  theme ' + themeName + ': ' + round(PAGE_W / MM) + ' × ' + round(PAGE_H / MM) +
   'mm, ' + (FACING ? 'facing pages' : 'single pages') + ', ' + COLUMNS +
   (COLUMNS === 1 ? ' column' : ' columns') + ', ' + PAGES + ' pages of threaded frames')

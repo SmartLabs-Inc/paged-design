@@ -1,5 +1,16 @@
 # Getting a book into InDesign
 
+## Never import the PDF
+
+The first thing anyone tries is placing the PDF, and it is the one route that
+cannot work. A PDF holds glyphs at coordinates, not words. Any PDF-to-text
+import has to infer where the spaces are from the gaps between glyphs, and in
+justified text set with tracking the gaps inside a word are often wider than
+the gaps between words — so the import puts spaces in the middle of words, by
+the thousand, and there is no way to repair it by hand.
+
+Export the IDML instead. It is real text with real styles.
+
 ## `.indd` cannot be written from outside InDesign
 
 InDesign's own document format is closed and undocumented, and Adobe ships no
@@ -73,6 +84,29 @@ that exists. That catches the ways a generated package usually fails.
 
 It does not prove InDesign is happy with it, and it cannot — InDesign cannot be
 run from the build. Open the file before relying on it.
+
+## Things that went wrong the first time, and are fixed
+
+Kept because each was invisible in the generated file and obvious the moment
+InDesign opened it.
+
+- **`<br>` was dropped.** A line break inside a table cell had no paragraph
+  open to receive it, so the words either side fused: table headers arrived as
+  "CELLULARSTRESS" and cells as "Cell-cycle arrestEpigenetic remodeling". It
+  now becomes a space — the break was a layout decision made for a 64mm column
+  and should not survive into a document that will be recomposed.
+- **A paragraph inside a list item took its own style.** The index is written
+  `<li><p>Term</p></li>`, so the `<p>` won and 596 of 599 index entries came
+  out as body text. The three written as bare `<li>` were correct, which is
+  what made it hard to see.
+- **Tables had no tab stops**, so cells landed on InDesign's default half-inch
+  stops and ran into each other. The styles now carry stops across the column.
+- **The secondary font was picked by first mention**, which chose a code face
+  used by one rule over the sans used by sixty. It is chosen by frequency now,
+  and both faces are named in the run report so a missing-font dialog is
+  expected rather than alarming. `--serif` and `--sans` override them.
+- **Parts did not start a new page.** Part Title and Part Eyebrow now carry
+  `StartParagraph="NextOddPage"`, sections `NextPage`.
 
 ## Page count
 
