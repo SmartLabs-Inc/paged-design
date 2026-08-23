@@ -112,11 +112,12 @@ $colorspace: rgb;
 // at reduced opacity — so the whole book can be re-tuned by
 // editing these two lines, and no third hue can creep in.
 //
-// TODO: replace these with the values sampled from the supplied
-// logo artwork. They are eyeballed from the mark and are close,
-// but they are not measured.
-$reno-gold: #f5a623;
-$reno-navy: #14395f;
+// Both sampled from the supplied artwork in
+// content/reno-first/images/reno-first-logo.png: the gold is 96%
+// of the mark's warm pixels in one cluster, the navy is the flat
+// fill of the skyline and the script.
+$reno-gold: #fbae06;
+$reno-navy: #02305f;
 
 // Gold, at strength. `-deep` is the gold darkened enough to hold
 // its own as small type on white; the washes are the gold itself

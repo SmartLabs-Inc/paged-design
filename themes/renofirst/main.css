@@ -127,7 +127,7 @@ blockquote {
 
 a {
   text-decoration: none;
-  color: #14395f; }
+  color: #02305f; }
 
 em {
   font-style: italic; }
@@ -3702,7 +3702,7 @@ h6 {
     text-indent: 0; }
 
 .box, .context-note {
-  border: 0.5pt solid #c2ccd5;
+  border: 0.5pt solid #bdc9d5;
   margin: 19px 0;
   padding: 19px;
   text-indent: 0; }
@@ -3730,13 +3730,13 @@ code, .code {
   font-family: "Inconsolata", monospace;
   line-height: 19px;
   white-space: pre-wrap;
-  background-color: rgba(245, 166, 35, 0.13);
+  background-color: rgba(251, 174, 6, 0.13);
   padding: 0.1em 0.3em;
   border-radius: 0;
   font-size: 11.48px; }
 
 pre {
-  background-color: rgba(245, 166, 35, 0.13);
+  background-color: rgba(251, 174, 6, 0.13);
   border-radius: 0;
   margin: 9.5px 0;
   padding: 9.5px; }
@@ -4236,8 +4236,8 @@ thead, th {
   page-break-after: avoid; }
 
 th, td {
-  border-top: 0.5pt solid #c2ccd5;
-  border-bottom: 0.5pt solid #c2ccd5;
+  border-top: 0.5pt solid #bdc9d5;
+  border-bottom: 0.5pt solid #bdc9d5;
   border-left: 0;
   border-right: 0;
   padding: 0.2em 0.3em;
@@ -4571,15 +4571,15 @@ th, td {
   break-before: recto; }
 
 body {
-  color: #0c2137;
+  color: #011c37;
   font-family: "Source Serif 4", Georgia, serif;
   font-size: 14px;
   font-variant-numeric: oldstyle-num proportional-nums;
   line-height: 19px; }
 
 h2 {
-  border-top: 2.5px solid #f5a623;
-  color: #14395f;
+  border-top: 2.5px solid #fbae06;
+  color: #02305f;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 20px;
   font-weight: 700;
@@ -4594,7 +4594,7 @@ h2 {
   break-after: avoid; }
 
 h3 {
-  color: #14395f;
+  color: #02305f;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 15px;
   font-weight: 700;
@@ -4607,7 +4607,7 @@ h3 {
   break-after: avoid; }
 
 h4 {
-  color: #5f7892;
+  color: #537292;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
   font-weight: 700;
@@ -4621,7 +4621,7 @@ h4 {
 
 h5,
 h6 {
-  color: #14395f;
+  color: #02305f;
   font-family: "Source Serif 4", Georgia, serif;
   font-size: 14px;
   font-style: italic;
@@ -4640,7 +4640,7 @@ p {
   widows: 2; }
 
 .lede {
-  color: #14395f;
+  color: #02305f;
   font-size: 16px;
   line-height: 23px;
   margin-bottom: 15.2px; }
@@ -4656,7 +4656,7 @@ ul.bullets {
   list-style: none;
   padding-left: 15px; }
   ul.bullets li::before {
-    color: #f5a623;
+    color: #fbae06;
     content: "\25C6";
     font-size: 8px;
     margin-left: -15px;
@@ -4668,7 +4668,7 @@ a {
   text-decoration: none; }
 
 a.url {
-  color: #14395f;
+  color: #02305f;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12.5px;
   font-weight: 500;
@@ -4683,7 +4683,7 @@ strong {
 
 hr {
   border: 0;
-  color: #f5a623;
+  color: #fbae06;
   font-size: 12px;
   letter-spacing: 0.5em;
   margin: 19px 0;
@@ -4707,12 +4707,12 @@ hr {
 
 @page :left {
   @top-left {
-    border-bottom: 2px solid #f5a623;
+    border-bottom: 2px solid #fbae06;
     height: 19px;
     margin-top: 6mm;
     padding-bottom: 5px;
     vertical-align: bottom;
-    color: #14395f;
+    color: #02305f;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 10.5px;
     font-weight: 700;
@@ -4722,19 +4722,19 @@ hr {
     letter-spacing: 0.06em;
     text-align: left; }
   @top-center {
-    border-bottom: 2px solid #f5a623;
+    border-bottom: 2px solid #fbae06;
     height: 19px;
     margin-top: 6mm;
     padding-bottom: 5px;
     vertical-align: bottom;
     content: ""; }
   @top-right {
-    border-bottom: 2px solid #f5a623;
+    border-bottom: 2px solid #fbae06;
     height: 19px;
     margin-top: 6mm;
     padding-bottom: 5px;
     vertical-align: bottom;
-    color: #5f7892;
+    color: #537292;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 9.5px;
     font-weight: 600;
@@ -4746,12 +4746,12 @@ hr {
 
 @page :right {
   @top-left {
-    border-bottom: 2px solid #f5a623;
+    border-bottom: 2px solid #fbae06;
     height: 19px;
     margin-top: 6mm;
     padding-bottom: 5px;
     vertical-align: bottom;
-    color: #5f7892;
+    color: #537292;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 9.5px;
     font-weight: 600;
@@ -4761,19 +4761,19 @@ hr {
     letter-spacing: 0.06em;
     text-align: left; }
   @top-center {
-    border-bottom: 2px solid #f5a623;
+    border-bottom: 2px solid #fbae06;
     height: 19px;
     margin-top: 6mm;
     padding-bottom: 5px;
     vertical-align: bottom;
     content: ""; }
   @top-right {
-    border-bottom: 2px solid #f5a623;
+    border-bottom: 2px solid #fbae06;
     height: 19px;
     margin-top: 6mm;
     padding-bottom: 5px;
     vertical-align: bottom;
-    color: #14395f;
+    color: #02305f;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 10.5px;
     font-weight: 700;
@@ -4870,7 +4870,7 @@ hr {
   width: 68mm; }
 
 .cover {
-  background-color: #14395f;
+  background-color: #02305f;
   overflow: hidden; }
   .cover > div {
     height: 100%; }
@@ -4879,7 +4879,7 @@ hr {
     padding: 40mm 24mm 46mm 24mm;
     position: relative; }
   .cover .cover-kicker {
-    color: #f5a623;
+    color: #fbae06;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 12px;
     font-weight: 700;
@@ -4899,7 +4899,7 @@ hr {
     margin: 0;
     max-width: 88%; }
     .cover .cover-title span {
-      color: #f5a623;
+      color: #fbae06;
       display: block;
       font-size: 68px;
       font-weight: 800;
@@ -4907,7 +4907,7 @@ hr {
       line-height: 66px;
       margin-top: 6px; }
   .cover .cover-subtitle {
-    border-top: 3px solid #f5a623;
+    border-top: 3px solid #fbae06;
     color: rgba(255, 255, 255, 0.74);
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 15px;
@@ -4939,7 +4939,7 @@ hr {
 .half-title-page {
   padding-top: 78mm; }
   .half-title-page .title-page-title {
-    color: #14395f;
+    color: #02305f;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 24px;
     font-weight: 700;
@@ -4949,7 +4949,7 @@ hr {
     max-width: 62%;
     string-set: book-title content(); }
     .half-title-page .title-page-title::after {
-      background-color: #f5a623;
+      background-color: #fbae06;
       content: "";
       display: block;
       height: 3px;
@@ -4959,7 +4959,7 @@ hr {
 .title-page {
   padding-top: 34mm; }
   .title-page .title-page-title {
-    color: #14395f;
+    color: #02305f;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 46px;
     font-weight: 800;
@@ -4967,10 +4967,10 @@ hr {
     line-height: 46px;
     margin: 0; }
     .title-page .title-page-title span {
-      color: #cc8309;
+      color: #bc8203;
       display: block; }
   .title-page .title-page-subtitle {
-    color: #5f7892;
+    color: #537292;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 14px;
     font-weight: 600;
@@ -4980,8 +4980,8 @@ hr {
     letter-spacing: 0.14em;
     margin: 20px 0 0 0; }
   .title-page .title-page-edition {
-    border-top: 3px solid #f5a623;
-    color: #14395f;
+    border-top: 3px solid #fbae06;
+    color: #02305f;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 14px;
     font-weight: 500;
@@ -4990,13 +4990,13 @@ hr {
     width: 54px;
     white-space: nowrap; }
   .title-page .title-page-contributors {
-    color: #5f7892;
+    color: #537292;
     font-size: 15px;
     line-height: 21px;
     margin: 44mm 0 0 0;
     max-width: 74%; }
   .title-page .title-page-publisher {
-    color: #14395f;
+    color: #02305f;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 12px;
     font-weight: 700;
@@ -5011,7 +5011,7 @@ hr {
 
 .copyright-page {
   bottom: 0;
-  color: #5f7892;
+  color: #537292;
   font-size: 11px;
   line-height: 15px;
   position: absolute; }
@@ -5019,7 +5019,7 @@ hr {
     margin-bottom: 10px;
     text-align: left; }
   .copyright-page .imprint {
-    color: #14395f;
+    color: #02305f;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 12px;
     font-weight: 500;
@@ -5028,7 +5028,7 @@ hr {
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     letter-spacing: 0.04em; }
   .copyright-page .editors-heading {
-    color: #cc8309;
+    color: #bc8203;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 10.5px;
     font-weight: 700;
@@ -5048,14 +5048,14 @@ hr {
 .contents-page {
   padding-top: 6mm; }
   .contents-page h1 {
-    color: #cc8309;
+    color: #bc8203;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 15px;
     font-weight: 700;
     letter-spacing: 0.09em;
     line-height: 13px;
     text-transform: uppercase;
-    border-bottom: 3px solid #f5a623;
+    border-bottom: 3px solid #fbae06;
     letter-spacing: 0.22em;
     margin: 0 0 22.8px 0;
     padding-bottom: 12px; }
@@ -5068,7 +5068,7 @@ hr {
   .contents-page a {
     display: block; }
   .contents-page .toc-list li a::after {
-    color: #5f7892;
+    color: #537292;
     content: target-counter(attr(href), page);
     float: right;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
@@ -5082,10 +5082,10 @@ hr {
   .contents-page .toc-list li.toc-part:first-child {
     margin-top: 0 !important; }
   .contents-page .toc-list li.toc-part a {
-    border-bottom: 2px solid #14395f;
+    border-bottom: 2px solid #02305f;
     padding-bottom: 6px; }
   .contents-page .toc-list li.toc-part .toc-entry-text {
-    color: #14395f;
+    color: #02305f;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 13px;
     font-weight: 700;
@@ -5094,7 +5094,7 @@ hr {
     text-transform: uppercase;
     letter-spacing: 0.13em; }
   .contents-page .toc-list li.toc-part a::after {
-    color: #14395f;
+    color: #02305f;
     font-size: 13px;
     font-weight: 700; }
 
@@ -5104,7 +5104,7 @@ hr {
   .toc-chapter a {
     padding-bottom: 1px; }
   .toc-chapter .toc-entry-number {
-    color: #cc8309;
+    color: #bc8203;
     display: inline-block;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 19px;
@@ -5112,13 +5112,13 @@ hr {
     min-width: 26px;
     vertical-align: -1px; }
   .toc-chapter .toc-entry-text {
-    color: #14395f;
+    color: #02305f;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 17px;
     font-weight: 700;
     letter-spacing: -0.01em; }
   .toc-chapter .toc-entry-summary {
-    color: #5f7892;
+    color: #537292;
     display: block;
     font-size: 12.5px;
     line-height: 16px;
@@ -5128,20 +5128,20 @@ hr {
 .toc-appendix {
   margin-top: 5px !important; }
   .toc-appendix .toc-entry-number {
-    color: #cc8309;
+    color: #bc8203;
     display: inline-block;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 13px;
     font-weight: 700;
     min-width: 26px; }
   .toc-appendix .toc-entry-text {
-    color: #14395f;
+    color: #02305f;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 13px;
     font-weight: 500; }
 
 .toc-group {
-  color: #cc8309;
+  color: #bc8203;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 10.5px;
   font-weight: 700;
@@ -5151,11 +5151,11 @@ hr {
   margin: 11.4px 0 3px 0 !important; }
 
 .toc-worksheet a {
-  border-bottom: 0.75px solid #d7dde4;
+  border-bottom: 0.75px solid #d4dce4;
   padding: 1px 0 2px 0; }
 
 .toc-worksheet .toc-entry-text {
-  color: #0c2137;
+  color: #011c37;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12.5px;
   font-weight: 400; }
@@ -5164,7 +5164,7 @@ hr {
   font-size: 11.5px; }
 
 .part-page {
-  background-color: #14395f;
+  background-color: #02305f;
   bottom: 0;
   left: 0;
   overflow: hidden;
@@ -5178,7 +5178,7 @@ hr {
     padding: 74mm 24mm 0 24mm;
     position: relative; }
   .part-page .part-number {
-    color: #f5a623;
+    color: #fbae06;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 12px;
     font-weight: 700;
@@ -5198,7 +5198,7 @@ hr {
     margin: 0;
     max-width: 74%; }
   .part-page .part-blurb {
-    border-top: 3px solid #f5a623;
+    border-top: 3px solid #fbae06;
     color: rgba(255, 255, 255, 0.74);
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 14px;
@@ -5220,7 +5220,7 @@ hr {
       width: 100%; }
 
 .chapter-opener {
-  background-color: #14395f;
+  background-color: #02305f;
   color: #fff;
   margin-bottom: 26.6px;
   margin-top: -7.6px;
@@ -5229,7 +5229,7 @@ hr {
   break-inside: avoid;
   page-break-inside: avoid; }
   .chapter-opener .chapter-number {
-    color: #f5a623;
+    color: #fbae06;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 10.5px;
     font-weight: 700;
@@ -5255,7 +5255,7 @@ hr {
     margin: 0;
     max-width: 88%; }
   .chapter-opener .chapter-summary {
-    border-top: 2.5px solid #f5a623;
+    border-top: 2.5px solid #fbae06;
     color: rgba(255, 255, 255, 0.74);
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 12.5px;
@@ -5265,7 +5265,7 @@ hr {
     max-width: 92%;
     padding-top: 12px; }
   .chapter-opener::after {
-    color: rgba(245, 166, 35, 0.18);
+    color: rgba(251, 174, 6, 0.18);
     content: attr(data-numeral);
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 128px;
@@ -5295,13 +5295,13 @@ hr {
     margin-bottom: 10px; }
 
 .worksheet-header {
-  border-bottom: 2.5px solid #f5a623;
+  border-bottom: 2.5px solid #fbae06;
   margin-bottom: 13.3px;
   padding-bottom: 9px;
   break-inside: avoid;
   page-break-inside: avoid; }
   .worksheet-header .worksheet-eyebrow {
-    color: #cc8309;
+    color: #bc8203;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 10.5px;
     font-weight: 700;
@@ -5310,7 +5310,7 @@ hr {
     text-transform: uppercase;
     margin: 0 0 6px 0; }
   .worksheet-header h1 {
-    color: #14395f;
+    color: #02305f;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 27px;
     font-weight: 800;
@@ -5320,7 +5320,7 @@ hr {
     margin: 0; }
 
 .margin-note {
-  color: #5f7892;
+  color: #537292;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 11px;
   font-weight: 400;
@@ -5332,7 +5332,7 @@ hr {
   break-inside: avoid;
   page-break-inside: avoid; }
   .margin-note .margin-note-label {
-    color: #cc8309;
+    color: #bc8203;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 9.5px;
     font-weight: 700;
@@ -5357,29 +5357,29 @@ hr {
   width: 43mm; }
 
 .margin-note-key {
-  border-top: 2.5px solid #f5a623;
+  border-top: 2.5px solid #fbae06;
   padding-top: 7px; }
 
 .margin-note-ref {
-  border-top: 0.75px solid #c2ccd5;
+  border-top: 0.75px solid #bdc9d5;
   padding-top: 7px; }
   .margin-note-ref .margin-note-label {
-    color: #14395f; }
+    color: #02305f; }
     .margin-note-ref .margin-note-label::before {
       content: "\2192\00a0"; }
 
 .margin-note-verify {
-  background-color: rgba(245, 166, 35, 0.19);
-  border-left: 2.5px solid #f5a623;
+  background-color: rgba(251, 174, 6, 0.19);
+  border-left: 2.5px solid #fbae06;
   padding: 7px 9px 8px 9px; }
   .margin-note-verify .margin-note-label::before {
     content: "\25C7\00a0"; }
 
 .context-note {
-  background-color: rgba(245, 166, 35, 0.19);
+  background-color: rgba(251, 174, 6, 0.19);
   border: 0;
-  border-left: 3px solid #f5a623;
-  color: #14395f;
+  border-left: 3px solid #fbae06;
+  color: #02305f;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 12px;
   font-weight: 400;
@@ -5395,9 +5395,9 @@ hr {
     font-weight: 600; }
 
 .verify-note {
-  border-top: 0.75px solid #c2ccd5;
-  border-bottom: 0.75px solid #c2ccd5;
-  color: #5f7892;
+  border-top: 0.75px solid #bdc9d5;
+  border-bottom: 0.75px solid #bdc9d5;
+  color: #537292;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 11.5px;
   font-weight: 400;
@@ -5408,21 +5408,21 @@ hr {
   break-inside: avoid;
   page-break-inside: avoid; }
   .verify-note .diamond {
-    color: #cc8309;
+    color: #bc8203;
     font-size: 13px;
     left: 0;
     position: absolute;
     top: 8px; }
 
 .reno-tip {
-  background-color: #14395f;
+  background-color: #02305f;
   color: #fff;
   margin: 15.2px 0;
   padding: 14px 16px 15px 16px;
   break-inside: avoid;
   page-break-inside: avoid; }
   .reno-tip .reno-tip-label {
-    color: #f5a623;
+    color: #fbae06;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 10.5px;
     font-weight: 700;
@@ -5438,17 +5438,17 @@ hr {
     line-height: 18px;
     margin: 0; }
   .reno-tip a.url {
-    color: #f5a623; }
+    color: #fbae06; }
 
 h2.checklist-heading {
-  border-top-color: #14395f; }
+  border-top-color: #02305f; }
 
 ul.checklist {
   list-style: none;
   margin: 9.5px 0 19px 0;
   padding: 0; }
   ul.checklist li {
-    border-bottom: 0.75px solid #d7dde4;
+    border-bottom: 0.75px solid #d4dce4;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 12.5px;
     line-height: 17px;
@@ -5459,18 +5459,18 @@ ul.checklist {
     break-inside: avoid;
     page-break-inside: avoid; }
     ul.checklist li::before {
-      border: 1px solid #95a6b7;
+      border: 1px solid #8da2b7;
       content: "";
       display: inline-block;
       height: 13px;
       width: 13px;
       background-color: #fff;
-      border-color: #cc8309;
+      border-color: #bc8203;
       left: 0;
       position: absolute;
       top: 8px; }
     ul.checklist li:first-child {
-      border-top: 0.75px solid #d7dde4; }
+      border-top: 0.75px solid #d4dce4; }
 
 .pagedjs_right_page .pagedjs_area ul.checklist {
   box-sizing: border-box;
@@ -5492,17 +5492,17 @@ ul.checklist {
     flex: 1 1 50%;
     padding: 12px 15px 13px 15px; }
   .pros-cons .pros {
-    background-color: rgba(245, 166, 35, 0.19);
-    border-top: 2.5px solid #f5a623; }
+    background-color: rgba(251, 174, 6, 0.19);
+    border-top: 2.5px solid #fbae06; }
   .pros-cons .cons {
-    background-color: #f1f3f5;
-    border-top: 2.5px solid #95a6b7; }
+    background-color: #f0f3f5;
+    border-top: 2.5px solid #8da2b7; }
   .pros-cons h4 {
-    color: #14395f;
+    color: #02305f;
     letter-spacing: 0.06em;
     margin: 0 0 7px 0; }
   .pros-cons .cons h4 {
-    color: #5f7892; }
+    color: #537292; }
   .pros-cons ul.bullets {
     margin: 0;
     padding-left: 13px; }
@@ -5520,7 +5520,7 @@ ul.checklist {
       .pros-cons ul.bullets li:last-child {
         margin-bottom: 0; }
   .pros-cons .cons ul.bullets li::before {
-    color: #95a6b7; }
+    color: #8da2b7; }
 
 .pagedjs_right_page .pagedjs_area .pros-cons {
   box-sizing: border-box;
@@ -5533,14 +5533,14 @@ ul.checklist {
   width: calc(100% + 50mm); }
 
 .directory .directory-entry {
-  border-top: 0.75px solid #d7dde4;
+  border-top: 0.75px solid #d4dce4;
   margin-bottom: 13px;
   padding-top: 9px;
   break-inside: avoid;
   page-break-inside: avoid; }
 
 .directory .entry-name {
-  color: #14395f;
+  color: #02305f;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 11.5px;
   font-weight: 700;
@@ -5552,7 +5552,7 @@ ul.checklist {
   padding-bottom: 0; }
 
 .directory .entry-contact {
-  color: #cc8309;
+  color: #bc8203;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 11.5px;
   font-weight: 500;
@@ -5563,13 +5563,13 @@ ul.checklist {
     font-size: inherit; }
 
 .directory p {
-  color: #5f7892;
+  color: #537292;
   font-size: 12.5px;
   line-height: 16.5px;
   margin-bottom: 0; }
 
 .worksheet .field-label {
-  color: #14395f;
+  color: #02305f;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 10.5px;
   font-weight: 700;
@@ -5585,7 +5585,7 @@ ul.checklist {
   break-after: avoid; }
 
 .worksheet .lede {
-  color: #5f7892;
+  color: #537292;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 13px;
   font-weight: 400;
@@ -5598,7 +5598,7 @@ ul.checklist {
   line-height: 17.5px; }
 
 .worksheet .source-note {
-  color: #95a6b7;
+  color: #8da2b7;
   font-size: 11px;
   line-height: 15px;
   margin-top: -5.7px; }
@@ -5621,7 +5621,7 @@ table.form-table {
     letter-spacing: 0.09em;
     line-height: 13px;
     text-transform: uppercase;
-    background-color: #14395f;
+    background-color: #02305f;
     border: 0;
     letter-spacing: 0.07em;
     padding: 6px 8px 6px 8px;
@@ -5629,8 +5629,8 @@ table.form-table {
     vertical-align: bottom; }
   table.form-table td {
     border: 0;
-    border-bottom: 0.75px solid #c2ccd5;
-    color: #0c2137;
+    border-bottom: 0.75px solid #bdc9d5;
+    color: #011c37;
     height: 28px;
     hyphens: none;
     padding: 7px 8px 7px 8px;
@@ -5640,24 +5640,24 @@ table.form-table {
     table.form-table td:empty::after {
       content: "\00a0"; }
   table.form-table tr:first-child td {
-    border-top: 0.75px solid #c2ccd5; }
+    border-top: 0.75px solid #bdc9d5; }
   table.form-table thead + tbody tr:first-child td {
     border-top: 0; }
   table.form-table td.fill {
-    background-color: rgba(245, 166, 35, 0.13);
-    border-bottom-color: rgba(245, 166, 35, 0.45); }
+    background-color: rgba(251, 174, 6, 0.13);
+    border-bottom-color: rgba(251, 174, 6, 0.45); }
   table.form-table td.label {
-    color: #14395f;
+    color: #02305f;
     font-weight: 600; }
   table.form-table thead + tbody td:first-child {
-    color: #14395f;
+    color: #02305f;
     font-weight: 600; }
   table.form-table .cell-title {
-    color: #14395f;
+    color: #02305f;
     display: block;
     font-weight: 600; }
   table.form-table .cell-note {
-    color: #5f7892;
+    color: #537292;
     display: block;
     font-size: 10.5px;
     font-weight: 400;
@@ -5679,16 +5679,16 @@ table.check-table td.tick {
   text-align: center;
   width: 22px; }
   table.check-table td.tick::before {
-    border: 1px solid #95a6b7;
+    border: 1px solid #8da2b7;
     content: "";
     display: inline-block;
     height: 12px;
     width: 12px;
-    border-color: #cc8309;
+    border-color: #bc8203;
     margin-top: 1px; }
 
 table.check-table tbody td:nth-child(2) {
-  color: #0c2137;
+  color: #011c37;
   font-weight: 400; }
 
 .write-in {
@@ -5696,29 +5696,29 @@ table.check-table tbody td:nth-child(2) {
   break-inside: avoid;
   page-break-inside: avoid; }
   .write-in .rule {
-    border-bottom: 0.75px solid rgba(245, 166, 35, 0.45);
+    border-bottom: 0.75px solid rgba(251, 174, 6, 0.45);
     display: block;
     height: 21.85px;
-    background-color: rgba(245, 166, 35, 0.13); }
+    background-color: rgba(251, 174, 6, 0.13); }
 
 .write-in-box {
-  border-top: 0.75px solid #c2ccd5; }
+  border-top: 0.75px solid #bdc9d5; }
 
 .prompt-box {
-  background-color: rgba(245, 166, 35, 0.13);
-  border-left: 3px solid #f5a623;
+  background-color: rgba(251, 174, 6, 0.13);
+  border-left: 3px solid #fbae06;
   margin: 9.5px 0;
   padding: 10px 14px 12px 14px;
   break-inside: avoid;
   page-break-inside: avoid; }
   .prompt-box .prompt {
-    color: #14395f;
+    color: #02305f;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 12px;
     font-weight: 600;
     margin: 0 0 6px 0; }
   .prompt-box .rule {
-    border-bottom: 0.75px solid rgba(245, 166, 35, 0.45);
+    border-bottom: 0.75px solid rgba(251, 174, 6, 0.45);
     display: block;
     height: 21.85px; }
 
@@ -5730,8 +5730,8 @@ figure {
     display: block;
     max-width: 100%; }
   figure figcaption {
-    border-top: 2.5px solid #f5a623;
-    color: #5f7892;
+    border-top: 2.5px solid #fbae06;
+    color: #537292;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 11.5px;
     line-height: 16px;
@@ -5739,7 +5739,7 @@ figure {
     padding-top: 8px; }
 
 .map-page h1 {
-  color: #14395f;
+  color: #02305f;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 13px;
   font-weight: 700;

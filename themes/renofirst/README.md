@@ -40,8 +40,8 @@ they are for writing on, not for reading around.
 
 ## Colours and type
 
-**Two colours, both from the Reno First mark: the gold and the navy.** Nothing
-else is invented. Every other value in `_variables.scss` is one of those two
+**Two colours, both sampled from the Reno First mark: gold `#fbae06` and navy
+`#02305f`.** Nothing else is invented. Every other value in `_variables.scss` is one of those two
 mixed toward white or black, or laid over the page at reduced opacity — so the
 whole book re-tunes from two lines, and no third hue can creep in.
 
@@ -69,10 +69,15 @@ content/reno-first/images/reno-first-logo.png           full colour, on white
 content/reno-first/images/reno-first-logo-reversed.png  on the navy ground
 ```
 
-There is deliberately **no type-set substitute**. If a file is missing the slot
-stays empty rather than standing in a lookalike lockup. `.reno-first
-img.title-page-logo` sizes on width, so either file drops in without
-retouching.
+Both are in place, supplied at 600 × 266px. There is deliberately **no
+type-set substitute**: if a file goes missing the slot stays empty rather than
+standing in a lookalike lockup. `.reno-first img.title-page-logo` sizes on
+width, so replacement artwork drops in without retouching.
+
+At the size the mark sits on the title page (62mm) the supplied 600px files
+work out to about 245 dpi. That is fine for this placement but under the 300
+dpi you would normally want for print — worth swapping in a larger master
+before a real print run.
 
 ## Page perfecting
 
