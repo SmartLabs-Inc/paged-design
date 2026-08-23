@@ -1,0 +1,59 @@
+// _margin-notes.scss
+//
+// The marginalia column carries three kinds of note:
+//   .margin-note-key    a fact worth lifting out of the text
+//   .margin-note-ref    a pointer to a worksheet or appendix
+//   .margin-note-verify a figure the reader must re-check
+
+#{$margin-note} {
+    color: $reno-slate;
+    font-family: $font-text-secondary;
+    font-size: 11px;
+    font-weight: 400;
+    hyphens: none;
+    line-height: 15px;
+    margin-bottom: $line-height-default * 0.6;
+    margin-top: 3px;
+    text-align: left;
+
+    @include no-break();
+
+    .margin-note-label {
+        @include label(9.5px, $reno-gold-deep, 700);
+        display: block;
+        margin-bottom: 3px;
+    }
+}
+
+@include in-margin-column($margin-note);
+
+.margin-note-key {
+    border-top: 2.5px solid $reno-gold;
+    padding-top: 7px;
+}
+
+.margin-note-ref {
+    border-top: 0.75px solid $reno-rule;
+    padding-top: 7px;
+
+    .margin-note-label {
+        color: $reno-navy;
+
+        &::before {
+            content: "\2192\00a0"; // →
+        }
+    }
+}
+
+.margin-note-verify {
+    background-color: $reno-sand;
+    border-left: 2.5px solid $reno-gold;
+    padding: 7px 9px 8px 9px;
+
+    .margin-note-label {
+
+        &::before {
+            content: "\25C7\00a0"; // ◇
+        }
+    }
+}

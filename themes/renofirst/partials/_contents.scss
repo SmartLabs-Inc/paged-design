@@ -1,0 +1,149 @@
+// _contents.scss
+
+.contents-page {
+    padding-top: 6mm;
+
+    h1 {
+        @include label(15px, $reno-gold-deep, 700);
+        border-bottom: 3px solid $reno-gold;
+        letter-spacing: 0.22em;
+        margin: 0 0 ($line-height-default * 1.2) 0;
+        padding-bottom: 12px;
+    }
+
+    // Two columns for the long planner list; the guide entries
+    // are wide enough to need the full measure, so the column
+    // rule falls where the list changes character.
+    .toc-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    li {
+        margin: 0;
+    }
+
+    a {
+        display: block;
+    }
+
+    // Same selector as the default TOC rule in themes/_defaults,
+    // so this wins the cascade outright: paged.js resolves one
+    // target-counter variable per rule, and two competing rules
+    // leave the page numbers unresolved.
+    .toc-list li a::after {
+        color: $reno-slate;
+        content: target-counter(attr(href), page);
+        float: right;
+        font-family: $font-text-secondary;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        padding-left: 8px;
+    }
+}
+
+.contents-page .toc-list li.toc-part {
+    margin-top: $line-height-default * 1.1 !important;
+
+    &:first-child {
+        margin-top: 0 !important;
+    }
+
+    a {
+        border-bottom: 2px solid $reno-navy;
+        padding-bottom: 6px;
+    }
+
+    .toc-entry-text {
+        @include label(13px, $reno-navy, 700);
+        letter-spacing: 0.13em;
+    }
+
+    a::after {
+        color: $reno-navy;
+        font-size: 13px;
+        font-weight: 700;
+    }
+}
+
+.toc-chapter {
+    break-inside: avoid;
+    margin-top: $line-height-default * 0.7 !important;
+
+    a {
+        padding-bottom: 1px;
+    }
+
+    .toc-entry-number {
+        color: $reno-gold-deep;
+        display: inline-block;
+        font-family: $font-display-main;
+        font-size: 19px;
+        font-weight: 800;
+        min-width: 26px;
+        vertical-align: -1px;
+    }
+
+    .toc-entry-text {
+        color: $reno-navy;
+        font-family: $font-display-main;
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    .toc-entry-summary {
+        color: $reno-slate;
+        display: block;
+        font-size: 12.5px;
+        line-height: 16px;
+        margin-bottom: 2px;
+        padding-left: 26px;
+    }
+}
+
+.toc-appendix {
+    margin-top: 5px !important;
+
+    .toc-entry-number {
+        color: $reno-gold-deep;
+        display: inline-block;
+        font-family: $font-display-main;
+        font-size: 13px;
+        font-weight: 700;
+        min-width: 26px;
+    }
+
+    .toc-entry-text {
+        color: $reno-navy;
+        font-family: $font-text-secondary;
+        font-size: 13px;
+        font-weight: 500;
+    }
+}
+
+.toc-group {
+    @include label($font-size-tiny, $reno-gold-deep, 700);
+    margin: ($line-height-default * 0.6) 0 3px 0 !important;
+}
+
+.toc-worksheet {
+
+    a {
+        border-bottom: 0.75px solid $reno-mist;
+        padding: 1px 0 2px 0;
+    }
+
+    .toc-entry-text {
+        color: $reno-ink;
+        font-family: $font-text-secondary;
+        font-size: 12.5px;
+        font-weight: 400;
+    }
+
+    a::after {
+        font-size: 11.5px;
+    }
+}

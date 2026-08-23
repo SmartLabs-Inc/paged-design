@@ -1,0 +1,252 @@
+// _frontmatter.scss
+//
+// Cover, half-title, title page and copyright page.
+
+
+// The brand lockup
+// ----------------
+// A type-set stand-in for the Reno First mark, built so the real
+// logo file can replace it: swap the <p class="brand-lockup"> for
+// an <img class="title-page-logo">.
+
+#{$brand-lockup} {
+    hyphens: none;
+    line-height: 1;
+    margin: 0 0 26px 0;
+    white-space: nowrap;
+
+    .brand-reno {
+        color: $reno-gold;
+        font-family: $font-display-main;
+        font-size: 44px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        text-transform: uppercase;
+    }
+
+    .brand-first {
+        color: $reno-navy;
+        font-family: $font-script;
+        font-size: 42px;
+        margin-left: 6px;
+        vertical-align: -6px;
+    }
+
+    &.brand-lockup-dark .brand-first {
+        color: #fff;
+    }
+}
+
+
+// Cover
+// -----
+
+.cover {
+    background-color: $reno-navy;
+    overflow: hidden;
+
+    & > div {
+        height: 100%;
+    }
+
+    & > div > div {
+        height: 100%;
+        padding: 40mm 24mm 46mm 24mm;
+        position: relative;
+    }
+
+    .cover-kicker {
+        @include label($font-size-small, $reno-gold, 700);
+        letter-spacing: 0.2em;
+        margin: 0 0 14px 0;
+    }
+
+    .cover-title {
+        color: #fff;
+        font-family: $font-display-main;
+        font-size: 38px;
+        font-weight: 600;
+        hyphens: none;
+        letter-spacing: -0.015em;
+        line-height: 42px;
+        margin: 0;
+        max-width: 88%;
+
+        span {
+            color: $reno-gold;
+            display: block;
+            font-size: 68px;
+            font-weight: 800;
+            letter-spacing: -0.035em;
+            line-height: 66px;
+            margin-top: 6px;
+        }
+    }
+
+    .cover-subtitle {
+        border-top: 3px solid $reno-gold;
+        color: $reno-navy-pale;
+        font-family: $font-text-secondary;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 21px;
+        margin: 26px 0 0 0;
+        max-width: 80%;
+        padding-top: 16px;
+    }
+
+    .cover-skyline {
+        bottom: -1px;
+        left: -24mm;
+        margin: 0;
+        position: absolute;
+        right: -24mm;
+
+        img {
+            display: block;
+            width: 100%;
+        }
+    }
+}
+
+
+// Half-title and title pages
+// --------------------------
+
+.half-title-page,
+.title-page {
+    margin: 0;
+    text-align: left;
+
+    p {
+        hyphens: none;
+        text-align: left;
+        text-indent: 0;
+    }
+}
+
+.half-title-page {
+    padding-top: 78mm;
+
+    .title-page-title {
+        color: $reno-navy;
+        font-family: $font-display-main;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: -0.015em;
+        line-height: 28px;
+        margin: 0;
+        max-width: 62%;
+        string-set: book-title content();
+
+        &::after {
+            background-color: $reno-gold;
+            content: "";
+            display: block;
+            height: 3px;
+            margin-top: 16px;
+            width: 54px;
+        }
+    }
+}
+
+.title-page {
+    padding-top: 34mm;
+
+    .title-page-title {
+        color: $reno-navy;
+        font-family: $font-display-main;
+        font-size: 46px;
+        font-weight: 800;
+        letter-spacing: -0.028em;
+        line-height: 46px;
+        margin: 0;
+
+        span {
+            color: $reno-gold-deep;
+            display: block;
+        }
+    }
+
+    .title-page-subtitle {
+        @include label(14px, $reno-slate, 600);
+        letter-spacing: 0.14em;
+        margin: 20px 0 0 0;
+    }
+
+    .title-page-edition {
+        border-top: 3px solid $reno-gold;
+        color: $reno-navy;
+        font-family: $font-text-secondary;
+        font-size: 14px;
+        font-weight: 500;
+        margin: 22px 0 0 0;
+        padding-top: 14px;
+        width: 54px;
+        white-space: nowrap;
+    }
+
+    .title-page-contributors {
+        color: $reno-slate;
+        font-size: 15px;
+        line-height: 21px;
+        margin: 44mm 0 0 0;
+        max-width: 74%;
+    }
+
+    .title-page-publisher {
+        @include label($font-size-small, $reno-navy, 700);
+        bottom: 0;
+        letter-spacing: 0.2em;
+        margin: 0;
+        position: absolute;
+        transform: none;
+    }
+}
+
+
+// Copyright page
+// --------------
+
+.copyright-page {
+    bottom: 0;
+    color: $reno-slate;
+    font-size: 11px;
+    line-height: 15px;
+    position: absolute;
+
+    p {
+        margin-bottom: 10px;
+        text-align: left;
+    }
+
+    .imprint {
+        color: $reno-navy;
+        font-family: $font-text-secondary;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 18px;
+    }
+
+    .identifiers {
+        font-family: $font-text-secondary;
+        letter-spacing: 0.04em;
+    }
+
+    .editors-heading {
+        @include label($font-size-tiny, $reno-gold-deep, 700);
+        border: 0;
+        margin: 20px 0 6px 0;
+        padding: 0;
+    }
+
+    .disclaimer {
+        max-width: 118mm;
+        text-align: justify;
+    }
+
+    .verify-note {
+        margin-top: 16px;
+        max-width: 118mm;
+    }
+}
