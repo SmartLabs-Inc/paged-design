@@ -46,7 +46,6 @@ $font-text-main: "Source Serif 4", Georgia, serif;
 $font-text-secondary: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
 $font-display-main: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
 $font-display-secondary: "Source Serif 4", Georgia, serif;
-$font-script: "Yellowtail", cursive;
 
 $font-size-default: 14px;
 $line-height-default: 19px;
@@ -105,25 +104,44 @@ $recto-bottom-frontmatter: normal;
 
 $colorspace: rgb;
 
-// Brand palette. Gold and navy are taken from the Reno First mark;
-// sand and mist are the tints they generate.
+// Brand palette.
+//
+// Two colours, both from the Reno First mark: the gold and the
+// navy. Nothing else is invented. Every other value below is one
+// of those two mixed with white or black, or laid over the page
+// at reduced opacity — so the whole book can be re-tuned by
+// editing these two lines, and no third hue can creep in.
+//
+// TODO: replace these with the values sampled from the supplied
+// logo artwork. They are eyeballed from the mark and are close,
+// but they are not measured.
 $reno-gold: #f5a623;
-$reno-gold-deep: #c97f0a;
-$reno-gold-pale: #fbe3b4;
 $reno-navy: #14395f;
-$reno-navy-deep: #0e2740;
-$reno-navy-pale: #d6dfe9;
-$reno-sand: #fdf5e8;
-$reno-sand-deep: #f7e8cd;
-$reno-ink: #1f2833;
-$reno-slate: #5b6675;
-$reno-slate-pale: #8b95a1;
-$reno-mist: #e2e0da;
-$reno-rule: #c9c6be;
+
+// Gold, at strength. `-deep` is the gold darkened enough to hold
+// its own as small type on white; the washes are the gold itself
+// at low opacity, which is what fills every panel the reader
+// writes on.
+$reno-gold-deep: darken($reno-gold, 13%);
+$reno-gold-rule: rgba($reno-gold, 0.45);
+$reno-gold-wash: rgba($reno-gold, 0.13);      // surfaces to write on
+$reno-gold-wash-deep: rgba($reno-gold, 0.19); // panels to read
+
+// Navy, mixed toward white for secondary type and hairlines, and
+// toward black for body text.
+$reno-ink: mix($reno-navy, #000, 58%);
+$reno-slate: mix($reno-navy, #fff, 68%);
+$reno-slate-pale: mix($reno-navy, #fff, 45%);
+$reno-rule: mix($reno-navy, #fff, 26%);
+$reno-mist: mix($reno-navy, #fff, 17%);
+$reno-tint: mix($reno-navy, #fff, 6%);
+
+// Reversed out of a navy ground.
+$reno-navy-pale: rgba(#fff, 0.74);
 
 $color-text-main: $reno-ink;
 $color-text-secondary: $reno-slate;
-$color-light: $reno-sand;
+$color-light: $reno-gold-wash;
 $color-mid: $reno-rule;
 $color-accent: $reno-gold;
 $color-links: $reno-navy;

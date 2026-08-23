@@ -7,10 +7,9 @@
 //
 //   Archivo         SIL Open Font License 1.1 — fonts/OFL-Archivo.txt
 //   Source Serif 4  SIL Open Font License 1.1 — fonts/OFL-SourceSerif4.txt
-//   Yellowtail      Apache License 2.0        — fonts/LICENSE-Yellowtail.txt
 //
-// All three are variable fonts, so one file covers every weight
-// the design uses.
+// Both are variable fonts, so one file covers every weight the
+// design uses.
 
 @font-face {
     font-family: "Archivo";
@@ -38,12 +37,4 @@
     font-display: block;
     src: url("fonts/source-serif-4-italic-variable.woff2") format("woff2-variations"),
          url("fonts/source-serif-4-italic-variable.woff2") format("woff2");
-}
-
-@font-face {
-    font-family: "Yellowtail";
-    font-style: normal;
-    font-weight: 400;
-    font-display: block;
-    src: url("fonts/yellowtail.woff2") format("woff2");
 }

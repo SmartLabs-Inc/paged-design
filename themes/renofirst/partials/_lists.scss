@@ -66,12 +66,12 @@ h2.checklist-heading {
     }
 
     .pros {
-        background-color: $reno-sand;
+        background-color: $reno-gold-wash-deep;
         border-top: 2.5px solid $reno-gold;
     }
 
     .cons {
-        background-color: #f2f2ef;
+        background-color: $reno-tint;
         border-top: 2.5px solid $reno-slate-pale;
     }
 
@@ -134,6 +134,11 @@ h2.checklist-heading {
         @include label(11.5px, $reno-navy, 700);
         letter-spacing: 0.05em;
         margin: 0 0 3px 0;
+
+        // These are directory entries, not subsections: they carry
+        // their contact lines with them and must not reserve the
+        // clearance an h3 gets in running text.
+        padding-bottom: 0;
     }
 
     #{$entry-contact} {

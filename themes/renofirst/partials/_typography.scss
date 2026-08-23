@@ -16,6 +16,21 @@ body {
 // and each of those partials sets its own. Everything below is
 // the run of headings inside a chapter.
 
+// A new section may not begin in the last ten lines of a page,
+// and a subsection may not begin in the last five: a heading with
+// two lines under it reads as a mistake.
+//
+// The clearance is added as padding, which makes the heading box
+// too tall to fit into a short remainder, so paged.js moves the
+// whole heading to the next page (`break-inside: avoid` stops it
+// splitting the padding instead). The matching negative margin
+// pulls the following copy back up, so the printed spacing is
+// exactly what it was.
+@mixin needs-room-below($lines, $visible-gap) {
+    margin-bottom: $visible-gap - ($line-height-default * $lines);
+    padding-bottom: $line-height-default * $lines;
+}
+
 h2 {
     border-top: 2.5px solid $reno-gold;
     color: $reno-navy;
@@ -24,9 +39,10 @@ h2 {
     font-weight: 700;
     letter-spacing: -0.006em;
     line-height: 24px;
-    margin: ($line-height-default * 1.6) 0 ($line-height-default * 0.45) 0;
+    margin-top: $line-height-default * 1.6;
     padding-top: 7px;
 
+    @include needs-room-below(10, $line-height-default * 0.45);
     @include no-break();
     break-after: avoid;
 }
@@ -37,8 +53,9 @@ h3 {
     font-size: 15px;
     font-weight: 700;
     line-height: 20px;
-    margin: ($line-height-default * 0.9) 0 3px 0;
+    margin-top: $line-height-default * 0.9;
 
+    @include needs-room-below(5, 3px);
     @include no-break();
     break-after: avoid;
 }
@@ -161,4 +178,38 @@ hr {
 // Anything the design generates and print should not repeat.
 .non-printing {
     display: none;
+}
+
+
+// Page perfecting
+// ---------------
+//
+// Applied by the build to a single section when its tail would
+// otherwise spill two or three lines onto the next page. Each
+// level takes a little more out of the leading and the space
+// between paragraphs — enough to pull the block back onto the
+// page it belongs to, and little enough that a reader comparing
+// two spreads would not see it.
+
+.section {
+
+    &.tighten-1 p {
+        margin-bottom: $text-spacing - 3px;
+    }
+
+    &.tighten-2 {
+        line-height: $line-height-default - 0.5px;
+
+        p {
+            margin-bottom: $text-spacing - 4px;
+        }
+    }
+
+    &.tighten-3 {
+        line-height: $line-height-default - 1px;
+
+        p {
+            margin-bottom: $text-spacing - 5px;
+        }
+    }
 }

@@ -18,7 +18,11 @@
 }
 
 @mixin runner-title() {
-    @include label($font-size-tiny, $reno-slate, 600);
+    // A notch smaller and less tracked than the folio, so that the
+    // longest title in the book — "Forms You'll Need to Get
+    // Started" — still sets on one line in the margin box.
+    @include label(9.5px, $reno-slate, 600);
+    letter-spacing: 0.06em;
 }
 
 @page :left {

@@ -2,7 +2,7 @@
 
 // A Nevada-specific aside carried over from the planner.
 #{$context-note} {
-    background-color: $reno-sand;
+    background-color: $reno-gold-wash-deep;
     border: 0;
     border-left: 3px solid $reno-gold;
     color: $reno-navy;
@@ -73,6 +73,6 @@
     }
 
     a.url {
-        color: $reno-gold-pale;
+        color: $reno-gold;
     }
 }

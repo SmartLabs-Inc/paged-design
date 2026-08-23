@@ -40,31 +40,79 @@ they are for writing on, not for reading around.
 
 ## Colours and type
 
-Gold `#f5a623` and navy `#14395f` are the Reno First brand colours; sand
-`#fdf5e8` is the tint they generate, and it does one job throughout the
-workbook: **anything printed sits on white, anything the reader fills in sits
-on sand.**
+**Two colours, both from the Reno First mark: the gold and the navy.** Nothing
+else is invented. Every other value in `_variables.scss` is one of those two
+mixed toward white or black, or laid over the page at reduced opacity — so the
+whole book re-tunes from two lines, and no third hue can creep in.
+
+The gold is what carries the design. It rules the headings, marks the
+checkboxes and margin notes, and — at 13% over white — fills every surface the
+reader writes on. That gives the workbook its one structural rule: **anything
+printed sits on white, anything you fill in sits on gold.** Panels that are
+there to be read rather than written on use the same gold a little stronger
+(19%), so the two never get confused.
 
 - Display: Archivo (variable, 400–800)
 - Text: Source Serif 4 (variable, roman and italic)
-- Wordmark script: Yellowtail
 
 Fonts are stored in `fonts/` and declared in `partials/_fonts.scss` rather
 than linked from Google, as the project README recommends for production: an
-upstream font change can reflow a whole book. Licences are alongside the
-files (OFL for Archivo and Source Serif 4, Apache 2.0 for Yellowtail).
+upstream font change can reflow a whole book. Licences (OFL) sit alongside the
+files.
+
+## The logo
+
+The mark is placed as supplied artwork, from two files:
+
+```
+content/reno-first/images/reno-first-logo.png           full colour, on white
+content/reno-first/images/reno-first-logo-reversed.png  on the navy ground
+```
+
+There is deliberately **no type-set substitute**. If a file is missing the slot
+stays empty rather than standing in a lookalike lockup. `.reno-first
+img.title-page-logo` sizes on width, so either file drops in without
+retouching.
+
+## Page perfecting
+
+Two typesetting rules are enforced. Both are checked against the rendered
+pages before the book is considered done — paginate in Chrome, then measure
+every `section.section` fragment:
+
+**A section may not begin in the last ten lines of a page** (a subsection, the
+last five). The clearance is added as `padding-bottom` on the heading, which
+makes its box too tall to fit into a short remainder, so paged.js moves the
+whole heading to the next page; a matching negative `margin-bottom` pulls the
+following copy back up, so the printed spacing is unchanged. `break-inside:
+avoid` stops paged.js splitting the padding instead. See `needs-room-below()`
+in `partials/_typography.scss`.
+
+Any rule that overrides a heading's margin must also reset its
+`padding-bottom`, or it will inherit that clearance as a gap — `.field-label`,
+`.editors-heading` and `.entry-name` all do.
+
+**No section may leave a tail of three lines or fewer alone on a new page.**
+Where the clearance rule does not already resolve this, the build tightens the
+offending section a notch — a little out of the leading and the space between
+paragraphs, at three escalating levels (`.tighten-1` … `.tighten-3`). The
+levels chosen are recorded in `content/reno-first/perfect.json` and written
+into the markup as classes, so the committed HTML is reproducible rather than
+hand-nudged. As the book currently stands the clearance rule alone is enough:
+that file is empty and no section is tightened.
 
 ## Components
 
 | Selector | What it is |
 | --- | --- |
 | `.chapter-opener` | Navy panel: eyebrow, title, gold rule, chapter summary, ghost numeral from `data-numeral` |
+| `section.section` | One h2 and the copy under it — the unit the page-perfecting pass tightens |
 | `.worksheet-header` | Light opener for planner pages |
 | `.pros-cons` | Paired advantages/disadvantages panels — Chapter 1 compares seven structures |
 | `ul.checklist` | End-of-chapter checklists, with drawn tick boxes |
 | `.directory-entry` | Agency listings in Appendices B and C |
 | `.reno-tip` | Local practical advice, reversed out of navy |
-| `.context-note` | A Nevada-specific aside, gold rule on sand |
+| `.context-note` | A Nevada-specific aside, gold rule on a gold wash |
 | `.verify-note` | A ◇ figure that will change |
 | `table.form-table` | Worksheet forms; `td.fill` marks a write-in cell |
 | `table.check-table` | Forms with a tick column |
@@ -72,9 +120,6 @@ files (OFL for Archivo and Source Serif 4, Apache 2.0 for Yellowtail).
 
 ## Notes for anyone editing this
 
-- The brand lockup on the cover and title page (`.brand-lockup`) is set in
-  type as a stand-in. Drop the real logo in as
-  `<p class="title-page-logo"><img …></p>` when the artwork is available.
 - Paged.js reads `page` and `break-before` in source order, and skips an
   explicit page break when it thinks the named page is about to change. Named
   pages are therefore declared *before* their breaks in
@@ -87,3 +132,7 @@ files (OFL for Archivo and Source Serif 4, Apache 2.0 for Yellowtail).
 - Paged.js lays @page margins out as grid tracks around the page area, so the
   area's padding is the marginalia column *only* — the outer margin is
   already reserved.
+- Paged.js does not resolve the defaults' multi-value `string-set`
+  (`h1-text content(), h1-title attr(title)`), so `string(h1-title)` comes
+  back empty and running heads go blank. Use `string(h1-text, first)` and size
+  the running head to fit the longest title in the book.

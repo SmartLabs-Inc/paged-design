@@ -3,40 +3,30 @@
 // Cover, half-title, title page and copyright page.
 
 
-// The brand lockup
-// ----------------
-// A type-set stand-in for the Reno First mark, built so the real
-// logo file can replace it: swap the <p class="brand-lockup"> for
-// an <img class="title-page-logo">.
+// The logo
+// --------
+// The Reno First mark, placed as supplied artwork. There is no
+// type-set substitute: if the file is missing the slot simply
+// stays empty rather than inventing a lockup.
+//
+//   images/reno-first-logo.png           full colour, for white
+//   images/reno-first-logo-reversed.png  for the navy ground
+//
+// Sized on width so either file drops in without retouching.
 
-#{$brand-lockup} {
-    hyphens: none;
-    line-height: 1;
+.reno-first #{$title-page-logo} {
+    display: block;
+    height: auto;
     margin: 0 0 26px 0;
-    white-space: nowrap;
-
-    .brand-reno {
-        color: $reno-gold;
-        font-family: $font-display-main;
-        font-size: 44px;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        text-transform: uppercase;
-    }
-
-    .brand-first {
-        color: $reno-navy;
-        font-family: $font-script;
-        font-size: 42px;
-        margin-left: 6px;
-        vertical-align: -6px;
-    }
-
-    &.brand-lockup-dark .brand-first {
-        color: #fff;
-    }
+    max-width: 100%;
+    position: static;
+    transform: none;
+    width: 62mm;
 }
 
+.reno-first.cover #{$title-page-logo} {
+    width: 68mm;
+}
 
 // Cover
 // -----
