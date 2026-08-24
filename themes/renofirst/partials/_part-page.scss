@@ -20,13 +20,14 @@
     }
 
     .part-number {
-        @include label($font-size-small, $reno-gold, 700);
+        @include label($font-size-small, $reno-navy-pale, 700);
         letter-spacing: 0.24em;
         margin: 0 0 16px 0;
     }
 
+    // Gold on navy, as on the chapter openers.
     h1 {
-        color: #fff;
+        color: $reno-gold;
         font-family: $font-display-main;
         font-size: 54px;
         font-weight: 800;

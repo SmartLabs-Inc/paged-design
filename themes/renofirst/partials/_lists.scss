@@ -6,11 +6,9 @@
 // Chapter checklists
 // ------------------
 // The end-of-chapter checklists are the part of this book people
-// actually work from, so they get room to be ticked.
-
-h2.checklist-heading {
-    border-top-color: $reno-navy;
-}
+// actually work from, so they get room to be ticked. The heading
+// takes no rule of its own: the closing rule on the section above
+// it already marks the end of the chapter's prose.
 
 #{$checklist} {
     list-style: none;

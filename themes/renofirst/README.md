@@ -38,6 +38,13 @@ outer margin (`full-measure()` in `partials/_mixins.scss`).
 Worksheet pages give the column up entirely and use the whole 180mm measure —
 they are for writing on, not for reading around.
 
+Every worksheet is followed by ruled Notes pages that belong to it: one page
+per page of worksheet, with one as the floor. That keeps each worksheet and its
+notes to an even number of pages, so the planner holds the same hand all the
+way through — the sheet on the verso, somewhere to write facing it on the
+recto. The counts are measured from the rendered book and recorded in
+`content/reno-first/notes.json`, the same way the page-perfecting levels are.
+
 ## Colours and type
 
 **Two colours, both sampled from the Reno First mark: gold `#fbae06` and navy
@@ -45,12 +52,16 @@ they are for writing on, not for reading around.
 mixed toward white or black, or laid over the page at reduced opacity — so the
 whole book re-tunes from two lines, and no third hue can creep in.
 
-The gold is what carries the design. It rules the headings, marks the
-checkboxes and margin notes, and — at 13% over white — fills every surface the
+The gold is what carries the design. It sets every title in the book — chapter,
+part, appendix and worksheet — closes every section with a rule, marks the
+checkboxes and margin notes, and, at 13% over white, fills every surface the
 reader writes on. That gives the workbook its one structural rule: **anything
 printed sits on white, anything you fill in sits on gold.** Panels that are
 there to be read rather than written on use the same gold a little stronger
 (19%), so the two never get confused.
+
+Navy is the reading colour: body text, section headings, table heads, and the
+ground the chapter and part titles are reversed out of.
 
 - Display: Archivo (variable, 400–800)
 - Text: Source Serif 4 (variable, roman and italic)
@@ -81,9 +92,18 @@ before a real print run.
 
 ## Page perfecting
 
-Two typesetting rules are enforced. Both are checked against the rendered
-pages before the book is considered done — paginate in Chrome, then measure
-every `section.section` fragment:
+How a section is set off, and two typesetting rules. Both rules are checked
+against the rendered pages before the book is considered done — paginate in
+Chrome, then measure every `section.section` fragment:
+
+**A section closes with its rule, rather than the next one opening with it.**
+The gold rule is a `border-bottom` on `section.section`, so it prints where the
+section *ends* — at the foot of the previous page when the next section starts
+a new one — and a section that opens at the top of a page has no rule stacked
+under the running head's. Paged.js unsets margins and padding on the fragments
+of a split box but leaves borders alone, so the theme zeroes the border on
+`[data-split-to]`; without that a section running over a page would print its
+closing rule at the foot of every page it touches.
 
 **A section may not begin in the last ten lines of a page** (a subsection, the
 last five). The clearance is added as `padding-bottom` on the heading, which
@@ -103,8 +123,8 @@ offending section a notch — a little out of the leading and the space between
 paragraphs, at three escalating levels (`.tighten-1` … `.tighten-3`). The
 levels chosen are recorded in `content/reno-first/perfect.json` and written
 into the markup as classes, so the committed HTML is reproducible rather than
-hand-nudged. As the book currently stands the clearance rule alone is enough:
-that file is empty and no section is tightened.
+hand-nudged. As the book currently stands seven sections are tightened, none
+past level 2.
 
 ## Components
 
@@ -121,7 +141,9 @@ that file is empty and no section is tightened.
 | `.verify-note` | A ◇ figure that will change |
 | `table.form-table` | Worksheet forms; `td.fill` marks a write-in cell |
 | `table.check-table` | Forms with a tick column |
+| `.field-panel` | Detail on one side, a box to write in on the other; `.field-panel-check` adds a tick |
 | `.write-in` / `.prompt-box` | Ruled answer areas |
+| `.notes-page` | A page of ruled lines belonging to the worksheet before it |
 
 ## Notes for anyone editing this
 
@@ -137,6 +159,12 @@ that file is empty and no section is tightened.
 - Paged.js lays @page margins out as grid tracks around the page area, so the
   area's padding is the marginalia column *only* — the outer margin is
   already reserved.
+- Word's own answer space is either a sliver of a table cell beside the
+  question or a run of underscores inside it, and neither is enough to write
+  in. Where that matters the build sets the table as a `.field-panel` instead —
+  question on one side, an open gold box on the other. Which tables get that
+  treatment is listed in `PANELS` in the build script, keyed by worksheet title
+  and field label.
 - Paged.js does not resolve the defaults' multi-value `string-set`
   (`h1-text content(), h1-title attr(title)`), so `string(h1-title)` comes
   back empty and running heads go blank. Use `string(h1-text, first)` and size

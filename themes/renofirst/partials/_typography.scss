@@ -31,16 +31,19 @@ body {
     padding-bottom: $line-height-default * $lines;
 }
 
+// The gold rule belongs to the *end* of a section, not the start
+// of the next one — see `section.section` under Page perfecting
+// below. A heading carries no rule of its own, so a section that
+// opens at the top of a page sits directly under the running
+// head instead of stacking a second gold line beneath its rule.
 h2 {
-    border-top: 2.5px solid $reno-gold;
     color: $reno-navy;
     font-family: $font-display-main;
     font-size: 20px;
     font-weight: 700;
     letter-spacing: -0.006em;
     line-height: 24px;
-    margin-top: $line-height-default * 1.6;
-    padding-top: 7px;
+    margin-top: $line-height-default * 1.2;
 
     @include needs-room-below(10, $line-height-default * 0.45);
     @include no-break();
@@ -190,6 +193,25 @@ hr {
 // between paragraphs — enough to pull the block back onto the
 // page it belongs to, and little enough that a reader comparing
 // two spreads would not see it.
+
+// Sections close with a gold rule across the text measure. It is
+// a border-bottom rather than a border-top on the next heading so
+// that it prints where the section *ends* — on the previous page
+// when the next section starts a new one — and so that a section
+// opening at the top of a page has no rule stacked under the
+// running head's.
+section.section {
+    border-bottom: 2.5px solid $reno-gold;
+    padding-bottom: $line-height-default * 0.55;
+}
+
+// Paged.js unsets margins and padding on the fragments of a split
+// box but leaves borders alone, so a section running over a page
+// would print its closing rule at the foot of every page it
+// touches. Only the last fragment keeps it.
+.pagedjs_area section.section[data-split-to] {
+    border-bottom: 0;
+}
 
 .section {
 

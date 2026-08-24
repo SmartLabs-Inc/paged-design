@@ -14,7 +14,7 @@
         @include label($font-size-tiny, $reno-navy, 700);
         border: 0;
         letter-spacing: 0.11em;
-        margin: ($line-height-default * 0.85) 0 6px 0;
+        margin: ($line-height-default * 0.75) 0 6px 0;
         padding: 0;
 
         @include no-break();
@@ -27,7 +27,7 @@
         font-size: 13px;
         font-weight: 400;
         line-height: 18.5px;
-        margin-bottom: $line-height-default * 0.6;
+        margin-bottom: $line-height-default * 0.5;
     }
 
     p {
@@ -212,3 +212,126 @@
     }
 }
 
+
+
+// Answer panels
+// -------------
+//
+// Some of the planner's tables ask a question and leave a sliver
+// of a cell beside it, or bury a run of underscores in the
+// question itself. Neither leaves room to write an answer. A
+// panel splits the row instead: the detail on one side, an open
+// box on the other, sized to be written in with a pen.
+
+#{$field-panel} {
+    margin: 0 0 ($line-height-default * 0.25) 0;
+
+    .field-row {
+        border-top: 0.75px solid $reno-rule;
+        display: flex;
+
+        @include no-break();
+
+        &:last-child {
+            border-bottom: 0.75px solid $reno-rule;
+        }
+    }
+
+    .field-detail {
+        box-sizing: border-box;
+        flex: 0 0 52%;
+        padding: 6px 16px 6px 0;
+    }
+
+    .field-name {
+        color: $reno-navy;
+        font-family: $font-text-secondary;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 16px;
+        margin: 0;
+    }
+
+    .field-note {
+        color: $reno-slate;
+        font-family: $font-text-secondary;
+        font-size: 10.5px;
+        font-weight: 400;
+        line-height: 14px;
+        margin: 2px 0 0 0;
+    }
+
+    // The box. Gold wash, like every other surface in the book
+    // that is blank for the reader rather than printed for them.
+    .field-answer {
+        background-color: $reno-gold-wash;
+        border-left: 0.75px solid $reno-gold-rule;
+        box-sizing: border-box;
+        flex: 1 1 48%;
+        min-height: $line-height-default * 1.75;
+    }
+}
+
+// The checked variant: the same panel with a tick box against the
+// detail, for lists where each row is both a thing to confirm and
+// a thing to record.
+.field-panel-check {
+
+    .field-detail {
+        padding-left: 30px;
+        position: relative;
+    }
+
+    .field-row .field-detail::before {
+        @include tick-box(13px);
+        border-color: $reno-gold-deep;
+        left: 0;
+        position: absolute;
+        top: 10px;
+    }
+
+    .field-answer {
+        min-height: $line-height-default * 2.4;
+    }
+}
+
+
+// Notes pages
+// -----------
+//
+// Every worksheet is followed by ruled pages that belong to it,
+// so the reader has somewhere to put what the sheet itself has no
+// box for — what an advisor said, what to check, what changed.
+// One page per page of worksheet, which keeps each sheet and its
+// notes to an even number of pages: the planner then holds the
+// same hand throughout, with the sheet on the verso and room to
+// write facing it.
+//
+// The block is sized to exactly the rules it holds ($notes-rules
+// of them) rather than to the page, so it can never spill a
+// stray line onto a page of its own. NOTES_RULES in the build
+// script emits the matching count.
+
+$notes-rule-height: $line-height-default * 1.35;
+$notes-rules: 31;
+
+.notes-page {
+
+    .notes-rules {
+        background-color: $reno-gold-wash;
+        height: $notes-rule-height * $notes-rules;
+        overflow: hidden;
+
+        @include no-break();
+
+        span {
+            border-bottom: 0.75px solid $reno-gold-rule;
+            display: block;
+            height: $notes-rule-height;
+
+            &:last-child {
+                border-bottom: 0;
+            }
+        }
+    }
+}

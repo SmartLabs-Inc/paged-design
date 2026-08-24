@@ -4578,15 +4578,13 @@ body {
   line-height: 19px; }
 
 h2 {
-  border-top: 2.5px solid #fbae06;
   color: #02305f;
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
   font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.006em;
   line-height: 24px;
-  margin-top: 30.4px;
-  padding-top: 7px;
+  margin-top: 22.8px;
   margin-bottom: -181.45px;
   padding-bottom: 190px;
   break-inside: avoid;
@@ -4691,6 +4689,13 @@ hr {
 
 .non-printing {
   display: none; }
+
+section.section {
+  border-bottom: 2.5px solid #fbae06;
+  padding-bottom: 10.45px; }
+
+.pagedjs_area section.section[data-split-to] {
+  border-bottom: 0; }
 
 .section.tighten-1 p {
   margin-bottom: 6.5px; }
@@ -5178,7 +5183,7 @@ hr {
     padding: 74mm 24mm 0 24mm;
     position: relative; }
   .part-page .part-number {
-    color: #fbae06;
+    color: rgba(255, 255, 255, 0.74);
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 12px;
     font-weight: 700;
@@ -5188,7 +5193,7 @@ hr {
     letter-spacing: 0.24em;
     margin: 0 0 16px 0; }
   .part-page h1 {
-    color: #fff;
+    color: #fbae06;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 54px;
     font-weight: 800;
@@ -5229,7 +5234,7 @@ hr {
   break-inside: avoid;
   page-break-inside: avoid; }
   .chapter-opener .chapter-number {
-    color: #fbae06;
+    color: rgba(255, 255, 255, 0.74);
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 10.5px;
     font-weight: 700;
@@ -5245,7 +5250,7 @@ hr {
       margin-left: 3px;
       vertical-align: -1px; }
   .chapter-opener h1 {
-    color: #fff;
+    color: #fbae06;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 40px;
     font-weight: 800;
@@ -5295,7 +5300,7 @@ hr {
     margin-bottom: 10px; }
 
 .worksheet-header {
-  border-bottom: 2.5px solid #fbae06;
+  border-bottom: 2.5px solid #02305f;
   margin-bottom: 13.3px;
   padding-bottom: 9px;
   break-inside: avoid;
@@ -5308,9 +5313,10 @@ hr {
     letter-spacing: 0.09em;
     line-height: 13px;
     text-transform: uppercase;
-    margin: 0 0 6px 0; }
+    margin: 0 0 6px 0;
+    color: #537292; }
   .worksheet-header h1 {
-    color: #02305f;
+    color: #fbae06;
     font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 27px;
     font-weight: 800;
@@ -5439,9 +5445,6 @@ hr {
     margin: 0; }
   .reno-tip a.url {
     color: #fbae06; }
-
-h2.checklist-heading {
-  border-top-color: #02305f; }
 
 ul.checklist {
   list-style: none;
@@ -5578,7 +5581,7 @@ ul.checklist {
   text-transform: uppercase;
   border: 0;
   letter-spacing: 0.11em;
-  margin: 16.15px 0 6px 0;
+  margin: 14.25px 0 6px 0;
   padding: 0;
   break-inside: avoid;
   page-break-inside: avoid;
@@ -5590,7 +5593,7 @@ ul.checklist {
   font-size: 13px;
   font-weight: 400;
   line-height: 18.5px;
-  margin-bottom: 11.4px; }
+  margin-bottom: 9.5px; }
 
 .worksheet p {
   font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
@@ -5721,6 +5724,71 @@ table.check-table tbody td:nth-child(2) {
     border-bottom: 0.75px solid rgba(251, 174, 6, 0.45);
     display: block;
     height: 21.85px; }
+
+.field-panel {
+  margin: 0 0 4.75px 0; }
+  .field-panel .field-row {
+    border-top: 0.75px solid #bdc9d5;
+    display: flex;
+    break-inside: avoid;
+    page-break-inside: avoid; }
+    .field-panel .field-row:last-child {
+      border-bottom: 0.75px solid #bdc9d5; }
+  .field-panel .field-detail {
+    box-sizing: border-box;
+    flex: 0 0 52%;
+    padding: 6px 16px 6px 0; }
+  .field-panel .field-name {
+    color: #02305f;
+    font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    margin: 0; }
+  .field-panel .field-note {
+    color: #537292;
+    font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 10.5px;
+    font-weight: 400;
+    line-height: 14px;
+    margin: 2px 0 0 0; }
+  .field-panel .field-answer {
+    background-color: rgba(251, 174, 6, 0.13);
+    border-left: 0.75px solid rgba(251, 174, 6, 0.45);
+    box-sizing: border-box;
+    flex: 1 1 48%;
+    min-height: 33.25px; }
+
+.field-panel-check .field-detail {
+  padding-left: 30px;
+  position: relative; }
+
+.field-panel-check .field-row .field-detail::before {
+  border: 1px solid #8da2b7;
+  content: "";
+  display: inline-block;
+  height: 13px;
+  width: 13px;
+  border-color: #bc8203;
+  left: 0;
+  position: absolute;
+  top: 10px; }
+
+.field-panel-check .field-answer {
+  min-height: 45.6px; }
+
+.notes-page .notes-rules {
+  background-color: rgba(251, 174, 6, 0.13);
+  height: 795.15px;
+  overflow: hidden;
+  break-inside: avoid;
+  page-break-inside: avoid; }
+  .notes-page .notes-rules span {
+    border-bottom: 0.75px solid rgba(251, 174, 6, 0.45);
+    display: block;
+    height: 25.65px; }
+    .notes-page .notes-rules span:last-child {
+      border-bottom: 0; }
 
 figure {
   margin: 19px 0;

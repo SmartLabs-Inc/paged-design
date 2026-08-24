@@ -16,8 +16,10 @@
 
     @include no-break();
 
+    // With the title in gold, the eyebrow steps back to white so
+    // the panel has one accent, not two.
     .chapter-number {
-        @include label($font-size-tiny, $reno-gold, 700);
+        @include label($font-size-tiny, $reno-navy-pale, 700);
         letter-spacing: 0.16em;
         margin: 0 0 14px 0;
 
@@ -30,8 +32,11 @@
         }
     }
 
+    // The chapter title is set in the brand gold, on the navy: the
+    // two colours of the mark, in the proportion the mark uses
+    // them. Everything else in the panel is support.
     h1 {
-        color: #fff;
+        color: $reno-gold;
         font-family: $font-display-main;
         font-size: 40px;
         font-weight: 800;
@@ -90,18 +95,21 @@
 // Worksheet openers are light: this is a page people write on,
 // so it should not start with a slab of ink.
 .worksheet-header {
-    border-bottom: 2.5px solid $reno-gold;
+    border-bottom: 2.5px solid $reno-navy;
     margin-bottom: $line-height-default * 0.7;
     padding-bottom: 9px;
 
     @include no-break();
 
+    // Navy here, not the usual gold: the worksheet title above it
+    // is already gold, and the rule's job is to separate them.
     .worksheet-eyebrow {
         @include eyebrow();
+        color: $reno-slate;
     }
 
     h1 {
-        color: $reno-navy;
+        color: $reno-gold;
         font-family: $font-display-main;
         font-size: 27px;
         font-weight: 800;
