@@ -119,11 +119,13 @@ $colorspace: rgb;
 $reno-gold: #fbae06;
 $reno-navy: #02305f;
 
-// Gold, at strength. `-deep` is the gold darkened enough to hold
-// its own as small type on white; the washes are the gold itself
-// at low opacity, which is what fills every panel the reader
-// writes on.
-$reno-gold-deep: darken($reno-gold, 13%);
+// Gold, at strength. Every piece of gold *type* in the book is the
+// brand gold itself, undarkened — nothing stands in for it. The
+// one exception is the drawn tick box, whose 1px outline needs a
+// notch more weight to read on white. The washes are the gold at
+// low opacity, which is what fills every panel the reader writes
+// on.
+$reno-gold-tick: darken($reno-gold, 13%);
 $reno-gold-rule: rgba($reno-gold, 0.45);
 $reno-gold-wash: rgba($reno-gold, 0.13);      // surfaces to write on
 $reno-gold-wash-deep: rgba($reno-gold, 0.19); // panels to read

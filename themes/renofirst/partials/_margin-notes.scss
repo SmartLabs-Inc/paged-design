@@ -19,7 +19,7 @@
     @include no-break();
 
     .margin-note-label {
-        @include label(9.5px, $reno-gold-deep, 700);
+        @include label(9.5px, $reno-gold, 700);
         display: block;
         margin-bottom: 3px;
     }

@@ -63,6 +63,11 @@ there to be read rather than written on use the same gold a little stronger
 Navy is the reading colour: body text, section headings, table heads, and the
 ground the chapter and part titles are reversed out of.
 
+Every piece of gold **type** in the book is the brand gold itself, undarkened —
+no near-miss stands in for it anywhere. The one value derived from it is
+`$reno-gold-tick`, a notch darker, used only for the 1px outline of a drawn
+tick box, which needs the extra weight to read on white.
+
 - Display: Archivo (variable, 400–800)
 - Text: Source Serif 4 (variable, roman and italic)
 

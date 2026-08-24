@@ -30,7 +30,7 @@
         &::before {
             @include tick-box(13px);
             background-color: #fff;
-            border-color: $reno-gold-deep;
+            border-color: $reno-gold-tick;
             left: 0;
             position: absolute;
             top: 8px;
@@ -140,7 +140,7 @@
     }
 
     #{$entry-contact} {
-        color: $reno-gold-deep;
+        color: $reno-gold;
         font-family: $font-text-secondary;
         font-size: 11.5px;
         font-weight: 500;

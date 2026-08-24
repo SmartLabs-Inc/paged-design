@@ -14,7 +14,7 @@
 
 // The gold eyebrow above a title.
 @mixin eyebrow() {
-    @include label($font-size-tiny, $reno-gold-deep, 700);
+    @include label($font-size-tiny, $reno-gold, 700);
     margin: 0 0 6px 0;
 }
 

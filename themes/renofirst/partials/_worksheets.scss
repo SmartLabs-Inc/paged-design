@@ -159,7 +159,7 @@
 
         &::before {
             @include tick-box(12px);
-            border-color: $reno-gold-deep;
+            border-color: $reno-gold-tick;
             margin-top: 1px;
         }
     }
@@ -284,7 +284,7 @@
 
     .field-row .field-detail::before {
         @include tick-box(13px);
-        border-color: $reno-gold-deep;
+        border-color: $reno-gold-tick;
         left: 0;
         position: absolute;
         top: 10px;
