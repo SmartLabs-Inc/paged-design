@@ -153,9 +153,9 @@ impossible.
 |---|---|---|
 | 1 · The Wager | Consequence framing | The output is a spend recommendation, so overstating costs real money |
 | 2 · Eight Numbers | Evidence over opinion | Asks for figures from memory with a first-class "I'd have to look" — inability to answer *is* the finding |
-| 3 · The Understudy | Third-person projection | People are markedly more honest about their business when answering as someone else |
+| 3 · The Understudy | Third-person projection + forced ordering | People are markedly more honest about their business when answering as someone else. Selection is **unlimited** — a real business has more than three broken things — but they must name the one their deputy leads with, so breadth and priority are both captured |
 | 4 · One Hundred Chips | Forced ipsative allocation | Must total exactly 100, so nothing can be rated "important" for free |
-| 5 · Triage | Scarcity constraint | "Bleeding" is hard-capped at six of 28, forcing revealed preference |
+| 5 · Triage | Scarcity constraint | "Bleeding" is hard-capped at six of 28, forcing revealed preference. This is the *only* stage that caps you — breadth is collected earlier, priority is forced here |
 | 6 · Price the Bleed | Loss framing + confidence tagging | Asks the cost of *not* fixing; gut-feel claims are weighted 0.4 against measured at 1.0, so inflating a number reduces its influence |
 | 7 · Contradiction Desk | Cross-answer consistency check | Surfaces pairs that can't both be true and makes the respondent choose |
 | 8 · The Ledger | — | Output |
