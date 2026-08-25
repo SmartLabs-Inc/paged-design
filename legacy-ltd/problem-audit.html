@@ -17,7 +17,7 @@
   --ink:#0A0A0B; --ink-2:#0F0F12; --panel:#141418; --panel-2:#1A1A1F;
   --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.055);
   --bone:#F4F1EA; --bone-dim:#CFCBC2; --muted:#8E8E97; --muted-2:#6A6A73;
-  --gold:#C9A227; --gold-2:#E8C766; --gold-dim:rgba(201,162,39,.14);
+  --aqua:#0E7C7B; --aqua-hi:#12807E; --aqua-2:#5FD6CE; --aqua-dim:rgba(95,214,206,.13);
 
   /* Status — reserved, never reused as series colors */
   --ok:#5FB878; --warn:#E0A23F; --bad:#E0563F;
@@ -50,7 +50,7 @@ p{margin:0 0 16px}
 .lede{font-size:clamp(16px,1.4vw,18.5px);color:var(--bone-dim);max-width:64ch}
 .small{font-size:13.5px;color:var(--muted);line-height:1.6}
 .xs{font-size:11.5px;color:var(--muted-2);line-height:1.55}
-.eyebrow{font-family:var(--display);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:700;margin:0 0 14px}
+.eyebrow{font-family:var(--display);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--aqua);font-weight:700;margin:0 0 14px}
 .num{font-variant-numeric:tabular-nums}
 
 /* ---------- Logo ---------------------------------------------------------
@@ -67,13 +67,13 @@ p{margin:0 0 16px}
 .top__right{margin-left:auto;display:flex;align-items:center;gap:14px}
 .pctlbl{font-family:var(--display);font-size:11px;letter-spacing:.14em;color:var(--muted);white-space:nowrap}
 .pbar{width:120px;height:4px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
-.pbar>i{display:block;height:100%;background:var(--gold);border-radius:99px;transition:width .35s cubic-bezier(.2,.7,.3,1)}
+.pbar>i{display:block;height:100%;background:var(--aqua);border-radius:99px;transition:width .35s cubic-bezier(.2,.7,.3,1)}
 @media(max-width:620px){.top__name{display:none}.pbar{width:70px}}
 
 /* ---------- Stage shell ------------------------------------------------- */
 .stage{padding:clamp(36px,5.5vw,68px) 0 clamp(60px,7vw,96px);display:none}
 .stage.on{display:block}
-.stage__no{font-family:var(--display);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+.stage__no{font-family:var(--display);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--aqua);font-weight:700;margin-bottom:14px}
 .stage__hd{max-width:66ch;margin-bottom:clamp(26px,3.5vw,40px)}
 .stage__hd p{margin-top:16px}
 
@@ -85,21 +85,21 @@ p{margin:0 0 16px}
 .nav{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:30px;padding-top:24px;border-top:1px solid var(--line-2)}
 .nav .spacer{flex:1}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 26px;border-radius:999px;border:1px solid transparent;font-family:var(--display);font-weight:700;font-size:12.5px;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s,color .18s,opacity .18s;text-decoration:none;white-space:nowrap}
-.btn--gold{background:var(--gold);color:#15100A}
-.btn--gold:hover{background:var(--gold-2)}
+.btn--aqua{background:var(--aqua);color:#fff}
+.btn--aqua:hover{background:var(--aqua-hi);box-shadow:0 0 0 3px rgba(95,214,206,.22)}
 .btn--ghost{border-color:var(--line);background:transparent;color:var(--bone)}
-.btn--ghost:hover{border-color:var(--gold);color:var(--gold-2)}
+.btn--ghost:hover{border-color:var(--aqua);color:var(--aqua-2)}
 .btn--sm{padding:9px 18px;font-size:11px}
 .btn[disabled]{opacity:.32;cursor:not-allowed}
-:focus-visible{outline:2px solid var(--gold-2);outline-offset:2px}
+:focus-visible{outline:2px solid var(--aqua-2);outline-offset:2px}
 
 /* ---------- Stage 1: the wager ------------------------------------------ */
 .wager{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:8px}
 .wager>div{border:1px solid var(--line-2);border-radius:12px;padding:24px;background:linear-gradient(180deg,rgba(255,255,255,.028),transparent)}
 .wager b{display:block;font-family:var(--display);font-size:15px;margin-bottom:10px;color:var(--bone)}
 .wager p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.65}
-.pledge{display:flex;gap:14px;align-items:flex-start;margin-top:26px;padding:20px;border:1px solid rgba(201,162,39,.32);border-radius:12px;background:var(--gold-dim);cursor:pointer}
-.pledge input{margin-top:3px;width:18px;height:18px;accent-color:var(--gold);flex:none;cursor:pointer}
+.pledge{display:flex;gap:14px;align-items:flex-start;margin-top:26px;padding:20px;border:1px solid rgba(95,214,206,.32);border-radius:12px;background:var(--aqua-dim);cursor:pointer}
+.pledge input{margin-top:3px;width:18px;height:18px;accent-color:var(--aqua);flex:none;cursor:pointer}
 .pledge span{font-size:14px;color:var(--bone-dim);line-height:1.6}
 
 /* ---------- Stage 2: the numbers ---------------------------------------- */
@@ -113,7 +113,7 @@ p{margin:0 0 16px}
 .q input[type=number],.q input[type=text]{width:132px;padding:11px 13px;border-radius:10px;background:var(--ink-2);border:1px solid var(--line);color:var(--bone);font-family:var(--body);font-size:15px;font-variant-numeric:tabular-nums;outline:none;appearance:none;-moz-appearance:textfield}
 .q input[type=text]{width:220px}
 .q input::-webkit-outer-spin-button,.q input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-.q input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+.q input:focus{border-color:var(--aqua);box-shadow:0 0 0 3px var(--aqua-dim)}
 .q .suffix{font-size:13px;color:var(--muted-2);margin-left:-4px}
 .dunno{padding:10px 15px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-size:11.5px;font-family:var(--display);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .16s;white-space:nowrap}
 .dunno:hover{border-color:var(--muted);color:var(--bone-dim)}
@@ -123,20 +123,20 @@ p{margin:0 0 16px}
 .bizrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px}
 .bizrow label{display:block;font-size:12px;color:var(--bone-dim);margin-bottom:7px;font-weight:600}
 .bizrow input{width:100%;padding:11px 13px;border-radius:10px;background:var(--ink-2);border:1px solid var(--line);color:var(--bone);font-size:15px;font-variant-numeric:tabular-nums;outline:none;appearance:none;-moz-appearance:textfield}
-.bizrow input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+.bizrow input:focus{border-color:var(--aqua);box-shadow:0 0 0 3px var(--aqua-dim)}
 
 /* ---------- Stage 3: understudy ----------------------------------------- */
 .picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:10px}
 .pick{text-align:left;padding:14px 16px;border-radius:11px;border:1px solid var(--line);background:var(--ink-2);cursor:pointer;transition:all .16s;display:flex;gap:11px;align-items:flex-start}
-.pick:hover{border-color:rgba(201,162,39,.5)}
-.pick[aria-pressed=true]{background:var(--gold-dim);border-color:var(--gold)}
+.pick:hover{border-color:rgba(95,214,206,.5)}
+.pick[aria-pressed=true]{background:var(--aqua-dim);border-color:var(--aqua)}
 .pick i{flex:none;width:16px;height:16px;border-radius:4px;border:1px solid var(--line);margin-top:2px}
-.pick[aria-pressed=true] i{background:var(--gold);border-color:var(--gold)}
+.pick[aria-pressed=true] i{background:var(--aqua);border-color:var(--aqua)}
 .picks--one .pick i{border-radius:50%}
 .pick b{font-size:13.5px;font-weight:600;color:var(--bone);line-height:1.35;display:block}
-.pick[aria-pressed=true] b{color:var(--gold-2)}
+.pick[aria-pressed=true] b{color:var(--aqua-2)}
 textarea{width:100%;min-height:96px;padding:14px;border-radius:11px;background:var(--ink-2);border:1px solid var(--line);color:var(--bone);font-family:var(--body);font-size:15px;line-height:1.6;resize:vertical;outline:none}
-textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+textarea:focus{border-color:var(--aqua);box-shadow:0 0 0 3px var(--aqua-dim)}
 
 /* ---------- Stage 4: chips ---------------------------------------------- */
 .chipbank{display:flex;align-items:baseline;gap:14px;margin-bottom:24px;flex-wrap:wrap}
@@ -148,10 +148,10 @@ textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
 @media(max-width:640px){.chiprow{grid-template-columns:1fr 56px;grid-template-areas:"n v" "s s";gap:10px 14px}.chiprow .cn{grid-area:n}.chiprow .cs{grid-area:s}.chiprow .cv{grid-area:v}}
 .chiprow .cn b{display:block;font-size:14.5px;color:var(--bone);font-weight:600;line-height:1.35}
 .chiprow .cn span{font-size:12px;color:var(--muted-2)}
-.chiprow .cv{font-family:var(--display);font-size:19px;font-weight:700;text-align:right;color:var(--gold-2);font-variant-numeric:tabular-nums}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:99px;background:linear-gradient(90deg,var(--gold) var(--pct,0%),rgba(255,255,255,.13) var(--pct,0%));outline:none;cursor:pointer;margin:0}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--bone);border:3px solid var(--gold);cursor:pointer}
-input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--bone);border:3px solid var(--gold);cursor:pointer}
+.chiprow .cv{font-family:var(--display);font-size:19px;font-weight:700;text-align:right;color:var(--aqua-2);font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:99px;background:linear-gradient(90deg,var(--aqua) var(--pct,0%),rgba(255,255,255,.13) var(--pct,0%));outline:none;cursor:pointer;margin:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--bone);border:3px solid var(--aqua);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--bone);border:3px solid var(--aqua);cursor:pointer}
 
 /* ---------- Stage 5: triage --------------------------------------------- */
 .tcount{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
@@ -175,20 +175,41 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 .price{padding:22px 0;border-bottom:1px solid var(--line-2)}
 .price:last-child{border-bottom:0;padding-bottom:0}
 .price>b{display:block;font-size:16px;color:var(--bone);margin-bottom:5px;line-height:1.4}
-.price>.probe{font-size:13px;color:var(--gold);margin-bottom:16px;line-height:1.55}
+.price>.probe{font-size:13px;color:var(--aqua);margin-bottom:16px;line-height:1.55}
 .pgrid{display:grid;grid-template-columns:200px 1fr;gap:18px;align-items:start}
 @media(max-width:640px){.pgrid{grid-template-columns:1fr}}
 .pgrid label{display:block;font-size:11.5px;letter-spacing:.05em;color:var(--muted);margin-bottom:8px;text-transform:uppercase;font-family:var(--display)}
 .dollar{position:relative}
 .dollar>i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted-2);font-style:normal;font-size:14px;pointer-events:none}
 .dollar input{width:100%;padding:11px 13px 11px 26px;border-radius:10px;background:var(--ink-2);border:1px solid var(--line);color:var(--bone);font-size:15px;font-variant-numeric:tabular-nums;outline:none;appearance:none;-moz-appearance:textfield}
-.dollar input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+.dollar input:focus{border-color:var(--aqua);box-shadow:0 0 0 3px var(--aqua-dim)}
+.pblock{margin-top:18px}
+.pblock>label{display:block;font-size:12.5px;letter-spacing:.03em;color:var(--bone-dim);margin-bottom:10px;font-weight:600}
+.opts{display:grid;gap:8px}
+.opts--5{grid-template-columns:repeat(5,1fr)}
+.opts--3{grid-template-columns:repeat(3,1fr)}
+.opts--wrap{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+@media(max-width:820px){.opts--5{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.opts--3{grid-template-columns:1fr}.opts--5{grid-template-columns:1fr}}
+.opts button{
+  padding:11px 12px;border-radius:9px;border:1px solid var(--line);background:var(--ink-2);
+  cursor:pointer;text-align:left;transition:all .15s;min-width:0;
+}
+.opts button:hover{border-color:rgba(95,214,206,.5)}
+.opts button b{display:block;font-family:var(--display);font-size:12.5px;color:var(--bone);letter-spacing:.01em;line-height:1.3;font-weight:700}
+.opts button span{display:block;font-size:10.5px;color:var(--muted-2);margin-top:3px;line-height:1.35}
+.opts button[aria-pressed=true]{background:var(--aqua-dim);border-color:var(--aqua-2)}
+.opts button[aria-pressed=true] b{color:var(--aqua-2)}
+.opts button[aria-pressed=true] span{color:var(--bone-dim)}
+.derived{margin:16px 0 0;font-size:13px;color:var(--muted);line-height:1.55;min-height:0}
+.derived[data-on]{padding:12px 14px;border-radius:9px;background:var(--ink-2);border-left:2px solid var(--aqua-2);color:var(--bone-dim)}
+.derived strong{color:var(--aqua-2);font-weight:700}
 .conf{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .conf button{padding:11px 8px;border-radius:9px;border:1px solid var(--line);background:var(--ink-2);cursor:pointer;text-align:center;transition:all .15s}
 .conf button b{display:block;font-family:var(--display);font-size:12px;color:var(--bone);letter-spacing:.04em}
 .conf button span{display:block;font-size:10.5px;color:var(--muted-2);margin-top:3px;line-height:1.35}
-.conf button[aria-pressed=true]{background:var(--gold-dim);border-color:var(--gold)}
-.conf button[aria-pressed=true] b{color:var(--gold-2)}
+.conf button[aria-pressed=true]{background:var(--aqua-dim);border-color:var(--aqua)}
+.conf button[aria-pressed=true] b{color:var(--aqua-2)}
 
 /* ---------- Stage 7: contradictions ------------------------------------- */
 .contra{border:1px solid rgba(224,86,63,.4);border-radius:12px;padding:22px;background:rgba(224,86,63,.05);margin-bottom:16px}
@@ -198,7 +219,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 @media(max-width:600px){.resolve{grid-template-columns:1fr}}
 .resolve button{padding:14px 16px;border-radius:10px;border:1px solid var(--line);background:var(--ink-2);cursor:pointer;text-align:left;transition:all .15s;font-size:13.5px;color:var(--bone-dim);line-height:1.5}
 .resolve button:hover{border-color:var(--muted)}
-.resolve button[aria-pressed=true]{background:var(--gold-dim);border-color:var(--gold);color:var(--gold-2)}
+.resolve button[aria-pressed=true]{background:var(--aqua-dim);border-color:var(--aqua);color:var(--aqua-2)}
 .clean{border:1px solid rgba(95,184,120,.4);border-radius:12px;padding:24px;background:rgba(95,184,120,.05)}
 .clean b{display:block;font-family:var(--display);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ok);margin-bottom:10px}
 .clean p{margin:0;font-size:14.5px;color:var(--bone-dim);line-height:1.6}
@@ -208,7 +229,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 .tile{background:var(--panel);padding:24px 22px}
 .tile span{display:block;font-family:var(--display);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:12px;font-weight:700}
 .tile b{display:block;font-family:var(--display);font-size:clamp(26px,3.3vw,36px);line-height:1;letter-spacing:-.03em;color:var(--bone);font-variant-numeric:tabular-nums}
-.tile b.acc{color:var(--gold-2)}
+.tile b.acc{color:var(--aqua-2)}
 .tile em{display:block;font-style:normal;margin-top:9px;font-size:12px;color:var(--muted);line-height:1.5}
 
 .legend{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
@@ -218,7 +239,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 .bars{display:flex;flex-direction:column;gap:14px}
 .bar__top{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-bottom:7px}
 .bar__top b{font-size:14px;color:var(--bone);font-weight:600;line-height:1.35;min-width:0}
-.bar__top em{font-style:normal;font-family:var(--display);font-size:15px;color:var(--gold-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar__top em{font-style:normal;font-family:var(--display);font-size:15px;color:var(--aqua-2);font-variant-numeric:tabular-nums;white-space:nowrap}
 .bar__track{display:flex;gap:2px;height:14px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.05)}
 .bar__seg{height:100%;border-radius:2px;transition:width .4s cubic-bezier(.2,.7,.3,1)}
 .bar__seg:first-child{border-radius:4px 2px 2px 4px}
@@ -236,7 +257,7 @@ input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;bac
 .lane__h span{font-size:12px;color:var(--muted-2);font-variant-numeric:tabular-nums}
 .lane__d{font-size:13px;color:var(--muted);margin-bottom:14px}
 .lane[data-l=now] .lane__h b{color:var(--ok)}
-.lane[data-l=quarter] .lane__h b{color:var(--gold-2)}
+.lane[data-l=quarter] .lane__h b{color:var(--aqua-2)}
 .lane[data-l=fund] .lane__h b{color:#7fb4f0}
 .lane[data-l=not] .lane__h b{color:var(--muted)}
 
@@ -246,7 +267,7 @@ th,td{text-align:left;padding:12px 16px;font-size:13.5px;border-bottom:1px solid
 th{font-family:var(--display);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);font-weight:700;background:var(--ink-2);white-space:nowrap}
 tbody tr:last-child td{border-bottom:0}
 td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-family:var(--display);font-weight:700}
-td.n.acc{color:var(--gold-2)}
+td.n.acc{color:var(--aqua-2)}
 td b{font-weight:600;color:var(--bone)}
 td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
 
@@ -343,7 +364,7 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
 
     <div class="nav">
       <div class="spacer"></div>
-      <button class="btn btn--gold" id="go-0" disabled>Begin the audit</button>
+      <button class="btn btn--aqua" id="go-0" disabled>Begin the audit</button>
     </div>
   </div>
 </section>
@@ -353,7 +374,7 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
   <div class="wrap">
     <div class="stage__hd">
       <p class="stage__no">Stage Two of Eight</p>
-      <h1>Eight numbers, from memory.</h1>
+      <h1>Nine numbers, from memory.</h1>
       <p class="lede">Answer from what you actually carry in your head. Don't open a dashboard, don't check
       the books, don't ask anyone. If you'd have to look it up, press the button that says so — that answer
       is worth as much to us as the number would have been.</p>
@@ -378,7 +399,7 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
     <div class="nav">
       <button class="btn btn--ghost btn--sm" data-back>Back</button>
       <div class="spacer"></div>
-      <button class="btn btn--gold" id="go-1">Continue</button>
+      <button class="btn btn--aqua" id="go-1">Continue</button>
     </div>
   </div>
 </section>
@@ -417,7 +438,7 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
     <div class="nav">
       <button class="btn btn--ghost btn--sm" data-back>Back</button>
       <div class="spacer"></div>
-      <button class="btn btn--gold" id="go-2" disabled>Continue</button>
+      <button class="btn btn--aqua" id="go-2" disabled>Continue</button>
     </div>
   </div>
 </section>
@@ -444,7 +465,7 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
     <div class="nav">
       <button class="btn btn--ghost btn--sm" data-back>Back</button>
       <div class="spacer"></div>
-      <button class="btn btn--gold" id="go-3" disabled>Continue</button>
+      <button class="btn btn--aqua" id="go-3" disabled>Continue</button>
     </div>
   </div>
 </section>
@@ -468,7 +489,7 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
     <div class="nav">
       <button class="btn btn--ghost btn--sm" data-back>Back</button>
       <div class="spacer"></div>
-      <button class="btn btn--gold" id="go-4" disabled>Continue</button>
+      <button class="btn btn--aqua" id="go-4" disabled>Continue</button>
     </div>
   </div>
 </section>
@@ -478,10 +499,11 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
   <div class="wrap">
     <div class="stage__hd">
       <p class="stage__no">Stage Six of Eight</p>
-      <h1>What does each one cost you to leave alone?</h1>
-      <p class="lede">Not what fixing it would be worth — what <em>not</em> fixing it costs. Twelve more months
-      of exactly the current situation. Then tell us how you know, because a measured figure and a gut feeling
-      are not the same evidence and won't be weighted the same.</p>
+      <h1>How often does it bite, and what does it cost when it does?</h1>
+      <p class="lede">No dollar figures — you'd be guessing, and a guess dressed as a number is worse than
+      no number. Answer only from what you've lived: how often this actually costs you something, and what
+      it costs in the units you already think in. <strong>We'll do the arithmetic</strong>, and show you
+      every step of it.</p>
     </div>
 
     <div class="card"><div id="pricing"></div></div>
@@ -489,7 +511,7 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
     <div class="nav">
       <button class="btn btn--ghost btn--sm" data-back>Back</button>
       <div class="spacer"></div>
-      <button class="btn btn--gold" id="go-5" disabled>Continue</button>
+      <button class="btn btn--aqua" id="go-5" disabled>Continue</button>
     </div>
   </div>
 </section>
@@ -508,7 +530,7 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
     <div class="nav">
       <button class="btn btn--ghost btn--sm" data-back>Back</button>
       <div class="spacer"></div>
-      <button class="btn btn--gold" id="go-6" disabled>Build my ledger</button>
+      <button class="btn btn--aqua" id="go-6" disabled>Build my ledger</button>
     </div>
   </div>
 </section>
@@ -550,7 +572,7 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
       <button class="btn btn--ghost" id="btn-print" type="button">Save as PDF</button>
       <button class="btn btn--ghost" id="btn-json" type="button">Copy result data</button>
       <button class="btn btn--ghost" id="btn-restart" type="button">Start over</button>
-      <a class="btn btn--gold" id="btn-mail" href="#">Send this to Legacy</a>
+      <a class="btn btn--aqua" id="btn-mail" href="#">Send this to Legacy</a>
     </div>
   </div>
 </section>
@@ -747,7 +769,9 @@ var PROBES = [
   {id:"hours",  key:"foundertime",   q:"Hours you personally worked last week",
    hint:"Last week specifically — not a typical week, not an average.", unit:"hrs", max:130},
   {id:"leads",  key:"traffic",       q:"Qualified leads that reached you last month",
-   hint:"People who could actually buy, not everyone who visited.", unit:"#", max:1e6}
+   hint:"People who could actually buy, not everyone who visited.", unit:"#", max:1e6},
+  {id:"deal",   key:"expand",        q:"What one customer is worth to you in a year",
+   hint:"Typical, not your biggest. Everything they spend across twelve months.", unit:"$", max:1e8}
 ];
 
 /* Cost band → typical spend to fix. Time band → typical elapsed weeks. */
@@ -756,8 +780,33 @@ var COST_L = {1:"Under $1k", 2:"$1–5k", 3:"$5–20k", 4:"$20k+"};
 var WEEKS  = {1:1, 2:4, 3:12, 4:26};
 var TIME_L = {1:"Days", 2:"2–4 weeks", 3:"A quarter", 4:"Two quarters+"};
 var LEV_L  = {E:"Earnings lever", M:"Multiple lever", B:"Both levers"};
-var CONF   = {measured:1.0, estimated:0.7, gut:0.4};
-var CONF_L = {measured:"Measured", estimated:"Estimated", gut:"Gut feel"};
+var CONF   = {counted:1.0, estimate:0.7, gut:0.4};
+var CONF_L = {counted:"Counted", estimate:"Good estimate", gut:"Gut feel"};
+var CONF_P = {counted:"something you have counted", estimate:"a good estimate", gut:"a gut feel"};
+
+/* Stage 6 asks only what an owner has actually lived: how often a problem
+   bites, and what it costs when it does — in units they already think in.
+   The dollars are derived here, never typed by the respondent. Asking an
+   owner who cannot state their own gross margin to price a problem in
+   dollars produces confident fiction, so we don't ask. */
+var FREQ = [
+  {k:"daily",   n:"Most days",              sub:"~250 a year", per:250},
+  {k:"weekly",  n:"Most weeks",             sub:"~45 a year",  per:45},
+  {k:"biweek",  n:"A few times a month",    sub:"~30 a year",  per:30},
+  {k:"monthly", n:"About once a month",     sub:"12 a year",   per:12},
+  {k:"rare",    n:"A few times a year",     sub:"~4 a year",   per:4}
+];
+
+/* value() receives the derived unit economics for this business */
+var UNITS = [
+  {k:"deal",     n:"A job or deal we'd have won",        value:function(u){ return u.deal; }},
+  {k:"churn",    n:"A customer stops buying",            value:function(u){ return u.deal * 2.5; }},
+  {k:"redo",     n:"A day of someone's time, redoing work", value:function(u){ return u.day; }},
+  {k:"owner",    n:"A couple of hours of yours",         value:function(u){ return u.ownerHrs; }},
+  {k:"discount", n:"A discount we didn't need to give",  value:function(u){ return u.deal * 0.12; }},
+  {k:"cash",     n:"Cash that should be in the bank, isn't", value:function(u){ return u.day * 0.6; }},
+  {k:"grind",    n:"Nothing you can point at — it just grinds", value:function(u){ return u.day * 0.3; }}
+];
 
 var TRIAGE_N   = 28;   /* cards drawn into the triage table */
 var BLEED_CAP  = 6;    /* the scarcity constraint that forces honest ranking */
@@ -1097,46 +1146,123 @@ $("go-4").addEventListener("click", function(){ show(5); });
 
 function bleeders(){ return S.cards.filter(function(i){ return S.bucket[i]==="bleed"; }); }
 
+/* Unit economics, derived — the respondent never types a dollar in stage 6. */
+function unitEconomics(){
+  var rev = Math.max(0, S.biz.rev);
+  var dealAnswered = S.probe.deal && !S.probe.deal.dunno && S.probe.deal.v > 0;
+  /* fallback assumes roughly fifty customers; flagged so the ledger says so */
+  var deal = dealAnswered ? S.probe.deal.v : rev * 0.02;
+  var perDay = rev / 250;
+  return {
+    deal: deal,
+    day: perDay * 0.12,        /* one person-day of delivery capacity */
+    ownerHrs: perDay * 0.10,   /* a couple of the owner's hours */
+    dealKnown: dealAnswered,
+    cap: rev * 0.15,           /* no single problem may claim more than this */
+    portfolio: rev * 0.30      /* nor may all of them together */
+  };
+}
+
+/* frequency x unit -> annual cost, before confidence weighting */
+function derivedAnnual(entry){
+  if(!entry || !entry.freq || !entry.unit) return 0;
+  var u = unitEconomics();
+  var f = FREQ.filter(function(x){ return x.k===entry.freq; })[0];
+  var m = UNITS.filter(function(x){ return x.k===entry.unit; })[0];
+  if(!f || !m) return 0;
+  return Math.min(f.per * m.value(u), u.cap);
+}
+
 function buildPricing(){
   var box = $("pricing"); box.innerHTML = "";
+  var u = unitEconomics();
+
+  if(!u.dealKnown){
+    var warn = el("div","");
+    warn.style.cssText = "margin:-8px 0 22px;padding:14px 16px;border-radius:10px;"+
+      "border:1px solid rgba(224,162,63,.4);background:rgba(224,162,63,.06)";
+    warn.innerHTML = '<p class="small" style="margin:0;color:var(--bone-dim)">'+
+      'You didn\u2019t have a figure for what one customer is worth, so we\u2019re working from '+
+      money(u.deal)+' \u2014 a rough read from your revenue. Every number below inherits that '+
+      'assumption, and the ledger says so.</p>';
+    box.appendChild(warn);
+  }
+
   bleeders().forEach(function(idx){
     var x = P[idx], fam = FAM[x.fam];
-    if(!S.price[idx]) S.price[idx] = {amt:null, conf:null};
+    if(!S.price[idx]) S.price[idx] = {freq:null, unit:null, conf:null};
     var d = el("div","price");
     d.innerHTML =
       '<b>'+esc(x.p)+'</b>'+
-      '<div class="probe">Check yourself first — '+esc(fam.probe)+'</div>'+
-      '<div class="pgrid">'+
-        '<div><label for="pa-'+idx+'">Cost of 12 more months</label>'+
-          '<div class="dollar"><i>$</i><input type="number" id="pa-'+idx+'" min="0" step="500" '+
-          'inputmode="numeric" placeholder="0" aria-label="Annual cost of leaving this unfixed"></div></div>'+
-        '<div><label>How do you know that?</label><div class="conf" data-i="'+idx+'">'+
-          '<button type="button" data-c="measured" aria-pressed="false"><b>Measured</b><span>It’s in a report</span></button>'+
-          '<button type="button" data-c="estimated" aria-pressed="false"><b>Estimated</b><span>Built from a real number</span></button>'+
-          '<button type="button" data-c="gut" aria-pressed="false"><b>Gut feel</b><span>It’s a judgement</span></button>'+
-        '</div></div>'+
-      '</div>';
+      '<div class="probe">Check yourself first \u2014 '+esc(fam.probe)+'</div>'+
+      '<div class="pblock">'+
+        '<label>How often does this actually cost you something?</label>'+
+        '<div class="opts opts--5" data-g="freq" data-i="'+idx+'">'+
+          FREQ.map(function(f){
+            return '<button type="button" data-v="'+f.k+'" aria-pressed="false">'+
+                   '<b>'+f.n+'</b><span>'+f.sub+'</span></button>';
+          }).join("")+
+        '</div>'+
+      '</div>'+
+      '<div class="pblock">'+
+        '<label>And when it does, what does it cost you?</label>'+
+        '<div class="opts opts--wrap" data-g="unit" data-i="'+idx+'">'+
+          UNITS.map(function(m){
+            return '<button type="button" data-v="'+m.k+'" aria-pressed="false">'+
+                   '<b>'+m.n+'</b></button>';
+          }).join("")+
+        '</div>'+
+      '</div>'+
+      '<div class="pblock">'+
+        '<label>How sure are you about that frequency?</label>'+
+        '<div class="opts opts--3" data-g="conf" data-i="'+idx+'">'+
+          '<button type="button" data-v="counted" aria-pressed="false"><b>Counted it</b><span>I know the number</span></button>'+
+          '<button type="button" data-v="estimate" aria-pressed="false"><b>Good estimate</b><span>Close enough</span></button>'+
+          '<button type="button" data-v="gut" aria-pressed="false"><b>Gut feel</b><span>It\u2019s a hunch</span></button>'+
+        '</div>'+
+      '</div>'+
+      '<p class="derived" id="dv-'+idx+'"></p>';
     box.appendChild(d);
 
-    d.querySelector("input").addEventListener("input", function(){
-      var v = parseFloat(this.value);
-      S.price[idx].amt = isFinite(v) ? Math.max(0,v) : null;
-      priceState();
+    d.querySelectorAll(".opts").forEach(function(group){
+      group.addEventListener("click", function(e){
+        var t = e.target.closest ? e.target.closest("button") : null;
+        if(!t) return;
+        S.price[idx][group.getAttribute("data-g")] = t.getAttribute("data-v");
+        var sibs = group.querySelectorAll("button");
+        for(var k=0;k<sibs.length;k++) sibs[k].setAttribute("aria-pressed", sibs[k]===t);
+        showDerived(idx);
+        priceState();
+      });
     });
-    d.querySelector(".conf").addEventListener("click", function(e){
-      var t = e.target.closest ? e.target.closest("button") : null;
-      if(!t) return;
-      S.price[idx].conf = t.getAttribute("data-c");
-      var sibs = this.querySelectorAll("button");
-      for(var k=0;k<sibs.length;k++) sibs[k].setAttribute("aria-pressed", sibs[k]===t);
-      priceState();
-    });
+    showDerived(idx);
   });
   priceState();
 }
+
+/* show the owner what their two answers imply, so nothing is hidden from them */
+function showDerived(idx){
+  var e = S.price[idx], out = $("dv-"+idx);
+  if(!out) return;
+  if(!e.freq || !e.unit){ out.textContent = ""; out.removeAttribute("data-on"); return; }
+  var f = FREQ.filter(function(x){ return x.k===e.freq; })[0];
+  var raw = derivedAnnual(e);
+  var w = e.conf ? CONF[e.conf] : 1;
+  var u = unitEconomics();
+  var m = UNITS.filter(function(x){ return x.k===e.unit; })[0];
+  var uncapped = f.per * m.value(u);
+  out.setAttribute("data-on","true");
+  out.innerHTML = (uncapped > u.cap
+      ? "At that rate this one problem alone would be "+money(uncapped)+" a year, which is more than a business your size can be losing to any single thing. Held at <strong>"+money(raw)+"</strong>. "
+      : "That works out to about <strong>"+money(raw)+" a year</strong> \u2014 ")+
+    (uncapped > u.cap ? "" : f.sub.replace("~","roughly ")+", at "+money(uncapped / f.per)+" a time.") +
+    (e.conf && w < 1 ? " Weighted to "+money(raw*w)+" because you called it "+CONF_P[e.conf]+"." : "");
+}
+
 function priceState(){
   var ok = bleeders().every(function(i){
-    return S.price[i] && S.price[i].amt !== null && S.price[i].conf;
+    var e = S.price[i];
+    return e && e.freq && e.unit && e.conf;
   });
   $("go-5").disabled = !ok;
 }
@@ -1202,10 +1328,10 @@ function genContradictions(){
 
   /* 5 · bleeding, but priced like an irritation */
   bleeders().forEach(function(i){
-    var pr = S.price[i];
-    if(pr && pr.amt !== null && pr.amt < 2000){
+    var pr = S.price[i], amt = derivedAnnual(pr);
+    if(pr && pr.freq && pr.unit && amt < S.biz.rev * 0.004){
       out.push({id:"cheap-"+i, head:"Bleeding, or merely irritating?",
-        body:"You put \u201C"+P[i].p+"\u201D in the bleeding pile \u2014 the pile capped at six \u2014 then priced twelve months of it at "+money(pr.amt)+". Something at that level is an irritation occupying a slot a real leak should have had.",
+        body:"You put \u201C"+P[i].p+"\u201D in the bleeding pile \u2014 the pile capped at six \u2014 but how often you say it bites, and what you say it costs each time, come to about "+money(amt)+" a year. Against revenue of "+money(S.biz.rev)+", that is an irritation occupying a slot a real leak should have had.",
         opts:[{t:"Move it to irritating.", act:"demote:"+i},
               {t:"The number is low but it's genuinely urgent. Keep it.", act:"none"}]});
     }
@@ -1302,16 +1428,24 @@ function computeLedger(){
   var gconf  = clamp(globalConfidence() + mods.confBoost, 0.3, 1);
 
   var rows = [];
+  var econ = unitEconomics();
+
+  /* Six problems each claiming whole lost deals will double-count the same
+     lost deals. Scale the set back to what a business this size could
+     plausibly be losing, and say so rather than hiding it. */
+  var live = bleeders().filter(function(i){ return !mods.demoted[i]; });
+  var rawTotal = live.reduce(function(t,i){ return t + derivedAnnual(S.price[i]); }, 0);
+  var squeeze = (rawTotal > econ.portfolio && rawTotal > 0) ? econ.portfolio / rawTotal : 1;
 
   bleeders().forEach(function(i){
     if(mods.demoted[i]) return;
     var x = P[i], pr = S.price[i];
     var cw    = CONF[pr.conf] || 0.4;
-    var gain  = (pr.amt||0) * cw * gconf;
+    var gain  = derivedAnnual(pr) * squeeze * cw * gconf;
     var mdEff = x.md * gconf;
     var evE   = gain * mult;
     var evM   = mdEff * ebitda;
-    rows.push(makeRow(x, gain, evE, evM, mdEff, cw, pr.amt, false));
+    rows.push(makeRow(x, gain, evE, evM, mdEff, cw, derivedAnnual(pr) * squeeze, false));
   });
 
   /* Families reopened at the contradiction desk enter unpriced — they carry
@@ -1326,7 +1460,8 @@ function computeLedger(){
   });
 
   rows.sort(function(a,b){ return b.ev - a.ev; });
-  return {rows:rows, ebitda:ebitda, mult:mult, gconf:gconf};
+  return {rows:rows, ebitda:ebitda, mult:mult, gconf:gconf,
+          squeeze:squeeze, rawTotal:rawTotal, econ:econ};
 }
 
 /* A $3.6M business does not fix a pricing problem for the same money a
@@ -1370,14 +1505,19 @@ function buildLedger(){
   var quick   = rows.filter(function(r){ return r.lane==="now"; });
 
   $("ledger-lede").innerHTML =
-    "Every problem you marked as bleeding, priced with your own numbers, discounted by the confidence you gave "+
-    "them, and converted into both cash and enterprise value. Your answers were weighted at <strong>"+
-    Math.round(L.gconf*100)+"%</strong> — you produced "+(PROBES.length - Math.round(bsi()*PROBES.length))+" of "+
-    PROBES.length+" core numbers from memory.";
+    "Every problem you marked as bleeding, costed from how often you said it bites and what it costs each "+
+    "time, discounted by the confidence you gave those frequencies, and converted into both cash and "+
+    "enterprise value. Your answers were weighted at <strong>"+Math.round(L.gconf*100)+"%</strong> — "+
+    "you produced "+(PROBES.length - Math.round(bsi()*PROBES.length))+" of "+PROBES.length+
+    " core numbers from memory."+
+    (L.squeeze < 1
+      ? " Taken literally your answers came to "+money(L.rawTotal)+"; several are almost certainly counting "+
+        "the same lost work twice, so the set has been scaled back to "+money(L.econ.portfolio)+"."
+      : "");
 
   /* ---- hero tiles ---- */
   $("tiles").innerHTML =
-    tile("Annual cash at stake", money(totGain), "acc", "What these problems cost you every year, at your own weighted estimates.") +
+    tile("Annual cash at stake", money(totGain), "acc", "From how often you said each one bites, weighted by how sure you were.") +
     tile("Enterprise value at stake", money(totEV), "acc", "Cash impact multiplied, plus the re-rating a buyer applies once the risk is gone.") +
     tile("Cost to fix all of it", money(totSp), "", "Typical spend for this class of work. Return of "+(totSp?(totEV/totSp).toFixed(1):"—")+"× on that outlay.") +
     tile("Free-and-fast wins", quick.length + (quick.length===1?" fix":" fixes"), "",
@@ -1437,19 +1577,22 @@ function buildLedger(){
   var blind = Math.round(bsi()*PROBES.length);
   var confMix = {};
   bleeders().forEach(function(i){ var c=S.price[i]&&S.price[i].conf; if(c) confMix[c]=(confMix[c]||0)+1; });
-  var mixTxt = Object.keys(confMix).map(function(k){ return confMix[k]+" "+CONF_L[k].toLowerCase(); }).join(", ") || "none priced";
+  var econ = unitEconomics();
+  var mixTxt = Object.keys(confMix).map(function(k){ return confMix[k]+" "+CONF_L[k].toLowerCase(); }).join(", ") || "nothing scored";
 
   $("diag").innerHTML =
     '<dl style="display:grid;grid-template-columns:1fr auto;gap:10px 18px;margin:0">'+
       dl("Blind Spot Index", blind+" of "+PROBES.length+" unknown", blind>=4?"var(--bad)":blind>=2?"var(--warn)":"var(--ok)") +
       dl("Weight applied to your estimates", Math.round(L.gconf*100)+"%", "") +
-      dl("Evidence behind the pricing", mixTxt, "") +
+      dl("Evidence behind the frequencies", mixTxt, "") +
+      dl("One customer valued at", money(econ.deal) + (econ.dealKnown ? "" : " (assumed)"), econ.dealKnown ? "" : "var(--warn)") +
       dl("Contradictions surfaced", String(S.contra.length), S.contra.length>=3?"var(--warn)":"") +
+      (L.squeeze < 1 ? dl("Overlap scaling applied", Math.round((1-L.squeeze)*100)+"% removed", "var(--warn)") : "") +
       dl("Split of value at stake", money(totE)+" earnings / "+money(totM)+" multiple", "") +
-      dl("Enterprise value per $1 spent", (totSp?"$"+(totEV/totSp).toFixed(0):"—"), "var(--gold-2)") +
+      dl("Enterprise value per $1 spent", (totSp?"$"+(totEV/totSp).toFixed(0):"—"), "var(--aqua-2)") +
     '</dl>'+
-    (S.denial ? '<div style="margin-top:22px;padding:18px;border-left:2px solid var(--gold);background:var(--ink-2);border-radius:0 10px 10px 0">'+
-      '<p class="xs" style="margin:0 0 8px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)">What you said you’re in denial about</p>'+
+    (S.denial ? '<div style="margin-top:22px;padding:18px;border-left:2px solid var(--aqua);background:var(--ink-2);border-radius:0 10px 10px 0">'+
+      '<p class="xs" style="margin:0 0 8px;letter-spacing:.16em;text-transform:uppercase;color:var(--aqua)">What you said you’re in denial about</p>'+
       '<p style="margin:0;font-size:15px;color:var(--bone-dim);line-height:1.6">'+esc(S.denial)+'</p></div>' : '');
 
   buildExports(rows, {gain:totGain, ev:totEV, spend:totSp, e:totE, m:totM, gconf:L.gconf, blind:blind});
@@ -1479,11 +1622,15 @@ function buildExports(rows, tot){
     understudyNamedFirst: S.understudyFirst,
     denial: S.denial,
     probes: PROBES.map(function(p){ return {id:p.id, value:S.probe[p.id].v, unknown:S.probe[p.id].dunno}; }),
+    unitEconomics: (function(u){ return {customerYearValue:Math.round(u.deal), assumed:!u.dealKnown,
+                                         personDay:Math.round(u.day), ownerCoupleHours:Math.round(u.ownerHrs)}; })(unitEconomics()),
     triage: S.cards.map(function(i){ return {problem:P[i].p, category:P[i].cat, family:P[i].fam, bucket:S.bucket[i]||null}; }),
     contradictions: S.contra.map(function(c,n){ return {issue:c.head, chose:c.opts[S.resolved[n]].t}; }),
     ledger: rows.map(function(r){
+      var e = S.price[r.i] || {};
       return {problem:r.p, family:r.fam, lever:r.lev, lane:r.lane,
-              statedAnnualCost:r.stated, confidence:r.cw,
+              frequency:e.freq || null, costUnit:e.unit || null,
+              derivedAnnualCost:Math.round(r.stated||0), confidence:r.cw,
               weightedAnnualCash:Math.round(r.gain), spendToFix:r.spend, weeks:r.weeks,
               valueFromEarnings:Math.round(r.evE), valueFromMultiple:Math.round(r.evM),
               totalValue:Math.round(r.ev), returnOnSpend:+r.roi.toFixed(2)};

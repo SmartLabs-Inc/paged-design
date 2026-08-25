@@ -152,11 +152,11 @@ impossible.
 | Stage | Mechanism | Why it works |
 |---|---|---|
 | 1 · The Wager | Consequence framing | The output is a spend recommendation, so overstating costs real money |
-| 2 · Eight Numbers | Evidence over opinion | Asks for figures from memory with a first-class "I'd have to look" — inability to answer *is* the finding |
+| 2 · Nine Numbers | Evidence over opinion | Asks for figures from memory with a first-class "I'd have to look" — inability to answer *is* the finding. One of the nine, what a customer is worth in a year, also supplies the unit economics stage 6 runs on |
 | 3 · The Understudy | Third-person projection + forced ordering | People are markedly more honest about their business when answering as someone else. Selection is **unlimited** — a real business has more than three broken things — but they must name the one their deputy leads with, so breadth and priority are both captured |
 | 4 · One Hundred Chips | Forced ipsative allocation | Must total exactly 100, so nothing can be rated "important" for free |
 | 5 · Triage | Scarcity constraint | "Bleeding" is hard-capped at six of 28, forcing revealed preference. This is the *only* stage that caps you — breadth is collected earlier, priority is forced here |
-| 6 · Price the Bleed | Loss framing + confidence tagging | Asks the cost of *not* fixing; gut-feel claims are weighted 0.4 against measured at 1.0, so inflating a number reduces its influence |
+| 6 · Score the Bleed | Lived units, not dollar guesses | **Never asks for a dollar figure.** An owner who cannot state their own gross margin cannot price a problem in dollars, and asking produces confident fiction. Instead: how often does this bite (five frequency bands), and what does it cost each time in units they already think in (a lost deal, a day redoing work, a discount they had to give). The engine derives the dollars from the unit economics collected in stage 2 and shows its arithmetic on screen. Gut-feel frequencies weigh 0.4 against counted at 1.0 |
 | 7 · Contradiction Desk | Cross-answer consistency check | Surfaces pairs that can't both be true and makes the respondent choose |
 | 8 · The Ledger | — | Output |
 
@@ -167,6 +167,12 @@ if you can't name your margin, your claim that pricing is fine carries less weig
 **Credibility flags.** Any fix showing better than a 25× return gets a visible
 *Check this estimate* mark. A return that large almost always means the bleed estimate is
 hot, not that the fix is miraculous.
+
+**Two ceilings on the derived costs.** No single problem may claim more than 15% of
+revenue, and the bleeding set together may not exceed 30% — six problems each claiming
+whole lost deals are counting the same lost deals. When the portfolio ceiling binds, the
+ledger says what the raw answers came to and what they were scaled back to, rather than
+quietly shrinking them.
 
 ## Two uses, one instrument
 
@@ -185,6 +191,8 @@ contradiction resolutions, and the ledger with every intermediate figure.
    `<script>` block, or replace the paths inside `<symbol id="lg-mark">`.
 2. **Email** — `buildExports()` → `var to = "hello@legacy.ltd";`
 3. **Cost bands** — `COST_$` and the revenue scaling in `sizeFactor()`.
+3b. **Unit economics** — `UNITS` (what each kind of loss is worth) and `FREQ` (how many
+   times a year each band means), plus the two ceilings in `unitEconomics()`.
 4. **Confidence weights** — `CONF` (measured 1.0 / estimated 0.7 / gut 0.4) and the 30%
    Blind Spot discount in `globalConfidence()`.
 5. **Multiple deltas** — the `md` value per family, in the injected `FAM` table. These are
