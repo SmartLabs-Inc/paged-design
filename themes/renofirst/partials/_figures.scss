@@ -1,0 +1,43 @@
+// _figures.scss
+
+figure {
+    margin: $line-height-default 0;
+
+    @include no-break();
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    figcaption {
+        border-top: 2.5px solid $reno-gold;
+        color: $reno-slate;
+        font-family: $font-text-secondary;
+        font-size: 11.5px;
+        line-height: 16px;
+        margin-top: 10px;
+        padding-top: 8px;
+    }
+}
+
+.map-page {
+
+    h1 {
+        @include label(13px, $reno-navy, 700);
+        letter-spacing: 0.18em;
+        margin: 0 0 12px 0;
+    }
+
+    .full-page-figure {
+        margin: 0;
+
+        img {
+            width: 100%;
+        }
+
+        figcaption {
+            max-width: 70%;
+        }
+    }
+}

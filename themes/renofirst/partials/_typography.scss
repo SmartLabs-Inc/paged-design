@@ -1,0 +1,237 @@
+// _typography.scss
+
+body {
+    color: $reno-ink;
+    font-family: $font-text-main;
+    font-size: $font-size-default;
+    font-variant-numeric: oldstyle-num proportional-nums;
+    line-height: $line-height-default;
+}
+
+
+// Headings
+// --------
+
+// h1 is only ever a chapter, appendix, part or worksheet title,
+// and each of those partials sets its own. Everything below is
+// the run of headings inside a chapter.
+
+// A new section may not begin in the last ten lines of a page,
+// and a subsection may not begin in the last five: a heading with
+// two lines under it reads as a mistake.
+//
+// The clearance is added as padding, which makes the heading box
+// too tall to fit into a short remainder, so paged.js moves the
+// whole heading to the next page (`break-inside: avoid` stops it
+// splitting the padding instead). The matching negative margin
+// pulls the following copy back up, so the printed spacing is
+// exactly what it was.
+@mixin needs-room-below($lines, $visible-gap) {
+    margin-bottom: $visible-gap - ($line-height-default * $lines);
+    padding-bottom: $line-height-default * $lines;
+}
+
+// The gold rule belongs to the *end* of a section, not the start
+// of the next one — see `section.section` under Page perfecting
+// below. A heading carries no rule of its own, so a section that
+// opens at the top of a page sits directly under the running
+// head instead of stacking a second gold line beneath its rule.
+h2 {
+    color: $reno-navy;
+    font-family: $font-display-main;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.006em;
+    line-height: 24px;
+    margin-top: $line-height-default * 1.2;
+
+    @include needs-room-below(10, $line-height-default * 0.45);
+    @include no-break();
+    break-after: avoid;
+}
+
+h3 {
+    color: $reno-navy;
+    font-family: $font-display-main;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 20px;
+    margin-top: $line-height-default * 0.9;
+
+    @include needs-room-below(5, 3px);
+    @include no-break();
+    break-after: avoid;
+}
+
+h4 {
+    @include label($font-size-small, $reno-slate, 700);
+    margin: ($line-height-default * 0.75) 0 4px 0;
+
+    @include no-break();
+    break-after: avoid;
+}
+
+h5,
+h6 {
+    color: $reno-navy;
+    font-family: $font-text-main;
+    font-size: $font-size-default;
+    font-style: italic;
+    font-weight: 600;
+    margin: ($line-height-default * 0.6) 0 0 0;
+    break-after: avoid;
+}
+
+.pagedjs_page_content {
+
+    h1, h2, h3, h4, h5, h6 {
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+}
+
+
+// Paragraphs
+// ----------
+
+p {
+    hyphens: $hyphenation;
+    margin: 0 0 $text-spacing 0;
+    orphans: 2;
+    text-align: left;
+    widows: 2;
+}
+
+// The opening paragraph of a chapter or worksheet.
+#{$lede} {
+    color: $reno-navy;
+    font-size: 16px;
+    line-height: 23px;
+    margin-bottom: $line-height-default * 0.8;
+}
+
+
+// Lists
+// -----
+
+ul, ol {
+    margin: 0 0 $text-spacing 0;
+    padding-left: 18px;
+}
+
+li {
+    margin-bottom: 2px;
+}
+
+#{$bullets} {
+    list-style: none;
+    padding-left: 15px;
+
+    li {
+
+        &::before {
+            color: $reno-gold;
+            content: "\25C6"; // ◆
+            font-size: 8px;
+            margin-left: -15px;
+            position: absolute;
+            padding-top: 4px;
+        }
+    }
+}
+
+
+// Inline
+// ------
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a.url {
+    color: $reno-navy;
+    font-family: $font-text-secondary;
+    font-size: 12.5px;
+    font-weight: 500;
+    hyphens: none;
+    word-break: break-word;
+}
+
+em {
+    font-style: italic;
+}
+
+strong {
+    font-weight: 600;
+}
+
+hr {
+    border: 0;
+    color: $reno-gold;
+    font-size: 12px;
+    letter-spacing: 0.5em;
+    margin: $line-height-default 0;
+    text-align: center;
+}
+
+
+// Anything the design generates and print should not repeat.
+.non-printing {
+    display: none;
+}
+
+
+// Page perfecting
+// ---------------
+//
+// Applied by the build to a single section when its tail would
+// otherwise spill two or three lines onto the next page. Each
+// level takes a little more out of the leading and the space
+// between paragraphs — enough to pull the block back onto the
+// page it belongs to, and little enough that a reader comparing
+// two spreads would not see it.
+
+// Sections close with a gold rule across the text measure. It is
+// a border-bottom rather than a border-top on the next heading so
+// that it prints where the section *ends* — on the previous page
+// when the next section starts a new one — and so that a section
+// opening at the top of a page has no rule stacked under the
+// running head's.
+section.section {
+    border-bottom: 2.5px solid $reno-gold;
+    padding-bottom: $line-height-default * 0.55;
+}
+
+// Paged.js unsets margins and padding on the fragments of a split
+// box but leaves borders alone, so a section running over a page
+// would print its closing rule at the foot of every page it
+// touches. Only the last fragment keeps it.
+.pagedjs_area section.section[data-split-to] {
+    border-bottom: 0;
+}
+
+.section {
+
+    &.tighten-1 p {
+        margin-bottom: $text-spacing - 3px;
+    }
+
+    &.tighten-2 {
+        line-height: $line-height-default - 0.5px;
+
+        p {
+            margin-bottom: $text-spacing - 4px;
+        }
+    }
+
+    &.tighten-3 {
+        line-height: $line-height-default - 1px;
+
+        p {
+            margin-bottom: $text-spacing - 5px;
+        }
+    }
+}

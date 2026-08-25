@@ -1,0 +1,20 @@
+// _styles.scss
+//
+// Reno First: an 8.5 × 11in design for a guide and its
+// companion workbook. Add custom CSS here; main.scss imports it
+// after themes/_defaults/_styles.scss, so everything below wins.
+
+@import 'partials/fonts';
+@import 'partials/mixins';
+@import 'partials/page-setup';
+@import 'partials/typography';
+@import 'partials/running';
+@import 'partials/frontmatter';
+@import 'partials/contents';
+@import 'partials/part-page';
+@import 'partials/openers';
+@import 'partials/margin-notes';
+@import 'partials/callouts';
+@import 'partials/lists';
+@import 'partials/worksheets';
+@import 'partials/figures';

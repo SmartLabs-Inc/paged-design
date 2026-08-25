@@ -1,0 +1,162 @@
+// _lists.scss
+//
+// Checklists and the paired advantages/disadvantages panels.
+
+
+// Chapter checklists
+// ------------------
+// The end-of-chapter checklists are the part of this book people
+// actually work from, so they get room to be ticked. The heading
+// takes no rule of its own: the closing rule on the section above
+// it already marks the end of the chapter's prose.
+
+#{$checklist} {
+    list-style: none;
+    margin: ($line-height-default * 0.5) 0 $line-height-default 0;
+    padding: 0;
+
+    li {
+        border-bottom: 0.75px solid $reno-mist;
+        font-family: $font-text-secondary;
+        font-size: 12.5px;
+        line-height: 17px;
+        margin: 0;
+        min-height: 26px;
+        padding: 8px 0 8px 30px;
+        position: relative;
+
+        @include no-break();
+
+        &::before {
+            @include tick-box(13px);
+            background-color: #fff;
+            border-color: $reno-gold-tick;
+            left: 0;
+            position: absolute;
+            top: 8px;
+        }
+
+        &:first-child {
+            border-top: 0.75px solid $reno-mist;
+        }
+    }
+}
+
+@include full-measure($checklist);
+
+
+// Advantages / disadvantages
+// --------------------------
+// Chapter 1 compares seven business structures. Setting each
+// pair side by side turns four pages of prose into something a
+// reader can actually compare at a glance.
+
+#{$pros-cons} {
+    display: flex;
+    gap: 0;
+    margin: ($line-height-default * 0.7) 0 $line-height-default 0;
+
+    @include no-break();
+
+    & > div {
+        flex: 1 1 50%;
+        padding: 12px 15px 13px 15px;
+    }
+
+    .pros {
+        background-color: $reno-gold-wash-deep;
+        border-top: 2.5px solid $reno-gold;
+    }
+
+    .cons {
+        background-color: $reno-tint;
+        border-top: 2.5px solid $reno-slate-pale;
+    }
+
+    h4 {
+        color: $reno-navy;
+        letter-spacing: 0.06em;
+        margin: 0 0 7px 0;
+    }
+
+    .cons h4 {
+        color: $reno-slate;
+    }
+
+    ul.bullets {
+        margin: 0;
+        padding-left: 13px;
+
+        li {
+            font-family: $font-text-secondary;
+            font-size: 11.5px;
+            hyphens: none;
+            line-height: 15px;
+            margin-bottom: 5px;
+
+            &::before {
+                content: "\25C6";
+                font-size: 7px;
+                margin-left: -13px;
+                padding-top: 3px;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    .cons ul.bullets li::before {
+        color: $reno-slate-pale;
+    }
+}
+
+@include full-measure($pros-cons);
+
+
+// Directory pages (Appendices B and C)
+// -----------------------------------
+
+.directory {
+
+    #{$directory-entry} {
+        border-top: 0.75px solid $reno-mist;
+        margin-bottom: 13px;
+        padding-top: 9px;
+
+        @include no-break();
+    }
+
+    #{$entry-name} {
+        @include label(11.5px, $reno-navy, 700);
+        letter-spacing: 0.05em;
+        margin: 0 0 3px 0;
+
+        // These are directory entries, not subsections: they carry
+        // their contact lines with them and must not reserve the
+        // clearance an h3 gets in running text.
+        padding-bottom: 0;
+    }
+
+    #{$entry-contact} {
+        color: $reno-gold;
+        font-family: $font-text-secondary;
+        font-size: 11.5px;
+        font-weight: 500;
+        hyphens: none;
+        margin: 0 0 3px 0;
+
+        a.url {
+            color: inherit;
+            font-size: inherit;
+        }
+    }
+
+    p {
+        color: $reno-slate;
+        font-size: 12.5px;
+        line-height: 16.5px;
+        margin-bottom: 0;
+    }
+}

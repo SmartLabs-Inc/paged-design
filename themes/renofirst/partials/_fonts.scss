@@ -1,0 +1,40 @@
+// _fonts.scss
+//
+// Fonts are stored with the theme rather than linked from the
+// web. The project README recommends this for real book
+// production: once pages are refined, an upstream change to a
+// font file can reflow the whole book.
+//
+//   Archivo         SIL Open Font License 1.1 — fonts/OFL-Archivo.txt
+//   Source Serif 4  SIL Open Font License 1.1 — fonts/OFL-SourceSerif4.txt
+//
+// Both are variable fonts, so one file covers every weight the
+// design uses.
+
+@font-face {
+    font-family: "Archivo";
+    font-style: normal;
+    font-weight: 100 900;
+    font-stretch: 62% 125%;
+    font-display: block;
+    src: url("fonts/archivo-variable.woff2") format("woff2-variations"),
+         url("fonts/archivo-variable.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Source Serif 4";
+    font-style: normal;
+    font-weight: 200 900;
+    font-display: block;
+    src: url("fonts/source-serif-4-variable.woff2") format("woff2-variations"),
+         url("fonts/source-serif-4-variable.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Source Serif 4";
+    font-style: italic;
+    font-weight: 200 900;
+    font-display: block;
+    src: url("fonts/source-serif-4-italic-variable.woff2") format("woff2-variations"),
+         url("fonts/source-serif-4-italic-variable.woff2") format("woff2");
+}

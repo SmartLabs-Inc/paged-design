@@ -1,0 +1,42 @@
+// _selectors.scss
+//
+// Selectors for the Reno First content HTML
+// (content/reno-first/index.html).
+
+
+// Page types
+
+$page-chapter: '.chapter';
+$page-endmatter: '.endmatter';
+$page-worksheet: '.worksheet';
+$page-part: '.part-page';
+
+
+// Book features
+
+$box: '.box, .context-note';
+$chapter-number: '.chapter-number';
+$chapter-summary: '.chapter-summary';
+$lede: '.lede';
+
+$bullets: 'ul.bullets';
+$checklist: 'ul.checklist';
+$pros-cons: '.pros-cons';
+
+$directory-entry: '.directory-entry';
+$entry-name: '.entry-name';
+$entry-contact: '.entry-contact';
+
+$margin-note: '.margin-note';
+$reno-tip: '.reno-tip';
+$verify-note: '.verify-note';
+$context-note: '.context-note';
+
+$form-table: 'table.form-table';
+$check-table: 'table.check-table';
+$field-label: '.field-label';
+$field-panel: '.field-panel';
+$write-in: '.write-in';
+$prompt-box: '.prompt-box';
+
+$title-page-logo: 'img.title-page-logo';

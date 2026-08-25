@@ -1,0 +1,67 @@
+// _part-page.scss
+
+.part-page {
+    background-color: $reno-navy;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    & > div {
+        height: 100%;
+    }
+
+    & > div > div {
+        height: 100%;
+        padding: 74mm 24mm 0 24mm;
+        position: relative;
+    }
+
+    .part-number {
+        @include label($font-size-small, $reno-navy-pale, 700);
+        letter-spacing: 0.24em;
+        margin: 0 0 16px 0;
+    }
+
+    // Gold on navy, as on the chapter openers.
+    h1 {
+        color: $reno-gold;
+        font-family: $font-display-main;
+        font-size: 54px;
+        font-weight: 800;
+        hyphens: none;
+        letter-spacing: -0.03em;
+        line-height: 54px;
+        margin: 0;
+        max-width: 74%;
+    }
+
+    .part-blurb {
+        border-top: 3px solid $reno-gold;
+        color: $reno-navy-pale;
+        font-family: $font-text-secondary;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 21px;
+        margin: 24px 0 0 0;
+        max-width: 62%;
+        padding-top: 16px;
+        text-align: left;
+    }
+
+    .part-skyline {
+        bottom: 0;
+        left: -24mm;
+        margin: 0;
+        opacity: 0.28;
+        position: absolute;
+        right: -24mm;
+
+        img {
+            display: block;
+            width: 100%;
+        }
+    }
+}
