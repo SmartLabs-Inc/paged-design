@@ -1,0 +1,1425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legacy.Ltd — Exit Value Simulator</title>
+<meta name="description" content="Model what your business is worth today, what it could be worth on your exit date, and the moves that close the gap. Not just how to make more money — how to keep more of it, automate the systems, and become a business someone actually wants to buy.">
+<meta name="theme-color" content="#0A0A0B">
+<style>
+/* ==========================================================================
+   Legacy.Ltd — Exit Value Simulator
+   Single-file, fully self-contained. No external fonts, scripts, or assets.
+   ========================================================================== */
+
+:root{
+  --ink:#0A0A0B;
+  --ink-2:#0F0F12;
+  --panel:#141418;
+  --panel-2:#1A1A1F;
+  --line:rgba(255,255,255,.10);
+  --line-2:rgba(255,255,255,.055);
+  --bone:#F4F1EA;
+  --bone-dim:#CFCBC2;
+  --muted:#8E8E97;
+  --muted-2:#6A6A73;
+  --gold:#C9A227;
+  --gold-2:#E8C766;
+  --gold-dim:rgba(201,162,39,.14);
+  --red:#E0563F;
+  --amber:#E0A23F;
+  --green:#5FB878;
+  --display:"Futura PT","Futura","Century Gothic","Avenir Next","Avenir","Trebuchet MS","Segoe UI",system-ui,sans-serif;
+  --body:"Inter","Helvetica Neue","Helvetica",Arial,system-ui,sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --maxw:1200px;
+  --r:14px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--bone);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img,svg{max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit}
+
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.eyebrow{
+  font-family:var(--display);
+  font-size:11px;letter-spacing:.30em;text-transform:uppercase;
+  color:var(--gold);font-weight:700;margin:0 0 18px;
+}
+.eyebrow.muted{color:var(--muted-2)}
+h1,h2,h3,h4{font-family:var(--display);font-weight:700;letter-spacing:-.01em;line-height:1.06;margin:0}
+h1{font-size:clamp(38px,6.2vw,76px);letter-spacing:-.025em}
+h2{font-size:clamp(28px,3.9vw,48px);letter-spacing:-.02em}
+h3{font-size:clamp(19px,2vw,25px);letter-spacing:-.01em}
+h4{font-size:15px;letter-spacing:.02em}
+p{margin:0 0 18px}
+.lede{font-size:clamp(17px,1.55vw,20px);line-height:1.62;color:var(--bone-dim);max-width:62ch}
+.small{font-size:13.5px;line-height:1.6;color:var(--muted)}
+.xs{font-size:11.5px;line-height:1.55;color:var(--muted-2)}
+.gold{color:var(--gold-2)}
+.rule{height:1px;background:var(--line-2);border:0;margin:0}
+section{padding:clamp(64px,8vw,116px) 0;position:relative}
+
+/* ---------- Logo ---------------------------------------------------------
+   NOTE: This is a vector reconstruction of the LEGACY wordmark so the file
+   stays 100% self-contained (no external image requests).
+   To drop in the official artwork instead, replace the <svg> inside
+   .logo with:  <img src="data:image/png;base64,PASTE_HERE" alt="Legacy">
+   ----------------------------------------------------------------------- */
+.logo{display:block;color:var(--bone);line-height:0}
+.logo svg{display:block;height:var(--h,22px);width:auto;max-width:100%;fill:currentColor}
+.logo--nav{--h:22px}
+.logo--hero{color:var(--bone)}
+.logo--hero svg{height:auto;width:min(100%,760px)}
+.logo--foot{--h:26px;color:var(--bone-dim)}
+
+/* ---------- Nav --------------------------------------------------------- */
+.nav{
+  position:sticky;top:0;z-index:60;
+  background:rgba(10,10,11,.86);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line-2);
+}
+.nav__in{display:flex;align-items:center;gap:28px;height:66px}
+.nav__links{display:flex;gap:26px;margin-left:auto;align-items:center}
+.nav__links a{
+  text-decoration:none;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  font-family:var(--display);font-weight:600;color:var(--muted);transition:color .18s;
+}
+.nav__links a:hover{color:var(--bone)}
+@media(max-width:860px){.nav__links a:not(.btn){display:none}}
+
+/* ---------- Buttons ----------------------------------------------------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:13px 26px;border-radius:999px;border:1px solid transparent;
+  font-family:var(--display);font-weight:700;font-size:12.5px;
+  letter-spacing:.13em;text-transform:uppercase;text-decoration:none;
+  cursor:pointer;transition:transform .16s ease, background .18s, color .18s, border-color .18s;
+  white-space:nowrap;
+}
+.btn:active{transform:translateY(1px)}
+.btn--gold{background:var(--gold);color:#15100A}
+.btn--gold:hover{background:var(--gold-2)}
+.btn--ghost{border-color:var(--line);color:var(--bone);background:transparent}
+.btn--ghost:hover{border-color:var(--gold);color:var(--gold-2)}
+.btn--sm{padding:10px 20px;font-size:11px}
+.btn--block{width:100%}
+
+/* ---------- Hero -------------------------------------------------------- */
+.hero{
+  padding-top:clamp(56px,8vw,96px);
+  padding-bottom:clamp(56px,7vw,96px);
+  background:
+    radial-gradient(900px 460px at 78% -8%, rgba(201,162,39,.13), transparent 62%),
+    radial-gradient(700px 420px at 8% 8%, rgba(255,255,255,.045), transparent 60%);
+  overflow:hidden;
+}
+.hero__logo{margin-bottom:clamp(28px,4vw,44px)}
+.hero__tag{
+  font-family:var(--display);font-size:11px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--muted);margin-top:16px;line-height:1.5;
+}
+.hero h1{max-width:17ch;margin-bottom:24px}
+.hero h1 em{font-style:normal;color:var(--gold-2)}
+.hero__cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px}
+.hero__stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:1px;background:var(--line-2);border:1px solid var(--line-2);
+  border-radius:var(--r);overflow:hidden;margin-top:clamp(44px,6vw,72px);
+}
+.hero__stat{background:var(--ink);padding:26px 24px}
+.hero__stat b{display:block;font-family:var(--display);font-size:clamp(28px,3.4vw,40px);color:var(--gold-2);line-height:1;letter-spacing:-.02em}
+.hero__stat span{display:block;margin-top:10px;font-size:12.5px;color:var(--muted);line-height:1.5}
+
+/* ---------- Three levers ------------------------------------------------ */
+.levers{background:var(--ink-2);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)}
+.levers__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:26px;margin-top:44px}
+.lever{
+  border:1px solid var(--line-2);border-radius:var(--r);padding:30px 28px;
+  background:linear-gradient(180deg,rgba(255,255,255,.028),transparent);
+}
+.lever__n{
+  font-family:var(--display);font-size:11px;letter-spacing:.24em;color:var(--gold);
+  font-weight:700;display:block;margin-bottom:16px;
+}
+.lever h3{margin-bottom:12px}
+.lever p{margin:0;font-size:14.5px;color:var(--muted);line-height:1.66}
+.lever p strong{color:var(--bone-dim);font-weight:600}
+
+/* ---------- Simulator --------------------------------------------------- */
+.sim{background:var(--ink)}
+.sim__head{max-width:74ch;margin-bottom:44px}
+.sim__grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:26px;align-items:start}
+@media(max-width:1000px){.sim__grid{grid-template-columns:1fr}}
+
+.card{
+  background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);
+  padding:clamp(22px,2.4vw,30px);
+}
+.card+.card{margin-top:22px}
+.card__title{
+  font-family:var(--display);font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;margin:0 0 22px;display:flex;align-items:center;gap:12px;
+}
+.card__title::after{content:"";flex:1;height:1px;background:var(--line-2)}
+
+.field{margin-bottom:20px}
+.field:last-child{margin-bottom:0}
+.field label{
+  display:block;font-size:12px;letter-spacing:.05em;color:var(--bone-dim);
+  margin-bottom:8px;font-weight:600;
+}
+.field .hint{font-size:11.5px;color:var(--muted-2);margin-top:6px;line-height:1.5}
+.inputrow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:520px){.inputrow{grid-template-columns:1fr}}
+
+.money-in{position:relative}
+.money-in>span{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  color:var(--muted-2);font-size:14px;pointer-events:none;
+}
+.money-in input{padding-left:28px}
+input[type=number],input[type=text],select{
+  width:100%;padding:12px 14px;border-radius:10px;
+  background:var(--ink-2);border:1px solid var(--line);color:var(--bone);
+  font-family:var(--body);font-size:15px;outline:none;transition:border-color .16s, box-shadow .16s;
+  -moz-appearance:textfield;appearance:none;
+}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+select{
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 19px) 52%,calc(100% - 13px) 52%;
+  background-size:6px 6px,6px 6px;background-repeat:no-repeat;padding-right:38px;
+}
+input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+
+/* segmented timeframe control */
+.seg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media(max-width:700px){.seg{grid-template-columns:repeat(2,1fr)}}
+.seg button{
+  background:var(--ink-2);border:1px solid var(--line);border-radius:10px;
+  padding:12px 8px;cursor:pointer;text-align:center;transition:all .16s;
+  display:flex;flex-direction:column;gap:5px;align-items:center;
+}
+.seg button b{font-family:var(--display);font-size:13px;letter-spacing:.01em;color:var(--bone)}
+.seg button i{font-style:normal;font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted-2)}
+.seg button:hover{border-color:rgba(201,162,39,.5)}
+.seg button[aria-pressed=true]{background:var(--gold-dim);border-color:var(--gold)}
+.seg button[aria-pressed=true] b{color:var(--gold-2)}
+.seg button[aria-pressed=true] i{color:var(--gold)}
+
+/* pillar sliders */
+.pillar{padding:18px 0;border-bottom:1px solid var(--line-2)}
+.pillar:last-child{border-bottom:0;padding-bottom:0}
+.pillar__top{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.pillar__name{font-size:14.5px;font-weight:600;color:var(--bone);flex:1;line-height:1.35}
+.pillar__w{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2);font-family:var(--display);white-space:nowrap}
+.pillar__val{
+  font-family:var(--display);font-size:15px;font-weight:700;min-width:34px;text-align:right;
+  color:var(--gold-2);
+}
+.pillar__q{font-size:12.5px;color:var(--muted);margin:0 0 12px;line-height:1.5}
+.pillar__anchor{font-size:11.5px;color:var(--muted-2);margin-top:8px;min-height:17px;line-height:1.45}
+
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:99px;
+  background:linear-gradient(90deg,var(--gold) var(--pct,50%),rgba(255,255,255,.13) var(--pct,50%));
+  outline:none;cursor:pointer;margin:0;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;
+  background:var(--bone);border:3px solid var(--gold);cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.5);
+}
+input[type=range]::-moz-range-thumb{
+  width:16px;height:16px;border-radius:50%;background:var(--bone);
+  border:3px solid var(--gold);cursor:pointer;
+}
+input[type=range]:focus-visible{box-shadow:0 0 0 3px var(--gold-dim)}
+
+/* results panel */
+@media(min-width:1001px){
+  .results{
+    position:sticky;top:82px;
+    max-height:calc(100vh - 104px);overflow-y:auto;overscroll-behavior:contain;
+    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent;
+  }
+  .results::-webkit-scrollbar{width:8px}
+  .results::-webkit-scrollbar-track{background:transparent}
+  .results::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:99px}
+  .results::-webkit-scrollbar-thumb:hover{background:rgba(201,162,39,.45)}
+}
+
+.dial{display:flex;align-items:center;gap:24px;margin-bottom:24px}
+.dial__svg{width:118px;height:118px;flex:none;transform:rotate(-90deg)}
+.dial__track{fill:none;stroke:rgba(255,255,255,.09);stroke-width:9}
+.dial__arc{fill:none;stroke:var(--gold);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .5s cubic-bezier(.2,.7,.3,1), stroke .3s}
+.dial__meta b{
+  display:block;font-family:var(--display);font-size:44px;line-height:1;
+  letter-spacing:-.03em;color:var(--bone);
+}
+.dial__meta b small{font-size:17px;color:var(--muted-2);font-weight:400;letter-spacing:0}
+.dial__meta .grade{
+  display:inline-block;margin-top:10px;padding:4px 12px;border-radius:999px;
+  font-family:var(--display);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
+}
+.dial__meta .grade[data-t=green]{background:rgba(95,184,120,.15);color:var(--green)}
+.dial__meta .grade[data-t=amber]{background:rgba(224,162,63,.15);color:var(--amber)}
+.dial__meta .grade[data-t=red]{background:rgba(224,86,63,.15);color:var(--red)}
+.dial__meta p{margin:10px 0 0;font-size:12.5px;color:var(--muted);line-height:1.5;max-width:30ch}
+
+.verdict{
+  border-radius:12px;padding:16px 18px;margin-bottom:22px;
+  border:1px solid var(--line);background:var(--ink-2);
+}
+.verdict b{display:block;font-family:var(--display);font-size:12.5px;letter-spacing:.13em;text-transform:uppercase;margin-bottom:7px}
+.verdict p{margin:0;font-size:13px;color:var(--bone-dim);line-height:1.55}
+.verdict[data-t=green]{border-color:rgba(95,184,120,.4)} .verdict[data-t=green] b{color:var(--green)}
+.verdict[data-t=amber]{border-color:rgba(224,162,63,.4)} .verdict[data-t=amber] b{color:var(--amber)}
+.verdict[data-t=red]{border-color:rgba(224,86,63,.45)} .verdict[data-t=red] b{color:var(--red)}
+
+.vbar{margin-bottom:12px}
+.vbar__lbl{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:7px}
+.vbar__lbl span{font-size:12px;letter-spacing:.05em;color:var(--muted)}
+.vbar__lbl b{font-family:var(--display);font-size:clamp(20px,2.4vw,27px);letter-spacing:-.02em;color:var(--bone)}
+.vbar__lbl b.hi{color:var(--gold-2)}
+.vbar__track{height:11px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+.vbar__fill{height:100%;border-radius:99px;transition:width .5s cubic-bezier(.2,.7,.3,1)}
+.vbar__fill.now{background:linear-gradient(90deg,#555,#8b8b93)}
+.vbar__fill.exit{background:linear-gradient(90deg,var(--gold),var(--gold-2))}
+
+.gapbox{
+  margin-top:22px;padding:20px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(201,162,39,.15),rgba(201,162,39,.04));
+  border:1px solid rgba(201,162,39,.32);
+}
+.gapbox span{font-family:var(--display);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.gapbox b{display:block;font-family:var(--display);font-size:clamp(30px,4vw,42px);letter-spacing:-.03em;line-height:1.05;margin:8px 0 6px;color:var(--bone)}
+.gapbox p{margin:0;font-size:12.5px;color:var(--bone-dim);line-height:1.5}
+
+.kv{display:grid;grid-template-columns:1fr auto;gap:9px 16px;margin-top:22px;padding-top:20px;border-top:1px solid var(--line-2)}
+.kv dt{font-size:13px;color:var(--muted);min-width:0}
+.kv dd{margin:0;font-family:var(--display);font-size:14.5px;font-weight:700;text-align:right;color:var(--bone-dim);white-space:nowrap}
+.kv dd.pos{color:var(--green)} .kv dd.neg{color:var(--red)} .kv dd.acc{color:var(--gold-2)}
+
+.moves{margin-top:22px;padding-top:20px;border-top:1px solid var(--line-2)}
+.moves>b{display:block;font-family:var(--display);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.move{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line-2)}
+.move:last-child{border-bottom:0;padding-bottom:0}
+.move__n{
+  flex:none;width:24px;height:24px;border-radius:50%;background:var(--gold-dim);
+  border:1px solid rgba(201,162,39,.4);color:var(--gold-2);
+  display:grid;place-items:center;font-family:var(--display);font-size:11px;font-weight:700;
+}
+.move__b{min-width:0;flex:1}
+.move__b b{display:block;font-size:13.5px;color:var(--bone);margin-bottom:3px;line-height:1.35}
+.move__b span{font-size:12.5px;color:var(--muted);line-height:1.5;display:block}
+.move__b i{display:block;font-style:normal;font-size:11px;color:var(--gold);margin-top:5px;font-family:var(--display);letter-spacing:.06em}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px;padding-top:22px;border-top:1px solid var(--line-2)}
+.actions .btn{flex:1;min-width:150px}
+
+.disclaimer{margin-top:18px;font-size:11px;color:var(--muted-2);line-height:1.55}
+
+/* ---------- Horizon grid ------------------------------------------------ */
+.horizon{background:var(--ink-2);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)}
+.hz__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1px;background:var(--line-2);border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden;margin-top:44px}
+.hz{background:var(--ink);padding:28px 24px;transition:background .2s}
+.hz[data-active=true]{background:linear-gradient(180deg,rgba(201,162,39,.13),transparent)}
+.hz__t{font-family:var(--display);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+.hz h4{margin-bottom:12px;color:var(--bone);font-size:17px}
+.hz ul{margin:0;padding:0;list-style:none}
+.hz li{font-size:13px;color:var(--muted);line-height:1.55;padding-left:16px;position:relative;margin-bottom:9px}
+.hz li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.7}
+
+/* ---------- Pillars reference ------------------------------------------- */
+.pillars-ref{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;margin-top:44px}
+details.pref{
+  border:1px solid var(--line-2);border-radius:12px;background:var(--panel);
+  padding:0;overflow:hidden;transition:border-color .2s;
+}
+details.pref[open]{border-color:rgba(201,162,39,.32)}
+details.pref summary{
+  list-style:none;cursor:pointer;padding:20px 22px;display:flex;align-items:center;gap:14px;
+}
+details.pref summary::-webkit-details-marker{display:none}
+.pref__i{
+  flex:none;width:30px;height:30px;border-radius:8px;background:var(--gold-dim);
+  border:1px solid rgba(201,162,39,.3);color:var(--gold-2);display:grid;place-items:center;
+  font-family:var(--display);font-size:11.5px;font-weight:700;
+}
+.pref__h{flex:1;min-width:0}
+.pref__h b{display:block;font-size:15px;color:var(--bone);line-height:1.3;font-weight:600}
+.pref__h span{font-size:11.5px;color:var(--muted-2)}
+.pref__c{padding:0 22px 22px;border-top:1px solid var(--line-2);margin-top:2px;padding-top:18px}
+.pref__c dt{font-family:var(--display);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;font-weight:700}
+.pref__c dd{margin:0 0 16px;font-size:13.5px;color:var(--muted);line-height:1.62}
+.pref__c dd:last-child{margin-bottom:0}
+
+/* ---------- Keep-more section ------------------------------------------- */
+.keep{background:var(--ink)}
+.keep__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:22px;margin-top:44px}
+.leak{border:1px solid var(--line-2);border-radius:12px;padding:24px 22px;background:var(--panel)}
+.leak b{display:block;font-family:var(--display);font-size:15px;color:var(--bone);margin-bottom:10px}
+.leak p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.62}
+.leak .tag{
+  display:inline-block;margin-bottom:14px;padding:3px 10px;border-radius:999px;
+  font-family:var(--display);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
+  background:rgba(224,86,63,.13);color:var(--red);
+}
+.leak .tag.fix{background:rgba(95,184,120,.13);color:var(--green)}
+
+/* ---------- Process ----------------------------------------------------- */
+.process{background:var(--ink-2);border-top:1px solid var(--line-2)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:26px;margin-top:44px;counter-reset:s}
+.step{position:relative;padding-top:26px;border-top:2px solid var(--line)}
+.step::before{
+  counter-increment:s;content:"0" counter(s);
+  position:absolute;top:-13px;left:0;background:var(--ink-2);padding-right:12px;
+  font-family:var(--display);font-size:11px;letter-spacing:.2em;color:var(--gold);font-weight:700;
+}
+.step h4{font-size:18px;margin-bottom:10px;color:var(--bone)}
+.step p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.62}
+
+/* ---------- FAQ --------------------------------------------------------- */
+.faq{max-width:820px;margin:44px auto 0}
+details.q{border-bottom:1px solid var(--line-2)}
+details.q summary{
+  list-style:none;cursor:pointer;padding:22px 40px 22px 0;position:relative;
+  font-family:var(--display);font-size:16.5px;color:var(--bone);font-weight:600;line-height:1.4;
+}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary::after{
+  content:"+";position:absolute;right:6px;top:20px;font-size:22px;color:var(--gold);
+  font-family:var(--display);transition:transform .2s;
+}
+details.q[open] summary::after{content:"–"}
+details.q .a{padding:0 0 24px;font-size:14.5px;color:var(--muted);line-height:1.7;max-width:70ch}
+
+/* ---------- CTA --------------------------------------------------------- */
+.cta{
+  background:
+    radial-gradient(700px 380px at 50% 0%, rgba(201,162,39,.16), transparent 66%),
+    var(--ink);
+  text-align:center;border-top:1px solid var(--line-2);
+}
+.cta h2{max-width:20ch;margin:0 auto 22px}
+.cta .lede{margin:0 auto 34px}
+.cta__btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* ---------- Footer ------------------------------------------------------ */
+.foot{background:var(--ink-2);border-top:1px solid var(--line-2);padding:52px 0 40px}
+.foot__in{display:flex;gap:30px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between}
+.foot__l{max-width:38ch}
+.foot__l p{margin:18px 0 0;font-size:12.5px;color:var(--muted-2);line-height:1.62}
+.foot__nav{display:flex;gap:30px;flex-wrap:wrap}
+.foot__nav a{
+  text-decoration:none;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  font-family:var(--display);color:var(--muted);
+}
+.foot__nav a:hover{color:var(--gold-2)}
+.foot__bot{margin-top:40px;padding-top:24px;border-top:1px solid var(--line-2);font-size:11.5px;color:var(--muted-2);line-height:1.6}
+
+/* ---------- Print ------------------------------------------------------- */
+@media print{
+  :root{--ink:#fff;--ink-2:#fff;--panel:#fff;--bone:#000;--bone-dim:#222;--muted:#444;--muted-2:#666;--line:#ccc;--line-2:#ddd}
+  body{background:#fff;color:#000}
+  .nav,.hero__cta,.actions,.cta__btns,.foot__nav,.levers,.process,.faq,.keep,.horizon,.pillars-ref{display:none!important}
+  section{padding:18px 0;break-inside:avoid}
+  .sim__grid{grid-template-columns:1fr 1fr}
+  .results{position:static;max-height:none;overflow:visible}
+  .card{border:1px solid #ccc;break-inside:avoid}
+  .logo{color:#000}
+  a{text-decoration:none}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== NAV ===================== -->
+<header class="nav">
+  <div class="wrap nav__in">
+    <a href="#top" class="logo logo--nav" aria-label="Legacy home">
+      <svg viewBox="0 0 600 77" role="img" aria-label="LEGACY"><title>LEGACY</title>
+        <path d="M0 0h17v60h55v17H0z"/>
+        <path d="M95 0h72v16h-55v14h48v16h-48v15h55v16H95z"/>
+        <path d="M280.96 16.42A50 38.5 0 1 0 289.05 46L288.77 30 252 30 252 46 272.06 46A34 22.5 0 1 1 267.85 25.59Z"/>
+        <path d="M300 77 347.5 0 395 77h-19l-28.5-46.2L319 77z"/>
+        <circle cx="410" cy="68.5" r="8.5"/>
+        <path d="M506.93 17.53A50 38.5 0 1 0 506.93 59.47L493.52 50.75A34 22.5 0 1 1 493.52 26.25Z"/>
+        <path d="M525 0h19l18.5 30L581 0h19l-29 46v31h-17V46z"/>
+      </svg>
+    </a>
+    <nav class="nav__links">
+      <a href="#simulator">Simulator</a>
+      <a href="#horizon">Your Horizon</a>
+      <a href="#drivers">The 10 Drivers</a>
+      <a href="#keep">Keep More</a>
+      <a href="#faq">FAQ</a>
+      <a href="#book" class="btn btn--gold btn--sm">Book a Review</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div class="logo logo--hero hero__logo" aria-label="Legacy">
+      <svg viewBox="0 0 600 77" role="img" aria-label="LEGACY"><title>LEGACY</title>
+        <path d="M0 0h17v60h55v17H0z"/>
+        <path d="M95 0h72v16h-55v14h48v16h-48v15h55v16H95z"/>
+        <path d="M280.96 16.42A50 38.5 0 1 0 289.05 46L288.77 30 252 30 252 46 272.06 46A34 22.5 0 1 1 267.85 25.59Z"/>
+        <path d="M300 77 347.5 0 395 77h-19l-28.5-46.2L319 77z"/>
+        <circle cx="410" cy="68.5" r="8.5"/>
+        <path d="M506.93 17.53A50 38.5 0 1 0 506.93 59.47L493.52 50.75A34 22.5 0 1 1 493.52 26.25Z"/>
+        <path d="M525 0h19l18.5 30L581 0h19l-29 46v31h-17V46z"/>
+      </svg>
+      <div class="hero__tag">Exit Architecture &amp; Enterprise Value</div>
+    </div>
+
+    <p class="eyebrow">The Exit Value Simulator</p>
+    <h1>Most owners build a job. <em>You're building an asset.</em></h1>
+    <p class="lede">
+      Revenue is the vanity number. Buyers pay for what runs without you, what recurs
+      without selling, and what survives due diligence. This simulator prices the gap
+      between the business you have and the business someone will actually buy — against
+      the date <strong>you</strong> pick to walk away.
+    </p>
+    <div class="hero__cta">
+      <a href="#simulator" class="btn btn--gold">Run My Numbers</a>
+      <a href="#drivers" class="btn btn--ghost">See the 10 Drivers</a>
+    </div>
+
+    <div class="hero__stats">
+      <div class="hero__stat"><b>~70%</b><span>of businesses listed for sale never close a transaction</span></div>
+      <div class="hero__stat"><b>2&ndash;5&times;</b><span>spread in multiple between an owner-dependent business and a transferable one</span></div>
+      <div class="hero__stat"><b>10&ndash;20%</b><span>of enterprise value routinely lost in diligence re-trades on unprepared books</span></div>
+      <div class="hero__stat"><b>18&ndash;36 mo</b><span>the runway most value-creation work needs before it shows up in the price</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== THREE LEVERS ===================== -->
+<section class="levers" id="levers">
+  <div class="wrap">
+    <p class="eyebrow">The Legacy Thesis</p>
+    <h2>Three levers. Not one.</h2>
+    <p class="lede" style="margin-top:20px">
+      Everyone sells you the first lever. The money is in the other two.
+    </p>
+    <div class="levers__grid">
+      <div class="lever">
+        <span class="lever__n">Lever 01</span>
+        <h3>Keep more of it</h3>
+        <p>Top line is the most expensive way to fix a business. <strong>Margin leakage, working-capital
+        drag, entity structure, and deal-stage tax exposure</strong> quietly cost more than a bad sales
+        month — and unlike revenue, every dollar you stop losing drops straight into the multiple.</p>
+      </div>
+      <div class="lever">
+        <span class="lever__n">Lever 02</span>
+        <h3>Automate the systems</h3>
+        <p>A buyer isn't purchasing your effort — they can't inherit it. They're buying
+        <strong>documented process, instrumented data, and workflows that execute without a hero.</strong>
+        Automation isn't a cost-cutting story. It's the proof that the machine is transferable.</p>
+      </div>
+      <div class="lever">
+        <span class="lever__n">Lever 03</span>
+        <h3>Become acquirable</h3>
+        <p>Acquirability is a <strong>manufactured</strong> condition: clean books, contracted revenue,
+        diversified customers, a second-in-command, assigned IP, transferable contracts.
+        Build those and you stop hoping for an offer — you start choosing between them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SIMULATOR ===================== -->
+<section class="sim" id="simulator">
+  <div class="wrap">
+    <div class="sim__head">
+      <p class="eyebrow">Step One</p>
+      <h2>Model your exit.</h2>
+      <p class="lede" style="margin-top:20px">
+        Enter your real numbers, set the date you want out, and score yourself honestly against
+        the ten drivers a buyer will actually diligence. Everything runs in your browser —
+        nothing is transmitted, stored, or sent anywhere.
+      </p>
+    </div>
+
+    <div class="sim__grid">
+
+      <!-- ---------- INPUTS ---------- -->
+      <div>
+        <div class="card">
+          <p class="card__title">1 &nbsp;· &nbsp;The Business</p>
+
+          <div class="field">
+            <label for="in-sector">Sector</label>
+            <select id="in-sector"></select>
+            <p class="hint" id="sector-hint"></p>
+          </div>
+
+          <div class="inputrow">
+            <div class="field">
+              <label for="in-rev">Trailing 12-month revenue</label>
+              <div class="money-in"><span>$</span><input type="number" id="in-rev" value="4200000" min="0" step="10000" inputmode="numeric"></div>
+            </div>
+            <div class="field">
+              <label for="in-margin">EBITDA margin (%)</label>
+              <input type="number" id="in-margin" value="14" min="-50" max="90" step="0.5" inputmode="decimal">
+              <p class="hint">Earnings before interest, tax, depreciation &amp; amortisation.</p>
+            </div>
+          </div>
+
+          <div class="inputrow">
+            <div class="field">
+              <label for="in-addbacks">Owner add-backs &amp; normalizations</label>
+              <div class="money-in"><span>$</span><input type="number" id="in-addbacks" value="180000" min="0" step="5000" inputmode="numeric"></div>
+              <p class="hint">Above-market owner comp, personal expenses, one-time costs — the defensible ones.</p>
+            </div>
+            <div class="field">
+              <label for="in-debt">Interest-bearing debt at close</label>
+              <div class="money-in"><span>$</span><input type="number" id="in-debt" value="350000" min="0" step="10000" inputmode="numeric"></div>
+              <p class="hint">Comes off the price on a cash-free / debt-free basis.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <p class="card__title">2 &nbsp;· &nbsp;Your Exit Horizon</p>
+          <div class="field">
+            <label id="tf-label">When do you want to be out?</label>
+            <div class="seg" id="tf-seg" role="group" aria-labelledby="tf-label"></div>
+            <p class="hint" id="tf-hint"></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <p class="card__title">3 &nbsp;· &nbsp;The Ten Value Drivers</p>
+          <p class="small" style="margin:-8px 0 18px">
+            Score each 0&ndash;10 as a buyer would, not as you'd like it to read.
+            Weightings reflect how heavily each one moves a real multiple.
+          </p>
+          <div id="pillars"></div>
+        </div>
+      </div>
+
+      <!-- ---------- RESULTS ---------- -->
+      <div class="results">
+        <div class="card">
+          <p class="card__title">Your Exit Readiness</p>
+
+          <div class="dial">
+            <svg class="dial__svg" viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="dial__track" cx="60" cy="60" r="50"></circle>
+              <circle class="dial__arc" id="dial-arc" cx="60" cy="60" r="50"
+                      stroke-dasharray="314.16" stroke-dashoffset="314.16"></circle>
+            </svg>
+            <div class="dial__meta">
+              <b id="score-num">0<small>/100</small></b>
+              <span class="grade" id="score-grade" data-t="red">Calculating</span>
+              <p id="score-note"></p>
+            </div>
+          </div>
+
+          <div class="verdict" id="verdict" data-t="amber">
+            <b id="verdict-title">—</b>
+            <p id="verdict-body">—</p>
+          </div>
+
+          <div class="vbar">
+            <div class="vbar__lbl"><span>Enterprise value today</span><b id="ev-now">—</b></div>
+            <div class="vbar__track"><div class="vbar__fill now" id="bar-now" style="width:0%"></div></div>
+          </div>
+          <div class="vbar">
+            <div class="vbar__lbl"><span id="ev-exit-lbl">Projected value at exit</span><b class="hi" id="ev-exit">—</b></div>
+            <div class="vbar__track"><div class="vbar__fill exit" id="bar-exit" style="width:0%"></div></div>
+          </div>
+
+          <div class="gapbox">
+            <span>Value at stake</span>
+            <b id="gap-val">—</b>
+            <p id="gap-note">—</p>
+          </div>
+
+          <dl class="kv">
+            <dt>Adjusted EBITDA (today)</dt><dd id="kv-ebitda">—</dd>
+            <dt>Sector base multiple</dt><dd id="kv-base">—</dd>
+            <dt>Scale adjustment</dt><dd id="kv-size">—</dd>
+            <dt>Readiness adjustment</dt><dd id="kv-ready">—</dd>
+            <dt><strong>Effective multiple today</strong></dt><dd class="acc" id="kv-mult">—</dd>
+            <dt>Effective multiple at exit</dt><dd class="acc" id="kv-mult2">—</dd>
+            <dt>Adjusted EBITDA at exit</dt><dd id="kv-ebitda2">—</dd>
+          </dl>
+
+          <dl class="kv">
+            <dt>Transaction &amp; advisory fees (~4%)</dt><dd class="neg" id="kv-fees">—</dd>
+            <dt>Debt retired at close</dt><dd class="neg" id="kv-debt">—</dd>
+            <dt>Estimated effective tax on proceeds</dt><dd class="neg" id="kv-tax">—</dd>
+            <dt><strong>Estimated net to owner</strong></dt><dd class="pos" id="kv-net">—</dd>
+            <dt>Kept by fixing structure &amp; tax posture</dt><dd class="acc" id="kv-kept">—</dd>
+          </dl>
+
+          <div class="moves">
+            <b>Your highest-leverage moves</b>
+            <div id="moves-list"></div>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn--ghost" id="btn-print" type="button">Save as PDF</button>
+            <a class="btn btn--gold" id="btn-send" href="#book">Send Me the Plan</a>
+          </div>
+
+          <p class="disclaimer">
+            Illustrative model only. Outputs are directional estimates built from market-observed
+            multiple ranges and readiness weightings — not a certified business valuation, an offer,
+            or tax advice. Real transaction outcomes depend on diligence findings, deal structure,
+            buyer type, and market conditions at the time of sale.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HORIZON ===================== -->
+<section class="horizon" id="horizon">
+  <div class="wrap">
+    <p class="eyebrow">Step Two</p>
+    <h2>The date changes the plan.</h2>
+    <p class="lede" style="margin-top:20px">
+      The same business is worked completely differently depending on whether you're out in
+      nine months or nine years. Your selection above is highlighted.
+    </p>
+    <div class="hz__grid" id="hz-grid"></div>
+  </div>
+</section>
+
+<!-- ===================== DRIVERS REFERENCE ===================== -->
+<section id="drivers">
+  <div class="wrap">
+    <p class="eyebrow">The Workbook</p>
+    <h2>The ten drivers, in full.</h2>
+    <p class="lede" style="margin-top:20px">
+      Every line item from the valuation workbook — what it is, what a buyer is really
+      testing for, and the work that moves the score.
+    </p>
+    <div class="pillars-ref" id="pillars-ref"></div>
+  </div>
+</section>
+
+<!-- ===================== KEEP MORE ===================== -->
+<section class="keep" id="keep">
+  <div class="wrap">
+    <p class="eyebrow">Lever One, In Detail</p>
+    <h2>Where the money actually leaks.</h2>
+    <p class="lede" style="margin-top:20px">
+      Before you chase another dollar of revenue, close the holes. These are the five leaks
+      we find in almost every workbook — and each one compounds, because it hits earnings
+      <em>and</em> the multiple applied to them.
+    </p>
+    <div class="keep__grid">
+      <div class="leak">
+        <span class="tag">Leak</span>
+        <b>Pricing drift &amp; discount creep</b>
+        <p>Rates set three years ago, exceptions granted and never rescinded, a discount schedule
+        nobody owns. A 3-point gross-margin recovery on mid-seven-figure revenue is usually the
+        single largest EBITDA line available — and it costs nothing to capture.</p>
+      </div>
+      <div class="leak">
+        <span class="tag">Leak</span>
+        <b>Working capital sitting still</b>
+        <p>Slow collections, stale inventory, terms you never renegotiated. It doesn't show up in
+        the P&amp;L, so it never gets managed — but it is cash you already earned, and buyers set a
+        working-capital peg at close that will price your bad habits back at you.</p>
+      </div>
+      <div class="leak">
+        <span class="tag">Leak</span>
+        <b>Entity structure left on default</b>
+        <p>The structure that suited a startup rarely suits a sale. Entity type, holding structure,
+        basis, and qualification windows are decisions with <em>calendar deadlines</em> — most of the
+        good options close 24 to 60 months before a transaction, not after LOI.</p>
+      </div>
+      <div class="leak">
+        <span class="tag">Leak</span>
+        <b>Unmodeled deal-stage tax</b>
+        <p>Asset sale versus stock sale, allocation, state apportionment, installment treatment,
+        rollover equity. The difference between a modeled and an unmodeled exit is frequently
+        seven figures on the same headline price.</p>
+      </div>
+      <div class="leak">
+        <span class="tag fix">Fix</span>
+        <b>Manual work that should be machine work</b>
+        <p>Every recurring task done by a human hand is a payroll line, an error rate, and a
+        key-person dependency in one. Automating it removes cost, removes risk, and produces the
+        exact artefact a buyer wants: a process that runs whether or not anyone shows up.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PROCESS ===================== -->
+<section class="process">
+  <div class="wrap">
+    <p class="eyebrow">Working With Legacy</p>
+    <h2>From simulation to signed.</h2>
+    <div class="steps">
+      <div class="step">
+        <h4>Baseline the asset</h4>
+        <p>We rebuild the numbers the way a buyer will: normalized earnings, defensible add-backs,
+        revenue quality, concentration, and a diligence dry-run that surfaces the findings before
+        someone else's accountants do.</p>
+      </div>
+      <div class="step">
+        <h4>Price the gap</h4>
+        <p>Your readiness score against your chosen exit date, translated into a value gap, a
+        sequenced roadmap, and the specific driver-by-driver movement each initiative is worth.</p>
+      </div>
+      <div class="step">
+        <h4>Build the machine</h4>
+        <p>Margin recovery, systems documentation, automation, management depth, contract and IP
+        clean-up — executed in the order that compounds fastest against your timeline.</p>
+      </div>
+      <div class="step">
+        <h4>Engineer the exit</h4>
+        <p>Structure, timing, and net-proceeds planning set well before you go to market, so the
+        headline number and the number that reaches your family are as close as the law allows.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section id="faq">
+  <div class="wrap">
+    <p class="eyebrow">Questions</p>
+    <h2>What owners ask first.</h2>
+    <div class="faq">
+      <details class="q" open>
+        <summary>Is this a real valuation?</summary>
+        <div class="a">No — and anyone telling you a web form produces a certified valuation is selling
+        something. This is a directional model built on observed market multiple ranges, scale
+        adjustments, and readiness weightings. Its job is to show you the <em>shape</em> of the
+        opportunity and where your value is trapped. A formal valuation comes later, and it comes
+        from a credentialed appraiser.</div>
+      </details>
+      <details class="q">
+        <summary>Why does the exit date change my number so much?</summary>
+        <div class="a">Because value creation needs runway. Recurring revenue has to be contracted and
+        then <em>demonstrated</em>. A second-in-command has to be hired and then proven. Clean financials
+        need trailing periods, not a good quarter. Tax structure has qualification windows measured in
+        years. Under twelve months, most of what's available is defensive — protecting the number you
+        already have. Past twenty-four months, you can genuinely manufacture a different business.</div>
+      </details>
+      <details class="q">
+        <summary>My revenue is strong. Why is my multiple low?</summary>
+        <div class="a">Buyers don't buy revenue, they buy transferable earnings with acceptable risk.
+        Revenue that depends on the owner's relationships, concentrates in two clients, or has to be
+        re-won every month is discounted hard — sometimes to the point where a smaller, boring,
+        contracted business trades at double your multiple.</div>
+      </details>
+      <details class="q">
+        <summary>Isn't "keeping more" just cost cutting?</summary>
+        <div class="a">Cost cutting is one small part of it, and often the least valuable. The bigger
+        money is in pricing integrity, working-capital discipline, structure, and deal-stage tax
+        planning. Those don't shrink the business — they stop it from bleeding, and every recovered
+        dollar of earnings is then multiplied at exit.</div>
+      </details>
+      <details class="q">
+        <summary>What if I'm not sure I want to sell?</summary>
+        <div class="a">Then build it as though you will. Every driver in this workbook — less owner
+        dependence, recurring revenue, real management, automated systems, clean books — makes the
+        business better to <em>own</em>. Acquirability is just operational excellence with a buyer's
+        name on the report card. You keep the optionality either way.</div>
+      </details>
+      <details class="q">
+        <summary>Does anything I type here get sent to you?</summary>
+        <div class="a">No. The entire model runs locally in your browser. There is no analytics call,
+        no form submission, and no network request of any kind in this page. If you want us to see
+        your numbers, you send them deliberately — using the buttons on the results panel.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CTA ===================== -->
+<section class="cta" id="book">
+  <div class="wrap">
+    <p class="eyebrow">Next Step</p>
+    <h2>Bring us the gap. We'll bring the roadmap.</h2>
+    <p class="lede">
+      A ninety-minute Exit Readiness Review: we pressure-test your inputs, rebuild your adjusted
+      earnings the way a buyer will, and hand you the sequenced plan for your timeline.
+    </p>
+    <div class="cta__btns">
+      <!-- REPLACE: booking link -->
+      <a class="btn btn--gold" href="#book" id="cta-book">Book the Review</a>
+      <!-- REPLACE: destination email -->
+      <a class="btn btn--ghost" id="cta-mail" href="#">Email My Simulation</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot__in">
+      <div class="foot__l">
+        <div class="logo logo--foot" aria-label="Legacy">
+          <svg viewBox="0 0 600 77" role="img" aria-label="LEGACY"><title>LEGACY</title>
+            <path d="M0 0h17v60h55v17H0z"/>
+            <path d="M95 0h72v16h-55v14h48v16h-48v15h55v16H95z"/>
+            <path d="M280.96 16.42A50 38.5 0 1 0 289.05 46L288.77 30 252 30 252 46 272.06 46A34 22.5 0 1 1 267.85 25.59Z"/>
+            <path d="M300 77 347.5 0 395 77h-19l-28.5-46.2L319 77z"/>
+            <circle cx="410" cy="68.5" r="8.5"/>
+            <path d="M506.93 17.53A50 38.5 0 1 0 506.93 59.47L493.52 50.75A34 22.5 0 1 1 493.52 26.25Z"/>
+            <path d="M525 0h19l18.5 30L581 0h19l-29 46v31h-17V46z"/>
+          </svg>
+        </div>
+        <p>Exit architecture for owners who intend to leave on their own terms —
+        with the business intact and the proceeds where they belong.</p>
+      </div>
+      <nav class="foot__nav">
+        <a href="#simulator">Simulator</a>
+        <a href="#horizon">Horizon</a>
+        <a href="#drivers">Drivers</a>
+        <a href="#keep">Keep More</a>
+        <a href="#faq">FAQ</a>
+        <a href="#book">Book</a>
+      </nav>
+    </div>
+    <p class="foot__bot">
+      &copy; <span id="yr"></span> Legacy.Ltd. All rights reserved. &nbsp;·&nbsp;
+      The Exit Value Simulator is an educational planning tool. It does not constitute a business
+      valuation, an offer or solicitation, investment advice, legal advice, or tax advice. Figures
+      are illustrative estimates. Consult your own qualified advisers before acting on any output.
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ======================================================================
+   CONFIGURATION
+   ====================================================================== */
+
+var SECTORS = [
+  {k:"prof",  n:"Professional & B2B services",        m:3.6, note:"Agencies, consulting, marketing, staffing. Multiples hinge almost entirely on owner dependence and contracted revenue."},
+  {k:"home",  n:"Home services, trades & contracting", m:4.1, note:"Recurring maintenance contracts and route density are what separate a 3× business from a 6× one."},
+  {k:"health",n:"Healthcare & clinical services",      m:5.2, note:"Payer mix, credentialing, and provider retention dominate diligence. Consolidators are active and pay for scale."},
+  {k:"saas",  n:"Software & SaaS",                     m:6.8, note:"Net revenue retention, gross margin, and churn drive the number more than growth alone. Small SaaS is often priced on ARR."},
+  {k:"ecom",  n:"E-commerce & DTC",                    m:3.5, note:"Channel concentration and paid-acquisition dependence are the two biggest discounts applied."},
+  {k:"mfg",   n:"Manufacturing & industrial",          m:5.1, note:"Equipment condition, capacity headroom, and customer diversification carry the value. Real assets support debt."},
+  {k:"dist",  n:"Distribution & logistics",            m:4.6, note:"Supplier agreements, inventory turns, and route or contract stickiness set the range."},
+  {k:"fin",   n:"Financial & insurance services",      m:5.6, note:"Book persistency, recurring commission, and regulatory cleanliness. Highly acquisitive buyer universe."},
+  {k:"const", n:"Construction & real estate services", m:3.9, note:"Backlog quality, bonding capacity, and project margin discipline. Lumpy revenue is discounted."},
+  {k:"hosp",  n:"Hospitality, food & retail",          m:3.1, note:"Location economics and labor model. Multi-unit consistency is what earns a premium."},
+  {k:"other", n:"Other / diversified",                 m:4.2, note:"A blended market range. Refine this with us against true comparable transactions in your niche."}
+];
+
+var TIMEFRAMES = [
+  {k:"t0", label:"Under 12 mo",  sub:"Now",      months:9,  close:0.32, req:78,
+   phrase:"an exit inside 12 months", at:"Projected value at exit (within 12 months)",
+   title:"Triage & Defend",
+   pts:["Protect the number you already have — this window is about not losing value","Diligence dry-run first: find your own bad news before a buyer does","Normalize earnings and document every add-back you intend to claim","Lock key staff and key customers with agreements that transfer","Accept that structural tax planning options are largely closed — model net proceeds honestly"]},
+  {k:"t1", label:"12–24 mo",     sub:"Near",     months:18, close:0.58, req:72,
+   phrase:"a 12–24 month exit", at:"Projected value at exit (12–24 months)",
+   title:"De-risk & Optimize",
+   pts:["Margin recovery and pricing integrity — fastest earnings available","Convert project revenue to contracted and recurring wherever the model allows","Hire or promote a genuine second-in-command and step out of the critical path","Document and automate the top ten recurring processes","Begin entity and structure review while windows are still open"]},
+  {k:"t2", label:"2–3 yr",       sub:"Build",    months:30, close:0.76, req:65,
+   phrase:"a 2–3 year exit", at:"Projected value at exit (2–3 years)",
+   title:"Rebuild the Engine",
+   pts:["Three clean trailing years become achievable — the single biggest credibility lever","Deliberately reduce customer concentration by design, not by luck","Build the management layer and prove it with the owner genuinely absent","Automate to the point where headcount growth decouples from revenue growth","Structure and estate planning executed inside its qualification windows"]},
+  {k:"t3", label:"3–5 yr",       sub:"Compound", months:48, close:0.89, req:58,
+   phrase:"a 3–5 year exit", at:"Projected value at exit (3–5 years)",
+   title:"Compound & Scale",
+   pts:["Value compounds on both axes at once: higher earnings and a higher multiple","Platform positioning — become the acquirer's obvious consolidation target","Institutional-grade reporting, audited or reviewed financials, real KPI infrastructure","Defensible market position: proprietary process, brand, IP, or contractual moat","Full net-proceeds architecture: entity, trust, timing, and charitable structure"]},
+  {k:"t4", label:"5+ yr",        sub:"Architect",months:72, close:0.95, req:50,
+   phrase:"a 5+ year exit", at:"Projected value at exit (5+ years)",
+   title:"Architect the Legacy",
+   pts:["Every option stays open: strategic sale, private equity recap, ESOP, or family transition","Build the business as a governed institution with a board and a real succession bench","Automation and data become durable competitive advantage, not just efficiency","Acquire, don't just grow — inorganic scale expands your own exit multiple","Wealth, estate, and philanthropic structures fully mature before any liquidity event"]}
+];
+
+var PILLARS = [
+  {k:"owner", n:"Owner independence", w:1.5, v:4,
+   q:"If you vanished for 90 days with no contact, what would the business look like when you got back?",
+   lens:"Transferability. A buyer is purchasing future cash flow they can operate. Anything that lives only in the founder's head, relationships, or judgement is not an asset they can buy — it is a risk they must price.",
+   fix:"Map every decision and relationship that routes through you. Delegate with written authority limits. Introduce your top accounts to someone else and let that person own the relationship for two full cycles before you go to market.",
+   moveTitle:"Remove yourself from the critical path",
+   moveBody:"Document the decisions only you make, assign each one an owner and an authority limit, and prove the handover with a real absence — not a theoretical one.",
+   anchors:["Nothing ships, sells or gets decided without you","Operations continue for days; sales and key decisions stall","Runs for a few weeks; you're still the escalation point","Runs a quarter comfortably; you're advisory","Genuinely owner-independent, and you can prove it with a real absence"]},
+
+  {k:"revq", n:"Revenue quality & recurrence", w:1.4, v:3,
+   q:"What share of next year's revenue is already contracted, subscribed, or reliably repeating?",
+   lens:"Predictability. Contracted and recurring revenue is the difference between a buyer underwriting a forecast and a buyer underwriting a hope — and it is the single most reliable multiple expander available.",
+   fix:"Convert project and transactional work to retainers, service agreements, or subscriptions. Put terms, auto-renewal, and notice periods in writing. Track and publish retention as a monthly number.",
+   moveTitle:"Contract the revenue",
+   moveBody:"Move project and one-off work onto written recurring agreements with auto-renewal, then track retention as a headline KPI so the pattern is demonstrable, not anecdotal.",
+   anchors:["Entirely one-off; every month starts at zero","Mostly transactional with some repeat customers","Meaningful repeat business, little of it contracted","Majority contracted or subscription with solid retention","Overwhelmingly contracted, high retention, long terms, documented"]},
+
+  {k:"conc", n:"Customer & supplier concentration", w:1.0, v:5,
+   q:"What percentage of revenue sits with your largest client — and with your largest supplier or channel?",
+   lens:"Single points of failure. Any customer above roughly 15% of revenue becomes its own diligence workstream, and above 25% it commonly triggers escrow, earn-out, or a direct discount to price.",
+   fix:"Deliberately grow the tail. Set a concentration ceiling as policy, resource acquisition against it, and diversify supply and channel alongside customers.",
+   moveTitle:"Break the concentration",
+   moveBody:"Set a hard ceiling for any single customer, supplier, or channel and resource business development specifically against it — buyers price concentration as risk, not as a strong relationship.",
+   anchors:["One client or channel is more than half of revenue","Top client 25–50%; heavy channel or supplier dependence","Top client 15–25%; some diversification underway","Top client under 15%; supply and channel diversified","Well distributed across customers, suppliers and channels by design"]},
+
+  {k:"fin", n:"Financial hygiene & reporting", w:1.2, v:4,
+   q:"Could you hand three years of financials to a buyer's accountants tomorrow without flinching?",
+   lens:"Credibility. Messy books don't just slow diligence — they cause re-trades. Every question your numbers can't answer instantly gets priced as risk, and the discount is almost always larger than the cost of fixing it.",
+   fix:"Move to accrual accounting, close monthly on a schedule, separate personal from business entirely, and get financials reviewed or audited well before you go to market.",
+   moveTitle:"Make the books diligence-proof",
+   moveBody:"Accrual basis, a disciplined monthly close, clean separation of personal spend, and reviewed or audited statements for the trailing periods a buyer will actually examine.",
+   anchors:["Cash basis, tax-return-only, personal spend mixed in","Bookkeeping current but no real close discipline","Monthly close, clean separation, no external review","Reviewed statements, documented add-backs, tight close","Audited or reviewed, board-grade reporting, instant answers to any question"]},
+
+  {k:"sys", n:"Systems, process & automation", w:1.1, v:3,
+   q:"Is the way the work gets done written down, instrumented, and running without a hero?",
+   lens:"Machine versus memory. Documented and automated process is what proves the business is a system a buyer can own, rather than a group of people who happen to be good at their jobs.",
+   fix:"Document the top processes by revenue impact, then automate the repetitive ones. Integrate the tech stack so data flows without re-keying. Instrument the outputs so performance is visible without asking anyone.",
+   moveTitle:"Turn tribal knowledge into a system",
+   moveBody:"Document your highest-impact recurring processes, automate the repetitive ones, and integrate the stack so the same data isn't re-entered by three different people.",
+   anchors:["Everything is tribal knowledge and manual effort","A few things written down; systems are disconnected","Core processes documented; some automation in place","Most processes documented, automated and measured","Fully systemized and instrumented; the machine runs itself"]},
+
+  {k:"team", n:"Management depth & key-person risk", w:1.1, v:3,
+   q:"Is there a leadership team that would stay, and could run this, after you leave?",
+   lens:"Continuity. Buyers are acquiring an operating team as much as a cash flow. No management bench means the buyer must supply one, and they will deduct the cost and the risk of doing so from your price.",
+   fix:"Build the layer below you. Retention agreements, incentive plans tied to the transaction, and clear succession for every critical role — then let them run it while you watch.",
+   moveTitle:"Build the bench that stays",
+   moveBody:"Identify every critical role with no successor, close those gaps, and put retention and transaction-incentive agreements in place so the team is a reason to buy rather than a risk to price.",
+   anchors:["No management layer; every key role is a single point of failure","A couple of senior people, no succession, no agreements","Emerging leadership team; partial succession coverage","Capable team, succession mapped, retention in place","Complete team that could run and grow the business without you"]},
+
+  {k:"marg", n:"Margin discipline & cash conversion", w:1.2, v:4,
+   q:"Are your margins improving, and does earned revenue actually turn into cash on schedule?",
+   lens:"Earnings quality. Two businesses with identical EBITDA are not worth the same if one converts it to cash and the other funds a growing receivables balance. Working-capital habits get priced at close.",
+   fix:"Recover pricing, kill discount creep, tighten collections and terms, manage inventory turns, and review your true cost-to-serve by customer and by line of business.",
+   moveTitle:"Stop the margin and cash leak",
+   moveBody:"Reprice against real cost-to-serve, end discount creep, and tighten collections and terms — recovered margin lifts earnings and gets multiplied at exit.",
+   anchors:["Margins unknown or eroding; cash is chronically tight","Margins flat; collections and terms poorly managed","Margins stable; cash conversion adequate","Margins improving; disciplined collections and working capital","Best-in-class margins, tight cash conversion, cost-to-serve understood by line"]},
+
+  {k:"legal", n:"Legal, IP & contract integrity", w:0.9, v:5,
+   q:"Do you actually own what you think you own — and does it transfer to a buyer?",
+   lens:"Deliverability. If IP isn't assigned, contracts aren't assignable, the cap table is unclear, or there is unresolved litigation, the deal either shrinks, slows, or dies. This is where transactions quietly break.",
+   fix:"Assign all IP from founders and contractors, register the marks that matter, add assignment and change-of-control language to key contracts, clean the cap table, and resolve disputes before you go to market.",
+   moveTitle:"Clean the legal foundation",
+   moveBody:"Assign all IP, register the marks that matter, ensure key contracts survive a change of control, tidy the cap table, and clear open disputes before anyone starts diligence.",
+   anchors:["IP unassigned, contracts informal, disputes open","Some agreements in place; significant gaps and unknowns","Main contracts documented; IP position mostly clear","IP assigned and registered; contracts assignable; cap table clean","Fully clean and transferable; a legal diligence non-event"]},
+
+  {k:"growth", n:"Growth story & market position", w:1.0, v:4,
+   q:"Is there a credible, evidenced reason a buyer should pay for tomorrow and not just today?",
+   lens:"Upside. A buyer pays a premium for a runway they can see and believe. That means a defensible position, a documented pipeline, and a growth thesis supported by data rather than optimism.",
+   fix:"Sharpen the niche, evidence the pipeline, build a defensible advantage the buyer can inherit, and prepare a growth plan with the unit economics to back it.",
+   moveTitle:"Build the buyer's growth thesis",
+   moveBody:"Sharpen your niche, evidence the pipeline with data, and hand the buyer a documented, defensible plan for the upside they're being asked to pay for.",
+   anchors:["Flat or declining; no differentiation; no pipeline visibility","Modest growth; commoditised position","Steady growth; clear niche; some pipeline data","Strong growth with a defensible position and evidenced pipeline","Category leader with a proven, data-backed expansion thesis"]},
+
+  {k:"tax", n:"Structure, tax & net-proceeds readiness", w:0.6, v:2,
+   q:"Have you modeled what actually reaches your account after fees, debt, and tax?",
+   lens:"The number that matters. Owners negotiate the headline price and inherit the net. Entity form, holding structure, basis, timing, state apportionment, and estate planning all have deadlines measured in years — most close long before an LOI.",
+   fix:"Model asset versus stock treatment, review entity and holding structure inside its qualification windows, plan basis and timing, and set up estate and charitable structures before a liquidity event, not after.",
+   moveTitle:"Engineer the net, not just the price",
+   moveBody:"Model asset versus stock treatment, review entity and holding structure while the qualification windows are still open, and put estate and charitable planning in place before liquidity.",
+   anchors:["No planning; structure is whatever it was at formation","Aware it matters; nothing modeled or actioned","Advisers engaged; structure reviewed but not optimized","Structure optimized; deal treatment and timing modeled","Fully architected: entity, timing, estate and charitable planning all in place"]}
+];
+
+var FEE_RATE   = 0.04;   // transaction, advisory & legal, as % of enterprise value
+var TAX_HIGH   = 0.28;   // effective rate on proceeds with no structural planning
+var TAX_LOW    = 0.17;   // effective rate with fully executed structure & timing
+var ORGANIC_G  = 0.05;   // baseline annual growth in adjusted EBITDA
+var MAX_YEARS  = 6;      // cap on compounding years, for realism
+var CEILING    = 95;     // practical readiness ceiling
+
+/* ======================================================================
+   STATE + HELPERS
+   ====================================================================== */
+
+var state = { sector:"prof", tf:"t1" };
+
+function $(id){ return document.getElementById(id); }
+
+function money(n){
+  if(!isFinite(n)) return "—";
+  var s = n < 0 ? "-" : "", a = Math.abs(n);
+  if(a >= 1e9) return s + "$" + (a/1e9).toFixed(2) + "B";
+  if(a >= 1e6) return s + "$" + (a/1e6).toFixed(2) + "M";
+  if(a >= 1e3) return s + "$" + Math.round(a/1e3).toLocaleString("en-US") + "K";
+  return s + "$" + Math.round(a).toLocaleString("en-US");
+}
+function num(id, fallback){
+  var v = parseFloat($(id).value);
+  return isFinite(v) ? v : (fallback || 0);
+}
+function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+function tf(){ for(var i=0;i<TIMEFRAMES.length;i++){ if(TIMEFRAMES[i].k===state.tf) return TIMEFRAMES[i]; } return TIMEFRAMES[1]; }
+function sector(){ for(var i=0;i<SECTORS.length;i++){ if(SECTORS[i].k===state.sector) return SECTORS[i]; } return SECTORS[0]; }
+
+/* Scale premium — small businesses trade at a discount, larger ones at a premium. */
+function sizeFactor(ebitda){
+  if(ebitda < 250000)   return 0.68;
+  if(ebitda < 500000)   return 0.78;
+  if(ebitda < 1000000)  return 0.90;
+  if(ebitda < 3000000)  return 1.00;
+  if(ebitda < 10000000) return 1.20;
+  return 1.42;
+}
+/* Readiness maps 0–100 onto a 0.55×–1.45× adjustment of the sector multiple. */
+function readinessFactor(score){ return 0.55 + (clamp(score,0,100)/100) * 0.90; }
+function taxRate(taxScore){ return TAX_HIGH - (clamp(taxScore,0,10)/10) * (TAX_HIGH - TAX_LOW); }
+
+/* ======================================================================
+   BUILD THE UI
+   ====================================================================== */
+
+/* --- sector select --- */
+(function(){
+  var sel = $("in-sector"), html = "";
+  for(var i=0;i<SECTORS.length;i++){
+    html += '<option value="'+SECTORS[i].k+'">'+SECTORS[i].n+'</option>';
+  }
+  sel.innerHTML = html;
+  sel.value = state.sector;
+  sel.addEventListener("change", function(){ state.sector = sel.value; recalc(); });
+})();
+
+/* --- timeframe segmented control --- */
+(function(){
+  var seg = $("tf-seg"), html = "";
+  for(var i=0;i<TIMEFRAMES.length;i++){
+    var t = TIMEFRAMES[i];
+    html += '<button type="button" data-k="'+t.k+'" aria-pressed="'+(t.k===state.tf)+'">'+
+            '<b>'+t.label+'</b><i>'+t.sub+'</i></button>';
+  }
+  seg.innerHTML = html;
+  seg.addEventListener("click", function(e){
+    var b = e.target.closest ? e.target.closest("button") : null;
+    if(!b) return;
+    state.tf = b.getAttribute("data-k");
+    var all = seg.querySelectorAll("button");
+    for(var i=0;i<all.length;i++){
+      all[i].setAttribute("aria-pressed", all[i].getAttribute("data-k")===state.tf);
+    }
+    recalc();
+  });
+})();
+
+/* --- horizon cards --- */
+(function(){
+  var g = $("hz-grid"), html = "";
+  for(var i=0;i<TIMEFRAMES.length;i++){
+    var t = TIMEFRAMES[i], li = "";
+    for(var j=0;j<t.pts.length;j++){ li += "<li>"+t.pts[j]+"</li>"; }
+    html += '<div class="hz" data-k="'+t.k+'" data-active="'+(t.k===state.tf)+'">'+
+            '<div class="hz__t">'+t.label+'</div><h4>'+t.title+'</h4><ul>'+li+'</ul></div>';
+  }
+  g.innerHTML = html;
+})();
+
+/* --- pillar sliders --- */
+(function(){
+  var box = $("pillars"), html = "";
+  for(var i=0;i<PILLARS.length;i++){
+    var p = PILLARS[i];
+    html +=
+      '<div class="pillar">'+
+        '<div class="pillar__top">'+
+          '<span class="pillar__name">'+p.n+'</span>'+
+          '<span class="pillar__w">Weight '+p.w.toFixed(1)+'</span>'+
+          '<span class="pillar__val" id="pv-'+p.k+'">'+p.v+'</span>'+
+        '</div>'+
+        '<p class="pillar__q">'+p.q+'</p>'+
+        '<input type="range" id="ps-'+p.k+'" min="0" max="10" step="1" value="'+p.v+'" '+
+               'aria-label="'+p.n+'" style="--pct:'+(p.v*10)+'%">'+
+        '<p class="pillar__anchor" id="pa-'+p.k+'"></p>'+
+      '</div>';
+  }
+  box.innerHTML = html;
+
+  for(var m=0;m<PILLARS.length;m++){
+    (function(p){
+      var el = $("ps-"+p.k);
+      el.addEventListener("input", function(){
+        p.v = parseInt(el.value, 10);
+        el.style.setProperty("--pct", (p.v*10) + "%");
+        $("pv-"+p.k).textContent = p.v;
+        $("pa-"+p.k).textContent = anchorText(p);
+        recalc();
+      });
+      $("pa-"+p.k).textContent = anchorText(p);
+    })(PILLARS[m]);
+  }
+})();
+
+function anchorText(p){
+  var idx = p.v <= 1 ? 0 : p.v <= 3 ? 1 : p.v <= 5 ? 2 : p.v <= 7 ? 3 : 4;
+  return p.anchors[idx];
+}
+
+/* --- driver reference cards --- */
+(function(){
+  var box = $("pillars-ref"), html = "";
+  for(var i=0;i<PILLARS.length;i++){
+    var p = PILLARS[i], n = (i+1) < 10 ? "0"+(i+1) : ""+(i+1);
+    html +=
+      '<details class="pref">'+
+        '<summary>'+
+          '<span class="pref__i">'+n+'</span>'+
+          '<span class="pref__h"><b>'+p.n+'</b><span>Weight '+p.w.toFixed(1)+' &nbsp;·&nbsp; tap to open</span></span>'+
+        '</summary>'+
+        '<dl class="pref__c">'+
+          '<dt>The question</dt><dd>'+p.q+'</dd>'+
+          '<dt>What the buyer is testing</dt><dd>'+p.lens+'</dd>'+
+          '<dt>The work that moves it</dt><dd>'+p.fix+'</dd>'+
+        '</dl>'+
+      '</details>';
+  }
+  box.innerHTML = html;
+})();
+
+/* ======================================================================
+   THE MODEL
+   ====================================================================== */
+
+function recalc(){
+  var t   = tf();
+  var sec = sector();
+
+  /* ---- earnings ---- */
+  var rev      = Math.max(0, num("in-rev", 0));
+  var marginPc = num("in-margin", 0);
+  var addbacks = Math.max(0, num("in-addbacks", 0));
+  var debt     = Math.max(0, num("in-debt", 0));
+  var ebitda   = Math.max(0, rev * (marginPc/100) + addbacks);
+
+  /* ---- readiness score ---- */
+  var wsum = 0, ssum = 0, byKey = {};
+  for(var i=0;i<PILLARS.length;i++){
+    var p = PILLARS[i];
+    wsum += p.w; ssum += p.w * p.v; byKey[p.k] = p.v;
+  }
+  var score = wsum ? (ssum / wsum) * 10 : 0;          // 0–100
+
+  /* ---- today's value ---- */
+  var sz    = sizeFactor(ebitda);
+  var rf    = readinessFactor(score);
+  var mult  = sec.m * sz * rf;
+  var evNow = ebitda * mult;
+
+  /* ---- projection to the chosen exit date ---- */
+  var years      = Math.min(t.months / 12, MAX_YEARS);
+  var scoreExit  = score + t.close * (CEILING - score);
+  if(scoreExit < score) scoreExit = score;
+
+  /* improvement in systems, margin and revenue quality drives earnings growth */
+  var opsGap = (30 - (byKey.sys + byKey.marg + byKey.revq)) / 30;   // 0–1
+  var growth = ORGANIC_G + t.close * clamp(opsGap,0,1) * 0.10;
+  var ebitdaExit = ebitda * Math.pow(1 + growth, years);
+
+  var szExit   = sizeFactor(ebitdaExit);
+  var rfExit   = readinessFactor(scoreExit);
+  var multExit = sec.m * szExit * rfExit;
+  var evExit   = ebitdaExit * multExit;
+
+  var gap = evExit - evNow;
+
+  /* ---- net proceeds at exit ---- */
+  var taxScoreExit = byKey.tax + t.close * (9.5 - byKey.tax);
+  var rateNow      = taxRate(byKey.tax);
+  var rateExit     = taxRate(taxScoreExit);
+
+  var fees      = evExit * FEE_RATE;
+  var preTax    = Math.max(0, evExit - fees - debt);
+  var taxDue    = preTax * rateExit;
+  var net       = preTax - taxDue;
+  var taxIfLazy = preTax * rateNow;
+  var kept      = Math.max(0, taxIfLazy - taxDue);
+
+  /* ================= RENDER ================= */
+
+  /* dial */
+  var C = 2 * Math.PI * 50;
+  var arc = $("dial-arc");
+  arc.setAttribute("stroke-dasharray", C.toFixed(2));
+  arc.setAttribute("stroke-dashoffset", (C * (1 - clamp(score,0,100)/100)).toFixed(2));
+  var tone = score >= 70 ? "green" : score >= 48 ? "amber" : "red";
+  arc.style.stroke = tone === "green" ? "var(--green)" : tone === "amber" ? "var(--gold)" : "var(--red)";
+
+  $("score-num").innerHTML = Math.round(score) + "<small>/100</small>";
+  var grade = $("score-grade");
+  grade.setAttribute("data-t", tone);
+  grade.textContent = score >= 85 ? "Institutional" : score >= 70 ? "Sale-Ready"
+                    : score >= 55 ? "Improvable"    : score >= 38 ? "Owner-Dependent"
+                    : "High Risk";
+  $("score-note").textContent =
+    "Weighted across all ten drivers. A buyer's diligence produces a version of this number "
+    + "whether or not you do.";
+
+  /* verdict against the chosen horizon */
+  var v = $("verdict"), vt = $("verdict-title"), vb = $("verdict-body");
+  var deficit = t.req - score;
+  if(deficit <= 0){
+    v.setAttribute("data-t","green");
+    vt.textContent = "On track for " + t.phrase;
+    vb.textContent = "Your readiness clears the threshold buyers apply on this timeline. "
+      + "The work now is protecting the position through diligence and engineering the net proceeds — "
+      + "not rebuilding the business.";
+  } else if(deficit <= 15){
+    v.setAttribute("data-t","amber");
+    vt.textContent = "At risk on the timeline for " + t.phrase;
+    vb.textContent = "You are roughly " + Math.round(deficit) + " points short of where buyers expect a business "
+      + "to be at this horizon. Expect pressure on price, an earn-out, or an extended escrow unless the gaps below "
+      + "are closed before you go to market.";
+  } else {
+    v.setAttribute("data-t","red");
+    vt.textContent = "Off track for " + t.phrase;
+    vb.textContent = "At " + Math.round(deficit) + " points below the threshold for this timeline, a sale now would "
+      + "likely mean a significant discount, a heavy earn-out, or no close at all. Either extend the horizon or "
+      + "compress the work — the drivers below are where to start.";
+  }
+
+  /* value bars */
+  var top = Math.max(evNow, evExit, 1);
+  $("ev-now").textContent  = money(evNow);
+  $("ev-exit").textContent = money(evExit);
+  $("ev-exit-lbl").textContent = t.at;
+  $("bar-now").style.width  = (evNow/top*100).toFixed(1) + "%";
+  $("bar-exit").style.width = (evExit/top*100).toFixed(1) + "%";
+
+  /* gap */
+  var perMonth = t.months ? gap / t.months : 0;
+  $("gap-val").textContent = money(gap);
+  $("gap-note").textContent =
+    "The difference between selling the business you have and selling the business you could build "
+    + "by then — about " + money(perMonth) + " for every month of the plan. Delay costs the same amount.";
+
+  /* key figures */
+  $("kv-ebitda").textContent  = money(ebitda);
+  $("kv-base").textContent    = sec.m.toFixed(1) + "×";
+  $("kv-size").textContent    = sz.toFixed(2) + "×";
+  $("kv-ready").textContent   = rf.toFixed(2) + "×";
+  $("kv-mult").textContent    = mult.toFixed(2) + "×";
+  $("kv-mult2").textContent   = multExit.toFixed(2) + "×";
+  $("kv-ebitda2").textContent = money(ebitdaExit);
+
+  $("kv-fees").textContent = "− " + money(fees);
+  $("kv-debt").textContent = "− " + money(debt);
+  $("kv-tax").textContent  = "− " + money(taxDue) + "  (" + Math.round(rateExit*100) + "%)";
+  $("kv-net").textContent  = money(net);
+  $("kv-kept").textContent = "+ " + money(kept);
+
+  /* prioritized moves — weight × shortfall */
+  var ranked = PILLARS.slice().sort(function(a,b){
+    return (b.w * (10 - b.v)) - (a.w * (10 - a.v));
+  }).filter(function(p){ return p.v < 9; }).slice(0, 4);
+
+  var mh = "";
+  for(var r=0;r<ranked.length;r++){
+    var p = ranked[r];
+    /* what closing this one driver to 9 would be worth, holding everything else constant */
+    var lift = (p.w * (9 - p.v) * 10) / wsum;
+    var evIf = ebitda * sec.m * sz * readinessFactor(clamp(score + lift, 0, 100));
+    mh += '<div class="move">'+
+            '<span class="move__n">'+(r+1)+'</span>'+
+            '<span class="move__b">'+
+              '<b>'+p.moveTitle+'</b>'+
+              '<span>'+p.moveBody+'</span>'+
+              '<i>Worth about '+money(evIf - evNow)+' at today’s earnings</i>'+
+            '</span>'+
+          '</div>';
+  }
+  if(!mh){
+    mh = '<div class="move"><span class="move__n">✓</span><span class="move__b">'+
+         '<b>No structural gaps left</b><span>Every driver is scoring at or near the ceiling. '+
+         'The remaining value is in timing, buyer selection, and deal structure.</span></span></div>';
+  }
+  $("moves-list").innerHTML = mh;
+
+  /* sector note + horizon highlight */
+  $("sector-hint").textContent = sec.note;
+  $("tf-hint").textContent = t.title + " — " + t.pts[0] + ".";
+  var cards = document.querySelectorAll(".hz");
+  for(var c=0;c<cards.length;c++){
+    cards[c].setAttribute("data-active", cards[c].getAttribute("data-k") === state.tf);
+  }
+
+  /* mail link carries the simulation */
+  buildMail({
+    sector: sec.n, horizon: t.label, score: Math.round(score), grade: grade.textContent,
+    ebitda: money(ebitda), mult: mult.toFixed(2), evNow: money(evNow),
+    evExit: money(evExit), gap: money(gap), net: money(net),
+    moves: ranked.map(function(p){ return p.moveTitle; })
+  });
+}
+
+/* ======================================================================
+   MAIL / PRINT
+   ====================================================================== */
+
+function buildMail(d){
+  /* REPLACE: destination address for enquiries */
+  var to = "hello@legacy.ltd";
+  var subject = "Exit Value Simulation — " + d.sector + " — " + d.horizon;
+  var lines = [
+    "My Legacy.Ltd Exit Value Simulation",
+    "",
+    "Sector:                 " + d.sector,
+    "Exit horizon:           " + d.horizon,
+    "Exit readiness:         " + d.score + "/100 (" + d.grade + ")",
+    "",
+    "Adjusted EBITDA:        " + d.ebitda,
+    "Effective multiple:     " + d.mult + "x",
+    "Enterprise value today: " + d.evNow,
+    "Projected at exit:      " + d.evExit,
+    "Value at stake:         " + d.gap,
+    "Estimated net to owner: " + d.net,
+    "",
+    "Priority moves flagged:",
+    d.moves.map(function(m,i){ return "  " + (i+1) + ". " + m; }).join("\n"),
+    "",
+    "I'd like to book an Exit Readiness Review to pressure-test these numbers.",
+    "",
+    "Name:",
+    "Company:",
+    "Best number:"
+  ].join("\n");
+
+  var href = "mailto:" + to + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(lines);
+  $("cta-mail").setAttribute("href", href);
+  $("btn-send").setAttribute("href", href);
+}
+
+$("btn-print").addEventListener("click", function(){ window.print(); });
+
+/* recalc on every numeric input */
+["in-rev","in-margin","in-addbacks","in-debt"].forEach(function(id){
+  $(id).addEventListener("input", recalc);
+});
+
+$("yr").textContent = new Date().getFullYear();
+
+recalc();
+})();
+</script>
+</body>
+</html>
