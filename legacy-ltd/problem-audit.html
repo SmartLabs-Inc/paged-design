@@ -58,7 +58,7 @@ p{margin:0 0 16px}
    stays self-contained. Swap for the official artwork before go-live.
    ----------------------------------------------------------------------- */
 .logo{display:block;color:var(--bone);line-height:0}
-.logo svg{display:block;height:var(--h,20px);width:auto;max-width:100%;fill:currentColor}
+.logo svg,.logo img{display:block;height:var(--h,20px);width:auto;max-width:100%;fill:currentColor}
 
 /* ---------- Chrome ------------------------------------------------------ */
 .top{position:sticky;top:0;z-index:60;background:rgba(10,10,11,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line-2)}
@@ -265,19 +265,39 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<!-- ==========================================================================
+     LEGACY WORDMARK  —  the ONE place the logo is defined.
+     This is a PLACEHOLDER vector reconstruction, not the official artwork.
+
+     To drop in the real logo, do ONE of these:
+
+     A) Official SVG  — replace the <path>/<circle> elements below with the
+        paths from the real file, and set this <symbol>'s viewBox to match it.
+
+     B) PNG / JPG / official SVG as a file — leave this alone and instead set
+        LOGO_SRC at the top of the <script> block to a data URI:
+            var LOGO_SRC = "data:image/png;base64,iVBORw0KG...";
+        Every logo slot on the page then renders that image instead.
+
+     Either way it is a single edit and every placement updates.
+     ========================================================================== -->
+<symbol id="lg-mark" viewBox="0 0 600 77">
+  <title>LEGACY</title>
+  <path d="M0 0h17v60h55v17H0z"/>
+  <path d="M95 0h72v16h-55v14h48v16h-48v15h55v16H95z"/>
+  <path d="M280.96 16.42A50 38.5 0 1 0 289.05 46L288.77 30 252 30 252 46 272.06 46A34 22.5 0 1 1 267.85 25.59Z"/>
+  <path d="M300 77 347.5 0 395 77h-19l-28.5-46.2L319 77z"/>
+  <circle cx="410" cy="68.5" r="8.5"/>
+  <path d="M506.93 17.53A50 38.5 0 1 0 506.93 59.47L493.52 50.75A34 22.5 0 1 1 493.52 26.25Z"/>
+  <path d="M525 0h19l18.5 30L581 0h19l-29 46v31h-17V46z"/>
+</symbol>
+</defs></svg>
 
 <header class="top">
   <div class="wrap top__in">
     <span class="logo" style="--h:20px" aria-label="Legacy">
-      <svg viewBox="0 0 600 77" role="img" aria-label="LEGACY"><title>LEGACY</title>
-        <path d="M0 0h17v60h55v17H0z"/>
-        <path d="M95 0h72v16h-55v14h48v16h-48v15h55v16H95z"/>
-        <path d="M280.96 16.42A50 38.5 0 1 0 289.05 46L288.77 30 252 30 252 46 272.06 46A34 22.5 0 1 1 267.85 25.59Z"/>
-        <path d="M300 77 347.5 0 395 77h-19l-28.5-46.2L319 77z"/>
-        <circle cx="410" cy="68.5" r="8.5"/>
-        <path d="M506.93 17.53A50 38.5 0 1 0 506.93 59.47L493.52 50.75A34 22.5 0 1 1 493.52 26.25Z"/>
-        <path d="M525 0h19l18.5 30L581 0h19l-29 46v31h-17V46z"/>
-      </svg>
+      <svg viewBox="0 0 600 77" role="img" aria-label="LEGACY"><use href="#lg-mark"/></svg>
     </span>
     <span class="top__name">The Honest Audit</span>
     <a href="index.html" style="font-family:var(--display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);text-decoration:none">Simulator</a>
@@ -540,6 +560,21 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
 </footer>
 
 <script>
+/* --------------------------------------------------------------------------
+   LOGO — set this to a data URI to use the official artwork everywhere.
+   Leave it "" to keep the placeholder vector defined in the #lg-mark symbol.
+   e.g. var LOGO_SRC = "data:image/png;base64,iVBORw0KGgoAAAANS...";
+   -------------------------------------------------------------------------- */
+var LOGO_SRC = "";
+
+(function applyLogo(){
+  if(!LOGO_SRC) return;
+  var slots = document.querySelectorAll(".logo");
+  for(var i=0;i<slots.length;i++){
+    slots[i].innerHTML = '<img src="'+LOGO_SRC+'" alt="Legacy">';
+  }
+})();
+
 var FAM={"traffic": {"probe": "How many people who had never heard of you touched your business last month? People, not impressions.", "fix": "Build one repeatable acquisition channel and instrument it end to end.", "lever": "B", "md": 0.06}, "capture": {"probe": "Of everyone who visited your site last month, what percentage gave you an email address?", "fix": "Put a real entry offer and capture mechanism on pages that already get traffic.", "lever": "E", "md": 0.02}, "qualify": {"probe": "A lead came in yesterday. How many minutes passed before a human replied?", "fix": "Response-time SLA plus a qualification gate before anything reaches a closer.", "lever": "E", "md": 0.03}, "nurture": {"probe": "How many touches does someone get between first contact and buying? Name them.", "fix": "A written sequence that runs on its own from first touch through post-purchase.", "lever": "B", "md": 0.05}, "salesproc": {"probe": "What percentage of your qualified conversations became customers last quarter?", "fix": "Documented stages, scripts, and objection handling anyone on the team can run.", "lever": "B", "md": 0.08}, "crm": {"probe": "Open your CRM now. Is every live deal in it, with a next step and a date?", "fix": "One system of record where the pipeline lives outside anyone's head.", "lever": "M", "md": 0.12}, "offer": {"probe": "In one sentence: what specific outcome do you promise, to whom, by when?", "fix": "Sharpen the promise and the audience until the offer does the selling.", "lever": "E", "md": 0.05}, "convert": {"probe": "Of 100 people who reach your checkout or booking page, how many complete?", "fix": "Fix the page, the friction, and the pricing presentation — in that order.", "lever": "E", "md": 0.03}, "proof": {"probe": "How many written or recorded customer results could you produce in the next hour?", "fix": "Collect proof systematically at the moment of customer success.", "lever": "E", "md": 0.02}, "retain": {"probe": "What percentage of last year's customers bought again this year?", "fix": "Onboarding and success motion that makes the second purchase the default.", "lever": "B", "md": 0.14}, "expand": {"probe": "What is your average order value, and what is the second thing you sell?", "fix": "Add the obvious next purchase and present it at the moment of highest trust.", "lever": "E", "md": 0.04}, "paid": {"probe": "What does it cost you to acquire one paying customer, all-in?", "fix": "Rebuild the unit economics before spending another dollar on media.", "lever": "E", "md": 0.02}, "measure": {"probe": "What did you test last month, and what did it prove?", "fix": "A standing testing cadence with a decision rule, not opinions.", "lever": "B", "md": 0.07}, "price": {"probe": "What is your gross margin, to the nearest five points, without looking?", "fix": "Reprice against real cost-to-serve and end discount creep.", "lever": "E", "md": 0.05}, "recurring": {"probe": "What share of next quarter's revenue is already contracted or subscribed?", "fix": "Convert one-off work to written recurring agreements with auto-renewal.", "lever": "M", "md": 0.28}, "cash": {"probe": "How many days pass between work delivered and cash in the bank?", "fix": "Automate invoicing and collection, shorten terms, take payment up front.", "lever": "E", "md": 0.04}, "coststruct": {"probe": "Which single cost line grew fastest last year, and by how much?", "fix": "Rebuild cost-to-serve line by line and cut what does not earn.", "lever": "E", "md": 0.03}, "concentration": {"probe": "What percentage of revenue comes from your largest single client, product, or channel?", "fix": "Deliberately grow the tail against a hard concentration ceiling.", "lever": "M", "md": 0.22}, "visibility": {"probe": "Without opening anything: last month's revenue, margin, and cash on hand.", "fix": "One dashboard, closed monthly, that answers any question in under a minute.", "lever": "M", "md": 0.13}, "ownerdep": {"probe": "If you disappeared for 30 days with no contact, what breaks first?", "fix": "Move decisions and relationships out of your head into named owners with authority limits.", "lever": "M", "md": 0.32}, "team": {"probe": "How long until a new hire produces without supervision — and who trained the last one?", "fix": "Documented hiring, onboarding and training that does not route through you.", "lever": "M", "md": 0.16}, "keyperson": {"probe": "Which single person's resignation would hurt most, and what would break?", "fix": "Cross-train, document, and put retention terms on the roles that carry the business.", "lever": "M", "md": 0.24}, "foundertime": {"probe": "How many hours did you personally work last week? Last week, not a typical one.", "fix": "Reclaim the calendar: cut meetings, batch, hand off work below your pay grade.", "lever": "M", "md": 0.1}, "direction": {"probe": "Write down where this business is in three years and what you want out of it. Can you?", "fix": "A written plan with a target date, a target buyer, and the gap between here and there.", "lever": "M", "md": 0.18}, "legal": {"probe": "Can you produce a signed, current agreement for your three largest customers right now?", "fix": "Bring contracts, IP assignment, terms and data handling up to a standard that survives diligence.", "lever": "M", "md": 0.09}, "resilience": {"probe": "If your biggest channel or customer vanished on Monday, what is the written plan?", "fix": "A one-page contingency plan per single point of failure, reviewed quarterly.", "lever": "M", "md": 0.11}};
 /* [name, cat, family, demand, income, difficulty, costBand, timeBand, lever, multipleDelta] */
 var RAW=[

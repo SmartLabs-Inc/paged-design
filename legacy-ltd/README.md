@@ -52,11 +52,19 @@ visitor's browser. Nothing is transmitted or stored.
 
 Every one is marked with a `REPLACE:` comment in the source.
 
-1. **Logo.** The wordmark is a vector reconstruction so the file stays self-contained.
-   To use the official artwork, replace the `<svg>` inside each `.logo` element (nav,
-   hero, footer — three places) with
-   `<img src="data:image/png;base64,…" alt="Legacy">`, or paste the official SVG paths
-   over the ones in place.
+1. **Logo — ONE line.** The wordmark in place is a **placeholder vector
+   reconstruction**, not the official artwork. It is defined exactly once per file, in a
+   `<symbol id="lg-mark">` at the top of `<body>`; every placement is a `<use>` reference.
+   Two ways to swap it, both single edits:
+
+   - **A raster or SVG file** — set `LOGO_SRC` at the top of the `<script>` block to a
+     data URI: `var LOGO_SRC = "data:image/png;base64,iVBORw0KG…";`
+     Every logo slot on the page then renders that image instead. The CSS already sizes
+     an `<img>` identically to the `<svg>`, hero included.
+   - **Official SVG paths** — replace the elements inside `<symbol id="lg-mark">` with the
+     paths from the real file and set the symbol's `viewBox` to match.
+
+   Do it in both `index.html` and `problem-audit.html`.
 2. **Email address.** `buildMail()` → `var to = "hello@legacy.ltd";`
 3. **Booking link.** `<a … id="cta-book">` and the nav `Book a Review` button both point
    at `#book`. Repoint them at the real scheduler.
@@ -173,7 +181,8 @@ contradiction resolutions, and the ledger with every intermediate figure.
 
 ## Before it goes live — swap these
 
-1. **Logo** — same vector reconstruction as the simulator; one `<svg>` in the header.
+1. **Logo** — same placeholder, same one-line swap: set `LOGO_SRC` at the top of the
+   `<script>` block, or replace the paths inside `<symbol id="lg-mark">`.
 2. **Email** — `buildExports()` → `var to = "hello@legacy.ltd";`
 3. **Cost bands** — `COST_$` and the revenue scaling in `sizeFactor()`.
 4. **Confidence weights** — `CONF` (measured 1.0 / estimated 0.7 / gut 0.4) and the 30%

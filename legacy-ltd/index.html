@@ -79,10 +79,10 @@ section{padding:clamp(64px,8vw,116px) 0;position:relative}
    .logo with:  <img src="data:image/png;base64,PASTE_HERE" alt="Legacy">
    ----------------------------------------------------------------------- */
 .logo{display:block;color:var(--bone);line-height:0}
-.logo svg{display:block;height:var(--h,22px);width:auto;max-width:100%;fill:currentColor}
+.logo svg,.logo img{display:block;height:var(--h,22px);width:auto;max-width:100%;fill:currentColor}
 .logo--nav{--h:22px}
 .logo--hero{color:var(--bone)}
-.logo--hero svg{height:auto;width:min(100%,760px)}
+.logo--hero svg,.logo--hero img{height:auto;width:min(100%,760px)}
 .logo--foot{--h:26px;color:var(--bone-dim)}
 
 /* ---------- Nav --------------------------------------------------------- */
@@ -452,20 +452,40 @@ details.q .a{padding:0 0 24px;font-size:14.5px;color:var(--muted);line-height:1.
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<!-- ==========================================================================
+     LEGACY WORDMARK  —  the ONE place the logo is defined.
+     This is a PLACEHOLDER vector reconstruction, not the official artwork.
+
+     To drop in the real logo, do ONE of these:
+
+     A) Official SVG  — replace the <path>/<circle> elements below with the
+        paths from the real file, and set this <symbol>'s viewBox to match it.
+
+     B) PNG / JPG / official SVG as a file — leave this alone and instead set
+        LOGO_SRC at the top of the <script> block to a data URI:
+            var LOGO_SRC = "data:image/png;base64,iVBORw0KG...";
+        Every logo slot on the page then renders that image instead.
+
+     Either way it is a single edit and every placement updates.
+     ========================================================================== -->
+<symbol id="lg-mark" viewBox="0 0 600 77">
+  <title>LEGACY</title>
+  <path d="M0 0h17v60h55v17H0z"/>
+  <path d="M95 0h72v16h-55v14h48v16h-48v15h55v16H95z"/>
+  <path d="M280.96 16.42A50 38.5 0 1 0 289.05 46L288.77 30 252 30 252 46 272.06 46A34 22.5 0 1 1 267.85 25.59Z"/>
+  <path d="M300 77 347.5 0 395 77h-19l-28.5-46.2L319 77z"/>
+  <circle cx="410" cy="68.5" r="8.5"/>
+  <path d="M506.93 17.53A50 38.5 0 1 0 506.93 59.47L493.52 50.75A34 22.5 0 1 1 493.52 26.25Z"/>
+  <path d="M525 0h19l18.5 30L581 0h19l-29 46v31h-17V46z"/>
+</symbol>
+</defs></svg>
 
 <!-- ===================== NAV ===================== -->
 <header class="nav">
   <div class="wrap nav__in">
     <a href="#top" class="logo logo--nav" aria-label="Legacy home">
-      <svg viewBox="0 0 600 77" role="img" aria-label="LEGACY"><title>LEGACY</title>
-        <path d="M0 0h17v60h55v17H0z"/>
-        <path d="M95 0h72v16h-55v14h48v16h-48v15h55v16H95z"/>
-        <path d="M280.96 16.42A50 38.5 0 1 0 289.05 46L288.77 30 252 30 252 46 272.06 46A34 22.5 0 1 1 267.85 25.59Z"/>
-        <path d="M300 77 347.5 0 395 77h-19l-28.5-46.2L319 77z"/>
-        <circle cx="410" cy="68.5" r="8.5"/>
-        <path d="M506.93 17.53A50 38.5 0 1 0 506.93 59.47L493.52 50.75A34 22.5 0 1 1 493.52 26.25Z"/>
-        <path d="M525 0h19l18.5 30L581 0h19l-29 46v31h-17V46z"/>
-      </svg>
+      <svg viewBox="0 0 600 77" role="img" aria-label="LEGACY"><use href="#lg-mark"/></svg>
     </a>
     <nav class="nav__links">
       <a href="#simulator">Simulator</a>
@@ -483,15 +503,7 @@ details.q .a{padding:0 0 24px;font-size:14.5px;color:var(--muted);line-height:1.
 <section class="hero">
   <div class="wrap">
     <div class="logo logo--hero hero__logo" aria-label="Legacy">
-      <svg viewBox="0 0 600 77" role="img" aria-label="LEGACY"><title>LEGACY</title>
-        <path d="M0 0h17v60h55v17H0z"/>
-        <path d="M95 0h72v16h-55v14h48v16h-48v15h55v16H95z"/>
-        <path d="M280.96 16.42A50 38.5 0 1 0 289.05 46L288.77 30 252 30 252 46 272.06 46A34 22.5 0 1 1 267.85 25.59Z"/>
-        <path d="M300 77 347.5 0 395 77h-19l-28.5-46.2L319 77z"/>
-        <circle cx="410" cy="68.5" r="8.5"/>
-        <path d="M506.93 17.53A50 38.5 0 1 0 506.93 59.47L493.52 50.75A34 22.5 0 1 1 493.52 26.25Z"/>
-        <path d="M525 0h19l18.5 30L581 0h19l-29 46v31h-17V46z"/>
-      </svg>
+      <svg viewBox="0 0 600 77" role="img" aria-label="LEGACY"><use href="#lg-mark"/></svg>
       <div class="hero__tag">Exit Architecture &amp; Enterprise Value</div>
     </div>
 
@@ -886,15 +898,7 @@ details.q .a{padding:0 0 24px;font-size:14.5px;color:var(--muted);line-height:1.
     <div class="foot__in">
       <div class="foot__l">
         <div class="logo logo--foot" aria-label="Legacy">
-          <svg viewBox="0 0 600 77" role="img" aria-label="LEGACY"><title>LEGACY</title>
-            <path d="M0 0h17v60h55v17H0z"/>
-            <path d="M95 0h72v16h-55v14h48v16h-48v15h55v16H95z"/>
-            <path d="M280.96 16.42A50 38.5 0 1 0 289.05 46L288.77 30 252 30 252 46 272.06 46A34 22.5 0 1 1 267.85 25.59Z"/>
-            <path d="M300 77 347.5 0 395 77h-19l-28.5-46.2L319 77z"/>
-            <circle cx="410" cy="68.5" r="8.5"/>
-            <path d="M506.93 17.53A50 38.5 0 1 0 506.93 59.47L493.52 50.75A34 22.5 0 1 1 493.52 26.25Z"/>
-            <path d="M525 0h19l18.5 30L581 0h19l-29 46v31h-17V46z"/>
-          </svg>
+          <svg viewBox="0 0 600 77" role="img" aria-label="LEGACY"><use href="#lg-mark"/></svg>
         </div>
         <p>Exit architecture for owners who intend to leave on their own terms —
         with the business intact and the proceeds where they belong.</p>
@@ -919,6 +923,21 @@ details.q .a{padding:0 0 24px;font-size:14.5px;color:var(--muted);line-height:1.
 </footer>
 
 <script>
+/* --------------------------------------------------------------------------
+   LOGO — set this to a data URI to use the official artwork everywhere.
+   Leave it "" to keep the placeholder vector defined in the #lg-mark symbol.
+   e.g. var LOGO_SRC = "data:image/png;base64,iVBORw0KGgoAAAANS...";
+   -------------------------------------------------------------------------- */
+var LOGO_SRC = "";
+
+(function applyLogo(){
+  if(!LOGO_SRC) return;
+  var slots = document.querySelectorAll(".logo");
+  for(var i=0;i<slots.length;i++){
+    slots[i].innerHTML = '<img src="'+LOGO_SRC+'" alt="Legacy">';
+  }
+})();
+
 (function(){
 "use strict";
 
