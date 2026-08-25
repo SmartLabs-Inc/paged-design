@@ -1,0 +1,1470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legacy.Ltd — The Honest Audit</title>
+<meta name="description" content="An eight-stage diagnostic that resolves 126 evergreen business problems into a ranked ledger: what's cheap, what's fast, what's worth funding, and the exact dollar and multiple impact of fixing each one.">
+<meta name="theme-color" content="#0A0A0B">
+<style>
+/* ==========================================================================
+   Legacy.Ltd — The Honest Audit
+   Single-file, fully self-contained. No external fonts, scripts, or assets.
+   Companion to legacy-ltd/index.html (Exit Value Simulator) — same tokens.
+   ========================================================================== */
+
+:root{
+  --ink:#0A0A0B; --ink-2:#0F0F12; --panel:#141418; --panel-2:#1A1A1F;
+  --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.055);
+  --bone:#F4F1EA; --bone-dim:#CFCBC2; --muted:#8E8E97; --muted-2:#6A6A73;
+  --gold:#C9A227; --gold-2:#E8C766; --gold-dim:rgba(201,162,39,.14);
+
+  /* Status — reserved, never reused as series colors */
+  --ok:#5FB878; --warn:#E0A23F; --bad:#E0563F;
+
+  /* Categorical series — validated all-pairs against surface #141418 (dark).
+     Slot 1 blue = value created by re-rating the MULTIPLE
+     Slot 2 orange = value created by lifting EARNINGS
+     Slot 3 aqua = fixes that do both                                        */
+  --s-mult:#3987e5; --s-earn:#d95926; --s-both:#199e70;
+
+  --display:"Futura PT","Futura","Century Gothic","Avenir Next","Avenir","Trebuchet MS","Segoe UI",system-ui,sans-serif;
+  --body:"Inter","Helvetica Neue","Helvetica",Arial,system-ui,sans-serif;
+  --maxw:1120px; --r:14px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--ink);color:var(--bone);
+  font-family:var(--body);font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+svg{max-width:100%}
+button{font:inherit;color:inherit}
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 24px}
+h1,h2,h3,h4{font-family:var(--display);font-weight:700;letter-spacing:-.015em;line-height:1.08;margin:0}
+h1{font-size:clamp(30px,4.4vw,50px);letter-spacing:-.025em;text-wrap:balance}
+h2{font-size:clamp(23px,3vw,34px);text-wrap:balance}
+h3{font-size:clamp(17px,1.8vw,21px)}
+p{margin:0 0 16px}
+.lede{font-size:clamp(16px,1.4vw,18.5px);color:var(--bone-dim);max-width:64ch}
+.small{font-size:13.5px;color:var(--muted);line-height:1.6}
+.xs{font-size:11.5px;color:var(--muted-2);line-height:1.55}
+.eyebrow{font-family:var(--display);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:700;margin:0 0 14px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- Logo ---------------------------------------------------------
+   REPLACE: vector reconstruction of the LEGACY wordmark, used so the file
+   stays self-contained. Swap for the official artwork before go-live.
+   ----------------------------------------------------------------------- */
+.logo{display:block;color:var(--bone);line-height:0}
+.logo svg{display:block;height:var(--h,20px);width:auto;max-width:100%;fill:currentColor}
+
+/* ---------- Chrome ------------------------------------------------------ */
+.top{position:sticky;top:0;z-index:60;background:rgba(10,10,11,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line-2)}
+.top__in{display:flex;align-items:center;gap:20px;height:60px}
+.top__name{font-family:var(--display);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-2);border-left:1px solid var(--line);padding-left:20px}
+.top__right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.pctlbl{font-family:var(--display);font-size:11px;letter-spacing:.14em;color:var(--muted);white-space:nowrap}
+.pbar{width:120px;height:4px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
+.pbar>i{display:block;height:100%;background:var(--gold);border-radius:99px;transition:width .35s cubic-bezier(.2,.7,.3,1)}
+@media(max-width:620px){.top__name{display:none}.pbar{width:70px}}
+
+/* ---------- Stage shell ------------------------------------------------- */
+.stage{padding:clamp(36px,5.5vw,68px) 0 clamp(60px,7vw,96px);display:none}
+.stage.on{display:block}
+.stage__no{font-family:var(--display);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:14px}
+.stage__hd{max-width:66ch;margin-bottom:clamp(26px,3.5vw,40px)}
+.stage__hd p{margin-top:16px}
+
+.card{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);padding:clamp(20px,2.4vw,28px)}
+.card+.card{margin-top:18px}
+.card__t{font-family:var(--display);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 20px;display:flex;align-items:center;gap:12px}
+.card__t::after{content:"";flex:1;height:1px;background:var(--line-2)}
+
+.nav{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:30px;padding-top:24px;border-top:1px solid var(--line-2)}
+.nav .spacer{flex:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 26px;border-radius:999px;border:1px solid transparent;font-family:var(--display);font-weight:700;font-size:12.5px;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;transition:background .18s,border-color .18s,color .18s,opacity .18s;text-decoration:none;white-space:nowrap}
+.btn--gold{background:var(--gold);color:#15100A}
+.btn--gold:hover{background:var(--gold-2)}
+.btn--ghost{border-color:var(--line);background:transparent;color:var(--bone)}
+.btn--ghost:hover{border-color:var(--gold);color:var(--gold-2)}
+.btn--sm{padding:9px 18px;font-size:11px}
+.btn[disabled]{opacity:.32;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--gold-2);outline-offset:2px}
+
+/* ---------- Stage 1: the wager ------------------------------------------ */
+.wager{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:8px}
+.wager>div{border:1px solid var(--line-2);border-radius:12px;padding:24px;background:linear-gradient(180deg,rgba(255,255,255,.028),transparent)}
+.wager b{display:block;font-family:var(--display);font-size:15px;margin-bottom:10px;color:var(--bone)}
+.wager p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.65}
+.pledge{display:flex;gap:14px;align-items:flex-start;margin-top:26px;padding:20px;border:1px solid rgba(201,162,39,.32);border-radius:12px;background:var(--gold-dim);cursor:pointer}
+.pledge input{margin-top:3px;width:18px;height:18px;accent-color:var(--gold);flex:none;cursor:pointer}
+.pledge span{font-size:14px;color:var(--bone-dim);line-height:1.6}
+
+/* ---------- Stage 2: the numbers ---------------------------------------- */
+.q{padding:20px 0;border-bottom:1px solid var(--line-2);display:grid;grid-template-columns:1fr auto;gap:14px 20px;align-items:start}
+.q:last-child{border-bottom:0;padding-bottom:0}
+.q__ask{min-width:0}
+.q__ask b{display:block;font-size:15px;color:var(--bone);font-weight:600;line-height:1.4;margin-bottom:4px}
+.q__ask span{font-size:12.5px;color:var(--muted-2);line-height:1.5;display:block}
+.q__in{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:640px){.q{grid-template-columns:1fr}.q__in{justify-content:flex-start}}
+.q input[type=number],.q input[type=text]{width:132px;padding:11px 13px;border-radius:10px;background:var(--ink-2);border:1px solid var(--line);color:var(--bone);font-family:var(--body);font-size:15px;font-variant-numeric:tabular-nums;outline:none;appearance:none;-moz-appearance:textfield}
+.q input[type=text]{width:220px}
+.q input::-webkit-outer-spin-button,.q input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.q input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+.q .suffix{font-size:13px;color:var(--muted-2);margin-left:-4px}
+.dunno{padding:10px 15px;border-radius:999px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-size:11.5px;font-family:var(--display);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .16s;white-space:nowrap}
+.dunno:hover{border-color:var(--muted);color:var(--bone-dim)}
+.dunno[aria-pressed=true]{background:rgba(224,162,63,.16);border:1px solid var(--warn);color:var(--warn)}
+.q[data-dunno=true] input{opacity:.3;pointer-events:none}
+
+.bizrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px}
+.bizrow label{display:block;font-size:12px;color:var(--bone-dim);margin-bottom:7px;font-weight:600}
+.bizrow input{width:100%;padding:11px 13px;border-radius:10px;background:var(--ink-2);border:1px solid var(--line);color:var(--bone);font-size:15px;font-variant-numeric:tabular-nums;outline:none;appearance:none;-moz-appearance:textfield}
+.bizrow input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+
+/* ---------- Stage 3: understudy ----------------------------------------- */
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:10px}
+.pick{text-align:left;padding:14px 16px;border-radius:11px;border:1px solid var(--line);background:var(--ink-2);cursor:pointer;transition:all .16s;display:flex;gap:11px;align-items:flex-start}
+.pick:hover{border-color:rgba(201,162,39,.5)}
+.pick[aria-pressed=true]{background:var(--gold-dim);border-color:var(--gold)}
+.pick i{flex:none;width:16px;height:16px;border-radius:4px;border:1px solid var(--line);margin-top:2px}
+.pick[aria-pressed=true] i{background:var(--gold);border-color:var(--gold)}
+.pick b{font-size:13.5px;font-weight:600;color:var(--bone);line-height:1.35;display:block}
+.pick[aria-pressed=true] b{color:var(--gold-2)}
+textarea{width:100%;min-height:96px;padding:14px;border-radius:11px;background:var(--ink-2);border:1px solid var(--line);color:var(--bone);font-family:var(--body);font-size:15px;line-height:1.6;resize:vertical;outline:none}
+textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+
+/* ---------- Stage 4: chips ---------------------------------------------- */
+.chipbank{display:flex;align-items:baseline;gap:14px;margin-bottom:24px;flex-wrap:wrap}
+.chipbank b{font-family:var(--display);font-size:clamp(30px,4vw,42px);letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.chipbank b[data-t=over]{color:var(--bad)} .chipbank b[data-t=under]{color:var(--warn)} .chipbank b[data-t=exact]{color:var(--ok)}
+.chipbank span{font-size:13px;color:var(--muted)}
+.chiprow{display:grid;grid-template-columns:1fr 190px 62px;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line-2)}
+.chiprow:last-child{border-bottom:0}
+@media(max-width:640px){.chiprow{grid-template-columns:1fr 56px;grid-template-areas:"n v" "s s";gap:10px 14px}.chiprow .cn{grid-area:n}.chiprow .cs{grid-area:s}.chiprow .cv{grid-area:v}}
+.chiprow .cn b{display:block;font-size:14.5px;color:var(--bone);font-weight:600;line-height:1.35}
+.chiprow .cn span{font-size:12px;color:var(--muted-2)}
+.chiprow .cv{font-family:var(--display);font-size:19px;font-weight:700;text-align:right;color:var(--gold-2);font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:99px;background:linear-gradient(90deg,var(--gold) var(--pct,0%),rgba(255,255,255,.13) var(--pct,0%));outline:none;cursor:pointer;margin:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--bone);border:3px solid var(--gold);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--bone);border:3px solid var(--gold);cursor:pointer}
+
+/* ---------- Stage 5: triage --------------------------------------------- */
+.tcount{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.tcount span{font-family:var(--display);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:6px 13px;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-variant-numeric:tabular-nums}
+.tcount span[data-full=true]{border-color:var(--bad);color:var(--bad)}
+.tcard{padding:16px 0;border-bottom:1px solid var(--line-2);display:grid;grid-template-columns:1fr auto;gap:12px 18px;align-items:center}
+.tcard:last-child{border-bottom:0}
+@media(max-width:760px){.tcard{grid-template-columns:1fr}}
+.tcard__n b{display:block;font-size:15px;color:var(--bone);font-weight:600;line-height:1.4}
+.tcard__n span{font-size:12px;color:var(--muted-2)}
+.tbtns{display:grid;grid-template-columns:repeat(4,minmax(74px,1fr));gap:7px}
+.tbtn{padding:9px 6px;border-radius:9px;border:1px solid var(--line);background:var(--ink-2);cursor:pointer;font-family:var(--display);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);transition:all .15s;text-align:center;line-height:1.3}
+.tbtn:hover{border-color:var(--muted)}
+.tbtn[aria-pressed=true][data-b=bleed]{background:rgba(224,86,63,.18);border-color:var(--bad);color:var(--bad)}
+.tbtn[aria-pressed=true][data-b=irritate]{background:rgba(224,162,63,.16);border-color:var(--warn);color:var(--warn)}
+.tbtn[aria-pressed=true][data-b=handled]{background:rgba(95,184,120,.15);border-color:var(--ok);color:var(--ok)}
+.tbtn[aria-pressed=true][data-b=na]{background:rgba(255,255,255,.07);border-color:var(--muted);color:var(--bone-dim)}
+.tbtn[disabled]{opacity:.28;cursor:not-allowed}
+
+/* ---------- Stage 6: pricing -------------------------------------------- */
+.price{padding:22px 0;border-bottom:1px solid var(--line-2)}
+.price:last-child{border-bottom:0;padding-bottom:0}
+.price>b{display:block;font-size:16px;color:var(--bone);margin-bottom:5px;line-height:1.4}
+.price>.probe{font-size:13px;color:var(--gold);margin-bottom:16px;line-height:1.55}
+.pgrid{display:grid;grid-template-columns:200px 1fr;gap:18px;align-items:start}
+@media(max-width:640px){.pgrid{grid-template-columns:1fr}}
+.pgrid label{display:block;font-size:11.5px;letter-spacing:.05em;color:var(--muted);margin-bottom:8px;text-transform:uppercase;font-family:var(--display)}
+.dollar{position:relative}
+.dollar>i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted-2);font-style:normal;font-size:14px;pointer-events:none}
+.dollar input{width:100%;padding:11px 13px 11px 26px;border-radius:10px;background:var(--ink-2);border:1px solid var(--line);color:var(--bone);font-size:15px;font-variant-numeric:tabular-nums;outline:none;appearance:none;-moz-appearance:textfield}
+.dollar input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+.conf{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.conf button{padding:11px 8px;border-radius:9px;border:1px solid var(--line);background:var(--ink-2);cursor:pointer;text-align:center;transition:all .15s}
+.conf button b{display:block;font-family:var(--display);font-size:12px;color:var(--bone);letter-spacing:.04em}
+.conf button span{display:block;font-size:10.5px;color:var(--muted-2);margin-top:3px;line-height:1.35}
+.conf button[aria-pressed=true]{background:var(--gold-dim);border-color:var(--gold)}
+.conf button[aria-pressed=true] b{color:var(--gold-2)}
+
+/* ---------- Stage 7: contradictions ------------------------------------- */
+.contra{border:1px solid rgba(224,86,63,.4);border-radius:12px;padding:22px;background:rgba(224,86,63,.05);margin-bottom:16px}
+.contra>b{display:block;font-family:var(--display);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--bad);margin-bottom:12px}
+.contra>p{font-size:15px;color:var(--bone-dim);line-height:1.6;margin-bottom:18px}
+.resolve{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.resolve{grid-template-columns:1fr}}
+.resolve button{padding:14px 16px;border-radius:10px;border:1px solid var(--line);background:var(--ink-2);cursor:pointer;text-align:left;transition:all .15s;font-size:13.5px;color:var(--bone-dim);line-height:1.5}
+.resolve button:hover{border-color:var(--muted)}
+.resolve button[aria-pressed=true]{background:var(--gold-dim);border-color:var(--gold);color:var(--gold-2)}
+.clean{border:1px solid rgba(95,184,120,.4);border-radius:12px;padding:24px;background:rgba(95,184,120,.05)}
+.clean b{display:block;font-family:var(--display);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ok);margin-bottom:10px}
+.clean p{margin:0;font-size:14.5px;color:var(--bone-dim);line-height:1.6}
+
+/* ---------- Stage 8: the ledger ----------------------------------------- */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--line-2);border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden;margin-bottom:26px}
+.tile{background:var(--panel);padding:24px 22px}
+.tile span{display:block;font-family:var(--display);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:12px;font-weight:700}
+.tile b{display:block;font-family:var(--display);font-size:clamp(26px,3.3vw,36px);line-height:1;letter-spacing:-.03em;color:var(--bone);font-variant-numeric:tabular-nums}
+.tile b.acc{color:var(--gold-2)}
+.tile em{display:block;font-style:normal;margin-top:9px;font-size:12px;color:var(--muted);line-height:1.5}
+
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.legend i{display:inline-flex;align-items:center;gap:8px;font-style:normal;font-size:12.5px;color:var(--muted)}
+.legend i::before{content:"";width:11px;height:11px;border-radius:3px;background:var(--c)}
+
+.bars{display:flex;flex-direction:column;gap:14px}
+.bar__top{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-bottom:7px}
+.bar__top b{font-size:14px;color:var(--bone);font-weight:600;line-height:1.35;min-width:0}
+.bar__top em{font-style:normal;font-family:var(--display);font-size:15px;color:var(--gold-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar__track{display:flex;gap:2px;height:14px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.05)}
+.bar__seg{height:100%;border-radius:2px;transition:width .4s cubic-bezier(.2,.7,.3,1)}
+.bar__seg:first-child{border-radius:4px 2px 2px 4px}
+.bar__seg:last-child{border-radius:2px 4px 4px 2px}
+.bar__meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-family:var(--display);font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip[data-lev=M]{border-color:rgba(57,135,229,.5);color:#7fb4f0}
+.chip[data-lev=E]{border-color:rgba(217,89,38,.5);color:#f08a5f}
+.chip[data-lev=B]{border-color:rgba(25,158,112,.55);color:#4fc79b}
+
+.lane{margin-top:26px}
+.lane__h{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.lane__h b{font-family:var(--display);font-size:15px;letter-spacing:.02em}
+.lane__h span{font-size:12px;color:var(--muted-2);font-variant-numeric:tabular-nums}
+.lane__d{font-size:13px;color:var(--muted);margin-bottom:14px}
+.lane[data-l=now] .lane__h b{color:var(--ok)}
+.lane[data-l=quarter] .lane__h b{color:var(--gold-2)}
+.lane[data-l=fund] .lane__h b{color:#7fb4f0}
+.lane[data-l=not] .lane__h b{color:var(--muted)}
+
+.tblwrap{overflow-x:auto;border:1px solid var(--line-2);border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th,td{text-align:left;padding:12px 16px;font-size:13.5px;border-bottom:1px solid var(--line-2)}
+th{font-family:var(--display);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);font-weight:700;background:var(--ink-2);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-family:var(--display);font-weight:700}
+td.n.acc{color:var(--gold-2)}
+td b{font-weight:600;color:var(--bone)}
+td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
+
+.foot{border-top:1px solid var(--line-2);background:var(--ink-2);padding:40px 0 34px;margin-top:20px}
+.foot p{margin:0;font-size:11.5px;color:var(--muted-2);line-height:1.65;max-width:88ch}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px;padding-top:24px;border-top:1px solid var(--line-2)}
+
+@media print{
+  :root{--ink:#fff;--ink-2:#fff;--panel:#fff;--bone:#000;--bone-dim:#222;--muted:#444;--muted-2:#666;--line:#ccc;--line-2:#ddd}
+  body{background:#fff;color:#000}
+  .top,.nav,.acts{display:none!important}
+  .stage{display:none!important} .stage.on{display:block!important;padding:0}
+  .card,.tblwrap{border:1px solid #ccc;break-inside:avoid}
+  .logo{color:#000}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top__in">
+    <span class="logo" style="--h:20px" aria-label="Legacy">
+      <svg viewBox="0 0 600 77" role="img" aria-label="LEGACY"><title>LEGACY</title>
+        <path d="M0 0h17v60h55v17H0z"/>
+        <path d="M95 0h72v16h-55v14h48v16h-48v15h55v16H95z"/>
+        <path d="M280.96 16.42A50 38.5 0 1 0 289.05 46L288.77 30 252 30 252 46 272.06 46A34 22.5 0 1 1 267.85 25.59Z"/>
+        <path d="M300 77 347.5 0 395 77h-19l-28.5-46.2L319 77z"/>
+        <circle cx="410" cy="68.5" r="8.5"/>
+        <path d="M506.93 17.53A50 38.5 0 1 0 506.93 59.47L493.52 50.75A34 22.5 0 1 1 493.52 26.25Z"/>
+        <path d="M525 0h19l18.5 30L581 0h19l-29 46v31h-17V46z"/>
+      </svg>
+    </span>
+    <span class="top__name">The Honest Audit</span>
+    <a href="index.html" style="font-family:var(--display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);text-decoration:none">Simulator</a>
+    <div class="top__right">
+      <span class="pctlbl" id="prog-lbl">Stage 1 of 8</span>
+      <div class="pbar" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="1" aria-label="Audit progress"><i id="prog-bar" style="width:12.5%"></i></div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ 1 · THE WAGER ============ -->
+<section class="stage on" id="st-0">
+  <div class="wrap">
+    <div class="stage__hd">
+      <p class="stage__no">Stage One of Eight</p>
+      <h1>Before you answer anything, understand what you're wagering.</h1>
+      <p class="lede">Most business surveys are useless because everyone answers them the way they'd like
+      to be seen. This one is built so that isn't worth doing. Four things you should know before you start.</p>
+    </div>
+
+    <div class="wager">
+      <div><b>Lying costs you money</b><p>This ends in a spend recommendation. Overstate a problem and you'll be
+      told to spend real money fixing something that isn't broken. Understate one and your money stays where it is,
+      leaking.</p></div>
+      <div><b>"I don't know" is a scored answer</b><p>Several questions ask for numbers. Not knowing is a legitimate,
+      expected response and it is scored as information — it tells us something true. Guessing is the only answer
+      that corrupts the result.</p></div>
+      <div><b>You'll be caught contradicting yourself</b><p>Answers are cross-checked against each other. Where two of
+      your responses can't both be true, you'll be shown the pair and asked which one stands. That's a feature.</p></div>
+      <div><b>Confidence is weighted, not assumed</b><p>Every number you give is tagged with how you know it. Measured
+      figures count in full. Gut feel counts for less. So inflating a number reduces its influence rather than
+      increasing it.</p></div>
+    </div>
+
+    <label class="pledge">
+      <input type="checkbox" id="pledge">
+      <span>I'll answer as the business actually is today — not as I intend it to be, not as I'd describe it to a
+      buyer, and not as I'd like my team to hear it. Where I don't know a number, I'll say so instead of guessing.</span>
+    </label>
+
+    <div class="nav">
+      <div class="spacer"></div>
+      <button class="btn btn--gold" id="go-0" disabled>Begin the audit</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 · THE NUMBERS ============ -->
+<section class="stage" id="st-1">
+  <div class="wrap">
+    <div class="stage__hd">
+      <p class="stage__no">Stage Two of Eight</p>
+      <h1>Eight numbers, from memory.</h1>
+      <p class="lede">Answer from what you actually carry in your head. Don't open a dashboard, don't check
+      the books, don't ask anyone. If you'd have to look it up, press the button that says so — that answer
+      is worth as much to us as the number would have been.</p>
+    </div>
+
+    <div class="card">
+      <p class="card__t">The business</p>
+      <div class="bizrow">
+        <div><label for="biz-rev">Annual revenue ($)</label><input type="number" id="biz-rev" value="2400000" min="0" step="10000" inputmode="numeric"></div>
+        <div><label for="biz-mar">EBITDA margin (%)</label><input type="number" id="biz-mar" value="12" min="-50" max="90" step="0.5" inputmode="decimal"></div>
+        <div><label for="biz-mult">Current multiple (×)</label><input type="number" id="biz-mult" value="4.0" min="0.5" max="15" step="0.1" inputmode="decimal"></div>
+      </div>
+      <p class="xs" style="margin-top:14px">Used to convert every finding into dollars and into enterprise value.
+      If you've run the Exit Value Simulator, reuse the effective multiple it gave you.</p>
+    </div>
+
+    <div class="card">
+      <p class="card__t">From memory</p>
+      <div id="probes"></div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn--ghost btn--sm" data-back>Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn--gold" id="go-1">Continue</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 · THE UNDERSTUDY ============ -->
+<section class="stage" id="st-2">
+  <div class="wrap">
+    <div class="stage__hd">
+      <p class="stage__no">Stage Three of Eight</p>
+      <h1>What your second-in-command would say.</h1>
+      <p class="lede">An acquirer takes your most senior person aside and promises they'll never be identified,
+      then asks what's really broken here. People are consistently more honest about their own business when
+      they answer as someone else. <strong>Pick the three they'd name.</strong></p>
+    </div>
+
+    <div class="card">
+      <p class="card__t">They'd say the broken things are<span style="text-transform:none;letter-spacing:0;font-family:var(--body);color:var(--muted-2);font-size:12px">&nbsp;</span></p>
+      <div class="picks" id="picks"></div>
+      <p class="small" id="pick-count" style="margin-top:16px">Choose 3.</p>
+    </div>
+
+    <div class="card">
+      <p class="card__t">And one more thing</p>
+      <label for="denial" style="display:block;font-size:15px;color:var(--bone);margin-bottom:12px;font-weight:600">What would they say you're in denial about?</label>
+      <textarea id="denial" placeholder="One sentence. Nobody sees this but you — it prints on your own report."></textarea>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn--ghost btn--sm" data-back>Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn--gold" id="go-2" disabled>Continue</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4 · THE HUNDRED CHIPS ============ -->
+<section class="stage" id="st-3">
+  <div class="wrap">
+    <div class="stage__hd">
+      <p class="stage__no">Stage Four of Eight</p>
+      <h1>One hundred chips. Spend them all.</h1>
+      <p class="lede">If you could buy improvement in only these five areas, and you had exactly one hundred
+      chips to spend, where would they go? You can't give everything a ten here — every chip you put in one
+      place is a chip you took from another. That trade-off is the point.</p>
+    </div>
+
+    <div class="card">
+      <div class="chipbank">
+        <b id="chip-left" data-t="under">100</b>
+        <span id="chip-msg">chips left to spend — the total must land on exactly 100</span>
+      </div>
+      <div id="chips"></div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn--ghost btn--sm" data-back>Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn--gold" id="go-3" disabled>Continue</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 · TRIAGE ============ -->
+<section class="stage" id="st-4">
+  <div class="wrap">
+    <div class="stage__hd">
+      <p class="stage__no">Stage Five of Eight</p>
+      <h1>Sort them. Only six can be bleeding.</h1>
+      <p class="lede">These are drawn from 126 evergreen problems, weighted toward where you spent your chips.
+      Every one has to go somewhere. <strong>Bleeding is capped at six</strong> — if everything is urgent then
+      nothing is, and a cap forces you to reveal what you'd actually protect first.</p>
+    </div>
+
+    <div class="card">
+      <div class="tcount" id="tcount"></div>
+      <div id="triage"></div>
+    </div>
+
+    <div class="nav">
+      <button class="btn btn--ghost btn--sm" data-back>Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn--gold" id="go-4" disabled>Continue</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6 · PRICE THE BLEED ============ -->
+<section class="stage" id="st-5">
+  <div class="wrap">
+    <div class="stage__hd">
+      <p class="stage__no">Stage Six of Eight</p>
+      <h1>What does each one cost you to leave alone?</h1>
+      <p class="lede">Not what fixing it would be worth — what <em>not</em> fixing it costs. Twelve more months
+      of exactly the current situation. Then tell us how you know, because a measured figure and a gut feeling
+      are not the same evidence and won't be weighted the same.</p>
+    </div>
+
+    <div class="card"><div id="pricing"></div></div>
+
+    <div class="nav">
+      <button class="btn btn--ghost btn--sm" data-back>Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn--gold" id="go-5" disabled>Continue</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7 · CONTRADICTIONS ============ -->
+<section class="stage" id="st-6">
+  <div class="wrap">
+    <div class="stage__hd">
+      <p class="stage__no">Stage Seven of Eight</p>
+      <h1 id="contra-h">Where your answers disagree.</h1>
+      <p class="lede">Nothing here is a trick. These are places where what you told us in one stage can't
+      comfortably sit beside what you told us in another. Pick which version stands — the ledger is built
+      from your choice.</p>
+    </div>
+    <div id="contras"></div>
+    <div class="nav">
+      <button class="btn btn--ghost btn--sm" data-back>Back</button>
+      <div class="spacer"></div>
+      <button class="btn btn--gold" id="go-6" disabled>Build my ledger</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8 · THE LEDGER ============ -->
+<section class="stage" id="st-7">
+  <div class="wrap">
+    <div class="stage__hd">
+      <p class="stage__no">Stage Eight of Eight</p>
+      <h1>The ledger.</h1>
+      <p class="lede" id="ledger-lede"></p>
+    </div>
+
+    <div class="tiles" id="tiles"></div>
+
+    <div class="card">
+      <p class="card__t">Where the value sits</p>
+      <p class="small" style="margin:-10px 0 18px">Each bar is one fix, split by where its value comes from.
+      Earnings value is cash the business keeps and the buyer multiplies. Multiple value is the re-rating a
+      buyer applies when the risk itself is gone — it lands on your whole EBITDA, not just the fix.</p>
+      <div class="legend">
+        <i style="--c:var(--s-earn)">Value from lifting earnings</i>
+        <i style="--c:var(--s-mult)">Value from re-rating the multiple</i>
+      </div>
+      <div class="bars" id="bars"></div>
+    </div>
+
+    <div class="card">
+      <p class="card__t">What to do, and when</p>
+      <div id="lanes"></div>
+    </div>
+
+    <div class="card">
+      <p class="card__t">Honesty diagnostics</p>
+      <div id="diag"></div>
+    </div>
+
+    <div class="acts">
+      <button class="btn btn--ghost" id="btn-print" type="button">Save as PDF</button>
+      <button class="btn btn--ghost" id="btn-json" type="button">Copy result data</button>
+      <button class="btn btn--ghost" id="btn-restart" type="button">Start over</button>
+      <a class="btn btn--gold" id="btn-mail" href="#">Send this to Legacy</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p><strong>How to read this.</strong> The ledger is a prioritisation tool, not a valuation, an audit, or
+    tax advice. Dollar figures are your own estimates, weighted by the confidence you assigned them and by how
+    many core numbers you could produce from memory. Cost and time bands are typical ranges for the class of fix,
+    not quotes. Multiple movements are directional estimates of how buyers re-rate risk — a real transaction
+    depends on diligence findings, deal structure, buyer type, and market conditions. Nothing you entered left
+    your browser.</p>
+  </div>
+</footer>
+
+<script>
+var FAM={"traffic": {"probe": "How many people who had never heard of you touched your business last month? People, not impressions.", "fix": "Build one repeatable acquisition channel and instrument it end to end.", "lever": "B", "md": 0.06}, "capture": {"probe": "Of everyone who visited your site last month, what percentage gave you an email address?", "fix": "Put a real entry offer and capture mechanism on pages that already get traffic.", "lever": "E", "md": 0.02}, "qualify": {"probe": "A lead came in yesterday. How many minutes passed before a human replied?", "fix": "Response-time SLA plus a qualification gate before anything reaches a closer.", "lever": "E", "md": 0.03}, "nurture": {"probe": "How many touches does someone get between first contact and buying? Name them.", "fix": "A written sequence that runs on its own from first touch through post-purchase.", "lever": "B", "md": 0.05}, "salesproc": {"probe": "What percentage of your qualified conversations became customers last quarter?", "fix": "Documented stages, scripts, and objection handling anyone on the team can run.", "lever": "B", "md": 0.08}, "crm": {"probe": "Open your CRM now. Is every live deal in it, with a next step and a date?", "fix": "One system of record where the pipeline lives outside anyone's head.", "lever": "M", "md": 0.12}, "offer": {"probe": "In one sentence: what specific outcome do you promise, to whom, by when?", "fix": "Sharpen the promise and the audience until the offer does the selling.", "lever": "E", "md": 0.05}, "convert": {"probe": "Of 100 people who reach your checkout or booking page, how many complete?", "fix": "Fix the page, the friction, and the pricing presentation — in that order.", "lever": "E", "md": 0.03}, "proof": {"probe": "How many written or recorded customer results could you produce in the next hour?", "fix": "Collect proof systematically at the moment of customer success.", "lever": "E", "md": 0.02}, "retain": {"probe": "What percentage of last year's customers bought again this year?", "fix": "Onboarding and success motion that makes the second purchase the default.", "lever": "B", "md": 0.14}, "expand": {"probe": "What is your average order value, and what is the second thing you sell?", "fix": "Add the obvious next purchase and present it at the moment of highest trust.", "lever": "E", "md": 0.04}, "paid": {"probe": "What does it cost you to acquire one paying customer, all-in?", "fix": "Rebuild the unit economics before spending another dollar on media.", "lever": "E", "md": 0.02}, "measure": {"probe": "What did you test last month, and what did it prove?", "fix": "A standing testing cadence with a decision rule, not opinions.", "lever": "B", "md": 0.07}, "price": {"probe": "What is your gross margin, to the nearest five points, without looking?", "fix": "Reprice against real cost-to-serve and end discount creep.", "lever": "E", "md": 0.05}, "recurring": {"probe": "What share of next quarter's revenue is already contracted or subscribed?", "fix": "Convert one-off work to written recurring agreements with auto-renewal.", "lever": "M", "md": 0.28}, "cash": {"probe": "How many days pass between work delivered and cash in the bank?", "fix": "Automate invoicing and collection, shorten terms, take payment up front.", "lever": "E", "md": 0.04}, "coststruct": {"probe": "Which single cost line grew fastest last year, and by how much?", "fix": "Rebuild cost-to-serve line by line and cut what does not earn.", "lever": "E", "md": 0.03}, "concentration": {"probe": "What percentage of revenue comes from your largest single client, product, or channel?", "fix": "Deliberately grow the tail against a hard concentration ceiling.", "lever": "M", "md": 0.22}, "visibility": {"probe": "Without opening anything: last month's revenue, margin, and cash on hand.", "fix": "One dashboard, closed monthly, that answers any question in under a minute.", "lever": "M", "md": 0.13}, "ownerdep": {"probe": "If you disappeared for 30 days with no contact, what breaks first?", "fix": "Move decisions and relationships out of your head into named owners with authority limits.", "lever": "M", "md": 0.32}, "team": {"probe": "How long until a new hire produces without supervision — and who trained the last one?", "fix": "Documented hiring, onboarding and training that does not route through you.", "lever": "M", "md": 0.16}, "keyperson": {"probe": "Which single person's resignation would hurt most, and what would break?", "fix": "Cross-train, document, and put retention terms on the roles that carry the business.", "lever": "M", "md": 0.24}, "foundertime": {"probe": "How many hours did you personally work last week? Last week, not a typical one.", "fix": "Reclaim the calendar: cut meetings, batch, hand off work below your pay grade.", "lever": "M", "md": 0.1}, "direction": {"probe": "Write down where this business is in three years and what you want out of it. Can you?", "fix": "A written plan with a target date, a target buyer, and the gap between here and there.", "lever": "M", "md": 0.18}, "legal": {"probe": "Can you produce a signed, current agreement for your three largest customers right now?", "fix": "Bring contracts, IP assignment, terms and data handling up to a standard that survives diligence.", "lever": "M", "md": 0.09}, "resilience": {"probe": "If your biggest channel or customer vanished on Monday, what is the written plan?", "fix": "A one-page contingency plan per single point of failure, reviewed quarterly.", "lever": "M", "md": 0.11}};
+/* [name, cat, family, demand, income, difficulty, costBand, timeBand, lever, multipleDelta] */
+var RAW=[
+["Low landing page opt-ins", "rev", "capture", 10, 8, 4, 1, 1, "E", 0.02],
+["Social media presence unoptimized", "rev", "traffic", 10, 7, 3, 2, 2, "B", 0.06],
+["Slow lead response times", "rev", "qualify", 10, 8, 4, 2, 1, "E", 0.03],
+["No CRM or pipeline management", "rev", "crm", 9, 8, 4, 2, 2, "M", 0.12],
+["No system for nurturing warm traffic", "rev", "nurture", 9, 8, 4, 2, 2, "B", 0.05],
+["Organic traffic too low", "rev", "traffic", 10, 9, 6, 3, 4, "B", 0.06],
+["No system for attracting cold traffic", "rev", "traffic", 10, 9, 7, 4, 4, "B", 0.06],
+["No email list", "rev", "capture", 10, 8, 3, 1, 1, "E", 0.02],
+["Wrong marketing channels", "rev", "traffic", 9, 7, 4, 3, 3, "B", 0.06],
+["Weak follow-up", "rev", "nurture", 10, 8, 4, 2, 2, "B", 0.05],
+["No outbound or prospecting system", "rev", "crm", 10, 9, 4, 2, 2, "M", 0.12],
+["Unqualified leads entering sales", "rev", "qualify", 9, 8, 5, 2, 1, "E", 0.03],
+["No discovery process", "rev", "qualify", 8, 8, 5, 2, 1, "E", 0.03],
+["No consistent leads", "rev", "traffic", 10, 9, 5, 3, 3, "B", 0.06],
+["No backend offers", "rev", "expand", 8, 9, 5, 1, 1, "E", 0.04],
+["Inactive customers", "rev", "retain", 9, 8, 4, 2, 3, "B", 0.14],
+["Low close rates", "rev", "salesproc", 10, 9, 5, 2, 2, "B", 0.08],
+["Low lifetime value (LTV)", "rev", "retain", 8, 9, 6, 2, 4, "B", 0.14],
+["No clear promised outcome", "rev", "offer", 9, 8, 4, 1, 2, "E", 0.05],
+["Low-quality leads", "rev", "qualify", 10, 8, 4, 2, 1, "E", 0.03],
+["No content machine generating demand", "rev", "traffic", 10, 9, 5, 3, 3, "B", 0.06],
+["No community or follow-up touchpoints", "rev", "nurture", 9, 8, 4, 2, 2, "B", 0.05],
+["No evergreen lead engine", "rev", "traffic", 10, 9, 7, 4, 4, "B", 0.06],
+["No post-purchase communication", "rev", "nurture", 9, 8, 3, 1, 1, "B", 0.05],
+["No repeat customers", "rev", "retain", 9, 8, 4, 2, 3, "B", 0.14],
+["No re-engagement campaigns", "rev", "nurture", 9, 8, 4, 2, 2, "B", 0.05],
+["No testing or optimization system", "rev", "measure", 8, 9, 6, 2, 3, "B", 0.07],
+["No structured sales process", "rev", "salesproc", 9, 8, 5, 2, 2, "B", 0.08],
+["No win-back system", "rev", "nurture", 9, 8, 4, 2, 2, "B", 0.05],
+["No transformation communicated", "rev", "offer", 9, 8, 4, 1, 2, "E", 0.05],
+["Offer solves a non-urgent problem", "rev", "offer", 9, 9, 6, 1, 3, "E", 0.05],
+["Paid traffic not profitable", "rev", "paid", 9, 9, 7, 4, 4, "E", 0.02],
+["Unpredictable lead flow", "rev", "traffic", 10, 9, 6, 3, 4, "B", 0.06],
+["Slow email list growth", "rev", "capture", 9, 8, 4, 1, 1, "E", 0.02],
+["Weak customer research", "rev", "offer", 9, 8, 4, 1, 2, "E", 0.05],
+["Weak email nurturing", "rev", "nurture", 9, 8, 4, 2, 2, "B", 0.05],
+["Weak objection handling", "rev", "salesproc", 9, 8, 4, 2, 2, "B", 0.08],
+["Weak lead magnet or entry offer", "rev", "capture", 10, 8, 3, 1, 1, "E", 0.02],
+["No upsells or cross-sells", "rev", "expand", 9, 8, 3, 1, 1, "E", 0.04],
+["Weak value proposition", "rev", "offer", 10, 9, 5, 1, 2, "E", 0.05],
+["No post-purchase education", "rev", "retain", 8, 7, 4, 2, 3, "B", 0.14],
+["No lead qualification process", "rev", "qualify", 9, 8, 5, 2, 1, "E", 0.03],
+["No customer success system", "rev", "retain", 9, 8, 4, 2, 3, "B", 0.14],
+["Low website conversion rates", "rev", "convert", 10, 9, 6, 2, 3, "E", 0.03],
+["Long sales cycles", "rev", "salesproc", 8, 9, 7, 3, 3, "B", 0.08],
+["High cart abandonment", "rev", "convert", 10, 8, 4, 2, 2, "E", 0.03],
+["Offer doesn’t match audience needs", "rev", "offer", 8, 9, 5, 1, 2, "E", 0.05],
+["No segmentation strategy", "rev", "salesproc", 9, 8, 5, 2, 2, "B", 0.08],
+["No lead capture strategy", "rev", "capture", 10, 8, 4, 1, 1, "E", 0.02],
+["Checkout problems", "rev", "convert", 9, 8, 4, 2, 2, "E", 0.03],
+["Confusing funnel structure", "rev", "convert", 8, 9, 6, 2, 3, "E", 0.03],
+["No sales scripts or frameworks", "rev", "salesproc", 9, 8, 4, 2, 2, "B", 0.08],
+["Poor pricing presentation", "rev", "convert", 9, 8, 4, 2, 2, "E", 0.03],
+["Weak onboarding", "rev", "retain", 8, 7, 4, 2, 3, "B", 0.14],
+["No clear target audience", "rev", "offer", 10, 9, 3, 1, 1, "E", 0.05],
+["Weak testimonials", "rev", "proof", 9, 7, 3, 1, 1, "E", 0.02],
+["Dependence on one-time sales", "profit", "recurring", 10, 9, 6, 2, 4, "M", 0.28],
+["No pricing strategy", "profit", "price", 8, 9, 5, 1, 1, "E", 0.05],
+["Contractor/team overhead too high", "profit", "coststruct", 8, 9, 7, 3, 4, "E", 0.03],
+["Pricing too complicated", "profit", "price", 9, 8, 4, 1, 1, "E", 0.05],
+["Discounting too often", "profit", "price", 9, 8, 4, 1, 1, "E", 0.05],
+["Slow invoicing process", "profit", "cash", 9, 7, 3, 1, 1, "E", 0.04],
+["Products priced wrong relative to effort", "profit", "price", 9, 8, 5, 1, 1, "E", 0.05],
+["No savings buffer", "profit", "cash", 10, 8, 4, 1, 1, "E", 0.04],
+["Weak retainer offers", "profit", "recurring", 8, 9, 6, 2, 4, "M", 0.28],
+["Unpredictable cash flow", "profit", "cash", 10, 9, 5, 1, 1, "E", 0.04],
+["Underpriced offers", "profit", "price", 9, 9, 4, 1, 1, "E", 0.05],
+["No budgeting or financial planning", "profit", "visibility", 10, 9, 5, 2, 2, "M", 0.13],
+["Operational waste", "profit", "coststruct", 9, 8, 4, 2, 3, "E", 0.03],
+["Race-to-the-bottom competition", "profit", "offer", 8, 9, 5, 1, 2, "E", 0.05],
+["Late payments", "profit", "cash", 9, 7, 4, 1, 1, "E", 0.04],
+["High subscription churn", "profit", "recurring", 9, 9, 6, 2, 4, "M", 0.28],
+["No automated payment collection", "profit", "cash", 9, 8, 4, 1, 1, "E", 0.04],
+["Overspending on ads", "profit", "paid", 9, 9, 6, 3, 4, "E", 0.02],
+["Low profit margins", "profit", "price", 9, 10, 6, 1, 2, "E", 0.05],
+["High cost per acquisition", "profit", "paid", 10, 9, 6, 3, 4, "E", 0.02],
+["Poor packaging of services", "profit", "offer", 9, 8, 4, 1, 2, "E", 0.05],
+["No premium version of offer", "profit", "expand", 9, 8, 4, 1, 1, "E", 0.04],
+["No payment plans", "profit", "recurring", 8, 7, 3, 1, 2, "M", 0.28],
+["No expense tracking", "profit", "coststruct", 10, 8, 4, 2, 3, "E", 0.03],
+["No billing automation", "profit", "cash", 8, 7, 4, 1, 1, "E", 0.04],
+["Inefficient fulfillment costs", "profit", "coststruct", 8, 9, 7, 3, 4, "E", 0.03],
+["Expenses and income out of sync", "profit", "cash", 9, 8, 5, 1, 1, "E", 0.04],
+["No crisis management plan", "risk", "resilience", 6, 9, 5, 2, 2, "M", 0.11],
+["Overreliance on referrals", "risk", "concentration", 10, 9, 5, 3, 4, "M", 0.22],
+["Seasonal revenue drops", "risk", "concentration", 9, 8, 5, 3, 4, "M", 0.22],
+["Dependence on one marketing channel", "risk", "concentration", 10, 9, 6, 3, 4, "M", 0.22],
+["Depends on unpredictable sales spikes", "risk", "concentration", 9, 9, 7, 4, 4, "M", 0.22],
+["Dependence on one product", "risk", "concentration", 7, 8, 6, 3, 4, "M", 0.22],
+["Missing contracts", "risk", "recurring", 9, 8, 5, 2, 3, "M", 0.28],
+["No analytics setup", "risk", "measure", 10, 8, 5, 2, 2, "B", 0.07],
+["No legal documentation", "risk", "legal", 9, 8, 5, 2, 2, "M", 0.09],
+["Dependence on one team member", "risk", "keyperson", 9, 8, 6, 3, 4, "M", 0.24],
+["Outdated terms and policies", "risk", "legal", 9, 7, 5, 2, 2, "M", 0.09],
+["No plan for recurring revenue", "risk", "recurring", 9, 9, 6, 2, 4, "M", 0.28],
+["Platform risk (Instagram, TikTok, Ads)", "risk", "resilience", 9, 9, 5, 2, 2, "M", 0.11],
+["Data privacy or security issues", "risk", "legal", 10, 9, 6, 2, 3, "M", 0.09],
+["No plan for market downturns", "risk", "resilience", 7, 9, 6, 2, 3, "M", 0.11],
+["No forecasting system", "risk", "visibility", 8, 9, 6, 2, 3, "M", 0.13],
+["Dependence on one client", "risk", "concentration", 9, 8, 5, 3, 4, "M", 0.22],
+["No business dashboard", "risk", "visibility", 9, 8, 4, 2, 2, "M", 0.13],
+["Founder doing most tasks", "team", "ownerdep", 10, 9, 5, 3, 4, "M", 0.32],
+["No onboarding process", "team", "team", 9, 7, 4, 3, 3, "M", 0.16],
+["Poor employer brand", "team", "team", 9, 8, 4, 3, 3, "M", 0.16],
+["Poor delegation", "team", "ownerdep", 10, 9, 5, 3, 4, "M", 0.32],
+["No training materials", "team", "team", 9, 8, 4, 3, 3, "M", 0.16],
+["Misalignment between team members", "team", "team", 9, 8, 4, 3, 3, "M", 0.16],
+["No hiring process", "team", "team", 9, 8, 4, 3, 3, "M", 0.16],
+["Slow ramp-up for new hires", "team", "team", 9, 8, 4, 3, 3, "M", 0.16],
+["Attracting wrong applicants", "team", "team", 10, 8, 4, 3, 3, "M", 0.16],
+["Founder training everyone manually", "team", "ownerdep", 9, 8, 4, 3, 4, "M", 0.32],
+["Underperforming team members", "team", "team", 10, 9, 6, 3, 4, "M", 0.16],
+["Hard to find qualified candidates", "team", "team", 9, 8, 4, 3, 3, "M", 0.16],
+["Weak boundaries with clients", "freedom", "foundertime", 10, 8, 4, 1, 2, "M", 0.1],
+["Too many meetings", "freedom", "foundertime", 10, 7, 3, 1, 1, "M", 0.1],
+["No business direction", "freedom", "direction", 10, 8, 4, 2, 3, "M", 0.18],
+["No control over schedule", "freedom", "foundertime", 10, 8, 4, 1, 2, "M", 0.1],
+["Doing work below pay grade", "freedom", "foundertime", 10, 8, 4, 1, 2, "M", 0.1],
+["Constant context switching", "freedom", "foundertime", 10, 8, 4, 1, 2, "M", 0.1],
+["Business cannot run without the founder", "freedom", "ownerdep", 9, 9, 6, 3, 4, "M", 0.32],
+["Constant stress", "freedom", "foundertime", 10, 8, 4, 1, 2, "M", 0.1],
+["No exit or long-term plan", "freedom", "direction", 7, 10, 7, 3, 4, "M", 0.18],
+["Too many tasks on founder plate", "freedom", "ownerdep", 10, 8, 4, 3, 4, "M", 0.32],
+["Chronic overwork", "freedom", "foundertime", 10, 9, 5, 1, 2, "M", 0.1],
+["Founder working nights/weekends", "freedom", "foundertime", 10, 9, 5, 1, 2, "M", 0.1],
+["No deep work time", "freedom", "foundertime", 10, 8, 4, 1, 2, "M", 0.1]
+];
+
+(function(){
+"use strict";
+
+/* ======================================================================
+   CONFIG
+   ====================================================================== */
+
+var CATS = [
+  {k:"rev",     n:"More Revenue",                        d:"More customers, more sales, more growth."},
+  {k:"profit",  n:"More Profit & Better Cash Flow",      d:"Revenue is meaningless if profit doesn't follow."},
+  {k:"risk",    n:"More Predictability & Less Risk",     d:"Stability instead of surprises."},
+  {k:"team",    n:"Better Team Performance & Execution", d:"Team problems become business problems."},
+  {k:"freedom", n:"More Freedom & Control for the Owner",d:"A business that supports your life."}
+];
+
+/* Cold-open probes. `key` links an answer to the families it can contradict. */
+var PROBES = [
+  {id:"margin", key:"price",         q:"Your gross margin last quarter",
+   hint:"To the nearest five points. Not net, not a target — what it actually was.", unit:"%", max:100},
+  {id:"cac",    key:"paid",          q:"What it costs you to acquire one paying customer",
+   hint:"All-in: media, tools, and the time of everyone who touched the deal.", unit:"$", max:1e7},
+  {id:"top",    key:"concentration", q:"Your largest client's share of revenue",
+   hint:"If you have no clients as such, use your largest product or channel.", unit:"%", max:100},
+  {id:"contr",  key:"recurring",     q:"Share of next quarter's revenue already contracted",
+   hint:"Signed, subscribed, or on a standing agreement. Not forecast. Not likely.", unit:"%", max:100},
+  {id:"dso",    key:"cash",          q:"Days from work delivered to cash in the bank",
+   hint:"Average across the last few months, door to door.", unit:"days", max:400},
+  {id:"repeat", key:"retain",        q:"Share of last year's customers who bought again",
+   hint:"Same customer, second purchase, within twelve months.", unit:"%", max:100},
+  {id:"hours",  key:"foundertime",   q:"Hours you personally worked last week",
+   hint:"Last week specifically — not a typical week, not an average.", unit:"hrs", max:130},
+  {id:"leads",  key:"traffic",       q:"Qualified leads that reached you last month",
+   hint:"People who could actually buy, not everyone who visited.", unit:"#", max:1e6}
+];
+
+/* Cost band → typical spend to fix. Time band → typical elapsed weeks. */
+var COST_$ = {1:600, 2:3000, 3:12000, 4:40000};
+var COST_L = {1:"Under $1k", 2:"$1–5k", 3:"$5–20k", 4:"$20k+"};
+var WEEKS  = {1:1, 2:4, 3:12, 4:26};
+var TIME_L = {1:"Days", 2:"2–4 weeks", 3:"A quarter", 4:"Two quarters+"};
+var LEV_L  = {E:"Earnings lever", M:"Multiple lever", B:"Both levers"};
+var CONF   = {measured:1.0, estimated:0.7, gut:0.4};
+var CONF_L = {measured:"Measured", estimated:"Estimated", gut:"Gut feel"};
+
+var TRIAGE_N   = 28;   /* cards drawn into the triage table */
+var BLEED_CAP  = 6;    /* the scarcity constraint that forces honest ranking */
+
+var LANES = [
+  {k:"now",     n:"Do this week",      d:"Cheap, fast, and already bleeding. There is no reason these are still open."},
+  {k:"quarter", n:"Do this quarter",   d:"Real work, real return, and it fits inside a single planning cycle."},
+  {k:"fund",    n:"Fund it properly",  d:"Expensive or slow, but the return justifies a budget and an owner."},
+  {k:"not",     n:"Not yet",           d:"The return doesn't clear the cost at the confidence you gave it. Revisit when you have better numbers."}
+];
+
+/* ======================================================================
+   STATE
+   ====================================================================== */
+
+var P = RAW.map(function(r,i){
+  return {i:i, p:r[0], cat:r[1], fam:r[2], dem:r[3], inc:r[4],
+          diff:r[5], cost:r[6], time:r[7], lev:r[8], md:r[9]};
+});
+
+var S = {
+  step:0,
+  biz:{rev:2400000, mar:12, mult:4.0},
+  probe:{},            /* id -> {v:Number|null, dunno:Boolean} */
+  understudy:[],       /* family keys */
+  denial:"",
+  chips:{rev:0, profit:0, risk:0, team:0, freedom:0},
+  cards:[],            /* drawn problem indices */
+  bucket:{},           /* problem index -> bleed|irritate|handled|na */
+  price:{},            /* problem index -> {amt:Number, conf:String} */
+  contra:[],           /* generated contradictions */
+  resolved:{}          /* contradiction id -> chosen option index */
+};
+
+function $(id){ return document.getElementById(id); }
+function el(tag, cls, html){ var e=document.createElement(tag); if(cls)e.className=cls; if(html!=null)e.innerHTML=html; return e; }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+
+function money(n){
+  if(!isFinite(n)) return "—";
+  var s = n<0 ? "-" : "", a = Math.abs(n);
+  if(a >= 1e9) return s+"$"+(a/1e9).toFixed(2)+"B";
+  if(a >= 1e6) return s+"$"+(a/1e6).toFixed(2)+"M";
+  if(a >= 1e3) return s+"$"+Math.round(a/1e3).toLocaleString("en-US")+"K";
+  return s+"$"+Math.round(a).toLocaleString("en-US");
+}
+function catName(k){ for(var i=0;i<CATS.length;i++) if(CATS[i].k===k) return CATS[i].n; return k; }
+
+/* ======================================================================
+   NAVIGATION
+   ====================================================================== */
+
+function show(n){
+  S.step = n;
+  var all = document.querySelectorAll(".stage");
+  for(var i=0;i<all.length;i++) all[i].classList.toggle("on", i===n);
+  $("prog-lbl").textContent = "Stage "+(n+1)+" of 8";
+  $("prog-bar").style.width = ((n+1)/8*100)+"%";
+  $("prog-bar").parentNode.setAttribute("aria-valuenow", n+1);
+  window.scrollTo(0,0);
+  if(n===4) buildTriage();
+  if(n===5) buildPricing();
+  if(n===6) buildContradictions();
+  if(n===7) buildLedger();
+}
+var backs = document.querySelectorAll("[data-back]");
+for(var b=0;b<backs.length;b++) backs[b].addEventListener("click", function(){ show(S.step-1); });
+
+/* ---- 1 · wager ---- */
+$("pledge").addEventListener("change", function(){ $("go-0").disabled = !this.checked; });
+$("go-0").addEventListener("click", function(){ show(1); });
+
+/* ======================================================================
+   2 · THE NUMBERS
+   ====================================================================== */
+
+(function(){
+  var box = $("probes");
+  PROBES.forEach(function(pr){
+    S.probe[pr.id] = {v:null, dunno:false};
+    var q = el("div","q");
+    q.setAttribute("data-dunno","false");
+    q.innerHTML =
+      '<div class="q__ask"><b>'+esc(pr.q)+'</b><span>'+esc(pr.hint)+'</span></div>'+
+      '<div class="q__in">'+
+        '<input type="number" id="pb-'+pr.id+'" min="0" max="'+pr.max+'" step="any" inputmode="decimal" '+
+               'aria-label="'+esc(pr.q)+'">'+
+        '<span class="suffix">'+pr.unit+'</span>'+
+        '<button type="button" class="dunno" id="dk-'+pr.id+'" aria-pressed="false">I’d have to look</button>'+
+      '</div>';
+    box.appendChild(q);
+
+    var inp = q.querySelector("input"), btn = q.querySelector(".dunno");
+    inp.addEventListener("input", function(){
+      var v = parseFloat(inp.value);
+      S.probe[pr.id].v = isFinite(v) ? clamp(v,0,pr.max) : null;
+    });
+    btn.addEventListener("click", function(){
+      var on = !S.probe[pr.id].dunno;
+      S.probe[pr.id].dunno = on;
+      btn.setAttribute("aria-pressed", on);
+      q.setAttribute("data-dunno", on);
+      if(on){ inp.value=""; S.probe[pr.id].v=null; }
+    });
+  });
+})();
+
+["rev","mar","mult"].forEach(function(k){
+  $("biz-"+k).addEventListener("input", function(){
+    var v = parseFloat(this.value);
+    if(isFinite(v)) S.biz[k] = v;
+  });
+});
+$("go-1").addEventListener("click", function(){ show(2); });
+
+/* Blind Spot Index — the share of core numbers the owner could not produce. */
+function bsi(){
+  var n=0; PROBES.forEach(function(p){ if(S.probe[p.id].dunno || S.probe[p.id].v===null) n++; });
+  return n / PROBES.length;
+}
+/* Everything self-reported is discounted by how blind the operator is. */
+function globalConfidence(){ return 1 - 0.30 * bsi(); }
+
+/* ======================================================================
+   3 · THE UNDERSTUDY
+   ====================================================================== */
+
+var FAM_LABEL = {
+  traffic:"Getting found at all", capture:"Turning visitors into contacts", qualify:"Responding to and filtering leads",
+  nurture:"Following up after first contact", salesproc:"How deals actually get closed", crm:"Knowing what's in the pipeline",
+  offer:"What we sell and who for", convert:"The buying experience itself", proof:"Evidence that we deliver",
+  retain:"Keeping customers after the sale", expand:"Selling more to people who already bought",
+  paid:"Whether paid acquisition pays", measure:"Testing and measuring anything", price:"Pricing and margin",
+  recurring:"Revenue that repeats without selling", cash:"Getting paid and staying liquid",
+  coststruct:"What it costs us to deliver", concentration:"Depending on one client, product or channel",
+  visibility:"Knowing our numbers", ownerdep:"The owner being the bottleneck",
+  team:"Hiring, onboarding and training", keyperson:"One person nobody could replace",
+  foundertime:"The owner's hours and calendar", direction:"Where this is going long term",
+  legal:"Contracts, IP and compliance", resilience:"What happens if something breaks"
+};
+
+(function(){
+  var box = $("picks");
+  Object.keys(FAM_LABEL).forEach(function(f){
+    if(!P.some(function(x){ return x.fam===f; })) return;
+    var b = el("button","pick");
+    b.type="button"; b.setAttribute("aria-pressed","false"); b.setAttribute("data-f",f);
+    b.innerHTML = '<i aria-hidden="true"></i><b>'+esc(FAM_LABEL[f])+'</b>';
+    b.addEventListener("click", function(){
+      var on = S.understudy.indexOf(f) >= 0;
+      if(on){ S.understudy.splice(S.understudy.indexOf(f),1); }
+      else { if(S.understudy.length >= 3) return; S.understudy.push(f); }
+      b.setAttribute("aria-pressed", !on);
+      var left = 3 - S.understudy.length;
+      $("pick-count").textContent = left>0 ? ("Choose "+left+" more.") : "Three chosen. Change one by pressing it again.";
+      $("go-2").disabled = S.understudy.length !== 3;
+    });
+    box.appendChild(b);
+  });
+})();
+$("denial").addEventListener("input", function(){ S.denial = this.value; });
+$("go-2").addEventListener("click", function(){ show(3); });
+
+/* ======================================================================
+   4 · THE HUNDRED CHIPS
+   ====================================================================== */
+
+(function(){
+  var box = $("chips");
+  CATS.forEach(function(c){
+    var row = el("div","chiprow");
+    row.innerHTML =
+      '<div class="cn"><b>'+esc(c.n)+'</b><span>'+esc(c.d)+'</span></div>'+
+      '<div class="cs"><input type="range" id="ch-'+c.k+'" min="0" max="100" step="5" value="0" '+
+        'style="--pct:0%" aria-label="Chips for '+esc(c.n)+'"></div>'+
+      '<div class="cv" id="cv-'+c.k+'">0</div>';
+    box.appendChild(row);
+    var r = row.querySelector("input");
+    r.addEventListener("input", function(){
+      S.chips[c.k] = parseInt(r.value,10);
+      r.style.setProperty("--pct", r.value+"%");
+      $("cv-"+c.k).textContent = r.value;
+      chipTotal();
+    });
+  });
+})();
+
+function chipTotal(){
+  var t=0; CATS.forEach(function(c){ t += S.chips[c.k]; });
+  var left = 100 - t, e = $("chip-left"), m = $("chip-msg");
+  e.textContent = (left>=0?left:"+"+(-left));
+  if(left===0){ e.setAttribute("data-t","exact"); m.textContent = "All hundred spent. That allocation is your priority order."; }
+  else if(left>0){ e.setAttribute("data-t","under"); m.textContent = "chips left to spend — the total must land on exactly 100"; }
+  else { e.setAttribute("data-t","over"); m.textContent = "chips over budget — take some back from somewhere"; }
+  $("go-3").disabled = left !== 0;
+  return t;
+}
+$("go-3").addEventListener("click", function(){ show(4); });
+
+/* ======================================================================
+   5 · TRIAGE
+   ====================================================================== */
+
+/* Draw cards proportional to chips, best-value-first inside each category,
+   with every understudy-flagged family force-included. */
+function drawCards(){
+  var picked = [], seen = {};
+  function take(x){ if(!seen[x.i]){ seen[x.i]=1; picked.push(x.i); } }
+
+  S.understudy.forEach(function(f){
+    P.filter(function(x){ return x.fam===f; })
+     .sort(function(a,b){ return (b.inc+b.dem-b.diff)-(a.inc+a.dem-a.diff); })
+     .slice(0,2).forEach(take);
+  });
+
+  CATS.forEach(function(c){
+    var share = S.chips[c.k]/100;
+    var n = Math.round(TRIAGE_N * share);
+    P.filter(function(x){ return x.cat===c.k; })
+     .sort(function(a,b){ return (b.inc+b.dem-b.diff)-(a.inc+a.dem-a.diff); })
+     .slice(0, n).forEach(take);
+  });
+
+  /* top up to TRIAGE_N from the strongest remaining, weighted by chips */
+  P.slice().sort(function(a,b){
+    var wa = (S.chips[a.cat]/100)*10 + (a.inc+a.dem-a.diff);
+    var wb = (S.chips[b.cat]/100)*10 + (b.inc+b.dem-b.diff);
+    return wb-wa;
+  }).forEach(function(x){ if(picked.length < TRIAGE_N) take(x); });
+
+  return picked.slice(0, TRIAGE_N).sort(function(a,b){
+    return CATS.findIndex(function(c){return c.k===P[a].cat;}) - CATS.findIndex(function(c){return c.k===P[b].cat;});
+  });
+}
+
+var BUCKETS = [
+  {k:"bleed",    n:"Bleeding",   s:"costing me money right now"},
+  {k:"irritate", n:"Irritating", s:"real, but not urgent"},
+  {k:"handled",  n:"Handled",    s:"genuinely solved here"},
+  {k:"na",       n:"Not us",     s:"doesn't apply"}
+];
+
+function buildTriage(){
+  if(S.cards.length) return;
+  S.cards = drawCards();
+  var box = $("triage"); box.innerHTML = "";
+  S.cards.forEach(function(idx){
+    var x = P[idx];
+    var row = el("div","tcard");
+    var btns = BUCKETS.map(function(bk){
+      return '<button type="button" class="tbtn" data-b="'+bk.k+'" data-i="'+idx+'" aria-pressed="false" '+
+             'title="'+esc(bk.s)+'">'+bk.n+'</button>';
+    }).join("");
+    row.innerHTML = '<div class="tcard__n"><b>'+esc(x.p)+'</b><span>'+esc(catName(x.cat))+'</span></div>'+
+                    '<div class="tbtns">'+btns+'</div>';
+    box.appendChild(row);
+  });
+  box.addEventListener("click", function(e){
+    var t = e.target.closest ? e.target.closest(".tbtn") : null;
+    if(!t || t.disabled) return;
+    var i = t.getAttribute("data-i"), bk = t.getAttribute("data-b");
+    if(bk==="bleed" && S.bucket[i]!=="bleed" && bleedCount() >= BLEED_CAP) return;
+    S.bucket[i] = bk;
+    var sibs = t.parentNode.querySelectorAll(".tbtn");
+    for(var k=0;k<sibs.length;k++) sibs[k].setAttribute("aria-pressed", sibs[k]===t);
+    triageState();
+  });
+  triageState();
+}
+function bleedCount(){ var n=0; for(var k in S.bucket) if(S.bucket[k]==="bleed") n++; return n; }
+
+function triageState(){
+  var counts = {bleed:0,irritate:0,handled:0,na:0}, done=0;
+  S.cards.forEach(function(i){ var v=S.bucket[i]; if(v){ counts[v]++; done++; } });
+  var full = counts.bleed >= BLEED_CAP;
+  $("tcount").innerHTML = BUCKETS.map(function(bk){
+    var extra = bk.k==="bleed" ? (" / "+BLEED_CAP) : "";
+    return '<span'+(bk.k==="bleed"&&full?' data-full="true"':'')+'>'+bk.n+' '+counts[bk.k]+extra+'</span>';
+  }).join("") + '<span style="border:0;color:var(--muted-2)">'+done+' of '+S.cards.length+' sorted</span>';
+
+  /* grey out the Bleeding button once the cap is reached */
+  var all = document.querySelectorAll('#triage .tbtn[data-b="bleed"]');
+  for(var i=0;i<all.length;i++){
+    var idx = all[i].getAttribute("data-i");
+    all[i].disabled = full && S.bucket[idx] !== "bleed";
+  }
+  $("go-4").disabled = !(done === S.cards.length && counts.bleed > 0);
+}
+$("go-4").addEventListener("click", function(){ show(5); });
+
+/* ======================================================================
+   6 · PRICE THE BLEED
+   ====================================================================== */
+
+function bleeders(){ return S.cards.filter(function(i){ return S.bucket[i]==="bleed"; }); }
+
+function buildPricing(){
+  var box = $("pricing"); box.innerHTML = "";
+  bleeders().forEach(function(idx){
+    var x = P[idx], fam = FAM[x.fam];
+    if(!S.price[idx]) S.price[idx] = {amt:null, conf:null};
+    var d = el("div","price");
+    d.innerHTML =
+      '<b>'+esc(x.p)+'</b>'+
+      '<div class="probe">Check yourself first — '+esc(fam.probe)+'</div>'+
+      '<div class="pgrid">'+
+        '<div><label for="pa-'+idx+'">Cost of 12 more months</label>'+
+          '<div class="dollar"><i>$</i><input type="number" id="pa-'+idx+'" min="0" step="500" '+
+          'inputmode="numeric" placeholder="0" aria-label="Annual cost of leaving this unfixed"></div></div>'+
+        '<div><label>How do you know that?</label><div class="conf" data-i="'+idx+'">'+
+          '<button type="button" data-c="measured" aria-pressed="false"><b>Measured</b><span>It’s in a report</span></button>'+
+          '<button type="button" data-c="estimated" aria-pressed="false"><b>Estimated</b><span>Built from a real number</span></button>'+
+          '<button type="button" data-c="gut" aria-pressed="false"><b>Gut feel</b><span>It’s a judgement</span></button>'+
+        '</div></div>'+
+      '</div>';
+    box.appendChild(d);
+
+    d.querySelector("input").addEventListener("input", function(){
+      var v = parseFloat(this.value);
+      S.price[idx].amt = isFinite(v) ? Math.max(0,v) : null;
+      priceState();
+    });
+    d.querySelector(".conf").addEventListener("click", function(e){
+      var t = e.target.closest ? e.target.closest("button") : null;
+      if(!t) return;
+      S.price[idx].conf = t.getAttribute("data-c");
+      var sibs = this.querySelectorAll("button");
+      for(var k=0;k<sibs.length;k++) sibs[k].setAttribute("aria-pressed", sibs[k]===t);
+      priceState();
+    });
+  });
+  priceState();
+}
+function priceState(){
+  var ok = bleeders().every(function(i){
+    return S.price[i] && S.price[i].amt !== null && S.price[i].conf;
+  });
+  $("go-5").disabled = !ok;
+}
+$("go-5").addEventListener("click", function(){ show(6); });
+
+/* ======================================================================
+   7 · CONTRADICTIONS
+   ====================================================================== */
+
+function famBucket(fam){
+  /* strongest verdict this owner gave any card in a family */
+  var rank = {bleed:3, irritate:2, handled:1, na:0}, best=null;
+  S.cards.forEach(function(i){
+    if(P[i].fam!==fam) return;
+    var v = S.bucket[i];
+    if(v && (best===null || rank[v] > rank[best])) best = v;
+  });
+  return best;
+}
+
+function bleedHasFam(f){ return bleeders().some(function(i){ return P[i].fam===f; }); }
+function bleedHasCat(c){ return bleeders().some(function(i){ return P[i].cat===c; }); }
+
+function genContradictions(){
+  var out = [], pv = S.probe;
+
+  /* 1 · a concentration number that contradicts the triage */
+  if(!pv.top.dunno && pv.top.v !== null && pv.top.v >= 25 && !bleedHasFam("concentration")){
+    out.push({id:"conc", head:"A quarter of your revenue in one place",
+      body:"Your largest client, product or channel is "+pv.top.v+"% of revenue — and concentration didn't make your bleeding six. Above roughly 25% this is the finding that routinely triggers an escrow, an earn-out, or a straight discount to price. A buyer will put it in their top six whether or not you did.",
+      opts:[{t:"Fair. Put concentration back on the table.", act:"unresolve-conc"},
+            {t:"It's contractually locked and transferable. Leave it out.", act:"none"}]});
+  } else if((pv.top.dunno || pv.top.v === null) && (famBucket("concentration")==="handled" || famBucket("concentration")==="na")){
+    out.push({id:"conc2", head:"Concentration you called solved",
+      body:"You marked concentration as settled, but couldn't name your largest client's share of revenue from memory. Buyers treat an unknown concentration figure as a concentrated one until it's proven otherwise.",
+      opts:[{t:"Fair. Treat concentration as unresolved.", act:"unresolve-conc"},
+            {t:"It's genuinely diversified, I just don't track the number.", act:"none"}]});
+  }
+
+  /* 2 · nothing contracted, and yet revenue predictability isn't bleeding */
+  if(!pv.contr.dunno && pv.contr.v !== null && pv.contr.v <= 25 && !bleedHasFam("recurring")){
+    out.push({id:"recur", head:"Next quarter starts at nearly zero",
+      body:"Only "+pv.contr.v+"% of next quarter's revenue is already contracted, and recurring revenue isn't among the six things you called bleeding. Every quarter you start from scratch is a quarter a buyer has to underwrite on faith — it is the single most reliable driver of the multiple you'll be offered.",
+      opts:[{t:"Add contracted revenue to the plan.", act:"unresolve-recurring"},
+            {t:"That's normal for this business. Leave it.", act:"none"}]});
+  }
+
+  /* 3 · the owner's hours versus the owner's priorities */
+  if(pv.hours.v !== null && pv.hours.v >= 55 && !bleedHasCat("freedom")){
+    out.push({id:"hours", head:"Your hours and your priorities",
+      body:"You worked "+pv.hours.v+" hours last week and put "+S.chips.freedom+" of your hundred chips on freedom and control — yet nothing in that category made the bleeding six. Owners genuinely out of the critical path don't work those hours, and buyers read the founder's calendar as a risk register.",
+      opts:[{t:"The hours are real — put owner time back in.", act:"raise-freedom"},
+            {t:"Last week was atypical. Leave it alone.", act:"none"}]});
+  }
+
+  /* 4 · margin called handled by someone who can't state it */
+  if((pv.margin.dunno || pv.margin.v === null) && !bleedHasFam("price")){
+    out.push({id:"marg", head:"The margin nobody is watching",
+      body:"You couldn't state your gross margin from memory, and pricing didn't make the bleeding six. Pricing problems are invisible precisely when nobody is watching the margin — that's what makes them the most commonly missed earnings in a business this size.",
+      opts:[{t:"Reopen it — I should know that number.", act:"unresolve-price"},
+            {t:"My team tracks it and it's healthy. Leave it.", act:"none"}]});
+  }
+
+  /* 5 · bleeding, but priced like an irritation */
+  bleeders().forEach(function(i){
+    var pr = S.price[i];
+    if(pr && pr.amt !== null && pr.amt < 2000){
+      out.push({id:"cheap-"+i, head:"Bleeding, or merely irritating?",
+        body:"You put \u201C"+P[i].p+"\u201D in the bleeding pile \u2014 the pile capped at six \u2014 then priced twelve months of it at "+money(pr.amt)+". Something at that level is an irritation occupying a slot a real leak should have had.",
+        opts:[{t:"Move it to irritating.", act:"demote:"+i},
+              {t:"The number is low but it's genuinely urgent. Keep it.", act:"none"}]});
+    }
+  });
+
+  /* 6 · a category zeroed that is nonetheless bleeding */
+  CATS.forEach(function(c){
+    if(S.chips[c.k] > 0) return;
+    var hit = bleeders().filter(function(i){ return P[i].cat===c.k; });
+    if(hit.length){
+      out.push({id:"zero-"+c.k, head:"Zero chips, live bleeding",
+        body:"You spent nothing on \u201C"+c.n+"\u201D, then marked "+hit.length+" problem"+(hit.length>1?"s":"")+" in it as actively bleeding. One of those two answers is the honest one.",
+        opts:[{t:"The bleeding is real \u2014 the chips were wrong.", act:"none"},
+              {t:"Not a priority. Downgrade those to irritating.", act:"demote-cat:"+c.k}]});
+    }
+  });
+
+  /* 7 · flying blind overall */
+  if(bsi() >= 0.5){
+    var n = Math.round(bsi()*PROBES.length);
+    out.push({id:"blind", head:"How much of this is knowable",
+      body:"You couldn't produce "+n+" of the "+PROBES.length+" core numbers from memory. That isn't a character flaw \u2014 but it does mean every estimate you gave afterwards rests on impression rather than measurement, and the ledger weights them accordingly.",
+      opts:[{t:"Accept the discount and add visibility to the plan.", act:"add-visibility"},
+            {t:"I know the numbers, I just don't hold them in my head.", act:"soften-discount"}]});
+  }
+
+  return out.slice(0,4);
+}
+
+var WORDS = ["Nothing","One","Two","Three","Four"];
+
+function buildContradictions(){
+  S.contra = genContradictions();
+  S.resolved = {};
+  var n = S.contra.length;
+  $("contra-h").textContent = n === 0 ? "Nothing to reconcile."
+                            : n === 1 ? "One thing doesn\u2019t add up."
+                            : WORDS[n] + " things don\u2019t add up.";
+  var box = $("contras"); box.innerHTML = "";
+  if(!S.contra.length){
+    box.appendChild(el("div","clean",
+      "<b>Nothing to reconcile</b><p>Your answers hold together. Either you know this business unusually well, "+
+      "or you were unusually careful — both are good signs, and the ledger is built on the numbers as given.</p>"));
+    $("go-6").disabled = false;
+    return;
+  }
+  S.contra.forEach(function(c,n){
+    var d = el("div","contra");
+    d.innerHTML = '<b>'+esc(c.head)+'</b><p>'+esc(c.body)+'</p><div class="resolve" data-c="'+n+'">'+
+      c.opts.map(function(o,k){ return '<button type="button" data-k="'+k+'" aria-pressed="false">'+esc(o.t)+'</button>'; }).join("")+
+      '</div>';
+    box.appendChild(d);
+    d.querySelector(".resolve").addEventListener("click", function(e){
+      var t = e.target.closest ? e.target.closest("button") : null;
+      if(!t) return;
+      S.resolved[n] = parseInt(t.getAttribute("data-k"),10);
+      var sibs = this.querySelectorAll("button");
+      for(var k=0;k<sibs.length;k++) sibs[k].setAttribute("aria-pressed", sibs[k]===t);
+      $("go-6").disabled = Object.keys(S.resolved).length !== S.contra.length;
+    });
+  });
+  $("go-6").disabled = true;
+}
+$("go-6").addEventListener("click", function(){ show(7); });
+
+/* ======================================================================
+   8 · THE LEDGER
+   ====================================================================== */
+
+function applyResolutions(){
+  var mods = {demoted:{}, extraFams:[], confBoost:0};
+  S.contra.forEach(function(c,n){
+    var act = c.opts[S.resolved[n]].act;
+    if(act === "none") return;
+    if(act.indexOf("demote:") === 0){ mods.demoted[act.split(":")[1]] = 1; }
+    else if(act.indexOf("demote-cat:") === 0){
+      var ck = act.split(":")[1];
+      bleeders().forEach(function(i){ if(P[i].cat===ck) mods.demoted[i]=1; });
+    }
+    else if(act === "unresolve-conc")   mods.extraFams.push("concentration");
+    else if(act === "unresolve-recurring") mods.extraFams.push("recurring");
+    else if(act === "unresolve-price")  mods.extraFams.push("price");
+    else if(act === "raise-freedom")    mods.extraFams.push("foundertime");
+    else if(act === "add-visibility")   mods.extraFams.push("visibility");
+    else if(act === "soften-discount")  mods.confBoost = 0.15;
+  });
+  return mods;
+}
+
+function computeLedger(){
+  var mods   = applyResolutions();
+  var ebitda = Math.max(0, S.biz.rev * S.biz.mar/100);
+  var mult   = Math.max(0.5, S.biz.mult);
+  var gconf  = clamp(globalConfidence() + mods.confBoost, 0.3, 1);
+
+  var rows = [];
+
+  bleeders().forEach(function(i){
+    if(mods.demoted[i]) return;
+    var x = P[i], pr = S.price[i];
+    var cw    = CONF[pr.conf] || 0.4;
+    var gain  = (pr.amt||0) * cw * gconf;
+    var mdEff = x.md * gconf;
+    var evE   = gain * mult;
+    var evM   = mdEff * ebitda;
+    rows.push(makeRow(x, gain, evE, evM, mdEff, cw, pr.amt, false));
+  });
+
+  /* Families reopened at the contradiction desk enter unpriced — they carry
+     no earnings claim, only the multiple movement a buyer would apply. */
+  mods.extraFams.forEach(function(f){
+    if(rows.some(function(r){ return r.fam===f; })) return;
+    var cand = P.filter(function(x){ return x.fam===f; })
+                .sort(function(a,b){ return (b.inc+b.dem-b.diff)-(a.inc+a.dem-a.diff); })[0];
+    if(!cand) return;
+    var mdEff = cand.md * gconf;
+    rows.push(makeRow(cand, 0, 0, mdEff*ebitda, mdEff, 0, null, true));
+  });
+
+  rows.sort(function(a,b){ return b.ev - a.ev; });
+  return {rows:rows, ebitda:ebitda, mult:mult, gconf:gconf};
+}
+
+/* A $3.6M business does not fix a pricing problem for the same money a
+   $400k one does. Scale the band by revenue so the returns stay credible. */
+function sizeFactor(){ return clamp(S.biz.rev/1500000, 0.7, 4); }
+
+function makeRow(x, gain, evE, evM, mdEff, cw, stated, reopened){
+  var spend = Math.round(COST_$[x.cost] * sizeFactor() / 100) * 100;
+  var weeks = WEEKS[x.time], ev = evE + evM;
+  return {
+    i:x.i, p:x.p, fam:x.fam, cat:x.cat, lev:x.lev,
+    cost:x.cost, time:x.time, spend:spend, weeks:weeks,
+    gain:gain, evE:evE, evM:evM, ev:ev, md:mdEff, cw:cw, stated:stated, reopened:!!reopened,
+    roi: spend ? ev/spend : 0,
+    /* A return this large almost always means the bleed estimate is hot,
+       not that the fix is miraculous. Flag it rather than hide it. */
+    shaky: spend ? (ev/spend) > 25 : false,
+    payback: gain > 0 ? spend / (gain/52) : Infinity,
+    lane: null
+  };
+}
+
+function assignLanes(rows){
+  rows.forEach(function(r){
+    if(r.roi < 2)                          r.lane = "not";
+    else if(r.weeks <= 1 && r.cost <= 2)   r.lane = "now";
+    else if(r.weeks <= 12)                 r.lane = "quarter";
+    else                                   r.lane = "fund";
+  });
+}
+
+function buildLedger(){
+  var L = computeLedger(), rows = L.rows;
+  assignLanes(rows);
+
+  var totGain = rows.reduce(function(s,r){ return s+r.gain; }, 0);
+  var totEV   = rows.reduce(function(s,r){ return s+r.ev;   }, 0);
+  var totE    = rows.reduce(function(s,r){ return s+r.evE;  }, 0);
+  var totM    = rows.reduce(function(s,r){ return s+r.evM;  }, 0);
+  var totSp   = rows.reduce(function(s,r){ return s+r.spend;}, 0);
+  var quick   = rows.filter(function(r){ return r.lane==="now"; });
+
+  $("ledger-lede").innerHTML =
+    "Every problem you marked as bleeding, priced with your own numbers, discounted by the confidence you gave "+
+    "them, and converted into both cash and enterprise value. Your answers were weighted at <strong>"+
+    Math.round(L.gconf*100)+"%</strong> — you produced "+(PROBES.length - Math.round(bsi()*PROBES.length))+" of "+
+    PROBES.length+" core numbers from memory.";
+
+  /* ---- hero tiles ---- */
+  $("tiles").innerHTML =
+    tile("Annual cash at stake", money(totGain), "acc", "What these problems cost you every year, at your own weighted estimates.") +
+    tile("Enterprise value at stake", money(totEV), "acc", "Cash impact multiplied, plus the re-rating a buyer applies once the risk is gone.") +
+    tile("Cost to fix all of it", money(totSp), "", "Typical spend for this class of work. Return of "+(totSp?(totEV/totSp).toFixed(1):"—")+"× on that outlay.") +
+    tile("Free-and-fast wins", quick.length + (quick.length===1?" fix":" fixes"), "",
+         quick.length ? ("Worth "+money(quick.reduce(function(s,r){return s+r.ev;},0))+" once fixed. Nothing stops you starting Monday.")
+                      : "Nothing in your bleeding pile is both cheap and immediate.");
+
+  /* ---- value bars ---- */
+  var max = Math.max.apply(null, rows.map(function(r){ return r.ev; }).concat([1]));
+  $("bars").innerHTML = rows.map(function(r){
+    var we = r.evE/max*100, wm = r.evM/max*100;
+    return '<div>'+
+      '<div class="bar__top"><b>'+esc(r.p)+'</b><em>'+money(r.ev)+'</em></div>'+
+      '<div class="bar__track" title="'+esc(r.p)+' — '+money(r.evE)+' from earnings, '+money(r.evM)+' from the multiple">'+
+        (we>0?'<span class="bar__seg" style="width:'+we.toFixed(2)+'%;background:var(--s-earn)"></span>':'')+
+        (wm>0?'<span class="bar__seg" style="width:'+wm.toFixed(2)+'%;background:var(--s-mult)"></span>':'')+
+      '</div>'+
+      '<div class="bar__meta">'+
+        '<span class="chip" data-lev="'+r.lev+'">'+LEV_L[r.lev]+'</span>'+
+        '<span class="chip">'+money(r.spend)+' to fix</span>'+
+        '<span class="chip">'+TIME_L[r.time]+'</span>'+
+        (r.reopened?'<span class="chip">Reopened at review</span>':'')+
+        (r.shaky?'<span class="chip" style="border-color:rgba(224,162,63,.5);color:var(--warn)">Check this estimate</span>':'')+
+      '</div></div>';
+  }).join("") || '<p class="small">Nothing priced.</p>';
+
+  /* ---- lanes ---- */
+  $("lanes").innerHTML = LANES.map(function(ln){
+    var set = rows.filter(function(r){ return r.lane===ln.k; });
+    if(!set.length) return "";
+    var sum = set.reduce(function(s,r){ return s+r.ev; }, 0);
+    return '<div class="lane" data-l="'+ln.k+'">'+
+      '<div class="lane__h"><b>'+ln.n+'</b><span>'+set.length+' &middot; '+money(sum)+' at stake</span></div>'+
+      '<p class="lane__d">'+ln.d+'</p>'+
+      '<div class="tblwrap"><table><thead><tr>'+
+        '<th>Fix</th><th>Lever</th><th>Spend</th><th>Time</th>'+
+        '<th class="n" style="text-align:right">Annual cash</th>'+
+        '<th class="n" style="text-align:right">Value created</th>'+
+        '<th class="n" style="text-align:right">Return</th>'+
+        '<th class="n" style="text-align:right">Payback</th>'+
+      '</tr></thead><tbody>'+
+      set.map(function(r){
+        return '<tr>'+
+          '<td><b>'+esc(r.p)+'</b><span class="sub">'+esc(FAM[r.fam].fix)+'</span></td>'+
+          '<td><span class="chip" data-lev="'+r.lev+'">'+LEV_L[r.lev]+'</span></td>'+
+          '<td class="n">'+money(r.spend)+'</td>'+
+          '<td class="n">'+TIME_L[r.time]+'</td>'+
+          '<td class="n">'+(r.gain>0?money(r.gain):"—")+'</td>'+
+          '<td class="n acc">'+money(r.ev)+'</td>'+
+          '<td class="n">'+r.roi.toFixed(1)+'×'+(r.shaky?'<span class="sub" style="color:var(--warn)">verify</span>':'')+'</td>'+
+          '<td class="n">'+(isFinite(r.payback)?(r.payback<1?"<1 wk":Math.round(r.payback)+" wks"):"—")+'</td>'+
+        '</tr>';
+      }).join("")+
+      '</tbody></table></div></div>';
+  }).join("") || '<p class="small">No fixes cleared the threshold.</p>';
+
+  /* ---- diagnostics ---- */
+  var blind = Math.round(bsi()*PROBES.length);
+  var confMix = {};
+  bleeders().forEach(function(i){ var c=S.price[i]&&S.price[i].conf; if(c) confMix[c]=(confMix[c]||0)+1; });
+  var mixTxt = Object.keys(confMix).map(function(k){ return confMix[k]+" "+CONF_L[k].toLowerCase(); }).join(", ") || "none priced";
+
+  $("diag").innerHTML =
+    '<dl style="display:grid;grid-template-columns:1fr auto;gap:10px 18px;margin:0">'+
+      dl("Blind Spot Index", blind+" of "+PROBES.length+" unknown", blind>=4?"var(--bad)":blind>=2?"var(--warn)":"var(--ok)") +
+      dl("Weight applied to your estimates", Math.round(L.gconf*100)+"%", "") +
+      dl("Evidence behind the pricing", mixTxt, "") +
+      dl("Contradictions surfaced", String(S.contra.length), S.contra.length>=3?"var(--warn)":"") +
+      dl("Split of value at stake", money(totE)+" earnings / "+money(totM)+" multiple", "") +
+      dl("Enterprise value per $1 spent", (totSp?"$"+(totEV/totSp).toFixed(0):"—"), "var(--gold-2)") +
+    '</dl>'+
+    (S.denial ? '<div style="margin-top:22px;padding:18px;border-left:2px solid var(--gold);background:var(--ink-2);border-radius:0 10px 10px 0">'+
+      '<p class="xs" style="margin:0 0 8px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)">What you said you’re in denial about</p>'+
+      '<p style="margin:0;font-size:15px;color:var(--bone-dim);line-height:1.6">'+esc(S.denial)+'</p></div>' : '');
+
+  buildExports(rows, {gain:totGain, ev:totEV, spend:totSp, e:totE, m:totM, gconf:L.gconf, blind:blind});
+}
+
+function tile(label, val, cls, note){
+  return '<div class="tile"><span>'+label+'</span><b class="'+cls+'">'+val+'</b><em>'+note+'</em></div>';
+}
+function dl(k, v, color){
+  return '<dt style="font-size:13.5px;color:var(--muted)">'+k+'</dt>'+
+         '<dd style="margin:0;text-align:right;font-family:var(--display);font-weight:700;font-size:14px;'+
+         (color?'color:'+color:'color:var(--bone-dim)')+';font-variant-numeric:tabular-nums">'+v+'</dd>';
+}
+
+/* ======================================================================
+   EXPORTS
+   ====================================================================== */
+
+function buildExports(rows, tot){
+  var payload = {
+    generated: new Date().toISOString().slice(0,10),
+    business: S.biz,
+    blindSpotIndex: +(bsi().toFixed(3)),
+    confidenceWeight: +(tot.gconf.toFixed(3)),
+    chips: S.chips,
+    understudy: S.understudy,
+    denial: S.denial,
+    probes: PROBES.map(function(p){ return {id:p.id, value:S.probe[p.id].v, unknown:S.probe[p.id].dunno}; }),
+    triage: S.cards.map(function(i){ return {problem:P[i].p, category:P[i].cat, family:P[i].fam, bucket:S.bucket[i]||null}; }),
+    contradictions: S.contra.map(function(c,n){ return {issue:c.head, chose:c.opts[S.resolved[n]].t}; }),
+    ledger: rows.map(function(r){
+      return {problem:r.p, family:r.fam, lever:r.lev, lane:r.lane,
+              statedAnnualCost:r.stated, confidence:r.cw,
+              weightedAnnualCash:Math.round(r.gain), spendToFix:r.spend, weeks:r.weeks,
+              valueFromEarnings:Math.round(r.evE), valueFromMultiple:Math.round(r.evM),
+              totalValue:Math.round(r.ev), returnOnSpend:+r.roi.toFixed(2)};
+    }),
+    totals: {annualCash:Math.round(tot.gain), enterpriseValue:Math.round(tot.ev), spend:tot.spend}
+  };
+
+  $("btn-json").onclick = function(){
+    var txt = JSON.stringify(payload, null, 2);
+    function done(){ $("btn-json").textContent = "Copied"; setTimeout(function(){ $("btn-json").textContent = "Copy result data"; }, 1800); }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(done, fallback);
+    } else fallback();
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = txt; ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); done(); }catch(e){ window.prompt("Copy the result data:", txt); }
+      document.body.removeChild(ta);
+    }
+  };
+
+  /* REPLACE: destination address for completed audits */
+  var to = "hello@legacy.ltd";
+  var body = [
+    "My Legacy.Ltd Honest Audit",
+    "",
+    "Revenue:                 " + money(S.biz.rev),
+    "EBITDA margin:           " + S.biz.mar + "%",
+    "Current multiple:        " + S.biz.mult + "x",
+    "Blind Spot Index:        " + tot.blind + " of " + PROBES.length + " core numbers unknown",
+    "Confidence weight:       " + Math.round(tot.gconf*100) + "%",
+    "",
+    "Annual cash at stake:    " + money(tot.gain),
+    "Enterprise value at stake: " + money(tot.ev),
+    "  from earnings:         " + money(tot.e),
+    "  from the multiple:     " + money(tot.m),
+    "Cost to fix all of it:   " + money(tot.spend),
+    "",
+    "Ledger:",
+    rows.map(function(r,n){
+      return "  " + (n+1) + ". " + r.p + "  [" + LEV_L[r.lev] + "]  " +
+             money(r.ev) + " value  ·  " + money(r.spend) + " spend  ·  " + TIME_L[r.time] +
+             "  ·  " + r.lane;
+    }).join("\n"),
+    "",
+    S.denial ? ("In denial about: " + S.denial) : "",
+    "",
+    "I'd like to walk through this.",
+    "",
+    "Name:",
+    "Company:",
+    "Best number:"
+  ].join("\n");
+
+  $("btn-mail").setAttribute("href",
+    "mailto:"+to+"?subject="+encodeURIComponent("Honest Audit — "+money(tot.ev)+" at stake")+
+    "&body="+encodeURIComponent(body));
+}
+
+$("btn-print").addEventListener("click", function(){
+  try { window.print(); }
+  catch(e){ window.alert("Printing is blocked in this preview. Open the standalone HTML file to save a PDF."); }
+});
+$("btn-restart").addEventListener("click", function(){ window.location.reload(); });
+
+})();
+
+</script>
+</body>
+</html>

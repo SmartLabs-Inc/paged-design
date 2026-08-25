@@ -80,3 +80,103 @@ The page is deliberately built around three levers, not one:
 The simulator is an educational planning tool. It is not a certified business valuation,
 an offer, investment advice, or tax advice. That language appears both under the results
 panel and in the footer — keep it there.
+
+---
+
+# The Honest Audit
+
+`problem-audit.html` — a second self-contained page, and `problems-126.csv` — the
+classified problem table behind it.
+
+Built from the **200 Evergreen Problems** vault. Two things about that source you should
+know before trusting anything downstream of it.
+
+## Finding 1: the vault's `EASE` score is inverted
+
+It is a **difficulty** score, not an ease score. Every low-scoring item is trivially
+fixable (`Weak testimonials` 3, `Slow invoicing process` 3, `Too many meetings` 3) and
+every high-scoring one is genuinely hard (`No evergreen lead engine` 7,
+`Paid traffic not profitable` 7, `No exit or long-term plan` 7). It correlates
+**+0.72 with INCOME** — harder problems pay more, which is only coherent if high = hard.
+Read the other way round, the "easy wins" list is upside down.
+
+Everything in `problems-126.csv` is stated as `difficulty_1_10`, high = hard.
+
+## Finding 2: the vault's scores cannot rank anything
+
+`DEMAND` averages **9.15** across all 126 items, barely varies, and is uncorrelated with
+`INCOME` (−0.03). `EASE` only ever spans 3–7. So the vault carries roughly one
+discriminating signal, and it is an editorial judgement about problems in general, not
+about any particular business. **All the ranking information has to come from the survey.**
+That is what the instrument exists to produce.
+
+## Finding 3: the PDF contains 126 problems, not 200
+
+The category counts stated in the document itself — 56 + 27 + 18 + 12 + 13 — sum to 126,
+and 126 problem blocks parse out of it. Either the title is aspirational or this is a
+partial export. If a fuller vault exists, the classifier will absorb it: extend the
+`FAM` regex table and re-run.
+
+## The classification
+
+Every one of the 126 is mapped to one of **26 fix-families**. A family carries the four
+things the vault doesn't: what it costs, how long it takes, which lever it pulls, and one
+falsifiable probe that settles whether the problem is actually present.
+
+| Field | Meaning |
+|---|---|
+| `cost_band` | Typical spend to fix — scaled by client revenue at runtime |
+| `time_band` | Typical elapsed time, days through two quarters |
+| `lever` | **Earnings** (lifts EBITDA), **Multiple** (re-rates the business), or **Both** |
+| `multiple_delta` | Estimated movement in the exit multiple once resolved |
+| `falsifiable_probe` | The question whose answer proves the problem is real |
+
+The lever split is the whole point: **48 earnings levers, 49 multiple levers, 29 both.**
+A $3k fix that lifts EBITDA $20k is worth $80k at a 4× multiple. A $3k fix that moves the
+multiple 0.25× on $500k of EBITDA is worth $125k — on the same spend. Ranking by cash
+impact alone systematically buries the second kind.
+
+## How the instrument gets honest answers
+
+Eight stages, each with a mechanism that makes shading the truth costly, useless, or
+impossible.
+
+| Stage | Mechanism | Why it works |
+|---|---|---|
+| 1 · The Wager | Consequence framing | The output is a spend recommendation, so overstating costs real money |
+| 2 · Eight Numbers | Evidence over opinion | Asks for figures from memory with a first-class "I'd have to look" — inability to answer *is* the finding |
+| 3 · The Understudy | Third-person projection | People are markedly more honest about their business when answering as someone else |
+| 4 · One Hundred Chips | Forced ipsative allocation | Must total exactly 100, so nothing can be rated "important" for free |
+| 5 · Triage | Scarcity constraint | "Bleeding" is hard-capped at six of 28, forcing revealed preference |
+| 6 · Price the Bleed | Loss framing + confidence tagging | Asks the cost of *not* fixing; gut-feel claims are weighted 0.4 against measured at 1.0, so inflating a number reduces its influence |
+| 7 · Contradiction Desk | Cross-answer consistency check | Surfaces pairs that can't both be true and makes the respondent choose |
+| 8 · The Ledger | — | Output |
+
+**Blind Spot Index.** The share of the eight core numbers the owner couldn't produce.
+It's a finding on its own, and it discounts every later self-assessment by up to 30% —
+if you can't name your margin, your claim that pricing is fine carries less weight.
+
+**Credibility flags.** Any fix showing better than a 25× return gets a visible
+*Check this estimate* mark. A return that large almost always means the bleed estimate is
+hot, not that the fix is miraculous.
+
+## Two uses, one instrument
+
+- **Client-facing.** A business owner completes it and gets a ranked ledger for their
+  business, priced in both cash and enterprise value.
+- **Internal.** Pool the JSON exports across respondents to see which of the 126 problems
+  are most commonly bleeding, most highly priced, and cheapest to serve — that is the
+  product roadmap, evidenced rather than assumed.
+
+The **Copy result data** button emits the full JSON: probes, chips, triage buckets,
+contradiction resolutions, and the ledger with every intermediate figure.
+
+## Before it goes live — swap these
+
+1. **Logo** — same vector reconstruction as the simulator; one `<svg>` in the header.
+2. **Email** — `buildExports()` → `var to = "hello@legacy.ltd";`
+3. **Cost bands** — `COST_$` and the revenue scaling in `sizeFactor()`.
+4. **Confidence weights** — `CONF` (measured 1.0 / estimated 0.7 / gut 0.4) and the 30%
+   Blind Spot discount in `globalConfidence()`.
+5. **Multiple deltas** — the `md` value per family, in the injected `FAM` table. These are
+   the most opinionated numbers in the model; tune them against your own transaction data.
