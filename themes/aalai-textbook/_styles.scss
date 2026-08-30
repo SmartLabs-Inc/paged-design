@@ -43,7 +43,6 @@
 .part-contents,
 .section-head,
 .apparatus-head,
-.table-figure,
 .figure-span,
 .callout,
 .callout-dark,
@@ -330,6 +329,26 @@ a.cite {
 // Tables as numbered figures
 // ---------------------------------------------------------------------------
 // A table a reader cannot refer to by name is a table nobody refers to.
+//
+// A table does NOT span the columns, and this is the one rule in the theme
+// that is load-bearing rather than aesthetic: **Paged.js cannot fragment a
+// `column-span: all` element across a page break.** A spanning table that has
+// to be pushed past a page boundary makes the layout engine repeat without
+// progress until it gives up — and when it gives up it stops paginating the
+// document. A 305-page reference rendered 294 pages and silently dropped the
+// last part, the author note and the whole index; nothing errored, the page
+// count simply looked plausible. Bisected to this single declaration by
+// editing the theme and rebuilding, which is the only bisect that means
+// anything here: a `<style>` block injected into the page after load does not
+// reach Paged.js at all, so every result from that method was noise.
+//
+// It costs nothing to give up. A two-column table — which is what almost every
+// table in a clinical reference is, term against definition — sets perfectly
+// well in a 64mm column, and that is how a reference sets a glossary anyway.
+// A genuinely wide table is the case to watch: give it its own page with
+// `break-before: page` rather than letting it span, because a spanner that
+// always starts a page is never pushed and never trips the loop. That is why
+// `.section-head` and `.part-title` can span safely.
 
 .table-figure {
     margin: ($baseline-grid-unit * 1.2) 0;
