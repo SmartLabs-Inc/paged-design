@@ -216,3 +216,44 @@ following paragraph moved it at four lines remaining and `orphans: 2` did not.
 But `orphans` moves the *paragraph*; without a wrapper the heading stays behind,
 which is worse than the problem. Use the wrapper.
 
+## A `<thead>` does not repeat, so repeat it yourself
+
+Paged.js has no implementation of `display: table-header-group`. A table that
+runs over a page turn leaves the reader with unlabelled columns on every page
+after the first, which in a reference work is the difference between a usable
+table and a wall of cells.
+
+Nothing in CSS fixes this. What works is to paginate, see which tables actually
+split and after how many rows each fragment ended, then rewrite those tables as
+one table per fragment, each carrying its own `<thead>`:
+
+```js
+document.querySelectorAll('.pagedjs_page table[data-tbl]')   // fragments, in order
+// group by data-tbl; any id appearing more than once has split
+```
+
+Give every table a `data-tbl` id at build time so its fragments can be counted.
+Only rewrite the tables that split — a table that fits keeps its single header
+and no book-keeping. The caption stays on the first piece; repeated, it reads
+as a second table.
+
+On one 300-page reference, eleven of fifteen tables split and needed
+twenty-four continuation headers.
+
+## Anything measured has to be measured again after it moves
+
+Passes that change pagination and passes that read pagination must be ordered,
+and the reading ones go last:
+
+1. structure, hyphenation, figures — change the content
+2. repeat table headers — changes the content, but needs a pagination to know
+   which tables split
+3. the heading-break fixer — needs a pagination, and moves pages
+4. folio locators for the index — needs the final pagination
+
+Two of those iterate: the break fixer marks, re-paginates, and marks again,
+because moving one heading creates and cures offenders further down. It settles
+in three or four rounds. Never run two of these passes against the same file at
+once — they each read, edit and write the whole document, so a second one
+racing the first silently discards its work.
+

@@ -275,6 +275,18 @@ structure plates, which are grids read across. Both are figures, both span, and
 neither takes the split — which is the point. The pattern goes where the content
 calls for it.
 
+**Holding a heading to what it introduces.** A heading with one or two lines of
+its topic under it at the foot of a column is a label, not an introduction: the
+reader has to turn the page to find out what it labels. The rule this theme
+enforces is five lines, and none of the obvious CSS delivers it —
+`break-after: avoid` on the heading guarantees exactly one line, and both it
+and `break-before: column` are deleted from the stylesheet by Paged.js before
+the browser ever sees them (see `troubleshooting.md`). What works is
+`.entry-lead` / `.keep-lead`: a `break-inside: avoid` wrapper around the
+heading and the paragraph it introduces, which is the only keep-with-next
+Paged.js leaves intact. `orphans: 5` on that paragraph backs it up where the
+box is too tall for the constraint to hold.
+
 Six things this theme learned the hard way, all verified by rendering or by
 measuring in the browser:
 
