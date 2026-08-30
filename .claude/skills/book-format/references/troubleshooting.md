@@ -175,3 +175,44 @@ not the PDF.
 Only happens when printing the demo site by hand. `render-pdf.js` removes
 `#pagerControls` before printing; when printing manually from Chrome the
 switcher hides itself via a print media query.
+
+## Paged.js removes every break-before and break-after from your CSS
+
+This is not a bug you can style around, and it costs a day if you do not know
+it. Paged.js parses the stylesheet, **deletes** every `break-before`,
+`break-after`, `page-break-before` and `page-break-after` declaration, and
+re-implements them as `data-break-before` / `data-break-after` attributes that
+its own layout engine reads. Its engine implements only the page-level values —
+`page`, `always`, `left`, `right`, `recto`, `verso`. Everything else is
+discarded.
+
+Two consequences, both measured in the browser rather than reasoned about:
+
+- **`break-before: column` does nothing.** It computes to `auto` on the
+  element. Twenty-six entries were marked with it to move them off the foot of
+  a column; none moved.
+- **`break-after: avoid` on a heading does nothing either.** It also computes
+  to `auto`. A heading will sit at the foot of a column with its content
+  overleaf and no CSS you write on the heading will stop it.
+
+`break-inside` is **not** intercepted and works normally. So the only
+keep-with-next available is a wrapper:
+
+```html
+<div class="keep-lead">      <!-- break-inside: avoid -->
+  <h5>The heading</h5>
+  <p>The paragraph it introduces.</p>
+</div>
+```
+
+A group too tall for a fresh fragmentainer is not lost — the CSS fragmentation
+rules drop `break-inside: avoid` where the box fits nowhere, so a very long
+opening paragraph degrades to breaking normally instead of being pushed onto a
+page of its own.
+
+`orphans` and `widows` are also left alone and do work in Chromium's multicol —
+verified by sweeping a heading down a column, where `orphans: 5` on the
+following paragraph moved it at four lines remaining and `orphans: 2` did not.
+But `orphans` moves the *paragraph*; without a wrapper the heading stays behind,
+which is worse than the problem. Use the wrapper.
+

@@ -1,0 +1,64 @@
+{
+  "name": "AET reference",
+  "description": "A specialist reference manual written against Word's built-in styles rather than a house template, plus one custom style for the entry name. Heading 1 opens a part, Heading 2 a section, and Entry Name the unit a physician looks things up by. The document's own table of contents is dropped: its page numbers are the Word ones and the book generates its own.",
+  "defaults": {
+    "component": "chapter",
+    "leading": "cover"
+  },
+  "styles": {
+    "Title": {
+      "component": "title-page",
+      "element": "p",
+      "class": "title-page-title",
+      "role": "title"
+    },
+    "Subtitle": {
+      "element": "p",
+      "class": "title-page-subtitle"
+    },
+    "Author": {
+      "element": "p",
+      "class": "title-page-author"
+    },
+    "TOC Heading": {
+      "component": "chapter",
+      "role": "title"
+    },
+    "Heading 1": {
+      "component": "chapter",
+      "role": "title"
+    },
+    "Heading 2": {
+      "element": "h2"
+    },
+    "Heading 3": {
+      "element": "h3"
+    },
+    "Heading 4": {
+      "element": "h4"
+    },
+    "Entry Name": {
+      "element": "h5",
+      "class": "entry-name"
+    },
+    "First Paragraph": {
+      "element": "p",
+      "class": "standfirst"
+    },
+    "Body Text": {
+      "element": "p"
+    },
+    "Compact": {
+      "element": "p",
+      "class": "compact"
+    },
+    "toc 1": { "drop": true },
+    "toc 2": { "drop": true },
+    "toc 3": { "drop": true },
+    "Header": { "drop": true },
+    "Footer": { "drop": true }
+  },
+  "meta": {
+    "lang": "en"
+  }
+}

@@ -6468,3 +6468,32 @@ samp {
 
 .facets > .band {
   margin-bottom: 0; }
+
+.push-column {
+  break-before: column; }
+
+.push-page {
+  break-before: page; }
+
+h3 + p,
+h4 + p,
+h3 + .standfirst,
+h4 + .standfirst,
+.entry > h5 + p {
+  orphans: 5; }
+
+.entry-lead {
+  break-inside: avoid; }
+
+.entry > .entry-lead {
+  border-left: none;
+  padding-left: 0; }
+
+.entry > .entry-lead > * {
+  border-left: 2.5pt solid #137C7A;
+  padding-left: 8.5px;
+  margin-top: 0;
+  margin-bottom: 0; }
+
+.keep-lead {
+  break-inside: avoid; }

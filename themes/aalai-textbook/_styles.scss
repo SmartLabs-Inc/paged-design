@@ -1394,3 +1394,81 @@ $text-block: $page-width - $margin-inside - $margin-outside;
 .facets > .band {
     margin-bottom: 0;
 }
+
+// --- The five-line rule ------------------------------------------------------
+// A heading that gets fewer than five lines of its own content before the
+// column ends is not introducing anything; it is a label stranded at a foot,
+// and the reader has to turn the page to find out what it labels. The build
+// measures the paginated book and marks those headings, because CSS cannot see
+// how many lines fall after an element and `break-after: avoid` on the block
+// before it is not read by Paged.js at a page break.
+//
+// A column break, not a page break: at the foot of the first column the
+// heading only needs to move across, and forcing a page there would leave half
+// a sheet white. At the foot of the last column a column break is a page
+// break, which is what the rule asks for.
+
+.push-column {
+    break-before: column;
+}
+
+.push-page {
+    break-before: page;
+}
+
+// --- Five lines under a heading, at a column break ---------------------------
+//
+// `break-after: avoid` on a heading guarantees exactly one line under it, which
+// is how headings were ending up at a column foot with one or two lines of
+// their topic and the rest overleaf.
+//
+// The lever that says "five" is `orphans`, set on the paragraph the heading
+// introduces: a paragraph that cannot leave five lines at the foot of the
+// column moves whole, and the heading moves with it because it is already
+// held. This is the only way to express it here — Paged.js strips every
+// `break-before` declaration out of the stylesheet and re-implements it as its
+// own page break, so `break-before: column` computes to `auto` and does
+// nothing. Measured: twenty-six entries marked with it did not move.
+//
+// Only the paragraph directly under a heading. Set on every paragraph it would
+// push five lines to the next column at every awkward break in the book.
+
+h3 + p,
+h4 + p,
+h3 + .standfirst,
+h4 + .standfirst,
+.entry > h5 + p {
+    orphans: 5;
+}
+
+// --- Holding a heading to its opening ----------------------------------------
+// The one keep-together Paged.js does not take away. It intercepts every
+// `break-before` and `break-after` declaration, removes it from the stylesheet
+// and re-implements it as its own page break — so `break-after: avoid` on an
+// entry name computes to `auto`, and the name stayed at the foot of a column
+// while the paragraph it introduces moved to the next one. `break-inside` it
+// leaves alone.
+//
+// The wrapper is invisible: the entry's rule is drawn on the children, so the
+// children inside the group have to keep drawing it.
+
+.entry-lead {
+    break-inside: avoid;
+}
+
+.entry > .entry-lead {
+    border-left: none;
+    padding-left: 0;
+}
+
+.entry > .entry-lead > * {
+    border-left: $entry-rule solid $color-teal;
+    padding-left: $entry-pad;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+// The same group for a topic heading and the paragraph it introduces.
+.keep-lead {
+    break-inside: avoid;
+}
