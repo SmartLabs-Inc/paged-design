@@ -6500,3 +6500,8 @@ h4 + .standfirst,
 .cite {
   overflow-wrap: anywhere;
   word-break: break-word; }
+
+.table-wide {
+  column-span: all;
+  break-before: page;
+  margin: 0 0 20.4px 0; }
