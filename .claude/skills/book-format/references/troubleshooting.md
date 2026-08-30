@@ -301,3 +301,42 @@ in three or four rounds. Never run two of these passes against the same file at
 once — they each read, edit and write the whole document, so a second one
 racing the first silently discards its work.
 
+## Check the document is still well-formed after every rewriting pass
+
+Build passes rewrite tags with regular expressions, and a regular expression
+that gets an open and a close out of step corrupts the DOM in a way that
+nothing downstream reports. The browser silently repairs it, the page count
+still looks plausible, and the damage surfaces as an inexplicable overflow two
+hundred pages away from the pass that caused it.
+
+The specific trap: an alternation whose open and close lists are independent.
+
+```js
+// WRONG — `<table …>` is allowed to close at the first `</p>`,
+// which is inside the table's first header cell
+/<h5[^>]*>[\s\S]*?<\/h5>((?:\s*<(?:p|ul|ol|table|div)\b[\s\S]*?<\/(?:p|ul|ol|table|div)>)*)/
+
+// RIGHT — take a contiguous run up to the next heading and enumerate nothing
+/<h5[^>]*>[\s\S]*?<\/h5>((?:(?!<h[1-6])[\s\S])*)/
+```
+
+Two cheap assertions catch this class of bug at the pass that caused it. Run
+them before writing the file, and exit non-zero:
+
+```js
+const opens = (html.match(/<div\b/g) || []).length
+const closes = (html.match(/<\/div>/g) || []).length
+if (opens !== closes) throw new Error(opens + ' <div> against ' + closes + ' </div>')
+
+// a closing tag stranded inside a table cell means a wrapper closed in the
+// wrong place — the count above will not catch it, because it still balances
+const stray = html.match(/<t[hd]\b[^>]*>(?:(?!<\/t[hd]>)[\s\S])*?<\/div>/g)
+if (stray) throw new Error(stray.length + ' </div> inside a table cell')
+```
+
+The same family of bug bites regular expressions that need something *after*
+the part they capture — see the backtracking note below: a non-greedy body will
+run forward across whole chapters to make a trailing lookahead succeed. Where a
+pattern needs a heading and then something that follows it, split on the
+heading instead of matching across it.
+
