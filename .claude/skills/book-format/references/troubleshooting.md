@@ -216,29 +216,73 @@ following paragraph moved it at four lines remaining and `orphans: 2` did not.
 But `orphans` moves the *paragraph*; without a wrapper the heading stays behind,
 which is worse than the problem. Use the wrapper.
 
-## A `<thead>` does not repeat, so repeat it yourself
+## A spanning element cannot cross a page break, and failing at it is silent
+
+**Paged.js cannot fragment a `column-span: all` element across a page break.**
+If a spanner has to be pushed past a page boundary, the layout engine repeats
+without progress until it hits its own guard — and when it gives up it *stops
+paginating the rest of the document*.
+
+Nothing errors. The only trace is a `Layout repeated at:` line on the browser
+console, and a page count that looks plausible. On one 305-page reference this
+produced 294 pages, silently missing the last part, the author note and the
+entire index. It was noticed only because two contents links resolved to
+nothing.
+
+So: check the console for `Layout repeated`, and check that the *last* thing in
+your document actually rendered:
+
+```js
+!!document.querySelector('.pagedjs_page [id="the-last-anchor"]')
+```
+
+A spanner that **always starts a page** is safe, because it is never pushed —
+that is why `.section-head` and `.part-title` can span. For anything else,
+either drop the span or give it `break-before: page`. Dropping it is usually
+right: a two-column table sets perfectly well in a 64mm column, which is how a
+reference sets a glossary anyway.
+
+## Do not bisect the stylesheet by injecting a `<style>` block
+
+A `<style>` appended to the page after load **does not reach Paged.js** — it
+takes its stylesheets earlier, and the injected rules never affect the layout,
+even with `!important`. The computed value on the rendered element is unchanged.
+
+This produces confident, entirely meaningless bisects. Three separate "not the
+cause" conclusions in the spanning-table hunt above came from this method
+before the injection itself was tested:
+
+```js
+// the check that should have been run first
+getComputedStyle(document.querySelector('.pagedjs_page .thing')).columnSpan
+```
+
+Bisect by editing the theme and rebuilding the CSS. It is slower and it is the
+only method that means anything.
+
+## A `<thead>` does not repeat, so split the table before pagination
 
 Paged.js has no implementation of `display: table-header-group`. A table that
 runs over a page turn leaves the reader with unlabelled columns on every page
-after the first, which in a reference work is the difference between a usable
-table and a wall of cells.
+after the first.
 
-Nothing in CSS fixes this. What works is to paginate, see which tables actually
-split and after how many rows each fragment ended, then rewrite those tables as
-one table per fragment, each carrying its own `<thead>`:
+The fix is to cut the table into pieces that each fit, each carrying its own
+`<thead>` — and to measure for that **before** pagination, not after. Measuring
+after seems natural and cannot work: you would be reading the pagination to
+find which tables split, and on a document where a table is the thing breaking
+the layout, that pagination is the one that never finishes.
+
+Render the tables statically at the width they will be set at, with the theme
+CSS applied and Paged.js not running, and add up row heights against the page's
+text height:
 
 ```js
-document.querySelectorAll('.pagedjs_page table[data-tbl]')   // fragments, in order
-// group by data-tbl; any id appearing more than once has split
+await page.setContent('<link rel="stylesheet" href="…/main.css">' +
+  '<div class="chapter" style="width:64mm">' + tables.join('') + '</div>')
+// then read each <tr>'s height and cut where the running total exceeds budget
 ```
 
-Give every table a `data-tbl` id at build time so its fragments can be counted.
-Only rewrite the tables that split — a table that fits keeps its single header
-and no book-keeping. The caption stays on the first piece; repeated, it reads
-as a second table.
-
-On one 300-page reference, eleven of fifteen tables split and needed
-twenty-four continuation headers.
+The caption stays on the first piece; repeated, it reads as a second table.
 
 ## Anything measured has to be measured again after it moves
 
