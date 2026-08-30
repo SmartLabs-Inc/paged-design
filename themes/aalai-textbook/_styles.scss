@@ -1500,3 +1500,23 @@ h4 + .standfirst,
     overflow-wrap: anywhere;
     word-break: break-word;
 }
+
+// --- The table that really is too wide for a column --------------------------
+// Almost every table in a clinical reference is two columns and sets happily in
+// the 64mm text column. A few are not: a five-column product comparison at
+// 64mm overruns the measure no matter what is done to the type.
+//
+// Those span — and take a page break with them, which is the whole point. A
+// spanning element that always starts a page is never pushed past a page
+// boundary, and being pushed is what makes Paged.js loop until it abandons the
+// document (see the note on `.table-figure` above). `.section-head` and
+// `.part-title` span safely for exactly this reason.
+//
+// The build marks these by counting columns, and cuts any that is taller than
+// a page so the spanner never has to fragment either.
+
+.table-wide {
+    column-span: all;
+    break-before: page;
+    margin: 0 0 ($baseline-grid-unit * 1.2) 0;
+}
