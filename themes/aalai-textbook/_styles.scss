@@ -1520,3 +1520,12 @@ h4 + .standfirst,
     break-before: page;
     margin: 0 0 ($baseline-grid-unit * 1.2) 0;
 }
+
+// The comma that separates two locators must not be printed after the only
+// one. The parent suppresses it with `a:last-of-type`, which does not match in
+// the paginated DOM — every index entry printed a trailing comma. `:last-child`
+// does match, and an entry whose anchor is its last child has exactly one
+// locator by construction.
+.index li > a:last-child::after {
+    content: normal;
+}

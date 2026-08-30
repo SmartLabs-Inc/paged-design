@@ -6505,3 +6505,6 @@ h4 + .standfirst,
   column-span: all;
   break-before: page;
   margin: 0 0 20.4px 0; }
+
+.index li > a:last-child::after {
+  content: normal; }
