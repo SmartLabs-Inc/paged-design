@@ -1529,3 +1529,88 @@ h4 + .standfirst,
 .index li > a:last-child::after {
     content: normal;
 }
+
+// --- The index sets its own columns ------------------------------------------
+// The index arrived with two sets of columns: the chapter's, from
+// `.chapter > div > div`, and its own — so its title, its note and its entries
+// were divided twice and the opener came out four columns wide with the lower
+// half of the page empty.
+//
+// The flow is single-column here, which gives the title and the explanatory
+// note the full measure, and the entry list supplies the two columns an index
+// wants. Ordered after the chapter rule deliberately: the two selectors have
+// the same weight, so this one wins by coming last.
+
+// The index flow is single-column and the list supplies the two columns an
+// index wants. The other way round — columns on the flow, none on the list —
+// cannot work here: Paged.js paginates by flowing through a box far wider than
+// the sheet and clipping it, so `column-span: all` resolves against that wide
+// box and a "spanning" title measured 246px inside a 502px page. Nothing in
+// the index spans; the title and the note simply have the whole measure
+// because the flow they sit in has one column.
+
+.index > div > div {
+    column-count: 1;
+}
+
+.index-list {
+    column-count: 2;
+    column-gap: $column-gap;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+// A letter divider is an item of the list, not a heading above a list of its
+// own. One list means one column set, and the entries run on past a letter
+// instead of every letter ending its block and leaving the page white.
+.index li.index-letter {
+    @include sans-small();
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+    background-color: $color-teal;
+    line-height: $baseline-grid-unit;
+    padding: 0 ($baseline-grid-unit / 3);
+    margin: ($baseline-grid-unit * 0.8) 0 ($baseline-grid-unit / 3) 0;
+    display: block;
+    width: $baseline-grid-unit * 1.4;
+    text-align: center;
+    break-after: avoid;
+}
+
+// The letter dividers are chips; the chapter title is not. The parent
+// distinguishes them with `h2:first-of-type`, which is fragile — anything the
+// build adds above the title changes what matches, and the index opened with
+// its own title set as a small teal chip. The build marks the dividers, so
+// match the mark.
+.index h2 {
+    font-family: $font-display-main;
+    font-size: 27px;
+    font-weight: 400;
+    color: $color-navy;
+    background-color: transparent;
+    display: block;
+    padding: 0;
+    margin: 0 0 $baseline-grid-unit 0;
+    text-align: left;
+}
+
+.index h2.index-letter {
+    font-family: $font-display-secondary;
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+    background-color: $color-teal;
+    line-height: $baseline-grid-unit;
+    padding: 0 ($baseline-grid-unit / 3);
+    margin: ($baseline-grid-unit * 0.8) 0 ($baseline-grid-unit / 3) 0;
+    display: inline-block;
+    min-width: $baseline-grid-unit;
+    text-align: center;
+    break-after: avoid;
+}
+
+.index .standfirst {
+    column-span: all;
+}
