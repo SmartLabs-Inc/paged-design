@@ -6497,3 +6497,7 @@ h4 + .standfirst,
 
 .keep-lead {
   break-inside: avoid; }
+
+.cite {
+  overflow-wrap: anywhere;
+  word-break: break-word; }

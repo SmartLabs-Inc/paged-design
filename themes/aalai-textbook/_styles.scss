@@ -1472,3 +1472,12 @@ h4 + .standfirst,
 .keep-lead {
     break-inside: avoid;
 }
+
+// A citation mark carrying many numbers is one unbreakable "word" to the line
+// breaker. The build sets consecutive runs as ranges, which fixes the common
+// case; this is the backstop for a mark that is still long because its numbers
+// are scattered.
+.cite {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
