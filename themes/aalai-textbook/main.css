@@ -6508,3 +6508,58 @@ h4 + .standfirst,
 
 .index li > a:last-child::after {
   content: normal; }
+
+.index > div > div {
+  column-count: 1; }
+
+.index-list {
+  column-count: 2;
+  column-gap: 5mm;
+  list-style: none;
+  margin: 0;
+  padding: 0; }
+
+.index li.index-letter {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5px;
+  line-height: 13.6px;
+  text-indent: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+  background-color: #137C7A;
+  line-height: 17px;
+  padding: 0 5.66667px;
+  margin: 13.6px 0 5.66667px 0;
+  display: block;
+  width: 23.8px;
+  text-align: center;
+  break-after: avoid; }
+
+.index h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 27px;
+  font-weight: 400;
+  color: #0D2035;
+  background-color: transparent;
+  display: block;
+  padding: 0;
+  margin: 0 0 17px 0;
+  text-align: left; }
+
+.index h2.index-letter {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+  background-color: #137C7A;
+  line-height: 17px;
+  padding: 0 5.66667px;
+  margin: 13.6px 0 5.66667px 0;
+  display: inline-block;
+  min-width: 17px;
+  text-align: center;
+  break-after: avoid; }
+
+.index .standfirst {
+  column-span: all; }

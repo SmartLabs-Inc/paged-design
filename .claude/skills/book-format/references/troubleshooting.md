@@ -340,3 +340,29 @@ run forward across whole chapters to make a trailing lookahead succeed. Where a
 pattern needs a heading and then something that follows it, split on the
 heading instead of matching across it.
 
+\n
+## `column-span: all` resolves against a box much wider than the page
+
+Paged.js paginates by flowing the content through a multi-column box far wider
+than the sheet and clipping it to the page. So a spanner does not span *the
+page* — it spans that wide box. Measured on an index title with
+`column-span: all` computed and honoured:
+
+```
+page box width 502px
+flow width    1918px          ← what the spanner spans
+title width    246px          ← half a page, on a page it was supposed to cross
+```
+
+This is the same mechanism behind the truncation note above, and the practical
+advice is the same: do not reach for `column-span` to make something full
+width. Put the element in a flow that has one column instead. An index wants a
+full-measure title over two columns of entries — build it as a single-column
+chapter flow containing one two-column list, not as a two-column flow with
+spanning headings.
+
+The corollary is worth stating: a heading per letter followed by a list per
+letter gives each letter its own column set, so a letter with three entries
+ends its block there and leaves the rest of the page white. One list, with the
+dividers as items inside it, flows continuously.
+
