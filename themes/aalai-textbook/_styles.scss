@@ -1618,11 +1618,31 @@ h4 + .standfirst,
 // it just introduced a spanning region the engine could not fragment, and the
 // index stopped a third of the way down its opening page.
 
-// The index title must not span. `.part-title` is in the theme's spanning list,
-// which is right for a part opener — that page has nothing else on it — and
-// wrong here: it puts an unfragmentable spanning region at the head of a
-// two-column flow that then has to run for twenty pages, and the index stopped
-// a third of the way down its first page.
-.index .part-title {
+// --- The index title -------------------------------------------------------
+// Its own class, not `.part-title` scoped under `.index`. Two reasons, both
+// measured rather than assumed.
+//
+// `.part-title` is in the theme's spanning list, which is right for a part
+// opener — that page carries the title and little else — and wrong here, where
+// the same title heads a flow that runs for twenty pages: the spanning region
+// cannot be fragmented and the index stopped a third of the way down its first
+// page.
+//
+// And scoping the override as `.index .part-title` does not work. In the
+// paginated DOM an element's ancestor chain is not its source chain, so a
+// selector that depends on an ancestor class silently stops matching — the
+// override never applied, while the bare `.part-title` in the spanning list
+// still did. The element had no inline style and `column-span: all` computed.
+// Put the class on the element itself.
+
+.index-title {
+    font-family: $font-display-main;
+    font-size: 27px;
+    font-weight: 400;
+    color: $color-navy;
+    line-height: $baseline-grid-unit * 1.7;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    padding-bottom: ($baseline-grid-unit / 3);
+    border-bottom: 2pt solid $color-gold;
     column-span: auto;
 }

@@ -6557,5 +6557,13 @@ h4 + .standfirst,
   text-align: center;
   break-after: avoid; }
 
-.index .part-title {
+.index-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 27px;
+  font-weight: 400;
+  color: #0D2035;
+  line-height: 28.9px;
+  margin: 0 0 8.5px 0;
+  padding-bottom: 5.66667px;
+  border-bottom: 2pt solid #B79A5B;
   column-span: auto; }

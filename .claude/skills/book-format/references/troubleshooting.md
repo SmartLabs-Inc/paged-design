@@ -366,3 +366,33 @@ letter gives each letter its own column set, so a letter with three entries
 ends its block there and leaves the rest of the page white. One list, with the
 dividers as items inside it, flows continuously.
 
+## An ancestor-dependent selector can stop matching after pagination
+
+The skill's rules already say to keep selectors shallow and that `>` child
+selectors usually fail. This is the same family and it bites harder, because it
+fails **silently and selectively**: in the paginated DOM an element's ancestor
+chain is not its source chain, so a descendant selector that depends on an
+ancestor class can stop matching while a bare class selector on the same
+element keeps working.
+
+The symptom is a rule that looks more specific and loses anyway:
+
+```scss
+.part-title            { column-span: all; }   // still matches after pagination
+.index .part-title     { column-span: auto; }  // never matches — no .index ancestor
+```
+
+Measured on the element in the rendered page: no inline style, and
+`column-span: all` computed. The override with twice the specificity had simply
+never applied.
+
+**Do not scope an override by ancestor. Put the class on the element.** Where a
+component needs to behave differently in one part of the book, give it its own
+class at build time — `.index-title` rather than `.index .part-title` — and
+style that directly.
+
+The corollary for debugging: when a rule "does not work", read the computed
+value on the rendered element before touching the CSS. Specificity arithmetic
+done against the source stylesheet can be exactly right and completely
+irrelevant.
+
