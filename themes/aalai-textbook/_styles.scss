@@ -551,31 +551,33 @@ a.cite {
 // the measure; now that it has all of it (see the margin-box grid below),
 // capitals fit and are what a reference wants — furniture the eye can skip
 // until it is looking for it.
-@page {
-    @top-left {
-        font-family: $font-text-secondary;
-        font-size: 7.5px;
-        font-weight: 700;
-        letter-spacing: 0.09em;
-        text-transform: uppercase;
-        color: $color-foot;
-        vertical-align: bottom;
-    }
-    @top-right {
-        font-family: $font-text-secondary;
-        font-size: 7.5px;
-        font-weight: 700;
-        letter-spacing: 0.09em;
-        text-transform: uppercase;
-        color: $color-foot;
-        vertical-align: bottom;
-    }
-    // The foot matches it: the part on the left-hand page, the book's title on
-    // the right, both in the same capitals.
-    @bottom-center {
-        text-transform: uppercase;
-        letter-spacing: 0.09em;
-    }
+// Styled on Paged.js's own boxes rather than inside `@page`.
+//
+// Declarations in an `@top-left` block reach the page: the parent theme sets
+// the running foot that way and it works. They did not reach this one, and
+// the head printed as 12.8px body serif in black — measured in the paginated
+// document, not guessed at. The `.pagedjs_margin-content` selector is the
+// route that does work here; it is already how this theme keeps the head on
+// one line.
+.pagedjs_margin-top-left .pagedjs_margin-content,
+.pagedjs_margin-top-right .pagedjs_margin-content,
+.pagedjs_margin-bottom-center .pagedjs_margin-content {
+    font-family: $font-text-secondary;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: $color-foot;
+}
+
+.pagedjs_margin-top-left .pagedjs_margin-content,
+.pagedjs_margin-top-right .pagedjs_margin-content {
+    font-size: 7.5px;
+}
+
+// The foot keeps the size the parent theme set for it — a folio and a title
+// nobody can read are decoration — and takes the capitals from above.
+.pagedjs_margin-bottom-center .pagedjs_margin-content {
+    font-size: 8px;
 }
 
 // ---------------------------------------------------------------------------
@@ -1333,12 +1335,24 @@ samp {
 // three columns and the other two collapse, so the head has the full 502px of
 // the text block and every title in the book fits on one line.
 
+// `!important` because Paged.js writes the three equal columns as an inline
+// style on the row, and an inline style beats any selector without it.
 .pagedjs_left_page .pagedjs_margin-top {
-    grid-template-columns: 1fr 0 0;
+    grid-template-columns: 1fr 0 0 !important;
 }
 
 .pagedjs_right_page .pagedjs_margin-top {
-    grid-template-columns: 0 0 1fr;
+    grid-template-columns: 0 0 1fr !important;
+}
+
+// The head sits against the outside edge of the text block, which is where a
+// thumbing reader's eye lands.
+.pagedjs_left_page .pagedjs_margin-top-left .pagedjs_margin-content {
+    text-align: left;
+}
+
+.pagedjs_right_page .pagedjs_margin-top-right .pagedjs_margin-content {
+    text-align: right;
 }
 
 // ---------------------------------------------------------------------------
