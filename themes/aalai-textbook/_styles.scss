@@ -1,3 +1,50 @@
+// ---------------------------------------------------------------------------
+// Embedded faces
+// ---------------------------------------------------------------------------
+// Paths are relative to the compiled main.css, which sits in the theme folder.
+
+@font-face {
+    font-family: "Charis SIL";
+    src: url("../../fonts/CharisSIL-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Charis SIL";
+    src: url("../../fonts/CharisSIL-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Charis SIL";
+    src: url("../../fonts/CharisSIL-Italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Charis SIL";
+    src: url("../../fonts/CharisSIL-BoldItalic.ttf") format("truetype");
+    font-weight: 700;
+    font-style: italic;
+    font-display: block;
+}
+
+// The client's licensed display face. One weight, no italic — which is why it
+// sets only the titles that need neither.
+@font-face {
+    font-family: "Windorse";
+    src: url("../../fonts/Windorse-Regular.woff") format("woff");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+}
+
 // _styles.scss — AALAI Textbook, designed 7 × 10in
 //
 // The parent theme gives a correct book. This adds the apparatus that makes a
@@ -1681,4 +1728,16 @@ h4 + .standfirst,
 // none below.
 .index-letter {
     margin-top: ($baseline-grid-unit * 0.9);
+}
+
+// --- The display face, where it is safe -------------------------------------
+// The book title, the part titles and the index title. All checked for arabic
+// digits and none carry any: Windorse cannot distinguish 1 from I from l, so
+// anything that might print a dose or an identifier stays in the text face.
+
+.title-page-title,
+.part-title,
+.part-name,
+.index-title {
+    font-family: $font-display-hero;
 }

@@ -47,7 +47,7 @@ table {
   border-spacing: 0; }
 
 body {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 12.8px;
   line-height: 17px; }
 
@@ -147,7 +147,7 @@ sub {
 
 hr {
   border: 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   text-align: center;
   margin: 17px 0; }
   hr:after {
@@ -4266,14 +4266,14 @@ th, td {
   .title-page .title-page-title,
   .title-page .title-page-title {
     font-weight: bold;
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: "Charis SIL", Georgia, "Times New Roman", serif;
     font-size: 25.088px;
     line-height: 1.1;
     margin: 0;
     string-set: book-title content(); }
   .half-title-page .title-page-subtitle,
   .title-page .title-page-subtitle {
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: "Charis SIL", Georgia, "Times New Roman", serif;
     font-size: 17.92px;
     line-height: 1.1;
     margin: 17px 0 0 0;
@@ -4492,7 +4492,7 @@ th, td {
   color: #66717C; }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-weight: 400;
   color: #0D2035;
   break-after: avoid;
@@ -4595,7 +4595,7 @@ ul li:first-child {
   margin-bottom: 85px; }
 
 .cover .cover-line-3 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 30px;
   line-height: 37.4px;
   letter-spacing: 0;
@@ -4736,7 +4736,7 @@ ul li:first-child {
   break-after: avoid; }
 
 .week-dates {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 15px;
   color: #0D2035;
   margin: 0 0 8.5px 0;
@@ -4805,7 +4805,7 @@ ul li:first-child {
 
 .callout-dark .pullquote,
 .callout-accent .pullquote {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 12.5px;
   line-height: 17px;
   font-style: normal;
@@ -4941,7 +4941,7 @@ figure img {
   max-height: 100%; }
 
 .pullquote {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 14px;
   line-height: 22.1px;
   color: #0D2035;
@@ -4988,7 +4988,7 @@ blockquote {
   text-decoration: none; }
 
 .title-page-title {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 26px;
   line-height: 34px;
   color: #0D2035;
@@ -5155,7 +5155,7 @@ blockquote {
   margin-bottom: 4.25px; }
 
 .pillar-title {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 15px;
   color: #0D2035;
   margin: 0 0 5.66667px 0;
@@ -5185,7 +5185,7 @@ blockquote {
   margin-bottom: 4.25px; }
 
 .pillar .pillar-title {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 13px;
   font-weight: 400;
   line-height: 1.25;
@@ -5281,6 +5281,41 @@ blockquote {
   text-indent: 0;
   font-size: 8px;
   color: #66717C; }
+
+@font-face {
+  font-family: "Charis SIL";
+  src: url("../../fonts/CharisSIL-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block; }
+
+@font-face {
+  font-family: "Charis SIL";
+  src: url("../../fonts/CharisSIL-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block; }
+
+@font-face {
+  font-family: "Charis SIL";
+  src: url("../../fonts/CharisSIL-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: block; }
+
+@font-face {
+  font-family: "Charis SIL";
+  src: url("../../fonts/CharisSIL-BoldItalic.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: block; }
+
+@font-face {
+  font-family: "Windorse";
+  src: url("../../fonts/Windorse-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block; }
 
 .chapter > div > div,
 .frontmatter > div > div,
@@ -5976,7 +6011,7 @@ a.uri,
   break-after: avoid; }
 
 .index > div > div > h2:first-of-type {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 27px;
   font-weight: 400;
   color: #0D2035;
@@ -6027,7 +6062,7 @@ a.uri,
   break-after: avoid; }
 
 .index > div > div > h2:first-of-type {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 27px;
   font-weight: 400;
   color: #0D2035;
@@ -6401,7 +6436,7 @@ samp {
   background-color: #0D2035; }
 
 .band p {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 16px;
   line-height: 22.1px;
   color: #0D2035;
@@ -6533,7 +6568,7 @@ h4 + .standfirst,
   break-after: avoid; }
 
 .index h2 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 27px;
   font-weight: 400;
   color: #0D2035;
@@ -6558,7 +6593,7 @@ h4 + .standfirst,
   break-after: avoid; }
 
 .index-title {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 27px;
   font-weight: 400;
   color: #0D2035;
@@ -6585,3 +6620,9 @@ h4 + .standfirst,
 
 .index-letter {
   margin-top: 15.3px; }
+
+.title-page-title,
+.part-title,
+.part-name,
+.index-title {
+  font-family: "Windorse", "Charis SIL", Georgia, serif; }
