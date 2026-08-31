@@ -38,6 +38,38 @@
 // The client's licensed display face. One weight, no italic — which is why it
 // sets only the titles that need neither.
 @font-face {
+    font-family: "Source Sans 3";
+    src: url("../../fonts/SourceSans3-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Source Sans 3";
+    src: url("../../fonts/SourceSans3-Semibold.ttf") format("truetype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Source Sans 3";
+    src: url("../../fonts/SourceSans3-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Source Sans 3";
+    src: url("../../fonts/SourceSans3-It.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: block;
+}
+
+@font-face {
     font-family: "Windorse";
     // TrueType, not the WOFF the licence arrived in. Chromium will not embed
     // a CFF web font in the PDF it prints: it emits the glyphs as a Type 3
@@ -1887,7 +1919,9 @@ h4 + .standfirst,
     break-inside: avoid;
     padding-left: 1.1em;
     text-indent: -1.1em;
-    margin-bottom: ($baseline-grid-unit / 3);
+    // A fifth of the baseline, not a third: at a third the list ran three
+    // terms past the page and left a second page nine-tenths white for them.
+    margin-bottom: ($baseline-grid-unit / 5);
     line-height: $baseline-grid-unit;
 }
 

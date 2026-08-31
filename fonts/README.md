@@ -10,6 +10,22 @@ entirely in Liberation Serif without anything reporting it.
 | `Windorse-Regular.woff` | The licensed file as supplied | **Commercial, licensed to the client. Not redistributable — gitignored.** |
 | `Windorse-Regular.ttf` | Display only — book title, part titles, index title. Built from the WOFF; see below | **Same licence. Not redistributable — gitignored.** |
 | `CharisSIL-*.ttf` | Text face — running prose, headings, tables | SIL Open Font Licence 1.1 |
+| `SourceSans3-*.ttf` | The sans — labels, entry names, running heads, folios | SIL Open Font Licence 1.1 (`SourceSans3-LICENSE.md`) |
+
+## Why there is a sans at all, and why this one
+
+The design sets its labels, entry names, running heads and folios in a sans
+against the serif text. The parent theme names Aptos for that role. Aptos is
+not licensed here and a headless container does not have it, so every one of
+those elements was being set in whatever the renderer reached for — Liberation
+Sans, a Helvetica clone — and embedded in the PDF with nothing reporting the
+substitution.
+
+Source Sans 3 is the deliberate stand-in: a humanist sans of the same family
+of shapes as Aptos, with a semibold that holds at the 8px label sizes this
+design uses. To set the book in Aptos instead, drop the files in here and
+change `$font-display-secondary` in the theme's `_variables.scss`; nothing
+else refers to the face by name.
 
 ## Why the split
 

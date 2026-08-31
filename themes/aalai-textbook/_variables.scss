@@ -136,4 +136,15 @@ $recto-bottom: string(h1-text, first);
 
 $font-text-main: "Charis SIL", Georgia, "Times New Roman", serif;
 $font-display-main: "Charis SIL", Georgia, "Times New Roman", serif;
+
+// The sans, which the parent theme sets to Aptos. Aptos is not licensed here
+// and a headless container does not have it, so every label, entry name,
+// running head and folio in the book was being set in whatever the renderer
+// reached for — Liberation Sans, a Helvetica clone, embedded in the PDF with
+// nothing reporting the substitution. Source Sans 3 is the deliberate stand-
+// in: a humanist sans of the same family of shapes as Aptos, under the SIL
+// Open Font Licence, with a semibold that holds at the 8px label sizes this
+// design uses. Replace the files and this one line to set it in Aptos when
+// the licence is in hand.
+$font-display-secondary: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 $font-display-hero: "Windorse", "Charis SIL", Georgia, serif;
