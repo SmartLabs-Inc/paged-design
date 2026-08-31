@@ -140,7 +140,10 @@
     line-height: $baseline-grid-unit * 2;
     margin: 0 0 ($baseline-grid-unit / 2) 0;
     padding-bottom: ($baseline-grid-unit / 2);
-    border-bottom: 3pt solid $color-gold;
+    // Brand blue, not gold. The gold is the institute mark; the rule under a
+    // title is structural, and the navy is what the brand leads with — it is
+    // the ground of the prototype's cover.
+    border-bottom: 3pt solid $color-navy;
 }
 
 // ---------------------------------------------------------------------------
@@ -237,9 +240,11 @@ h4 {
 // Bordering the children instead leaves no fragmenting box at all. Vertical
 // space inside the entry comes from padding rather than margins so the rule
 // runs continuously from the heading to the last line.
+// No rule down the side. Three hundred and forty-one teal rules down a
+// two-column page read as scaffolding rather than as structure, and the entry
+// is already findable by its name. The name carries the weight instead:
+// larger, bold, underlined.
 .entry > * {
-    border-left: $entry-rule solid $color-teal;
-    padding-left: $entry-pad;
     margin-top: 0;
     margin-bottom: 0;
 }
@@ -249,16 +254,22 @@ h4 {
 // ordinary break properties; it is Paged.js's own page fragmentation that
 // ignores break-after. Without it an entry heading strands at the foot of a
 // column with its text in the next one.
-.entry > h5 {
+.entry > h5,
+.entry-lead > h5 {
     break-after: avoid;
     font-family: $font-display-secondary;
-    font-size: 11px;
+    font-size: 12.5px;
     font-style: normal;
     font-weight: 700;
     color: $color-navy;
     line-height: $baseline-grid-unit;
     padding-top: ($baseline-grid-unit / 3);
-    padding-bottom: ($baseline-grid-unit / 4);
+    padding-bottom: ($baseline-grid-unit / 5);
+    // Underlined, but not with `text-decoration` — that draws through the
+    // descenders of a peptide name like "Semaglutide" and sits too tight. A
+    // border is a rule under the whole line, at a distance the design chooses.
+    border-bottom: 1pt solid $color-navy;
+    margin-bottom: ($baseline-grid-unit / 4);
 }
 
 // The number badge. Scoped inside the topic, so it reads 1 to 22 rather than
@@ -398,6 +409,8 @@ a.cite {
 // `.section-head` and `.part-title` can span safely.
 
 .table-figure {
+    column-span: all;
+    break-inside: avoid;
     margin: ($baseline-grid-unit * 1.2) 0;
 }
 
@@ -1522,14 +1535,7 @@ h4 + .standfirst,
     break-inside: avoid;
 }
 
-.entry > .entry-lead {
-    border-left: none;
-    padding-left: 0;
-}
-
 .entry > .entry-lead > * {
-    border-left: $entry-rule solid $color-teal;
-    padding-left: $entry-pad;
     margin-top: 0;
     margin-bottom: 0;
 }
@@ -1690,7 +1696,7 @@ h4 + .standfirst,
     line-height: $baseline-grid-unit * 1.7;
     margin: 0 0 ($baseline-grid-unit / 2) 0;
     padding-bottom: ($baseline-grid-unit / 3);
-    border-bottom: 2pt solid $color-gold;
+    border-bottom: 2pt solid $color-navy;
     column-span: auto;
 }
 
@@ -1740,4 +1746,58 @@ h4 + .standfirst,
 .part-name,
 .index-title {
     font-family: $font-display-hero;
+}
+
+// --- Variety in the grid -----------------------------------------------------
+// Two even columns for three hundred pages is a texture, not a design. These
+// are the places the page opens out to the full measure, so the eye gets a
+// horizon line and the structure of the book is visible in its shape.
+
+// A sub-section opens across the measure: the heading and the paragraph that
+// introduces it, then the entries return to two columns underneath. `.keep-lead`
+// is already exactly that pair, wrapped by the build.
+.keep-lead {
+    column-span: all;
+}
+
+// A reference list is apparatus and reads as a block, not as two columns of
+// unlike things broken mid-citation.
+.references,
+.apparatus-head {
+    column-span: all;
+}
+
+// Balance the columns rather than filling the first to the foot and leaving
+// the second short. `column-fill: auto` is what put an inch of white in
+// column one while column two ran to the bottom.
+.chapter > div > div,
+.frontmatter > div > div {
+    column-fill: balance;
+}
+
+// A contents that lists only chapters cannot be used to find a section. The
+// sub-entries are indented under their chapter and set a size down.
+.toc-entry-sub {
+    @include sans-small();
+    font-size: 9.66px;
+    padding-left: $baseline-grid-unit;
+    color: $color-mid;
+}
+
+.toc-entry-sub > a {
+    color: inherit;
+    text-decoration: none;
+}
+
+// An abbreviation is a unit — it does not break across two lines.
+.table-figure td:first-child,
+.table-figure th:first-child {
+    white-space: nowrap;
+    hyphens: none;
+}
+
+// Nor do the headings inside a table hyphenate.
+.table-figure th,
+.table-figure caption {
+    hyphens: none;
 }
