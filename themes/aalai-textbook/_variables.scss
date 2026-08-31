@@ -111,3 +111,29 @@ $recto-top-right: string(h6-text, first);
 // on every page: Paged.js does not resolve `attr()` inside `string-set`.
 $verso-bottom: string(h1-text, first);
 $recto-bottom: string(h1-text, first);
+
+// ---------------------------------------------------------------------------
+// Faces
+// ---------------------------------------------------------------------------
+// Embedded, not named and hoped for. The parent theme asks for Georgia and
+// Aptos by name; a headless renderer has neither and substitutes silently,
+// which is how a 290-page proof came to be set entirely in Liberation Serif
+// with nothing reporting it. See `fonts/README.md`.
+//
+// Two faces, split by what each is good at rather than by hierarchy:
+//
+// Windorse is the client's licensed display serif. It sets the book title, the
+// eleven part titles and the index title — and nothing else. Its digit 1, its
+// capital I and its lowercase l are the same stroke, which in a reference that
+// prints BPC-157, IGF-1 LR3 and P-113 is a safety problem rather than a
+// stylistic one; those eleven titles and the book title were checked and carry
+// no arabic digits at all. It also has no bold and no italic, and the book
+// needs 2,467 words of one and 602 of the other.
+//
+// Charis SIL carries the text. It descends from Bitstream Charter — Matthew
+// Carter, who also drew Georgia — so it keeps the lineage the design asked
+// for, and it covers the book's characters with one glyph to spare.
+
+$font-text-main: "Charis SIL", Georgia, "Times New Roman", serif;
+$font-display-main: "Charis SIL", Georgia, "Times New Roman", serif;
+$font-display-hero: "Windorse", "Charis SIL", Georgia, serif;
