@@ -273,9 +273,16 @@ h4 {
 // they are rare. The rule costs no ink and does the same job — it draws the
 // extent of the entry, and it survives a page break, which a box does not.
 
+// All of the card's air is at its foot, none above its name.
+//
+// With space above the name, an entry that begins a column started a third of
+// a line lower than the text beside it and the two columns no longer lined up
+// — visible on every spread where a column opens on a new entry. The space
+// between two entries is the same either way; it just belongs to the entry
+// that is ending, not the one that is starting.
 .entry {
     counter-increment: entry;
-    margin: ($baseline-grid-unit * 1.1) 0;
+    margin: 0 0 ($baseline-grid-unit * 1.4) 0;
 }
 
 // The rule is drawn on the blocks inside the entry, not on the entry itself.
@@ -314,7 +321,9 @@ h4 {
     font-weight: 700;
     color: $color-navy;
     line-height: $baseline-grid-unit;
-    padding-top: ($baseline-grid-unit / 3);
+    // No padding above: see the note on `.entry` — the name has to sit on the
+    // same line as the first line of the column next to it.
+    padding-top: 0;
     padding-bottom: ($baseline-grid-unit / 5);
     // Underlined, but not with `text-decoration` — that draws through the
     // descenders of a peptide name like "Semaglutide" and sits too tight. A
@@ -349,6 +358,26 @@ h4 {
 
 .entry > p {
     padding-bottom: ($baseline-grid-unit * 0.55);
+}
+
+// The two halves of a lead the build cut after its third line. They have to
+// read as one paragraph: no space between them, no indent on the second, and
+// the first one's last line justified — it is a mid-paragraph line and would
+// otherwise set ragged and give the cut away.
+.lead-head {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    text-align-last: justify;
+}
+
+.lead-rest {
+    margin-top: 0;
+    text-indent: 0;
+    padding-bottom: ($baseline-grid-unit * 0.55);
+}
+
+.entry > .lead-rest:last-child {
+    padding-bottom: 0;
 }
 
 // The last paragraph of an entry takes no trailing padding. With it, the space
@@ -516,27 +545,36 @@ a.cite {
 // Set small and in the accent, so the furniture is legible without competing
 // with the text block below it.
 
-// Set in mixed case at seven and a half point rather than tracked-out capitals.
-// A page-margin box gets a third of the text width and no more, and at the
-// narrower measure of this theme that is about 145px: "TISSUE REPAIR AND WOUND
-// HEALING" in tracked capitals wrapped to two lines and crowded the first line
-// of text. The same words in mixed case fit on one.
+// Tracked-out capitals in the same grey as the foot, so the two ends of the
+// page read as one piece of furniture rather than two competing marks. This
+// was set in mixed case and in the accent while the head had only a third of
+// the measure; now that it has all of it (see the margin-box grid below),
+// capitals fit and are what a reference wants — furniture the eye can skip
+// until it is looking for it.
 @page {
     @top-left {
         font-family: $font-text-secondary;
         font-size: 7.5px;
         font-weight: 700;
-        letter-spacing: 0.03em;
-        color: $color-teal;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: $color-foot;
         vertical-align: bottom;
     }
     @top-right {
         font-family: $font-text-secondary;
         font-size: 7.5px;
         font-weight: 700;
-        letter-spacing: 0.03em;
-        color: $color-teal;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: $color-foot;
         vertical-align: bottom;
+    }
+    // The foot matches it: the part on the left-hand page, the book's title on
+    // the right, both in the same capitals.
+    @bottom-center {
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
     }
 }
 
@@ -1284,6 +1322,26 @@ samp {
 }
 
 // ---------------------------------------------------------------------------
+// The running head takes the whole measure
+// ---------------------------------------------------------------------------
+// Paged.js lays the top margin row out as a three-column grid of equal
+// thirds, so the head had about 165px whatever was in it — which is why half
+// the topic titles in this book were being cut to fit and printed as "Tissue
+// Repair and Wound…". A topic a reader cannot look up is not a running head.
+//
+// The grid is the thing to change, not the string. The outer box takes all
+// three columns and the other two collapse, so the head has the full 502px of
+// the text block and every title in the book fits on one line.
+
+.pagedjs_left_page .pagedjs_margin-top {
+    grid-template-columns: 1fr 0 0;
+}
+
+.pagedjs_right_page .pagedjs_margin-top {
+    grid-template-columns: 0 0 1fr;
+}
+
+// ---------------------------------------------------------------------------
 // The part opener panel
 // ---------------------------------------------------------------------------
 // What is in the part, set as a panel with a mark and a rule under every line —
@@ -1828,22 +1886,46 @@ h4 + .standfirst,
 // A sub-section opens across the measure: the heading and the paragraph that
 // introduces it, then the entries return to two columns underneath. `.keep-lead`
 // is already exactly that pair, wrapped by the build.
+//
+// Set as a shaded panel, for two reasons that turned out to be the same one.
+// Without a ground behind it the opener sat flush against the foot of the two
+// columns above with nothing between them — the heading read as the last line
+// of the left column rather than the start of something new. And a reader
+// skimming for structure needs the sub-sections to be findable at arm's
+// length: three hundred pages of even grey text with a slightly larger line
+// in it does not stop a thumbing eye. The panel does both.
 .keep-lead {
     column-span: all;
+    background-color: $color-tint;
+    border-left: 3pt solid $color-teal;
+    padding: ($baseline-grid-unit * 0.9) ($baseline-grid-unit * 1.1);
+    margin: ($baseline-grid-unit * 1.6) 0 ($baseline-grid-unit * 1.2) 0;
 }
 
-// A lead the build measured as too tall to hold together. The class it is
-// paired with still does everything else — the full width, the break fixer's
-// selector — and this turns off the one thing that was costing more than it
-// saved: a forty-line wrapper cannot fit the rest of a column, so it moved
-// whole and left the column before it four lines deep.
+// Inside the panel the heading carries no rule of its own — the panel is the
+// separation now, and a rule under a heading inside a tinted box reads as two
+// devices doing one job.
+.keep-lead > h3 {
+    margin-top: 0;
+
+    &::after {
+        content: none;
+    }
+}
+
+.keep-lead > p:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+// An entry the build measured as short enough to move whole. A column then
+// ends with the entry that was in it and the next one begins with the next
+// entry, rather than carrying two orphaned lines across.
 //
-// What keeps the heading with its text instead: `break-after: avoid` on the
-// heading, which native multicol honours at a column break, and the five-line
-// pass, which measures the paginated book and pushes a heading stranded at
-// the foot of a page.
-.lead-loose {
-    break-inside: auto;
+// Applied by measurement and only up to half a column: an entry taller than
+// that, moved whole, leaves more white behind it than the split it avoids.
+.entry-whole {
+    break-inside: avoid;
 }
 
 
@@ -1918,6 +2000,15 @@ h4 + .standfirst,
 // table, which would leave fifteen part-pages of white.
 .table-own-page {
     break-before: page;
+}
+
+// A table the build measured as fitting the room left on the page it belongs
+// to. It spans the measure like any other, and takes no page break — it is
+// never pushed across a boundary, because there was already room for it where
+// it stands. The build renders it both ways and puts the break back if the
+// table splits without it.
+.table-here {
+    break-before: auto;
 }
 
 // The first section of a part does not take a page break. The opener has
