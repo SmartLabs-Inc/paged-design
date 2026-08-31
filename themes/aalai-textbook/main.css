@@ -6656,3 +6656,6 @@ h4 + .standfirst,
 .table-figure th,
 .table-figure caption {
   hyphens: none; }
+
+.table-own-page {
+  break-before: page; }
