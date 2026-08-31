@@ -39,7 +39,13 @@
 // sets only the titles that need neither.
 @font-face {
     font-family: "Windorse";
-    src: url("../../fonts/Windorse-Regular.woff") format("woff");
+    // TrueType, not the WOFF the licence arrived in. Chromium will not embed
+    // a CFF web font in the PDF it prints: it emits the glyphs as a Type 3
+    // font — drawing procedures rather than a font program — which prints
+    // unpredictably and is refused by some RIPs. The same outlines converted
+    // to quadratics embed as a real subset. The conversion is a build step,
+    // not a change to the licensed file.
+    src: url("../../fonts/Windorse-Regular.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
     font-display: block;
@@ -1751,7 +1757,11 @@ h4 + .standfirst,
 // digits and none carry any: Windorse cannot distinguish 1 from I from l, so
 // anything that might print a dose or an identifier stays in the text face.
 
-.title-page-title,
+// `.title-page h1` rather than `.title-page-title`: the converter gives the
+// book title a plain `h1` and only the subtitle and the author line carry
+// classes, so the rule that named a class matched nothing and the title on
+// page one set in the text face while every part title set in the display one.
+.title-page h1,
 .part-title,
 .part-name,
 .index-title {
@@ -1885,6 +1895,14 @@ h4 + .standfirst,
 .abbrev > dd {
     display: inline;
     margin: 0;
+}
+
+// The float has to be turned off explicitly. The base stylesheet sets
+// `dl dt { float: left }`, which a `display: inline` does not undo — a
+// floated box computes to block whatever the declaration says — and the
+// term printed on top of its expansion: "TNFTumor Necrosis Factor".
+.abbrev > dt {
+    float: none;
 }
 
 .abbrev > dt {

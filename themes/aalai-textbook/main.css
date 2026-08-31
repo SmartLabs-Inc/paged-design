@@ -5312,7 +5312,7 @@ blockquote {
 
 @font-face {
   font-family: "Windorse";
-  src: url("../../fonts/Windorse-Regular.woff") format("woff");
+  src: url("../../fonts/Windorse-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: block; }
@@ -6621,7 +6621,7 @@ h4 + .standfirst,
 .index-letter {
   margin-top: 15.3px; }
 
-.title-page-title,
+.title-page h1,
 .part-title,
 .part-name,
 .index-title {
@@ -6691,6 +6691,9 @@ h4 + .standfirst,
 .abbrev > dd {
   display: inline;
   margin: 0; }
+
+.abbrev > dt {
+  float: none; }
 
 .abbrev > dt {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;

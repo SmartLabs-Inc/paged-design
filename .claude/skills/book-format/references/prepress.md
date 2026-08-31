@@ -38,6 +38,54 @@ Liberation Serif is metric-compatible with Times New Roman — not with Georgia,
 which has a larger x-height and different widths. Installing the real face will
 move line breaks, not just change the shapes.
 
+### The name in the PDF is not proof the face is embedded
+
+Chromium will not embed a **CFF** (PostScript-outline) web font in the PDF it
+prints — an `.otf`, or a `.woff`/`.woff2` wrapping CFF. It emits the glyphs as
+a **Type 3** font instead: drawing procedures stored in the page, not a font
+program. The text still looks right on screen and in a rasteriser, the font's
+name is still in the file, and a scan for `/BaseFont` still finds it. It is not
+an embedded face. Type 3 text prints unpredictably, is refused by some RIPs,
+and does not subset, hint or scale like a real font.
+
+So check the subtype, not just the name:
+
+```bash
+python3 -c '
+import re
+d = open("book.pdf","rb").read()
+print([m.decode() for m in re.findall(rb"/FontName /([^\s/>]+)", d)])
+print(sorted(set(x.decode() for x in re.findall(rb"/Subtype /(Type\d|TrueType|CIDFontType\d)", d))))
+'
+```
+
+`Type3` in that list is a failure, whatever the names say. A licensed display
+face went out in one proof exactly this way, and a scan for `/BaseFont`
+reported it as present.
+
+The fix is a format conversion, not a redraw or a different licence — the same
+outlines converted from cubic to quadratic curves embed as an ordinary
+TrueType subset:
+
+```bash
+python3 .claude/skills/book-format/scripts/otf-to-ttf.py fonts/Display.woff
+```
+
+Then point the `@font-face` at the `.ttf` and re-render. Glyphs, metrics, names
+and the licence bits all carry through; the file the licence was granted for is
+not modified.
+
+Two other font-embedding failures worth checking at the same time:
+
+- **`fsType` may forbid embedding.** Bits 1–3 of the OS/2 table say whether a
+  PDF may carry the face at all. `otf-to-ttf.py` prints the value and warns;
+  read the licence when it is not 0 or 8.
+- **A face declared but never used prints nothing.** A rule that names a class
+  the book's HTML does not carry matches nothing and fails silently — the
+  display face is simply absent from the PDF with no error anywhere. Confirm
+  each declared face actually appears in the rendered file.
+
+
 **The fix** is the one the skill's rules already state: save the font files
 into the project and `@font-face` them locally. Never link a web font in
 production — a remote update reflows the whole book.
