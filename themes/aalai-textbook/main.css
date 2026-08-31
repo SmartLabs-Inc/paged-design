@@ -6509,12 +6509,8 @@ h4 + .standfirst,
 .index li > a:last-child::after {
   content: normal; }
 
-.index > div > div {
-  column-count: 1; }
-
 .index-list {
-  column-count: 2;
-  column-gap: 5mm;
+  column-count: 1;
   list-style: none;
   margin: 0;
   padding: 0; }
@@ -6560,6 +6556,3 @@ h4 + .standfirst,
   min-width: 17px;
   text-align: center;
   break-after: avoid; }
-
-.index .standfirst {
-  column-span: all; }
