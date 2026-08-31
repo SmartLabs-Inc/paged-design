@@ -6660,6 +6660,16 @@ h4 + .standfirst,
 .table-figure caption {
   hyphens: none; }
 
+.table-figure.table-tight {
+  font-size: 9.5px; }
+  .table-figure.table-tight td,
+  .table-figure.table-tight th {
+    padding-top: 1.4px;
+    padding-bottom: 1.4px;
+    line-height: 12px; }
+  .table-figure.table-tight p {
+    line-height: 12px; }
+
 .table-own-page {
   break-before: page; }
 

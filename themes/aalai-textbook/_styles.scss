@@ -1812,6 +1812,30 @@ h4 + .standfirst,
     hyphens: none;
 }
 
+// A table that misses fitting a page by a little is set a size down rather
+// than cut in two. The build measures it at both settings and only marks it
+// when the smaller one actually fits — a rule applied to every table would
+// shrink the ones that were already comfortable, and a rule applied by eye
+// would shrink the ones that were never going to fit either way.
+//
+// The reduction is in the leading and the cell padding before it is in the
+// type: a reference table read a row at a time loses less by sitting tighter
+// than by setting smaller.
+.table-figure.table-tight {
+    font-size: 9.5px;
+
+    td,
+    th {
+        padding-top: 1.4px;
+        padding-bottom: 1.4px;
+        line-height: 12px;
+    }
+
+    p {
+        line-height: 12px;
+    }
+}
+
 // A table that fits a page but was being split takes a page of its own. This
 // is applied by measurement, to the tables that actually split — not to every
 // table, which would leave fifteen part-pages of white.
