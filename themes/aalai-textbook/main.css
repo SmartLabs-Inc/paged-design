@@ -6688,10 +6688,12 @@ h4 + .standfirst,
 
 .keep-lead {
   column-span: all;
+  margin: 27.2px 0 20.4px 0; }
+
+.keep-lead.lead-section {
   background-color: #EAF3F3;
   border-left: 3pt solid #137C7A;
-  padding: 15.3px 18.7px;
-  margin: 27.2px 0 20.4px 0; }
+  padding: 15.3px 18.7px; }
 
 .keep-lead > h3 {
   margin-top: 0; }

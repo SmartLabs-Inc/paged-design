@@ -1910,10 +1910,17 @@ h4 + .standfirst,
 // in it does not stop a thumbing eye. The panel does both.
 .keep-lead {
     column-span: all;
+    margin: ($baseline-grid-unit * 1.6) 0 ($baseline-grid-unit * 1.2) 0;
+}
+
+// The panel is for a sub-section — the level a reader skimming for structure
+// is looking for. A topic opener inside one takes the full measure and the
+// space above it, but no ground: two tinted boxes back to back read as one box
+// that has been broken, not as two levels of heading.
+.keep-lead.lead-section {
     background-color: $color-tint;
     border-left: 3pt solid $color-teal;
     padding: ($baseline-grid-unit * 0.9) ($baseline-grid-unit * 1.1);
-    margin: ($baseline-grid-unit * 1.6) 0 ($baseline-grid-unit * 1.2) 0;
 }
 
 // Inside the panel the heading carries no rule of its own — the panel is the
