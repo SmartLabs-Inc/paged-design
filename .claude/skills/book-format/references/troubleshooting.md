@@ -428,3 +428,36 @@ an ancestor whose computed `break-inside` is `avoid`. That names the box that
 moved. Where nothing on the chain refuses to break, the gap has another cause
 — an `orphans` value, a `column-span` element, or simply the end of a section —
 and tightening the wrappers will not touch it.
+
+## A measuring host is not the page
+
+Measuring content in a host built to look like a column — the right width, the
+theme's stylesheet, the same fonts — is much faster than paginating, and it is
+right often enough to be trusted. It is not always right.
+
+The same paragraph, at the same 242px, in the same face and size, with the
+same `text-align: justify` and `hyphens: auto`, set in **three** lines standing
+alone in a host and **four** lines inside the paginated page. Every computed
+value agreed: width, `font-size`, `line-height`, `text-align`, `text-align-last`,
+`word-spacing`, `letter-spacing`, parent width, parent padding. Only the line
+count differed.
+
+So: measure in a host for questions where being a line out does not matter — is
+this table taller than a page, is this box worth keeping together — and measure
+in the paginated document for anything that has to land on an exact line.
+Paginating is slower; a visible seam in three hundred entries is worse.
+
+### Counting lines
+
+`Range.getClientRects()` returns one rect per **inline box**, not one per line.
+A line carrying a citation mark or a bold run yields two or three rects at the
+same vertical position, and a superscript's rect has a different top from the
+text it sits in. Counted raw, a seven-line paragraph reported twenty-seven
+lines.
+
+Collapsing rects by their top edge fixes the count but not the order, and it
+breaks on a paragraph that runs into the next column, where line four sits
+*above* line three on the page. What works in both cases is to walk the
+characters and count a new line whenever one starts lower than the last **or
+further left** — the second test is what carries the count across a column
+boundary.
