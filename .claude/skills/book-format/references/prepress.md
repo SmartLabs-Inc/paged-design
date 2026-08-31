@@ -42,6 +42,26 @@ move line breaks, not just change the shapes.
 into the project and `@font-face` them locally. Never link a web font in
 production — a remote update reflows the whole book.
 
+Be aware that no theme in this repository currently does this. There is no
+`fonts/` directory and no `@font-face` rule anywhere in `themes/`, so every
+book built here so far has rendered in whatever the host machine happened to
+have. The instruction is right; it has simply never been exercised. Budget for
+that when a book first goes to press.
+
+Two routes, and which one applies is a licensing question, not a technical one:
+
+- **The specified face.** Georgia and Aptos are Microsoft faces. A client may
+  already hold the rights through Office or Windows, in which case the files
+  can go in `fonts/` and be `@font-face`d. A build server cannot simply fetch
+  them.
+- **An open face chosen deliberately.** If the licence is not there, pick a
+  substitute on purpose rather than letting the renderer pick one. Bitstream
+  Charter is worth knowing about for a Georgia-based design: Matthew Carter
+  drew both, it is open-licensed, and it holds up at text sizes in a reference
+  book. It is *not* metrically identical, so the pagination still has to be
+  regenerated — but that is a design decision made with open eyes rather than
+  a silent substitution.
+
 ## 2. Set the trim, the bleed and the marks
 
 `$bleed`, `$trim` and `$crop-marks` live in the theme's `_variables.scss`, not
