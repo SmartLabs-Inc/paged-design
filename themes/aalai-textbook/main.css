@@ -6506,7 +6506,7 @@ h4 + .standfirst,
   break-before: page;
   margin: 0 0 20.4px 0; }
 
-.index li > a:last-child::after {
+.index-entry > a:last-child::after {
   content: normal; }
 
 .index-list {
@@ -6515,7 +6515,7 @@ h4 + .standfirst,
   margin: 0;
   padding: 0; }
 
-.index li.index-letter {
+.index-letter {
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
@@ -6567,3 +6567,6 @@ h4 + .standfirst,
   padding-bottom: 5.66667px;
   border-bottom: 2pt solid #B79A5B;
   column-span: auto; }
+
+.index {
+  column-count: auto; }
