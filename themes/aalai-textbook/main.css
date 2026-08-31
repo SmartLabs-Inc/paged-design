@@ -5444,6 +5444,9 @@ h4 {
 .entry > p {
   padding-bottom: 9.35px; }
 
+.entry > p:last-child {
+  padding-bottom: 0; }
+
 .standfirst {
   break-after: avoid;
   font-size: 14.08px;
@@ -6662,3 +6665,25 @@ h4 + .standfirst,
 
 .section-head-first {
   break-before: auto; }
+
+.abbrev-list {
+  margin: 0 0 17px 0;
+  padding: 0; }
+
+.abbrev {
+  break-inside: avoid;
+  padding-left: 1.1em;
+  text-indent: -1.1em;
+  margin-bottom: 5.66667px;
+  line-height: 17px; }
+
+.abbrev > dt,
+.abbrev > dd {
+  display: inline;
+  margin: 0; }
+
+.abbrev > dt {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  color: #0D2035;
+  margin-right: 0.5em; }

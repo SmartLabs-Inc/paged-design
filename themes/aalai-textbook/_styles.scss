@@ -293,6 +293,16 @@ h4 {
     padding-bottom: ($baseline-grid-unit * 0.55);
 }
 
+// The last paragraph of an entry takes no trailing padding. With it, the space
+// between one entry's last line and the next entry's name ran to two blank
+// lines — the paragraph's own padding, then the card's margin — and read as a
+// stray empty line at the foot of every one of the three hundred and forty-one
+// entries. The card's margin is the separation; the paragraph padding is only
+// for the gaps between paragraphs inside a card.
+.entry > p:last-child {
+    padding-bottom: 0;
+}
+
 // ---------------------------------------------------------------------------
 // Section lead
 // ---------------------------------------------------------------------------
@@ -1819,4 +1829,46 @@ h4 + .standfirst,
 // is exactly the behaviour wanted here.
 .section-head-first {
     break-before: auto;
+}
+
+// ---------------------------------------------------------------------------
+// The abbreviations glossary
+// ---------------------------------------------------------------------------
+// Six hundred-odd terms set as a flowing two-column list rather than a table.
+// The term is set in the display face and hangs; the expansion follows it on
+// the same line and wraps under a hanging indent, so a column of them reads
+// down the initials.
+//
+// Each pair is a block that may not break, which is what the wrapping `div`
+// inside the `dl` is for: `break-inside` on a `dt`/`dd` pair cannot hold the
+// two together, and Paged.js's column fragmentation will otherwise leave a
+// term at the foot of one column and its expansion at the head of the next.
+
+.abbrev-list {
+    margin: 0 0 ($baseline-grid-unit) 0;
+    padding: 0;
+}
+
+.abbrev {
+    break-inside: avoid;
+    padding-left: 1.1em;
+    text-indent: -1.1em;
+    margin-bottom: ($baseline-grid-unit / 3);
+    line-height: $baseline-grid-unit;
+}
+
+.abbrev > dt,
+.abbrev > dd {
+    display: inline;
+    margin: 0;
+}
+
+.abbrev > dt {
+    font-family: $font-display-secondary;
+    font-weight: 700;
+    color: $color-navy;
+    // The gap between the term and its expansion is a margin, not generated
+    // content: Paged.js discards `::after` on ordinary elements, so a
+    // generated space would survive the preview and vanish from the PDF.
+    margin-right: 0.5em;
 }
