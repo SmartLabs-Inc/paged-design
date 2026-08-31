@@ -4470,7 +4470,7 @@ th, td {
   box-shadow: 0px -1px 0px 0px var(--pagedjs-crop-shadow); }
 
 .label {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -4575,7 +4575,7 @@ ul li:first-child {
   text-align: center; }
 
 .cover p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -4617,7 +4617,7 @@ ul li:first-child {
   color: #B79A5B; }
 
 .chapter-eyebrow {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -4656,7 +4656,7 @@ ul li:first-child {
 
 .objectives li,
 .takeaways li {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -4687,7 +4687,7 @@ ul li:first-child {
 
 .checklist li,
 .ours li {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -4723,7 +4723,7 @@ ul li:first-child {
   border-bottom: 0.5pt solid #F4F6F7; }
 
 .week-number {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -4744,7 +4744,7 @@ ul li:first-child {
   break-after: avoid; }
 
 .list-label {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -4769,7 +4769,7 @@ ul li:first-child {
 
 .callout p,
 .panel p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -4780,7 +4780,7 @@ ul li:first-child {
   margin-bottom: 0; }
 
 .callout-label {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -4821,7 +4821,7 @@ ul li:first-child {
   break-inside: avoid; }
 
 .figure-placeholder p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -4852,7 +4852,7 @@ ul li:first-child {
   align-items: center; }
 
 .level p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -4896,7 +4896,7 @@ tbody tr:first-child {
   break-after: avoid; }
 
 th {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -4911,7 +4911,7 @@ th {
   vertical-align: middle; }
 
 td {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -4925,7 +4925,7 @@ tbody tr:nth-child(odd) td {
 
 .table-caption,
 .figure-caption {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -4954,7 +4954,7 @@ blockquote {
   border-left: 2pt solid #EAF3F3; }
 
 .source {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -4962,7 +4962,7 @@ blockquote {
   break-before: avoid; }
 
 .reference {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -4977,7 +4977,7 @@ blockquote {
   border-top: 0.5pt solid #66717C; }
 
 .footnotes p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -4996,7 +4996,7 @@ blockquote {
   text-indent: 0; }
 
 .title-page-subtitle {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 11px;
   letter-spacing: 0.04em;
   color: #66717C;
@@ -5004,7 +5004,7 @@ blockquote {
 
 .title-page-author,
 .title-page-publisher {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -5012,7 +5012,7 @@ blockquote {
   text-indent: 0; }
 
 .toc-list li {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -5024,17 +5024,17 @@ blockquote {
 
 @page {
   @bottom-left {
-    font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     font-size: 9.5px;
     letter-spacing: 0.06em;
     color: #4A5560; }
   @bottom-right {
-    font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     font-size: 9.5px;
     letter-spacing: 0.06em;
     color: #4A5560; }
   @bottom-center {
-    font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     font-size: 9.5px;
     letter-spacing: 0.06em;
     color: #4A5560; } }
@@ -5049,7 +5049,7 @@ blockquote {
   break-inside: avoid; }
 
 .sidenote p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -5061,7 +5061,7 @@ blockquote {
   margin-bottom: 0; }
 
 .sidenote-label {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5098,7 +5098,7 @@ blockquote {
   color: #137C7A; }
 
 .step-number {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5111,7 +5111,7 @@ blockquote {
   margin-bottom: 4.25px; }
 
 .step-title {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5124,7 +5124,7 @@ blockquote {
   margin-bottom: 5.66667px; }
 
 .step p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -5142,7 +5142,7 @@ blockquote {
   break-inside: avoid; }
 
 .pillar-number {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5162,7 +5162,7 @@ blockquote {
   text-indent: 0; }
 
 .pillar p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -5172,7 +5172,7 @@ blockquote {
   margin-bottom: 0; }
 
 .pillar .pillar-number {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5194,7 +5194,7 @@ blockquote {
   text-indent: 0; }
 
 .step .step-number {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5206,7 +5206,7 @@ blockquote {
   color: #B79A5B; }
 
 .step .step-title {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5218,7 +5218,7 @@ blockquote {
   color: #0D2035; }
 
 .sidenote .sidenote-label {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5271,7 +5271,7 @@ blockquote {
 .pagedjs_blank_page .pagedjs_page_content::after {
   content: "This page is intentionally blank";
   display: block;
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5376,7 +5376,7 @@ blockquote {
   counter-reset: entry; }
 
 .chapter-eyebrow {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5484,7 +5484,7 @@ h4 {
 
 .cite,
 sup.cite {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8px;
   font-weight: 700;
   line-height: 0;
@@ -5536,7 +5536,7 @@ a.cite {
   caption-side: top;
   break-after: avoid;
   counter-increment: figure;
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5558,14 +5558,14 @@ a.cite {
 
 @page {
   @top-left {
-    font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     font-size: 7.5px;
     font-weight: 700;
     letter-spacing: 0.03em;
     color: #137C7A;
     vertical-align: bottom; }
   @top-right {
-    font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     font-size: 7.5px;
     font-weight: 700;
     letter-spacing: 0.03em;
@@ -5593,7 +5593,7 @@ a.cite {
   text-align: right; }
 
 .part-count {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5638,7 +5638,7 @@ a.uri,
   padding: 8.5px 0; }
 
 .part-contents-count {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -6015,7 +6015,7 @@ a.uri,
 
 .chapter ol li a.uri,
 .chapter ul li a.uri {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   color: #66717C;
   text-decoration: none; }
@@ -6057,7 +6057,7 @@ a.uri,
 
 .chapter ol li a.uri,
 .chapter ul li a.uri {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   color: #66717C;
   text-decoration: none; }
@@ -6121,7 +6121,7 @@ a.uri,
   padding: 8.5px; }
 
 .figure-slot-id {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -6134,7 +6134,7 @@ a.uri,
   margin: 0 0 4.25px 0; }
 
 .figure-slot-size {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -6144,7 +6144,7 @@ a.uri,
 
 .figure > .figure-caption,
 .figure-side > .figure-caption {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -6163,7 +6163,7 @@ a.uri,
 
 .figure > .figure-brief,
 .figure-side > .figure-brief {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -6325,7 +6325,7 @@ samp {
   text-decoration: none; }
 
 .index-locators {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   color: #137C7A;
   white-space: nowrap; }
@@ -6363,7 +6363,7 @@ samp {
   break-inside: avoid; }
 
 .part-panel-label {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -6403,7 +6403,7 @@ samp {
 
 .needs-copy {
   column-span: all;
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 9px;
   line-height: 12.75px;
   color: #D49B38;
@@ -6447,7 +6447,7 @@ samp {
   flex: 1 1 0; }
 
 .split-aside {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -6478,7 +6478,7 @@ samp {
   margin: 0; }
 
 .band > .callout-label {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -6579,7 +6579,7 @@ h4 + .standfirst,
   padding: 0; }
 
 .index-letter {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -6635,7 +6635,7 @@ h4 + .standfirst,
   column-count: auto; }
 
 .index-entry {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;
@@ -6658,6 +6658,9 @@ h4 + .standfirst,
 .keep-lead {
   column-span: all; }
 
+.lead-loose {
+  break-inside: auto; }
+
 .references,
 .apparatus-head {
   column-span: all; }
@@ -6667,7 +6670,7 @@ h4 + .standfirst,
   column-fill: balance; }
 
 .toc-entry-sub {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 13.6px;
   text-indent: 0;

@@ -1812,6 +1812,21 @@ h4 + .standfirst,
     column-span: all;
 }
 
+// A lead the build measured as too tall to hold together. The class it is
+// paired with still does everything else — the full width, the break fixer's
+// selector — and this turns off the one thing that was costing more than it
+// saved: a forty-line wrapper cannot fit the rest of a column, so it moved
+// whole and left the column before it four lines deep.
+//
+// What keeps the heading with its text instead: `break-after: avoid` on the
+// heading, which native multicol honours at a column break, and the five-line
+// pass, which measures the paginated book and pushes a heading stranded at
+// the foot of a page.
+.lead-loose {
+    break-inside: auto;
+}
+
+
 // A reference list is apparatus and reads as a block, not as two columns of
 // unlike things broken mid-citation.
 .references,
