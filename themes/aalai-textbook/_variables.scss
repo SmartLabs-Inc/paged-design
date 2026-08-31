@@ -98,6 +98,12 @@ $icon-size: 17px;                // the circled component markers
 // a string in CSS, so the build emits a shortened form as a zero-size h6 ahead
 // of each topic and the head reads that. Titles are cut at a natural break —
 // before " and ", " for ", a colon — rather than truncated mid-phrase.
+//
+// That shortening is gone. The head now takes the whole width of the text
+// block — the margin-box grid is overridden in _styles.scss so the outer box
+// gets all three columns instead of one — and the build emits the full title,
+// because a topic named "Tissue Repair and Wound…" is not a topic a reader
+// can look up.
 $verso-top-left: string(h6-text, first);
 $recto-top-right: string(h6-text, first);
 
@@ -109,8 +115,15 @@ $recto-top-right: string(h6-text, first);
 // set to zero size in _styles.scss, so it is a string source and nothing else.
 // Reading it from a title attribute was tried first and produced an empty foot
 // on every page: Paged.js does not resolve `attr()` inside `string-set`.
+// The two feet name different things, so a reader who lands on either half of
+// a spread knows both where they are in the book and what the book is: the
+// part on the left-hand page, the book's title on the right.
+//
+// The title comes from the `book-title` named string, which the parent theme
+// sets on the title page — see _selectors.scss for why it was empty until now.
+// It is set once and persists, so every right-hand page reads it.
 $verso-bottom: string(h1-text, first);
-$recto-bottom: string(h1-text, first);
+$recto-bottom: string(book-title);
 
 // ---------------------------------------------------------------------------
 // Faces
