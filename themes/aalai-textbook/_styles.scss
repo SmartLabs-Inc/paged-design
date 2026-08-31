@@ -1801,3 +1801,10 @@ h4 + .standfirst,
 .table-figure caption {
     hyphens: none;
 }
+
+// A table that fits a page but was being split takes a page of its own. This
+// is applied by measurement, to the tables that actually split — not to every
+// table, which would leave fifteen part-pages of white.
+.table-own-page {
+    break-before: page;
+}
