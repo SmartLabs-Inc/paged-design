@@ -5575,26 +5575,21 @@ a.cite {
 .table-figure > table {
   margin: 0; }
 
-@page {
-  @top-left {
-    font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    font-size: 7.5px;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: #4A5560;
-    vertical-align: bottom; }
-  @top-right {
-    font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    font-size: 7.5px;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: #4A5560;
-    vertical-align: bottom; }
-  @bottom-center {
-    text-transform: uppercase;
-    letter-spacing: 0.09em; } }
+.pagedjs_margin-top-left .pagedjs_margin-content,
+.pagedjs_margin-top-right .pagedjs_margin-content,
+.pagedjs_margin-bottom-center .pagedjs_margin-content {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #4A5560; }
+
+.pagedjs_margin-top-left .pagedjs_margin-content,
+.pagedjs_margin-top-right .pagedjs_margin-content {
+  font-size: 7.5px; }
+
+.pagedjs_margin-bottom-center .pagedjs_margin-content {
+  font-size: 8px; }
 
 .sidenote {
   width: 30mm;
@@ -6379,10 +6374,16 @@ samp {
   overflow: hidden; }
 
 .pagedjs_left_page .pagedjs_margin-top {
-  grid-template-columns: 1fr 0 0; }
+  grid-template-columns: 1fr 0 0 !important; }
 
 .pagedjs_right_page .pagedjs_margin-top {
-  grid-template-columns: 0 0 1fr; }
+  grid-template-columns: 0 0 1fr !important; }
+
+.pagedjs_left_page .pagedjs_margin-top-left .pagedjs_margin-content {
+  text-align: left; }
+
+.pagedjs_right_page .pagedjs_margin-top-right .pagedjs_margin-content {
+  text-align: right; }
 
 .part-panel {
   column-span: all;
