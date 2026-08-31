@@ -1526,7 +1526,7 @@ h4 + .standfirst,
 // the paginated DOM — every index entry printed a trailing comma. `:last-child`
 // does match, and an entry whose anchor is its last child has exactly one
 // locator by construction.
-.index li > a:last-child::after {
+.index-entry > a:last-child::after {
     content: normal;
 }
 
@@ -1566,7 +1566,7 @@ h4 + .standfirst,
 // A letter divider is an item of the list, not a heading above a list of its
 // own. One list means one column set, and the entries run on past a letter
 // instead of every letter ending its block and leaving the page white.
-.index li.index-letter {
+.index-letter {
     @include sans-small();
     font-size: 13px;
     font-weight: 700;
@@ -1645,4 +1645,20 @@ h4 + .standfirst,
     padding-bottom: ($baseline-grid-unit / 3);
     border-bottom: 2pt solid $color-gold;
     column-span: auto;
+}
+
+// --- The index chapter must not carry columns of its own ---------------------
+// Measured by walking the ancestor chain of a rendered index page against the
+// same chain on a body page that works:
+//
+//   index:  div.index.chapter  cols=2   →  div > div  cols=2   →  four columns
+//   body:   div.chapter        cols=auto →  div > div  cols=2   →  two columns
+//
+// The chapter div itself was picking up two columns, nested inside the two the
+// flow already has, so the index set in four narrow columns and stopped a third
+// of the way down every page. The class is on the element, not an ancestor —
+// an ancestor-scoped override does not match in the paginated DOM.
+
+.index {
+    column-count: auto;
 }
