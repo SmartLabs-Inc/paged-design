@@ -1,0 +1,167 @@
+// _variables.scss — AALAI Textbook, designed 7 × 10in
+//
+// The trim, palette, running feet and every component variable are inherited
+// from `aalai`. What changes here is the grid, and the grid is the whole
+// difference between a reference document and a textbook.
+
+// Type and measure
+// ----------------
+// Two columns, justified, at ten point. This is how a reference textbook is
+// set, and the reason is the measure.
+//
+// The parent theme sets nine point across a single 5.66in column: measured in
+// the browser over 4,202 lines of the real manuscript, a median of 109
+// characters a line. A book sets 60 to 70. One hundred and nine is not a long
+// measure, it is a different medium — the setting of an A4 report — and it is
+// why pages of this book read as a Word document no matter what is drawn on
+// them.
+//
+// A single column fixes that by shortening the line, and costs a great deal of
+// paper doing it. Two columns fix it by using the width the trim already has:
+// each column carries about 44 characters, and the page holds two of them. The
+// same text that ran 432 pages set in one wide column comes in under 300.
+//
+// Justified, because at 44 characters a ragged edge on technical prose leaves
+// holes the eye reads as paragraph breaks. Hyphenation is on and is not
+// optional at this measure.
+
+$baseline-grid-unit: 17px;       // ~12.75pt leading
+$font-size-default: 12.8px;      // ~9.6pt body
+$font-size-small: 10.5px;        // captions, table cells, panels
+$font-size-label: 8.5px;         // tracked-out labels
+$line-height-default: $baseline-grid-unit;
+$text-spacing: $baseline-grid-unit * 0.55;
+$text-align-default: justify;
+$hyphenation: auto;
+
+// The column set
+// --------------
+$column-count: 2;
+$column-gap: 5mm;
+
+// Margins
+// -------
+// Nearly even, as a two-column page wants: the columns supply the internal
+// white space that a single-column page has to buy with margin. The outer
+// margin is the wider of the two because it carries the fore-edge thumb tab
+// and is the edge a reader's thumb covers.
+//
+// Text block lands at 132.8mm, which divides into two columns of 63.9mm.
+//
+// Widened from 17/21mm after looking at a proof: at that size the outer
+// column sat about eight millimetres off the trim, which is inside the
+// tolerance a short-run printer will guarantee and reads as crowded even when
+// it prints correctly. The head and foot margins were worse — eleven and
+// thirteen millimetres on a ten-inch page, where eighteen and twenty are
+// normal — and the running head had nowhere to sit above the text block.
+
+$margin-inside: 20mm;
+$margin-outside: 25mm;
+$margin-top: $baseline-grid-unit * 4;
+$margin-bottom: $baseline-grid-unit * 4.5;
+
+// Chapter openers
+// ---------------
+$start-depth: $baseline-grid-unit * 3;
+$chapter-rule-width: 20mm;
+
+// Textbook apparatus
+// ------------------
+// Sizes for the pieces added in _styles.scss. Kept here so the whole grid can
+// be retuned from one file.
+
+$entry-rule: 2.5pt;              // the coloured spine down an entry card
+$entry-pad: $baseline-grid-unit * 0.5;
+$tab-width: 9mm;                 // the part tab on the outside edge
+$icon-size: 17px;                // the circled component markers
+
+// Running heads
+// -------------
+// The parent theme puts nothing across the top and the part title along the
+// foot. That is right for a book read front to back and wrong for one that is
+// scanned: a reader hunting an entry needs to know which topic the spread is
+// in without reading back to the last heading.
+//
+// The topic goes in the outside top slot, where a thumbing reader's eye lands.
+// The foot keeps the folio and the part title, so a page identifies itself at
+// both ends.
+
+// `first`, not `start`: a page that opens a new topic must name the new one.
+// With `start` the head reported the topic carried in from the previous page,
+// so a spread beginning "Tissue Repair and Wound Healing" was labelled "What
+// Are Peptides?" — the one heading on the page it could not be.
+// The running head reads a short form of the topic, not the topic itself.
+//
+// A page margin box gets a third of the text width — about 165px here — and
+// half the topic titles in this book are longer than that, so the head wrapped
+// to two lines and crowded the first line of text. There is no way to shorten
+// a string in CSS, so the build emits a shortened form as a zero-size h6 ahead
+// of each topic and the head reads that. Titles are cut at a natural break —
+// before " and ", " for ", a colon — rather than truncated mid-phrase.
+//
+// That shortening is gone. The head now takes the whole width of the text
+// block — the margin-box grid is overridden in _styles.scss so the outer box
+// gets all three columns instead of one — and the build emits the full title,
+// because a topic named "Tissue Repair and Wound…" is not a topic a reader
+// can look up.
+$verso-top-left: string(h6-text, first);
+$recto-top-right: string(h6-text, first);
+
+// The foot names the part, not the section. The section is already across the
+// top, and `string(h2-text)` gave the section there too, because the part title
+// and the section heads are both h2 in this manuscript.
+//
+// The part name is carried by an h1 the build emits at the head of each part —
+// set to zero size in _styles.scss, so it is a string source and nothing else.
+// Reading it from a title attribute was tried first and produced an empty foot
+// on every page: Paged.js does not resolve `attr()` inside `string-set`.
+// The two feet name different things, so a reader who lands on either half of
+// a spread knows both where they are in the book and what the book is: the
+// part on the left-hand page, the book's title on the right.
+//
+// The title comes from the `book-title` named string, which the parent theme
+// sets on the title page — see _selectors.scss for why it was empty until now.
+// It is set once and persists, so every right-hand page reads it.
+$verso-bottom: string(h1-text, first);
+$recto-bottom: string(book-title);
+
+// ---------------------------------------------------------------------------
+// Faces
+// ---------------------------------------------------------------------------
+// Embedded, not named and hoped for. The parent theme asks for Georgia and
+// Aptos by name; a headless renderer has neither and substitutes silently,
+// which is how a 290-page proof came to be set entirely in Liberation Serif
+// with nothing reporting it. See `fonts/README.md`.
+//
+// Two faces, split by what each is good at rather than by hierarchy:
+//
+// Windorse is the client's licensed display serif. It sets the book title, the
+// eleven part titles and the index title — and nothing else. Its digit 1, its
+// capital I and its lowercase l are the same stroke, which in a reference that
+// prints BPC-157, IGF-1 LR3 and P-113 is a safety problem rather than a
+// stylistic one; those eleven titles and the book title were checked and carry
+// no arabic digits at all. It also has no bold and no italic, and the book
+// needs 2,467 words of one and 602 of the other.
+//
+// Charis SIL carries the text. It descends from Bitstream Charter — Matthew
+// Carter, who also drew Georgia — so it keeps the lineage the design asked
+// for, and it covers the book's characters with one glyph to spare.
+
+$font-text-main: "Charis SIL", Georgia, "Times New Roman", serif;
+$font-display-main: "Charis SIL", Georgia, "Times New Roman", serif;
+
+// The sans, which the parent theme sets to Aptos. Aptos is not licensed here
+// and a headless container does not have it, so every label, entry name,
+// running head and folio in the book was being set in whatever the renderer
+// reached for — Liberation Sans, a Helvetica clone, embedded in the PDF with
+// nothing reporting the substitution. Source Sans 3 is the deliberate stand-
+// in: a humanist sans of the same family of shapes as Aptos, under the SIL
+// Open Font Licence, with a semibold that holds at the 8px label sizes this
+// design uses. Replace the files and this one line to set it in Aptos when
+// the licence is in hand.
+$font-display-secondary: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+// Both of them: the parent theme has a display and a text sans and sets each
+// to Aptos separately. Overriding only the display one left fifty-six rules —
+// most of the labels in the book — still asking for a face that is not here.
+$font-text-secondary: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+$font-display-hero: "Windorse", "Charis SIL", Georgia, serif;

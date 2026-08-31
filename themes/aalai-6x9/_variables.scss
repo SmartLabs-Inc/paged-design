@@ -1,0 +1,75 @@
+// _variables.scss — AALAI Textbook (6 × 9in)
+//
+// Palette, paragraph treatment, running feet and every component variable are
+// inherited from `aalai`. The page geometry changes, and so does the type —
+// see below for why the second is not optional.
+
+// Type
+// ----
+// The first version of this theme scaled the page and kept the 7 × 10in type,
+// and it was wrong in a way that measuring caught and the eye only felt: the
+// body ran to a median of 81 characters a line.
+//
+// A book sets 60 to 70 characters, about 66 at best. Eighty-one at nine point
+// is the measure of a letter-size business document, and that is exactly what
+// the pages looked like — a 6 × 9in sheet that read as 8½ × 11. The trim was
+// never the problem.
+//
+// Raising the body to eleven point brings the same column back to about 67
+// characters without touching the margins, and eleven point on a 6 × 9in page
+// is what a trade book is set in anyway. Everything else scales with it so the
+// relationships in the design hold.
+//
+// Declared before the margins below, which are computed from the grid unit.
+
+$baseline-grid-unit: 20px;       // ~15pt leading
+$font-size-default: 14.5px;      // ~11pt body
+$font-size-small: 11.5px;        // captions, table cells, side notes
+$font-size-label: 10px;          // tracked-out labels
+$line-height-default: $baseline-grid-unit;
+$text-spacing: $baseline-grid-unit;
+
+// Page setup
+// ----------
+// 6 × 9in — the standard trade and academic trim, and what a short-run digital
+// printer quotes cheapest.
+
+$page-width: 152.4mm;   // 6in
+$page-height: 228.6mm;  // 9in
+
+// Margins
+// -------
+// Scaled from the 7 × 10in theme rather than re-invented, so a spread keeps
+// the same proportions of ink to paper.
+//
+// The inside margin stays the larger of the two because it is the one the
+// binding eats. On a perfect-bound book of this extent the gutter swallows
+// several millimetres before the reader can flatten the page, and text set too
+// close to it disappears into the spine.
+//
+// Text width lands at 117.4mm, which at eleven point carries about 67
+// characters — the length a book is meant to be read at.
+//
+// The margins are not what was wrong when this page read as letter-size, and
+// widening them would have been the wrong fix: it shortens the line by taking
+// away page rather than by sizing the type to the paper. An earlier note here
+// claimed 68 characters at the 12px body. Measured, it was 81.
+//
+// It is also why the side callout has to be re-laid — at this width there is
+// no longer a third of the measure to give away to a float.
+
+$margin-inside: 20mm;
+$margin-outside: 15mm;
+$margin-top: $baseline-grid-unit * 2.5;
+$margin-bottom: $baseline-grid-unit * 2.5;
+
+// Chapter openers
+// ---------------
+// The opener drops less far down a shorter page. Three baseline units on a
+// 10in page is the same gesture as two and a half on a 9in one; keeping the
+// literal measurement would eat a disproportionate share of the shorter page.
+
+$start-depth: $baseline-grid-unit * 2.5;
+
+// The rule under a chapter eyebrow, scaled with the trim.
+$chapter-rule-width: 14mm;

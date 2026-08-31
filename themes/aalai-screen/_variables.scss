@@ -1,0 +1,8 @@
+// _variables.scss — AALAI Textbook (screen)
+//
+// Everything is inherited from the print theme. Only pagination differs.
+
+// No blank versos. `auto` stops the fragmenter forcing each section onto a
+// right-hand page; _styles.scss then asks for a plain page break instead, so
+// sections still start fresh without a blank between them.
+$chapters-start-on: auto;
