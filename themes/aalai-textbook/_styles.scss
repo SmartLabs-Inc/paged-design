@@ -1541,21 +1541,23 @@ h4 + .standfirst,
 // wants. Ordered after the chapter rule deliberately: the two selectors have
 // the same weight, so this one wins by coming last.
 
-// The index flow is single-column and the list supplies the two columns an
-// index wants. The other way round — columns on the flow, none on the list —
-// cannot work here: Paged.js paginates by flowing through a box far wider than
-// the sheet and clipping it, so `column-span: all` resolves against that wide
-// box and a "spanning" title measured 246px inside a 502px page. Nothing in
-// the index spans; the title and the note simply have the whole measure
-// because the flow they sit in has one column.
-
-.index > div > div {
-    column-count: 1;
-}
+// The index uses the chapter's own two columns and adds none of its own.
+//
+// Both alternatives were tried against the rendered page and both fail for the
+// same reason: Paged.js paginates by flowing content through a box far wider
+// than the sheet — 1918px against a 502px page — and clipping it. So
+// `column-span: all` spans that box rather than the page (a "spanning" title
+// measured 246px), and a nested `column-count` lays its columns out across the
+// full 1918px, putting the second column nine hundred pixels off the sheet.
+//
+// Only the columns on the chapter flow are managed per page by Paged.js. So
+// the index sets in those, the entry list adds no columns, and nothing spans.
+// The title and the note are one column wide, which is how a great many
+// printed indexes set them, and the entries run on continuously and fill the
+// page — which the alternatives did not.
 
 .index-list {
-    column-count: 2;
-    column-gap: $column-gap;
+    column-count: 1;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -1611,6 +1613,7 @@ h4 + .standfirst,
     break-after: avoid;
 }
 
-.index .standfirst {
-    column-span: all;
-}
+// Nothing in the index spans. `column-span: all` here resolved against the
+// wide box Paged.js flows through, so it did not make the note full width —
+// it just introduced a spanning region the engine could not fragment, and the
+// index stopped a third of the way down its opening page.
