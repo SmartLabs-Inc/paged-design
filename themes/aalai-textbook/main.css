@@ -6659,3 +6659,6 @@ h4 + .standfirst,
 
 .table-own-page {
   break-before: page; }
+
+.section-head-first {
+  break-before: auto; }

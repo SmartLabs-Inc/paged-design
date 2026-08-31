@@ -1808,3 +1808,15 @@ h4 + .standfirst,
 .table-own-page {
     break-before: page;
 }
+
+// The first section of a part does not take a page break. The opener has
+// already announced it, and breaking again left the opener page between a
+// quarter and nearly all white — measured across the eleven of them.
+//
+// `break-before: auto` rather than removing the rule, because the build marks
+// this one with an extra class and the cascade has to undo the page break the
+// base class sets. Paged.js reads the winning value and ignores `auto`, which
+// is exactly the behaviour wanted here.
+.section-head-first {
+    break-before: auto;
+}
