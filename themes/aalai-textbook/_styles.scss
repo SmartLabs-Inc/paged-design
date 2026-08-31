@@ -1662,3 +1662,23 @@ h4 + .standfirst,
 .index {
     column-count: auto;
 }
+
+// Index entries are look-up lines, not paragraphs. They set tight, and they
+// carry their locators on the same line. The leading rules further up target
+// `li`, which the entries no longer are — set as body paragraphs the index ran
+// with a paragraph's worth of air under every entry.
+.index-entry {
+    @include sans-small();
+    font-size: 9.66px;
+    line-height: $baseline-grid-unit * 0.78;
+    margin: 0 0 ($baseline-grid-unit * 0.22) 0;
+    text-align: left;
+    hyphens: none;
+    break-inside: avoid;
+}
+
+// The letter divider marks a new run of entries, so it gets air above it and
+// none below.
+.index-letter {
+    margin-top: ($baseline-grid-unit * 0.9);
+}

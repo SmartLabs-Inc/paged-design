@@ -6570,3 +6570,18 @@ h4 + .standfirst,
 
 .index {
   column-count: auto; }
+
+.index-entry {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5px;
+  line-height: 13.6px;
+  text-indent: 0;
+  font-size: 9.66px;
+  line-height: 13.26px;
+  margin: 0 0 3.74px 0;
+  text-align: left;
+  hyphens: none;
+  break-inside: avoid; }
+
+.index-letter {
+  margin-top: 15.3px; }
