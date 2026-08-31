@@ -1617,3 +1617,12 @@ h4 + .standfirst,
 // wide box Paged.js flows through, so it did not make the note full width —
 // it just introduced a spanning region the engine could not fragment, and the
 // index stopped a third of the way down its opening page.
+
+// The index title must not span. `.part-title` is in the theme's spanning list,
+// which is right for a part opener — that page has nothing else on it — and
+// wrong here: it puts an unfragmentable spanning region at the head of a
+// two-column flow that then has to run for twenty pages, and the index stopped
+// a third of the way down its first page.
+.index .part-title {
+    column-span: auto;
+}

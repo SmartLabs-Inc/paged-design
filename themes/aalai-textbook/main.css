@@ -6556,3 +6556,6 @@ h4 + .standfirst,
   min-width: 17px;
   text-align: center;
   break-after: avoid; }
+
+.index .part-title {
+  column-span: auto; }
