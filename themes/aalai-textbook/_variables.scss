@@ -147,4 +147,8 @@ $font-display-main: "Charis SIL", Georgia, "Times New Roman", serif;
 // design uses. Replace the files and this one line to set it in Aptos when
 // the licence is in hand.
 $font-display-secondary: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+// Both of them: the parent theme has a display and a text sans and sets each
+// to Aptos separately. Overriding only the display one left fifty-six rules —
+// most of the labels in the book — still asking for a face that is not here.
+$font-text-secondary: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 $font-display-hero: "Windorse", "Charis SIL", Georgia, serif;
