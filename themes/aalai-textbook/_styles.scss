@@ -325,8 +325,15 @@ h4 {
 
 // The number badge. Scoped inside the topic, so it reads 1 to 22 rather than
 // 1 to 333 — a number a reader can hold while scanning a spread.
-.entry > h5::before {
-    content: counter(entry);
+//
+// Drawn on a span the build writes, not on a `::before`. Two reasons, and the
+// first one is why the badge was printing as bare digits jammed against the
+// name — "11Topical Neuromodulator Peptides" — on all three hundred and
+// forty-one entries: the pseudo-element hangs off `.entry > h5`, and once the
+// heading is wrapped with its opening paragraph the h5 is no longer a child
+// of the entry, so the rule matches nothing. The second is that Paged.js
+// discards generated content on ordinary elements anyway.
+.entry-number {
     display: inline-block;
     min-width: 13px;
     padding: 1px 3px 2px 3px;

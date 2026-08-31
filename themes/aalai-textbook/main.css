@@ -5462,8 +5462,7 @@ h4 {
   border-bottom: 1pt solid #0D2035;
   margin-bottom: 4.25px; }
 
-.entry > h5::before {
-  content: counter(entry);
+.entry-number {
   display: inline-block;
   min-width: 13px;
   padding: 1px 3px 2px 3px;
