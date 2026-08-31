@@ -396,3 +396,35 @@ value on the rendered element before touching the CSS. Specificity arithmetic
 done against the source stylesheet can be exactly right and completely
 irrelevant.
 
+## A keep-together box empties the column before it
+
+`break-inside: avoid` on a wrapper is the only keep-with-next Paged.js
+implements, so it is the standard fix for a heading stranded at the foot of a
+column. It has a cost nobody mentions: a box that cannot fit the space left in
+a column does not break, it **moves whole**, and everything it was going to
+fill that column with goes with it.
+
+On one book a wrapper holding an entry name to a forty-line opening paragraph
+left the column before it four lines deep. Seventy-five pages had columns four
+or more lines out of step, and reading the CSS showed nothing wrong — the rule
+was doing exactly what it said.
+
+The fix is to apply the constraint by measurement rather than by rule. Measure
+each wrapper at the width it will be set at, and keep `break-inside: avoid`
+only where moving the box costs less than the hole it leaves — a sixth of the
+page is a reasonable cap for body text. Above that, drop it and rely on the
+two mechanisms that cost nothing:
+
+- **`break-after: avoid` on the heading.** Columns are native CSS multicol laid
+  out by the browser, so a *column* break obeys the ordinary break properties.
+  It is only Paged.js's own page fragmentation that ignores them.
+- **A pass that measures the paginated book** and pushes a heading left short
+  at the foot of a *page* — the one case `break-after` does not cover.
+
+Diagnosing this is a two-step measurement, and the first step alone will
+mislead you. Find the pages where one column ends well above the other, then
+for each, walk up from the element at the top of the second column looking for
+an ancestor whose computed `break-inside` is `avoid`. That names the box that
+moved. Where nothing on the chain refuses to break, the gap has another cause
+— an `orphans` value, a `column-span` element, or simply the end of a section —
+and tightening the wrappers will not touch it.

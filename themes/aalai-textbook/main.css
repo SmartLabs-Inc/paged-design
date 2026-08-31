@@ -5339,6 +5339,13 @@ blockquote {
   font-display: block; }
 
 @font-face {
+  font-family: "Source Sans 3";
+  src: url("../../fonts/SourceSans3-BoldIt.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: block; }
+
+@font-face {
   font-family: "Windorse";
   src: url("../../fonts/Windorse-Regular.ttf") format("truetype");
   font-weight: 400;

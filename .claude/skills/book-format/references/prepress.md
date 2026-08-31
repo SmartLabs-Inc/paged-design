@@ -85,6 +85,20 @@ Two other font-embedding failures worth checking at the same time:
   display face is simply absent from the PDF with no error anywhere. Confirm
   each declared face actually appears in the rendered file.
 
+### A weight the family does not have is also a Type 3 font
+
+Where a `font-weight`/`font-style` pair has no drawn face, the browser
+synthesises one — a faux bold by smearing, a faux italic by slanting — and a
+synthesised face is emitted into the PDF the same way a CFF one is: as a
+**Type 3** font. One missing bold italic put a Type 3 face into a book where
+every other face embedded correctly.
+
+So declare every combination the design uses, not only the ones it uses often.
+The check is the same subtype scan; when it finds a Type 3, the name in the
+descriptor says which family, and the missing combination is usually obvious
+from there.
+
+
 
 **The fix** is the one the skill's rules already state: save the font files
 into the project and `@font-face` them locally. Never link a web font in
