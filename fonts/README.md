@@ -7,7 +7,8 @@ entirely in Liberation Serif without anything reporting it.
 
 | File | Role | Licence |
 | --- | --- | --- |
-| `Windorse-Regular.woff` | Display only — book title, part titles, index title | **Commercial, licensed to the client. Not redistributable — gitignored.** |
+| `Windorse-Regular.woff` | The licensed file as supplied | **Commercial, licensed to the client. Not redistributable — gitignored.** |
+| `Windorse-Regular.ttf` | Display only — book title, part titles, index title. Built from the WOFF; see below | **Same licence. Not redistributable — gitignored.** |
 | `CharisSIL-*.ttf` | Text face — running prose, headings, tables | SIL Open Font Licence 1.1 |
 
 ## Why the split
@@ -41,3 +42,23 @@ book's own characters before committing to it:
 
     node .claude/skills/book-format/scripts/font-check.js fonts/Your-Font.otf \
       --content content/<book>
+
+## Why the display face is converted to TrueType
+
+The licence supplies Windorse as a WOFF wrapping CFF (PostScript) outlines.
+Chromium will not embed a CFF web font in the PDF it prints: it emits the
+glyphs as a **Type 3** font — drawing procedures rather than a font program —
+which is not a real embedded face, prints unpredictably, and is refused by
+some RIPs. The first proof that used Windorse went out that way and read as
+embedded to a byte scan.
+
+The fix is a format conversion, not an edit to the licensed file: the same
+outlines converted from cubic to quadratic curves embed as an ordinary
+TrueType subset. Rebuild it with:
+
+```bash
+python3 .claude/skills/book-format/scripts/otf-to-ttf.py fonts/Windorse-Regular.woff
+```
+
+Check the result in any PDF the book produces: the font must appear with
+`/Subtype /TrueType` or `/CIDFontType2`, never `/Subtype /Type3`.
