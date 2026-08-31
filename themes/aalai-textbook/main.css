@@ -5366,7 +5366,7 @@ blockquote {
   line-height: 34px;
   margin: 0 0 8.5px 0;
   padding-bottom: 8.5px;
-  border-bottom: 3pt solid #B79A5B; }
+  border-bottom: 3pt solid #0D2035; }
 
 .section-head {
   break-before: page;
@@ -5410,21 +5410,22 @@ h4 {
   margin: 18.7px 0; }
 
 .entry > * {
-  border-left: 2.5pt solid #137C7A;
-  padding-left: 8.5px;
   margin-top: 0;
   margin-bottom: 0; }
 
-.entry > h5 {
+.entry > h5,
+.entry-lead > h5 {
   break-after: avoid;
   font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 11px;
+  font-size: 12.5px;
   font-style: normal;
   font-weight: 700;
   color: #0D2035;
   line-height: 17px;
   padding-top: 5.66667px;
-  padding-bottom: 4.25px; }
+  padding-bottom: 3.4px;
+  border-bottom: 1pt solid #0D2035;
+  margin-bottom: 4.25px; }
 
 .entry > h5::before {
   content: counter(entry);
@@ -5496,6 +5497,8 @@ a.cite {
   margin-left: 8.5px; }
 
 .table-figure {
+  column-span: all;
+  break-inside: avoid;
   margin: 20.4px 0; }
 
 .table-figure caption.table-caption {
@@ -6519,13 +6522,7 @@ h4 + .standfirst,
 .entry-lead {
   break-inside: avoid; }
 
-.entry > .entry-lead {
-  border-left: none;
-  padding-left: 0; }
-
 .entry > .entry-lead > * {
-  border-left: 2.5pt solid #137C7A;
-  padding-left: 8.5px;
   margin-top: 0;
   margin-bottom: 0; }
 
@@ -6600,7 +6597,7 @@ h4 + .standfirst,
   line-height: 28.9px;
   margin: 0 0 8.5px 0;
   padding-bottom: 5.66667px;
-  border-bottom: 2pt solid #B79A5B;
+  border-bottom: 2pt solid #0D2035;
   column-span: auto; }
 
 .index {
@@ -6626,3 +6623,36 @@ h4 + .standfirst,
 .part-name,
 .index-title {
   font-family: "Windorse", "Charis SIL", Georgia, serif; }
+
+.keep-lead {
+  column-span: all; }
+
+.references,
+.apparatus-head {
+  column-span: all; }
+
+.chapter > div > div,
+.frontmatter > div > div {
+  column-fill: balance; }
+
+.toc-entry-sub {
+  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5px;
+  line-height: 13.6px;
+  text-indent: 0;
+  font-size: 9.66px;
+  padding-left: 17px;
+  color: #66717C; }
+
+.toc-entry-sub > a {
+  color: inherit;
+  text-decoration: none; }
+
+.table-figure td:first-child,
+.table-figure th:first-child {
+  white-space: nowrap;
+  hyphens: none; }
+
+.table-figure th,
+.table-figure caption {
+  hyphens: none; }
