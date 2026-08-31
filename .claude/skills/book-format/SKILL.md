@@ -245,5 +245,8 @@ Read these when the task reaches them; they are not needed up front.
   how to change the template without breaking a document you already sent.
 - `references/troubleshooting.md` — Paged.js limitations and fixes for
   overflow, widows, orphans, bad breaks, and missing running heads.
+- `references/prepress.md` — what has to be true before a printer sees the
+  PDF: embedded fonts, trim and bleed, and why the font check has to come
+  first. Read before calling any book finished.
 - `references/indesign.md` — the InDesign handoff: why `.indd` cannot be
   written here, IDML against ICML, what survives the move and what does not.
