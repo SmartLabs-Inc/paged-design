@@ -48,23 +48,47 @@ visitor's browser. Nothing is transmitted or stored.
 | 09 | Growth story & market position | 1.0 |
 | 10 | Structure, tax & net-proceeds readiness | 0.6 |
 
+## The logo
+
+The pages carry the **official LEGACY wordmark** — the supplied `legacy white.png` and
+`legacy black.png`, 600 × 103. Not a redraw.
+
+Both are embedded as base64 PNG inside two `<symbol>` elements immediately after
+`<body>`, so the files stay 100% self-contained with no external image requests:
+
+| Symbol | Artwork | Used for |
+|---|---|---|
+| `#lg-mark` | white wordmark | the dark page ground (screen) |
+| `#lg-mark-dark` | black wordmark | printing onto white |
+
+Every placement — nav, hero, footer, and the audit's header — is a pair of `<use>`
+references to those two symbols, so the artwork is stored once per file however many
+times it appears. `.logo .lg--dark` is `display:none` on screen and the print block
+inverts the pair, which is what replaced the old `.logo{color:#000}` print rule: the
+mark is now a raster, so it cannot be recoloured by `currentColor`.
+
+Two notes on how the bytes are stored:
+
+- **Re-encoded to grayscale + alpha.** Every pixel in both source files is neutral
+  (measured: R = G = B for all 61,800 pixels of each), so dropping the two redundant
+  colour channels is bit-exact for this artwork. It takes each file from ~37 KB to
+  ~20 KB, which matters when it is inlined as base64 in two documents.
+- **The hero never upscales it.** The placeholder was a vector and stretched to 760 px.
+  The real mark is 600 px wide, so `.logo--hero` is capped at `min(100%, 600px)`.
+  If a larger or vector master ever turns up, raising that cap is the only change needed.
+
+The unmodified source files are committed alongside the pages at `brand/legacy-white.png`
+and `brand/legacy-black.png` — the pages do not load them, they are there so the masters
+live with the work.
+
+To replace the mark later, swap the two `href` data URIs in the symbols — one edit per
+file, every placement follows.
+
 ## Before it goes live — swap these
 
 Every one is marked with a `REPLACE:` comment in the source.
 
-1. **Logo — ONE line.** The wordmark in place is a **placeholder vector
-   reconstruction**, not the official artwork. It is defined exactly once per file, in a
-   `<symbol id="lg-mark">` at the top of `<body>`; every placement is a `<use>` reference.
-   Two ways to swap it, both single edits:
-
-   - **A raster or SVG file** — set `LOGO_SRC` at the top of the `<script>` block to a
-     data URI: `var LOGO_SRC = "data:image/png;base64,iVBORw0KG…";`
-     Every logo slot on the page then renders that image instead. The CSS already sizes
-     an `<img>` identically to the `<svg>`, hero included.
-   - **Official SVG paths** — replace the elements inside `<symbol id="lg-mark">` with the
-     paths from the real file and set the symbol's `viewBox` to match.
-
-   Do it in both `index.html` and `problem-audit.html`.
+1. ~~**Logo**~~ — **done.** The official artwork is in place; see *The logo* below.
 2. **Email address.** `buildMail()` → `var to = "hello@legacy.ltd";`
 3. **Booking link.** `<a … id="cta-book">` and the nav `Book a Review` button both point
    at `#book`. Repoint them at the real scheduler.
@@ -187,8 +211,7 @@ contradiction resolutions, and the ledger with every intermediate figure.
 
 ## Before it goes live — swap these
 
-1. **Logo** — same placeholder, same one-line swap: set `LOGO_SRC` at the top of the
-   `<script>` block, or replace the paths inside `<symbol id="lg-mark">`.
+1. ~~**Logo**~~ — **done.** Same official artwork as the simulator.
 2. **Email** — `buildExports()` → `var to = "hello@legacy.ltd";`
 3. **Cost bands** — `COST_$` and the revenue scaling in `sizeFactor()`.
 3b. **Unit economics** — `UNITS` (what each kind of loss is worth) and `FREQ` (how many
