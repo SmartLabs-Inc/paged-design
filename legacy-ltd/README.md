@@ -70,7 +70,7 @@ immediately after `<body>`:
 | `#lg-mark` | white wordmark | offline fallback for the hosted `<img>` |
 | `#lg-mark-dark` | black wordmark | printing onto white |
 
-Every placement — nav, hero, footer, and the audit's header — carries the same pair: an
+Every placement — nav, footer, and the audit's header — carries the same pair: an
 `<img class="lg lg--light">` at the hosted URL, and an `<svg class="lg lg--dark">`
 referencing `#lg-mark-dark`. The black variant is stored once per file however many times
 it appears, and the hosted white one is fetched once and cached across all placements.
@@ -79,7 +79,7 @@ replaced the old `.logo{color:#000}` print rule: the mark is a raster, so it can
 recoloured by `currentColor`.
 
 To change the logo, replace the file at that URL — no edit here. To repoint the pages at
-a different URL, change the `src` on the `.lg--light` images (three in the simulator, one
+a different URL, change the `src` on the `.lg--light` images (two in the simulator, one
 in the audit); to refresh the fallback and the print variant, swap the two `href` data
 URIs in the symbols.
 
@@ -89,11 +89,10 @@ Two notes on how the bytes are stored:
   (measured: R = G = B for all 61,800 pixels of each), so dropping the two redundant
   colour channels is bit-exact for this artwork. It takes each file from ~37 KB to
   ~20 KB, which matters when it is inlined as base64 in two documents.
-- **The hero never upscales it.** The placeholder was a vector and stretched to 760 px.
-  The supplied artwork is 600 px wide, so `.logo--hero` is capped at `min(100%, 600px)`.
-  That cap is safe either way: it stops a 600 px file being blown up, and a larger hosted
-  file simply renders downscaled and sharper. If you confirm the hosted file is wider,
-  raising the cap is the only change needed.
+- **The hero carries no wordmark.** An earlier draft opened the hero with a full-width
+  LEGACY lockup, which collided with the mark already in the sticky header. Both it and
+  its `Exit Architecture & Enterprise Value` sub-line are gone, so the hero now opens on
+  the eyebrow and headline and the wordmark appears once per screen, in the nav.
 
 The unmodified source files are committed alongside the pages at `brand/legacy-white.png`
 and `brand/legacy-black.png` — the pages do not load them, they are there so the masters

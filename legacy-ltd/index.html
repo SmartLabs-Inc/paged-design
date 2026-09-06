@@ -84,8 +84,6 @@ section{padding:clamp(64px,8vw,116px) 0;position:relative}
 .logo svg,.logo img{display:block;height:var(--h,22px);width:auto;max-width:100%}
 .logo .lg--dark{display:none}   /* the black wordmark is print-only */
 .logo--nav{--h:22px}
-.logo--hero{color:var(--bone)}
-.logo--hero svg,.logo--hero img{height:auto;width:min(100%,600px)}  /* 600px = the supplied artwork's width; a larger hosted file just renders downscaled */
 .logo--foot{--h:26px;color:var(--bone-dim)}
 
 /* ---------- Nav --------------------------------------------------------- */
@@ -129,11 +127,6 @@ section{padding:clamp(64px,8vw,116px) 0;position:relative}
     radial-gradient(900px 460px at 78% -8%, rgba(95,214,206,.13), transparent 62%),
     radial-gradient(700px 420px at 8% 8%, rgba(255,255,255,.045), transparent 60%);
   overflow:hidden;
-}
-.hero__logo{margin-bottom:clamp(28px,4vw,44px)}
-.hero__tag{
-  font-family:var(--display);font-size:11px;letter-spacing:.34em;text-transform:uppercase;
-  color:var(--muted);margin-top:16px;line-height:1.5;
 }
 .hero h1{max-width:17ch;margin-bottom:24px}
 .hero h1 em{font-style:normal;color:var(--aqua-2)}
@@ -513,10 +506,6 @@ function lgFallback(img){
 <main id="top">
 <section class="hero">
   <div class="wrap">
-    <div class="logo logo--hero hero__logo" aria-label="Legacy">
-      <img class="lg lg--light" src="https://legacy.ltd/wp-content/uploads/2025/01/legacy-white.png" alt="LEGACY" onerror="lgFallback(this)"><svg class="lg lg--dark" viewBox="0 0 600 103" aria-hidden="true" focusable="false"><use href="#lg-mark-dark"/></svg>
-      <div class="hero__tag">Exit Architecture &amp; Enterprise Value</div>
-    </div>
 
     <p class="eyebrow">The Exit Value Simulator</p>
     <h1>Most owners build a job. <em>You're building an asset.</em></h1>
