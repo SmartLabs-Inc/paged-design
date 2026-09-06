@@ -2,7 +2,8 @@
 
 A single, fully self-contained HTML page: `index.html`.
 
-No build step, no dependencies, no external requests of any kind — CSS, JavaScript and
+No build step and no dependencies. CSS, JavaScript and the fallback artwork are all
+embedded; the single external request is the hosted wordmark. Otherwise
 the logo are all inline. Drop it on any host, open it from a USB stick, or email it as an
 attachment and it works identically. Verified in headless Chromium: zero console errors,
 zero network requests, zero horizontal overflow at 390 / 768 / 1440px.
@@ -50,22 +51,37 @@ visitor's browser. Nothing is transmitted or stored.
 
 ## The logo
 
-The pages carry the **official LEGACY wordmark** — the supplied `legacy white.png` and
-`legacy black.png`, 600 × 103. Not a redraw.
+On screen the wordmark is a real `<img>` pointing at the hosted file:
 
-Both are embedded as base64 PNG inside two `<symbol>` elements immediately after
-`<body>`, so the files stay 100% self-contained with no external image requests:
+```
+https://legacy.ltd/wp-content/uploads/2025/01/legacy-white.png
+```
+
+so the pages always show whatever is live at that URL — update the logo there and these
+pages follow, with no edit here. If it cannot load (offline, opened from a USB stick,
+emailed as a single file), `lgFallback()` swaps in an identical embedded copy, so the
+mark is never missing and never a redraw.
+
+Both variants are also embedded as base64 PNG inside two `<symbol>` elements
+immediately after `<body>`:
 
 | Symbol | Artwork | Used for |
 |---|---|---|
-| `#lg-mark` | white wordmark | the dark page ground (screen) |
+| `#lg-mark` | white wordmark | offline fallback for the hosted `<img>` |
 | `#lg-mark-dark` | black wordmark | printing onto white |
 
-Every placement — nav, hero, footer, and the audit's header — is a pair of `<use>`
-references to those two symbols, so the artwork is stored once per file however many
-times it appears. `.logo .lg--dark` is `display:none` on screen and the print block
-inverts the pair, which is what replaced the old `.logo{color:#000}` print rule: the
-mark is now a raster, so it cannot be recoloured by `currentColor`.
+Every placement — nav, hero, footer, and the audit's header — carries the same pair: an
+`<img class="lg lg--light">` at the hosted URL, and an `<svg class="lg lg--dark">`
+referencing `#lg-mark-dark`. The black variant is stored once per file however many times
+it appears, and the hosted white one is fetched once and cached across all placements.
+`.logo .lg--dark` is `display:none` on screen and the print block inverts the pair, which
+replaced the old `.logo{color:#000}` print rule: the mark is a raster, so it cannot be
+recoloured by `currentColor`.
+
+To change the logo, replace the file at that URL — no edit here. To repoint the pages at
+a different URL, change the `src` on the `.lg--light` images (three in the simulator, one
+in the audit); to refresh the fallback and the print variant, swap the two `href` data
+URIs in the symbols.
 
 Two notes on how the bytes are stored:
 
@@ -74,15 +90,15 @@ Two notes on how the bytes are stored:
   colour channels is bit-exact for this artwork. It takes each file from ~37 KB to
   ~20 KB, which matters when it is inlined as base64 in two documents.
 - **The hero never upscales it.** The placeholder was a vector and stretched to 760 px.
-  The real mark is 600 px wide, so `.logo--hero` is capped at `min(100%, 600px)`.
-  If a larger or vector master ever turns up, raising that cap is the only change needed.
+  The supplied artwork is 600 px wide, so `.logo--hero` is capped at `min(100%, 600px)`.
+  That cap is safe either way: it stops a 600 px file being blown up, and a larger hosted
+  file simply renders downscaled and sharper. If you confirm the hosted file is wider,
+  raising the cap is the only change needed.
 
 The unmodified source files are committed alongside the pages at `brand/legacy-white.png`
 and `brand/legacy-black.png` — the pages do not load them, they are there so the masters
 live with the work.
 
-To replace the mark later, swap the two `href` data URIs in the symbols — one edit per
-file, every placement follows.
 
 ## Before it goes live — swap these
 
