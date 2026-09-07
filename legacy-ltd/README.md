@@ -1,12 +1,12 @@
 # Legacy.Ltd — Exit Value Simulator
 
-A single, fully self-contained HTML page: `index.html`.
+A single HTML page: `index.html`.
 
 No build step and no dependencies. CSS, JavaScript and the fallback artwork are all
-embedded; the single external request is the hosted wordmark. Otherwise
-the logo are all inline. Drop it on any host, open it from a USB stick, or email it as an
-attachment and it works identically. Verified in headless Chromium: zero console errors,
-zero network requests, zero horizontal overflow at 390 / 768 / 1440px.
+embedded; the only external request is the hosted wordmark, and if that cannot load an
+identical embedded copy takes its place. Drop it on any host, open it from a USB stick,
+or email it as an attachment and it works. Verified in headless Chromium: zero console
+errors, no horizontal overflow at 390 / 768 / 1440px.
 
 ## What the page does
 
@@ -98,6 +98,85 @@ The unmodified source files are committed alongside the pages at `brand/legacy-w
 and `brand/legacy-black.png` — the pages do not load them, they are there so the masters
 live with the work.
 
+
+## Deploying — the two pages are independent
+
+There are two pages, and **neither needs the other in order to run**:
+
+| File | Runs on its own? | Needs anything alongside it? |
+|---|---|---|
+| `index.html` | yes | no |
+| `problem-audit.html` | yes | no |
+| `problems-126.csv` | n/a | **not loaded by either page** — it is reference data for you |
+
+Each page is a complete application in one file. There is no shared library, no data
+fetch, no build output. You can publish one, the other, or both.
+
+The only thing connecting them is a single hyperlink each way — the simulator's footer
+links to `problem-audit.html`, and the audit's header links back to `index.html`. Those
+links assume the two files sit **in the same folder**. If you publish only one page,
+that one link will 404; delete it, or point it at wherever the other page lives. Nothing
+else breaks, and no functionality is lost.
+
+## Embedding in WordPress
+
+**Do not paste these files into a Custom HTML block.** They are complete HTML documents,
+and WordPress will strip the `<!DOCTYPE>`, `<html>`, `<head>` and `<body>` wrappers and
+leave the `<style>` block applying to the *whole* WordPress page. The page's own resets
+and its `body`, `:root`, `h1`, `a` and `.wrap` rules then fight the theme's, in both
+directions, and the sticky header collides with the theme's. That is what "does not embed
+well" looks like, and no amount of tidying the markup fixes it — the CSS has to be
+isolated.
+
+Use an `<iframe>`. It gives complete CSS and JavaScript isolation, so the page renders
+exactly as designed and cannot disturb the theme.
+
+**1 — Upload the files.** Put `index.html` (and `problem-audit.html`, if you want both)
+somewhere the site can serve them, keeping them in the same folder so the cross-links
+work — for example via SFTP into `/wp-content/uploads/legacy/`. WordPress's Media
+Library blocks `.html` uploads by default, so use SFTP, your host's file manager, or a
+plugin that permits HTML. Confirm the file loads directly in a browser first:
+`https://legacy.ltd/wp-content/uploads/legacy/index.html`
+
+**2 — Add this to the WordPress page** in a Custom HTML block:
+
+```html
+<iframe id="legacy-simulator"
+        src="https://legacy.ltd/wp-content/uploads/legacy/index.html"
+        title="Exit Value Simulator"
+        style="width:100%;border:0;display:block;height:1200px"
+        scrolling="no" loading="lazy"></iframe>
+<script>
+(function(){
+  var f = document.getElementById('legacy-simulator');
+  window.addEventListener('message', function(e){
+    if (e.origin !== window.location.origin) return;      /* same-site only */
+    var h = e.data && e.data.legacyEmbedHeight;
+    if (h) f.style.height = h + 'px';
+  });
+})();
+</script>
+```
+
+The `height:1200px` is only what shows before the script runs; it is replaced within a
+frame of load.
+
+**Why this works.** Each page carries an *embed bridge* — a short script that runs only
+when the page is inside an iframe. It posts the document's height to the parent, and the
+snippet above resizes the frame to match. The result is a frame exactly as tall as its
+content: the WordPress page does the scrolling, there is no scrollbar-inside-a-scrollbar,
+and no height to guess or maintain. It re-posts whenever the content height changes —
+advancing an audit stage, resizing the window — so the frame keeps tracking.
+
+Because an auto-sized frame never scrolls itself, `position:sticky` could never engage
+inside it, so the bridge also marks the document `is-embedded` and the sticky header and
+results rail become static. Standalone, none of this runs and the sticky behaviour is
+unchanged.
+
+**If the script is stripped.** Some WordPress configurations remove `<script>` from post
+content for non-administrator authors. If the frame stays at 1200px, that is what
+happened: put the snippet in the theme (or a small plugin) instead, or set a fixed height
+tall enough for the content and drop `scrolling="no"`.
 
 ## Before it goes live — swap these
 
