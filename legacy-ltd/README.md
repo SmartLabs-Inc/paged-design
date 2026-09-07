@@ -3,10 +3,11 @@
 A single HTML page: `index.html`.
 
 No build step and no dependencies. CSS, JavaScript and the fallback artwork are all
-embedded; the only external request is the hosted wordmark, and if that cannot load an
-identical embedded copy takes its place. Drop it on any host, open it from a USB stick,
-or email it as an attachment and it works. Verified in headless Chromium: zero console
-errors, no horizontal overflow at 390 / 768 / 1440px.
+embedded. Two external requests remain — the hosted wordmark and the Alatsi webfont — and
+both degrade cleanly: an identical embedded copy replaces the wordmark, and the display
+stack falls through to Futura PT → Futura → Century Gothic → Avenir → system. Drop it on
+any host, open it from a USB stick, or email it as an attachment and it works. Verified in
+headless Chromium: zero console errors, no horizontal overflow at 390 / 768 / 1440px.
 
 ## What the page does
 
@@ -99,6 +100,30 @@ and `brand/legacy-black.png` — the pages do not load them, they are there so t
 live with the work.
 
 
+
+## Typography
+
+Headings, the wordmark-adjacent eyebrows, buttons and all figures use **Alatsi**, loaded
+from Google Fonts:
+
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alatsi&display=swap">
+```
+
+Alatsi ships **one weight, 400**. The pages set `font-weight:700` on headings anyway, so
+the browser synthesises the bold. That is deliberate: at 400 the hero headline is too
+light to hold the dark ground, and the synthesised weight reads as intended at every size
+the pages use. If a real bold is ever wanted, it needs a different family — there is no
+700 file to load.
+
+`display:swap` means text paints immediately in the fallback and reflows when Alatsi
+arrives, so a slow or blocked font request never leaves the page blank. The fallback chain
+(`--display`) is geometric-sans throughout, so the layout does not jump.
+
+Body copy is unchanged and uses the system stack.
+
 ## Deploying — the two pages are independent
 
 There are two pages, and **neither needs the other in order to run**:
@@ -118,65 +143,96 @@ links assume the two files sit **in the same folder**. If you publish only one p
 that one link will 404; delete it, or point it at wherever the other page lives. Nothing
 else breaks, and no functionality is lost.
 
-## Embedding in WordPress
+## Embedding the pages
 
-**Do not paste these files into a Custom HTML block.** They are complete HTML documents,
-and WordPress will strip the `<!DOCTYPE>`, `<html>`, `<head>` and `<body>` wrappers and
-leave the `<style>` block applying to the *whole* WordPress page. The page's own resets
-and its `body`, `:root`, `h1`, `a` and `.wrap` rules then fight the theme's, in both
-directions, and the sticky header collides with the theme's. That is what "does not embed
-well" looks like, and no amount of tidying the markup fixes it — the CSS has to be
-isolated.
+**Do not paste these files into a Custom HTML / Custom Code block.** They are complete
+HTML documents, and every page builder — WordPress, GoHighLevel, Squarespace — strips the
+`<!DOCTYPE>`, `<html>`, `<head>` and `<body>` wrappers and leaves the `<style>` block
+applying to the *whole* host page. The page's own resets and its `body`, `:root`, `h1`,
+`a` and `.wrap` rules then fight the builder's, in both directions: the dark background
+never reaches the builder's own section wrappers, so their white shows through and over
+the top of the content, and the sticky header collides with the builder's header. That is
+what "does not embed well" and "the button is under a white bar" both look like, and no
+amount of tidying the markup fixes it — the CSS has to be isolated.
 
 Use an `<iframe>`. It gives complete CSS and JavaScript isolation, so the page renders
-exactly as designed and cannot disturb the theme.
+exactly as designed and cannot disturb the host page — or be disturbed by it.
 
-**1 — Upload the files.** Put `index.html` (and `problem-audit.html`, if you want both)
-somewhere the site can serve them, keeping them in the same folder so the cross-links
-work — for example via SFTP into `/wp-content/uploads/legacy/`. WordPress's Media
-Library blocks `.html` uploads by default, so use SFTP, your host's file manager, or a
-plugin that permits HTML. Confirm the file loads directly in a browser first:
-`https://legacy.ltd/wp-content/uploads/legacy/index.html`
+**1 — Upload the files** somewhere the site can serve them, keeping them in the same
+folder so the cross-links work. Confirm the file loads directly in a browser, on its own,
+before embedding it:
 
-**2 — Add this to the WordPress page** in a Custom HTML block:
+- **WordPress** — SFTP into `/wp-content/uploads/legacy/`. The Media Library blocks
+  `.html` uploads by default, so use SFTP, your host's file manager, or a plugin that
+  permits HTML. → `https://legacy.ltd/wp-content/uploads/legacy/index.html`
+- **GoHighLevel** — GHL will not host a raw `.html` file. Upload the two files anywhere
+  that serves them over HTTPS (the WordPress site above, an S3 bucket, Netlify Drop,
+  GitHub Pages) and point the iframe at that URL. Cross-origin is fine; the bridge below
+  is written for it.
+
+**2 — Add this to the host page** in a Custom HTML / Custom Code block. In GHL that is
+Add Element → Custom JS/HTML, dropped into a full-width section (Row width: Full, section
+padding 0) so the page is not squeezed into a narrow column.
 
 ```html
 <iframe id="legacy-simulator"
-        src="https://legacy.ltd/wp-content/uploads/legacy/index.html"
+        src="https://YOUR-HOST/legacy/index.html"
         title="Exit Value Simulator"
         style="width:100%;border:0;display:block;height:1200px"
         scrolling="no" loading="lazy"></iframe>
 <script>
 (function(){
+  /* Set this to the height of your site's fixed/sticky header, in pixels.
+     0 if the header scrolls away with the page. */
+  var HEADER_OFFSET = 0;
+
+  /* Must match the iframe src origin exactly, scheme included. */
+  var FRAME_ORIGIN = 'https://YOUR-HOST';
+
   var f = document.getElementById('legacy-simulator');
   window.addEventListener('message', function(e){
-    if (e.origin !== window.location.origin) return;      /* same-site only */
-    var h = e.data && e.data.legacyEmbedHeight;
-    if (h) f.style.height = h + 'px';
+    if (e.origin !== FRAME_ORIGIN) return;
+    var d = e.data || {};
+    if (d.legacyEmbedHeight) f.style.height = d.legacyEmbedHeight + 'px';
+    if (typeof d.legacyEmbedScrollTo === 'number'){
+      var top = f.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({top: top + d.legacyEmbedScrollTo - HEADER_OFFSET,
+                       behavior: 'smooth'});
+    }
   });
 })();
 </script>
 ```
 
-The `height:1200px` is only what shows before the script runs; it is replaced within a
-frame of load.
+Two values to set: `FRAME_ORIGIN` (scheme + host of the iframe `src`, no path, no
+trailing slash) and `HEADER_OFFSET`. The `height:1200px` is only what shows before the
+script runs; it is replaced within a frame of load.
 
 **Why this works.** Each page carries an *embed bridge* — a short script that runs only
 when the page is inside an iframe. It posts the document's height to the parent, and the
 snippet above resizes the frame to match. The result is a frame exactly as tall as its
-content: the WordPress page does the scrolling, there is no scrollbar-inside-a-scrollbar,
-and no height to guess or maintain. It re-posts whenever the content height changes —
+content: the host page does the scrolling, there is no scrollbar-inside-a-scrollbar, and
+no height to guess or maintain. It re-posts whenever the content height changes —
 advancing an audit stage, resizing the window — so the frame keeps tracking.
 
-Because an auto-sized frame never scrolls itself, `position:sticky` could never engage
-inside it, so the bridge also marks the document `is-embedded` and the sticky header and
-results rail become static. Standalone, none of this runs and the sticky behaviour is
-unchanged.
+Because an auto-sized frame never scrolls itself, two things follow. `position:sticky`
+could never engage inside it, so the bridge marks the document `is-embedded` and the
+sticky header and results rail become static. And the in-page links — *Run My Numbers*,
+*See the 10 Drivers*, the nav — would have nothing to scroll, so the bridge intercepts
+them, measures the target inside the frame, and posts its position; the snippet above
+scrolls the host page there instead. `HEADER_OFFSET` is what stops the target landing
+underneath a fixed site header. Standalone, none of this runs and both behave normally.
+
+**If the button is under a white bar.** That is the raw-paste failure above, or a fixed
+site header sitting over the top of the frame. The iframe fixes the first; `HEADER_OFFSET`
+fixes the second. If the header still covers the top of the embed on first load, give the
+section holding the iframe top padding equal to the header height.
 
 **If the script is stripped.** Some WordPress configurations remove `<script>` from post
 content for non-administrator authors. If the frame stays at 1200px, that is what
 happened: put the snippet in the theme (or a small plugin) instead, or set a fixed height
-tall enough for the content and drop `scrolling="no"`.
+tall enough for the content and drop `scrolling="no"`. GHL's Custom JS/HTML element does
+not strip scripts.
 
 ## Before it goes live — swap these
 

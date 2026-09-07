@@ -6,6 +6,9 @@
 <title>Legacy.Ltd — The Honest Audit</title>
 <meta name="description" content="An eight-stage diagnostic that resolves 126 evergreen business problems into a ranked ledger: what's cheap, what's fast, what's worth funding, and the exact dollar and multiple impact of fixing each one.">
 <meta name="theme-color" content="#0A0A0B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alatsi&display=swap">
 <style>
 /* ==========================================================================
    Legacy.Ltd — The Honest Audit
@@ -30,7 +33,7 @@
      Slot 3 aqua = fixes that do both                                        */
   --s-mult:#3987e5; --s-earn:#d95926; --s-both:#199e70;
 
-  --display:"Futura PT","Futura","Century Gothic","Avenir Next","Avenir","Trebuchet MS","Segoe UI",system-ui,sans-serif;
+  --display:"Alatsi","Futura PT","Futura","Century Gothic","Avenir Next","Avenir","Trebuchet MS","Segoe UI",system-ui,sans-serif;
   --body:"Inter","Helvetica Neue","Helvetica",Arial,system-ui,sans-serif;
   --maxw:1120px; --r:14px;
 }
@@ -334,10 +337,11 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
    auto-sized frame never scrolls itself, so sticky could never engage — and
    posts the document height to the parent, which sizes the frame to match.
    The host page then does the scrolling: no inner scrollbar, no guessed
-   height. Standalone, none of this runs.
+   height. For the same reason it hands in-page link targets to the parent
+   too, which scrolls the host page to them (minus the host's own fixed
+   header, if it has one). Standalone, none of this runs.
 
-   The matching WordPress snippet is in README.md, under "Embedding in
-   WordPress".
+   The matching host snippet is in README.md, under "Embedding the pages".
    ------------------------------------------------------------------------ */
 (function(){
   if (window.parent === window) return;          /* not framed */
@@ -353,6 +357,21 @@ td .sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:2px}
   window.addEventListener("resize", post);
   if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
   setTimeout(post, 400); setTimeout(post, 1500);   /* fonts, late layout */
+
+  /* In-page links. The frame is exactly as tall as its content, so it has
+     nothing to scroll and href="#simulator" would do nothing at all. Measure
+     the target inside the frame and let the host page do the scrolling. */
+  document.addEventListener("click", function(e){
+    var a = e.target && e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute("href").slice(1);
+    var el = id && document.getElementById(id);
+    if (!el) return;
+    e.preventDefault();
+    var y = 0, n = el;
+    while (n){ y += n.offsetTop; n = n.offsetParent; }
+    window.parent.postMessage({legacyEmbedScrollTo: y}, "*");
+  });
 })();
 </script>
 <script>
