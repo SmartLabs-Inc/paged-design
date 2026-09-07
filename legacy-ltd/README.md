@@ -124,13 +124,14 @@ arrives, so a slow or blocked font request never leaves the page blank. The fall
 
 Body copy is unchanged and uses the system stack.
 
-## Deploying — the two pages are independent
+## Deploying — the pages are independent
 
-There are two pages, and **neither needs the other in order to run**:
+There are three pages, and **none of them needs the others in order to run**:
 
 | File | Runs on its own? | Needs anything alongside it? |
 |---|---|---|
 | `index.html` | yes | no |
+| `calculator.html` | yes | no |
 | `problem-audit.html` | yes | no |
 | `problems-126.csv` | n/a | **not loaded by either page** — it is reference data for you |
 
@@ -139,7 +140,8 @@ fetch, no build output. You can publish one, the other, or both.
 
 The only thing connecting them is a single hyperlink each way — the simulator's footer
 links to `problem-audit.html`, and the audit's header links back to `index.html`. Those
-links assume the two files sit **in the same folder**. If you publish only one page,
+links assume the two files sit **in the same folder**. `calculator.html` links to neither
+and is linked from neither. If you publish only one page,
 that one link will 404; delete it, or point it at wherever the other page lives. Nothing
 else breaks, and no functionality is lost.
 
@@ -233,6 +235,92 @@ content for non-administrator authors. If the frame stays at 1200px, that is wha
 happened: put the snippet in the theme (or a small plugin) instead, or set a fixed height
 tall enough for the content and drop `scrolling="no"`. GHL's Custom JS/HTML element does
 not strip scripts.
+
+## The calculator on its own — `calculator.html`
+
+`index.html` is the whole landing page. `calculator.html` is **only the calculator**, for
+the case where the static copy around it is built somewhere else — a GoHighLevel page,
+say — and all that needs embedding is the working part.
+
+What is in it: the three input cards (business, exit horizon, ten drivers), the full
+model, and the results rail. What is gone: nav, hero, the three-levers band, the horizon
+playbooks, the driver reference, the keep-more and process sections, the FAQ, the CTA and
+the footer. Same engine, same numbers, same dark treatment — it is the identical simulator
+code, sliced out rather than rewritten, so the two pages cannot drift apart.
+
+It embeds exactly like the others (see **Embedding the pages**) — same auto-height bridge,
+same host snippet. There are no in-page anchors on it, so `HEADER_OFFSET` only affects
+where the frame itself lands.
+
+### The two buttons
+
+**Download PDF** builds the report and downloads it. No email asked for, nothing sent.
+
+**Send Me the Report** opens a four-field capture (name and email required, company and
+phone optional), then does both things at once: the PDF downloads for the prospect, and
+every figure is posted to your CRM.
+
+The PDF is drawn with [jsPDF](https://github.com/parallax/jsPDF), fetched from cdnjs on
+first use rather than at page load, so the calculator stays instant and still works with
+the library blocked — in that case it falls back to the browser's own print-to-PDF, which
+produces the same figures. It is a real vector PDF, not a screenshot: masthead, who it is
+for, readiness score and verdict, the full valuation and net-proceeds tables, the ranked
+moves with what each is worth, and the disclaimer.
+
+One trap worth knowing if you edit it: jsPDF's built-in Helvetica is WinAnsi-encoded and
+**silently drops en dashes, em dashes and curly quotes**, which turns `12–24 mo` into
+`1224 mo`. Every string is folded to ASCII at the boundary (`ascii()`), so no call site
+has to remember.
+
+## The GoHighLevel handoff
+
+Set one line at the top of the script in `calculator.html`:
+
+```js
+var GHL_WEBHOOK_URL = "";   /* REPLACE: https://services.leadconnectorhq.com/hooks/... */
+```
+
+In GHL: **Automation → Workflows → new workflow → trigger "Inbound Webhook"**. Copy the
+URL it gives you and paste it above. Then add a **Create/Update Contact** step and a
+**Send Email** step. Left empty, the calculator still runs and the PDF still downloads —
+nothing reaches your CRM, and the page does not claim otherwise.
+
+The POST body is flat JSON, one level deep, so every key maps straight onto a GHL field:
+
+| Key | Example |
+|---|---|
+| `name`, `email`, `phone`, `companyName` | what they typed |
+| `source` | `Exit Value Calculator` |
+| `sector` | `Professional & B2B services` |
+| `exitHorizon` | `12–24 mo` |
+| `readinessScore` / `readinessGrade` | `37` / `High Risk` |
+| `verdict` | `Off track for a 12–24 month exit` |
+| `adjustedEbitda`, `effectiveMultiple` | `$768K`, `2.87x` |
+| `enterpriseValueToday`, `projectedValueAtExit` | `$2.21M`, `$3.36M` |
+| `valueAtStake`, `valueAtStakePerMonth` | `$1.15M`, `$64K` |
+| `estimatedNetToOwner`, `keptByStructureAndTax` | `$2.27M`, `$137K` |
+| `priorityMove1` … `priorityMove4` | the ranked moves; empty string when there are fewer than four |
+| `reportSummary` | the whole report as one pre-formatted text block |
+| `submittedAt` | ISO 8601 |
+
+**`reportSummary` is the one to reach for first.** Map it to a single custom field, drop
+that field into your email template, and the email carries the entire report without you
+mapping twenty others.
+
+Values arrive pre-formatted as they read on screen (`$2.21M`, `2.87x`) rather than as raw
+numbers, so they can go straight into an email with no formatting step. The PDF and this
+payload are built from the same snapshot of the run, so what the prospect reads and what
+lands in your CRM cannot disagree.
+
+**What the page will and will not claim.** The POST is tried twice: first as normal JSON,
+which returns a readable status if the endpoint sends CORS headers; and if that throws —
+almost always a refused preflight rather than a real network problem — again in `no-cors`
+mode, which needs no preflight and goes out regardless, but whose reply is opaque. That
+gives three honest states, and the confirmation wording differs between them: sent and
+confirmed, sent but unconfirmable, and a genuine failure, where the page says only that
+the PDF downloaded. It deliberately does not use `navigator.sendBeacon`, which returns
+`true` the moment the browser *queues* a request — a dead endpoint would come back looking
+like a success, and the prospect would be told their report was on its way when it was not.
 
 ## Before it goes live — swap these
 

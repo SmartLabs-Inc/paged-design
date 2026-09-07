@@ -190,7 +190,6 @@ section{padding:clamp(64px,8vw,116px) 0;position:relative}
   position:absolute;left:14px;top:50%;transform:translateY(-50%);
   color:var(--muted-2);font-size:14px;pointer-events:none;
 }
-.money-in input{padding-left:28px}
 input[type=number],input[type=text],select{
   width:100%;padding:12px 14px;border-radius:10px;
   background:var(--ink-2);border:1px solid var(--line);color:var(--bone);
@@ -198,6 +197,7 @@ input[type=number],input[type=text],select{
   -moz-appearance:textfield;appearance:none;
 }
 input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.money-in input[type=number]{padding-left:28px}   /* after the shorthand above, or it loses */
 select{
   background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
   background-position:calc(100% - 19px) 52%,calc(100% - 13px) 52%;
