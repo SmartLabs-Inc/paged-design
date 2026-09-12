@@ -39,7 +39,7 @@ hangs until it times out.
 | `client` | `salutation` (cover), `familiar` (the letter's "Dear …"), `signatory` (signature block) |
 | `studio` | `name`, `shortName`, `signatory`, `signatoryTitle` |
 | `imprint` | `name`, `short`, `parent` |
-| `book` | `title`, `chapterCount`, `extentShort`, `extentSentence`, `trim`, `trimShort` |
+| `book` | `title`, `chapterCount`, `extentShort`, `extentSentence`, `trim`, `trimShort`; `sectionCount` and `companion` where the template asks for them |
 | `fee` | `total`, `totalWords`, and the three milestone amounts `p1`–`p3` |
 | `delivery` | `city`, `eventMonth`, `calendarMonths` |
 | `dates` | `proposal`, `validUntil`, `start`, `printer`, `delivery` — all `YYYY-MM-DD` |
@@ -74,9 +74,28 @@ delivery date by hand is where a Tuesday becomes a Wednesday.
   delivery window after the production grid has run out.
 - Rows with only `dates` print no week number.
 
+## Which template
+
+Two ship, and they differ in substance rather than in values:
+
+| | |
+| --- | --- |
+| `textbook-launch` | The default. A reference work composed from a manuscript the author has already written. Its apparatus section is footnotes, index, cross-references and evidence tables. |
+| `biography-launch` | A trade book ghostwritten from interviews, where there is no incoming manuscript and the interviews are the critical path. Its apparatus section is chapter openers, reader-facing panels, notes and sources. |
+
+Pick with `--template <name>`. A second template is right when the *argument*
+changes — the biography's Section 03 is the method rather than a repair, and no
+amount of token substitution turns one into the other. Where only a value
+changes, use a token; where only a block is absent, use `{{#if}}`.
+
+`biography-launch` takes `book.companion`, the name of an earlier book by the
+same author, and drops the sentences that refer to one when it is absent. Write
+it lowercase and in a form that reads mid-sentence — "your textbook" — because
+every place it appears is inside a sentence, not at the start of one.
+
 ## Changing the wording
 
-Edit `proposals/textbook-launch.html` directly. It is ordinary book HTML — the
+Edit the template you are changing directly. It is ordinary book HTML — the
 same markup contract as any other content, described in `references/markup.md`
 — with `{{tokens}}` where the deal-specific strings go.
 
