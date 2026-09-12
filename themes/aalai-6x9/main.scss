@@ -1,0 +1,28 @@
+// main.scss — AALAI Textbook (6 × 9in)
+
+// The AALAI design at 6 × 9in instead of 7 × 10in.
+//
+// The palette, the type, the components and the running feet all carry over
+// unchanged. Two things have to change, and both follow from the narrower
+// measure rather than from taste:
+//
+//   1. The trim and margins.
+//   2. Anything that assumed room across the page — the side callout, which
+//      floated beside the text, and the process row, which set four steps
+//      shoulder to shoulder. Neither fits, so both are re-laid rather than
+//      shrunk.
+//
+// See _styles.scss for the reasoning on each.
+
+@charset "utf-8";
+
+@import '../_defaults/variables';
+@import '../aalai/variables';
+@import 'variables';
+
+@import '../_defaults/selectors';
+@import '../aalai/selectors';
+
+@import '../_defaults/styles';
+@import '../aalai/styles';
+@import 'styles';

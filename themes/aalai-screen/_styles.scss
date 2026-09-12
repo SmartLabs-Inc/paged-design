@@ -1,0 +1,45 @@
+// _styles.scss — AALAI Textbook (screen)
+
+// With $chapters-start-on set to auto the defaults emit no break at all, and
+// consecutive components share one named page — so without this they would run
+// together mid-page. Ask for an ordinary page break instead of a recto one.
+.chapter,
+.frontmatter,
+.endmatter,
+.part-page {
+    break-before: page;
+}
+
+// The defaults keep the cover on a recto and force a blank verso after it, to
+// preserve folio parity in a bound book. On screen that blank is just an empty
+// first page after the cover.
+.cover {
+    break-before: auto;
+    break-after: page;
+}
+
+// A recto-only document has no inside or outside edge, so the running feet
+// stop alternating. The folio sits right on every page.
+@page :left {
+    @bottom-left { content: normal; }
+    @bottom-center { content: $recto-bottom; }
+    @bottom-right { content: $recto-bottom-right; }
+}
+
+@page chapter:left {
+    @bottom-left { content: normal; }
+    @bottom-center { content: $recto-bottom; }
+    @bottom-right { content: $recto-bottom-right; }
+}
+
+@page endmatter:left {
+    @bottom-left { content: normal; }
+    @bottom-center { content: $recto-bottom; }
+    @bottom-right { content: $recto-bottom-right; }
+}
+
+@page frontmatter:left {
+    @bottom-left { content: normal; }
+    @bottom-center { content: $recto-bottom-frontmatter; }
+    @bottom-right { content: $recto-bottom-right-frontmatter; }
+}

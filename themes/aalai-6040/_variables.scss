@@ -1,0 +1,44 @@
+// _variables.scss — AALAI 60/40
+
+// The grid
+// --------
+// One text column at sixty per cent of the text block, and a margin column at
+// forty beside it. The margin column is not white space: it carries the
+// callouts, the charts, the figures, the evidence chips and the side notes, so
+// the reader's eye has somewhere to go that is not the next paragraph.
+//
+// This is the layout the client picked from a set of mockups, and it is a real
+// choice rather than a decoration. It buys a 62-character measure — squarely
+// in the book range — without the reader having to track back across a
+// two-column page, and it gives every piece of apparatus a home.
+//
+// It costs paper. Set two-column, this book runs 315 pages; the same text with
+// a 40% column that is only sometimes full runs considerably longer. That is
+// the trade, and it is the client's to make.
+
+$text-block: 145.8mm;
+$main-column: 87.5mm;      // 60%
+$column-gutter: 6mm;
+$side-column: 52.3mm;      // 36%, plus the gutter makes the 40%
+
+// Page setup
+// ----------
+// Narrower margins than the two-column theme: the margin column now does the
+// work that white space was doing, so the text block can grow to fill the page.
+
+$margin-inside: 18mm;
+$margin-outside: 14mm;
+$margin-top: $baseline-grid-unit * 4;
+$margin-bottom: $baseline-grid-unit * 4.5;
+
+// Type
+// ----
+// Ten point over 87.5mm is about 62 characters. The two-column theme runs 47;
+// both are inside the book range, and the wider one reads better for continuous
+// prose while the narrower one packs more in.
+
+$font-size-default: 13.3px;   // ~10pt
+$baseline-grid-unit: 17.5px;  // ~13pt leading
+$line-height-default: $baseline-grid-unit;
+$text-spacing: $baseline-grid-unit * 0.6;
+$text-align-default: justify;
