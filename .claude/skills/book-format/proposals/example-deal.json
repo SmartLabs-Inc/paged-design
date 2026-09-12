@@ -11,10 +11,14 @@
     "signatory": "Adryenn Ashley",
     "signatoryTitle": "Chief Executive Officer"
   },
+  "publisher": {
+    "name": "The Publishing House",
+    "short": "The House"
+  },
   "imprint": {
-    "name": "Anti-Aging & Longevity Academic Institute",
-    "short": "AALAI",
-    "parent": "Disrupt"
+    "name": "The Academic Imprint",
+    "short": "The Imprint",
+    "parent": "The Publishing House"
   },
   "book": {
     "title": "The Working Title of the Book",
@@ -53,7 +57,7 @@
         "weeks": [
           1
         ],
-        "what": "Contract and deposit. Manuscript intake. Design locked against the AALAI prototype. Interviews begin."
+        "what": "Contract and deposit. Manuscript intake. Design locked against the {{imprint.short}} prototype. Interviews begin."
       },
       {
         "weeks": [
