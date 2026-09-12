@@ -89,31 +89,40 @@
 
                 <div class="keep-together">
     <h3 id="scope-book">1.1  What is in the book</h3>
-                    <p>A book that argues for a way of thinking needs the reader to be able to check it. These are handled as first-class parts of the production, not as an afterthought once the pages are set:</p>
+                    <p>{{book.thesisLead}}</p>
+                    <p>{{book.thesisBody}}</p>
+                    <p class="label">The shape of it</p>
+                    <p>There are {{book.sectionCount}} sections and {{book.chapterCount}} chapters, and the arc across them is the argument: what people currently believe and why it is persuasive, then how you actually decide, then how a reader does the same for themselves. The outline is settled in the first interviews rather than in this document, because it has to follow the way you already explain this to a patient.</p>
+                    <p>A chapter works the same way each time. It opens on a person or a moment rather than a definition. It works through the reasoning you actually used, including the part where the evidence was thin. It closes on the question the reader should now be able to ask their own physician, and what a good answer to it sounds like.</p>
+                    <div class="callout callout-dark">
+                      <p class="callout-label">What the reader leaves with</p>
+                      <p class="pullquote">{{book.promise}}</p>
+                    </div>
+                </div>
+
+                <div class="keep-together">
+    <h3 id="scope-pages">1.2  How the pages are handled</h3>
+                    <p>The furniture a reader never notices unless it is wrong. All of it is built and none of it is billed separately:</p>
                     <table class="keep-together">
                       <thead>
                         <tr>
                           <th>Element</th>
                           <th>Treatment</th>
-                          <th>Status</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr><td>Chapter openers</td><td>Each chapter opens on a person or a moment, not a definition</td><td>Design being drawn</td></tr>
-                        <tr><td>The questions to ask</td><td>A panel closing each section: what a patient should be able to ask, and what a good answer sounds like</td><td>Design being drawn</td></tr>
-                        <tr><td>Claim against evidence</td><td>Sidebars that take a claim a reader has actually met and show how to weigh it</td><td>Design being drawn</td></tr>
-                        <tr><td>Pull quotes</td><td>The line from each chapter a reader will repeat out loud</td><td>Built</td></tr>
-                        <tr><td>Notes and sources</td><td>Numbered, gathered at the back, so a claim can be checked without interrupting the read</td><td>Built</td></tr>
-                        <tr><td>Index</td><td>Compiled against final pagination, so entries point at real pages</td><td>Built</td></tr>
-                        <tr><td>Contents</td><td>Generated from the text, correct after every change</td><td>Built</td></tr>
-                        <tr><td>Photographs</td><td>Placement, sizing, captions and resolution checking</td><td>Design being drawn</td></tr>
-                        <tr><td>Front and back matter</td><td>Title, copyright, medical disclaimer, contents, author bio</td><td>Built</td></tr>
+                        <tr><td>Chapter openers</td><td>The person or moment each chapter starts on, set as a distinct page</td></tr>
+                        <tr><td>Pull quotes</td><td>The line from each chapter a reader will repeat out loud</td></tr>
+                        <tr><td>Notes and sources</td><td>Numbered, gathered at the back, so a claim can be checked without interrupting the read</td></tr>
+                        <tr><td>Contents and index</td><td>Generated from the text and compiled against final pagination, correct after every change</td></tr>
+                        <tr><td>Photographs</td><td>Placement, sizing, captions and resolution checking</td></tr>
+                        <tr><td>Front and back matter</td><td>Title, copyright, medical disclaimer, contents, author bio</td></tr>
                       </tbody>
                     </table>
                 </div>
                 <div class="callout">
-                  <p class="callout-label">On the reader-facing panels</p>
-                  <p>The three panels marked above are the parts of the design still being drawn, because they follow from the interviews rather than preceding them — the questions a reader should be able to ask are yours, not ours, and they come out of the recordings. They will be settled before composition begins, and they are inside the fixed fee. Commissioning original artwork or photography, rather than placing images you supply, is quoted separately.</p>
+                  <p class="callout-label">The one part still being drawn</p>
+                  <p>The closing panel of each section — the questions a reader should be able to ask — is the piece of the design that is not finished, and deliberately so: those questions are yours, not ours, and they come out of the recordings. It will be settled before composition begins and it is inside the fixed fee. Commissioning original artwork or photography, rather than placing images you supply, is quoted separately.</p>
                 </div>
             </div>
         </div>
