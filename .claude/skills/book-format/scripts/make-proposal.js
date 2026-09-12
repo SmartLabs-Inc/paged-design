@@ -174,6 +174,15 @@ function render (template, context) {
     return escapeHtml(value)
   })
 
+  // Nothing that looks like a template construct may survive into a document
+  // that goes to a client. The two passes above only catch `{{value}}` shapes;
+  // a stray `{{/if}}` from an unbalanced — or nested — conditional carries no
+  // word characters, so it slid through both and printed in the proposal.
+  const leftovers = output.match(/\{\{[^}]*\}\}/g)
+  if (leftovers) unresolved.push.apply(unresolved, leftovers.map(function (m) {
+    return m + '  (template construct, not a deal value — conditionals do not nest)'
+  }))
+
   return { html: output, unresolved: Array.from(new Set(unresolved)) }
 }
 

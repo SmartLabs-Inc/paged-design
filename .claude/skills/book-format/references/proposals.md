@@ -107,6 +107,13 @@ Three template constructs, and no more:
 | `{{{path.to.value}}}` | Substituted raw, for pre-built HTML like schedule rows |
 | `{{#if path}}…{{/if}}`, `{{#unless path}}…{{/unless}}` | Include a block when a deal value is set |
 
+**Conditionals do not nest.** The matcher is non-greedy, so an outer `{{#if}}`
+pairs with the *first* `{{/if}}` it meets — the inner one — and the remainder
+is orphaned. Write consecutive blocks instead of nested ones. This used to fail
+silently: a stray `{{/if}}` has no word characters, so neither substitution pass
+touched it and it printed in the document. The build now refuses any leftover
+`{{…}}` for that reason.
+
 Use `{{#if}}` to make a section optional rather than keeping two templates.
 A book-only engagement with no launch campaign, for instance, can wrap Section
 04 in `{{#if launch}}` and leave `launch` out of that deal file.
