@@ -18,6 +18,8 @@
   },
   "book": {
     "title": "The Working Title of the Book",
+    "companion": "the author's previous book",
+    "sectionCount": "eight",
     "chapterCount": "four",
     "extentShort": "nearly 500-page",
     "extentSentence": "Four large chapters with subsections, approximately 500 pages, at 7 × 10in.",
