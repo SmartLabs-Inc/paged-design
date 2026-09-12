@@ -20,6 +20,18 @@ produced it ends, it gets out of `/tmp`:
    to Drive, Dropbox or anything else means client data leaving the machine, so
    it is the user's call, not a default.
 
+### The Drive connector creates, it does not replace
+
+Uploading a file that is already there makes a second copy under the same
+name rather than a new version of the first. Re-uploading an edited deal file
+leaves two, and nothing on either says which is current. Rename the old one —
+`update_file` takes a title — before or straight after the new upload.
+
+Binary files cannot go up at all: the connector only takes content inline, so
+a PDF has to be base64-encoded through the reply, and anything past about
+30 KB exceeds what one message can carry and would arrive truncated. Send
+those with `SendUserFile` and let the user drop them in.
+
 ### Preserve the source, not just the output
 
 Sort a deliverable into *regenerable* and *irreplaceable* and save the second
