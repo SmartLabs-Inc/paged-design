@@ -14,7 +14,7 @@
             <div>
                 <div class="callout callout-dark">
                   <p class="cover-line-1"><span class="gold">◈</span></p>
-                  <p class="cover-line-2">{{studio.name}}<br />in association with {{imprint.parent}}</p>
+                  <p class="cover-line-2">{{studio.name}}<br />in association with {{publisher.name}}</p>
                   <p class="cover-line-3">Production &amp; Launch Proposal</p>
                   <p class="cover-line-4"><span class="gold">{{book.title}}</span></p>
                   <p class="cover-line-5">Prepared for {{client.salutation}}<br />{{dates.proposal}}</p>
@@ -28,17 +28,17 @@
                 <p class="chapter-eyebrow">Summary</p>
                 <h1 class="heading-2" id="summary">A published author by {{dates.delivery}}</h1>
                 <p class="chapter-subtitle">The book, the authority, and the launch that makes both count</p>
-                <p class="standfirst">Dear {{client.familiar}} — you have the knowledge. What you do not yet have is the book that proves it, the imprint behind it, or the platform that puts it in front of the people who matter. This proposal covers all three.</p>
+                <p class="standfirst">Dear {{client.familiar}} — you have the knowledge. What you do not yet have is the book that proves it, the publisher behind it, or the platform that puts it in front of the people who matter. This proposal covers all three.</p>
                 <div class="sidenote">
                   <p class="sidenote-label">The date</p>
                   <p>Printed books in your hands in {{delivery.city}} on <strong>{{dates.delivery}}</strong>. Every date in this proposal is worked backward from that one.</p>
                 </div>
                 <p>Most people in your position produce a manuscript and stop. The file sits with a printer, a box of books arrives, and nothing happens — because a book on its own does not create authority. Authority comes from the book, the credibility of who published it, and the campaign that puts the author in front of an audience already primed to listen.</p>
                 <p>We do all three, on one schedule, under one contract.</p>
-                <p class="label">The imprint you are joining</p>
-                <p>I created the <strong>{{imprint.name}}</strong> as an imprint of {{imprint.parent}}, and I have been building it for years. It exists to publish serious work in this field to a standard the field rarely gets, and it comes with a production engine built for {{imprint.short}} titles — the style, the structure, and the composition system behind them.</p>
-                <p>{{imprint.parent}} owns the imprint. What you get is the position inside it: <strong>you are its lead author, and this is its first book written for the public rather than the clinic</strong>, and the imprint is built to carry more. Every future volume, second edition, or collaboration you want to move quickly can go straight into the same engine and come out looking like this, without starting over.</p>
-                <p>The engine existed before this book did{{#if book.companion}}, and {{book.companion}} proved it{{/if}}. What is new here is an interior drawn for a reader in an armchair rather than a clinician at a desk — a trade page, set to be read straight through — and that design becomes the {{imprint.short}} standard for every public-facing title after it.</p>
+                <p class="label">The publisher you are joining</p>
+                <p>This book is published by <strong>{{publisher.name}}</strong>, and I have been building its list for years. It comes with a production engine — the style, the structure, and the composition system behind every title that goes through it.{{#if imprint}} {{publisher.name}} also runs the {{imprint.name}}, its imprint for textbooks and academic work — {{#if book.companion}}that is where {{book.companion}} belongs, and it is{{/if}}{{#unless book.companion}}and this book is{{/unless}} deliberately not where this one does.{{/if}}</p>
+                <p>A book for the public is a {{publisher.name}} title, not an academic one, and the distinction is the point: the imprint that gives a textbook its authority is the wrong badge on a book meant to be read in an armchair. What you get is the position on the {{publisher.name}} list, and every future volume, second edition, or collaboration you want to move quickly can go straight into the same engine and come out looking like this, without starting over.</p>
+                <p>The engine existed before this book did{{#if book.companion}}, and {{book.companion}} proved it{{/if}}. What is new here is an interior drawn for a reader in an armchair rather than a clinician at a desk — a trade page, set to be read straight through — and that design becomes the {{publisher.short}} standard for every public-facing title after it.</p>
                 <div class="callout callout-dark">
                   <p class="callout-label">The proof is in your hands</p>
                   <p class="pullquote">This document was set by the same system, and in the same house design, as your book.</p>
@@ -69,8 +69,8 @@
                 <div class="pillar">
                   <p class="pillar-number">Pillar Two</p>
                   <p class="pillar-title">Published, not self-published</p>
-                  <p>The book is published under {{imprint.parent}}. We issue the ISBN, apply our spine label, and manage the publishing process end to end. You cover your costs and <strong>we take no split</strong>. You retain your copyright and every publishing right.</p>
-                  <p>{{imprint.parent}} has award-winning titles in its portfolio. This is not a pay-to-play hybrid arrangement dressed up as a publisher — it is a real imprint, and it makes you a published author rather than a self-published one. That distinction is the first thing a booker, a reviewer, or a conference committee checks.</p>
+                  <p>The book is published by {{publisher.name}}. We issue the ISBN, apply our spine label, and manage the publishing process end to end. You cover your costs and <strong>we take no split</strong>. You retain your copyright and every publishing right.</p>
+                  <p>{{publisher.name}} has award-winning titles in its portfolio. This is not a pay-to-play hybrid arrangement dressed up as a publisher — it is a real one, and it makes you a published author rather than a self-published one. That distinction is the first thing a booker, a reviewer, or a conference committee checks.</p>
                 </div>
 
                 <div class="pillar">
@@ -348,11 +348,11 @@
                 <p class="chapter-eyebrow">Section 06</p>
                 <h2 id="investment">Investment</h2>
                 <p class="chapter-subtitle">One fixed fee for all four pillars</p>
-                <p class="standfirst">{{fee.totalWords}}, covering everything in this proposal: the interviews and the ghostwriting of the whole book, its full production, publication under the {{imprint.short}} imprint, your expert branding and on-camera setup, and the launch campaign. It does not cover printing.</p>
+                <p class="standfirst">{{fee.totalWords}}, covering everything in this proposal: the interviews and the ghostwriting of the whole book, its full production, publication by {{publisher.name}}, your expert branding and on-camera setup, and the launch campaign. It does not cover printing.</p>
 
                 <div class="sidenote">
                   <p class="sidenote-label">No split, ever</p>
-                  <p>{{imprint.parent}} and the {{imprint.short}} imprint take <strong>no percentage</strong> of your sales, now or later. The fee below is the entire economic relationship between us. You keep your copyright and every publishing right.</p>
+                  <p>{{publisher.name}} takes <strong>no percentage</strong> of your sales, now or later. The fee below is the entire economic relationship between us. You keep your copyright and every publishing right.</p>
                 </div>
                 <p>One number, one contract, no hourly billing. If a chapter needs three passes instead of one, that is our problem rather than yours, and it does not change what you pay.</p>
 
@@ -371,8 +371,8 @@
                     <tr><td>Developmental editing, copy editing and proofreading</td><td>Whole book</td></tr>
                     <tr><td>Manuscript revisions and proof corrections</td><td>Two full rounds, plus one pass per proof</td></tr>
                     <tr><td>Press-ready files, print managed to delivery</td><td>Final delivery</td></tr>
-                    <tr><td>Publication under the {{imprint.short}} imprint, ISBN, spine label</td><td>Ongoing, no split</td></tr>
-                    <tr><td>Composition in the {{imprint.short}} house design</td><td>Unlimited reprint rights</td></tr>
+                    <tr><td>Publication by {{publisher.name}}, ISBN, spine label</td><td>Ongoing, no split</td></tr>
+                    <tr><td>Composition in the {{publisher.short}} house design</td><td>Unlimited reprint rights</td></tr>
                     <tr><td>Expert branding and media-ready bio</td><td>One-off, yours to keep</td></tr>
                     <tr><td>Presentation and on-camera setup</td><td>Two sessions, recorded and reviewed</td></tr>
                     <tr><td>Launch kit: release, press kit, excerpts, questions, hooks</td><td>One-off, yours to keep</td></tr>
@@ -466,7 +466,7 @@
                 <p>The obligation survives this agreement without expiry, whether or not the book is completed.</p>
                 <p class="label">The one thing we will ask you for</p>
                 <p>Confidentiality runs one way here, and permanently: nothing about your book, your manuscript, or this engagement is ever ours to talk about.</p>
-                <p>What we will ask for — once, at the end, and only if the work has earned it — is a written or recorded testimonial about <strong>{{studio.shortName}} and the {{imprint.short}} imprint as your publisher</strong>: how the imprint handled the book, the production, and the launch. Not about ghostwriting, which stays confidential permanently and is never referenced. You are the author of this book, in public and without qualification, and nothing we ask for will ever suggest otherwise.</p>
+                <p>What we will ask for — once, at the end, and only if the work has earned it — is a written or recorded testimonial about <strong>{{studio.shortName}} and {{publisher.name}} as your publisher</strong>: how the book was handled, the production, and the launch. Not about ghostwriting, which stays confidential permanently and is never referenced. You are the author of this book, in public and without qualification, and nothing we ask for will ever suggest otherwise.</p>
                 <p>Saying no costs you nothing and changes nothing.</p>
 
                 <h3 id="patient-privacy">7.3  Patient material</h3>
@@ -484,12 +484,12 @@
                 <p>You retain your copyright and all publishing rights, in every territory and every format, without exception. Nothing here licenses, encumbers, options, or shares them, and no right reverts to us if the relationship ends.</p>
 
                 <h3 id="publishing">7.5  Publishing</h3>
-                <p>The book is published under the <strong>{{imprint.name}}</strong> imprint, an imprint of {{imprint.parent}}. We issue the ISBN, apply the {{imprint.short}} spine label, and manage the publishing process end to end — registration, metadata, distribution setup, print-on-demand account setup in your name, and the printer relationship.</p>
+                <p>The book is published by <strong>{{publisher.name}}</strong>. We issue the ISBN, apply the {{publisher.short}} spine label, and manage the publishing process end to end — registration, metadata, distribution setup, print-on-demand account setup in your name, and the printer relationship.</p>
                 <p>You cover your own production and printing costs, and <strong>we take no split of your sales</strong>, now or at any point afterward. The publishing arrangement is ongoing rather than a one-time service and does not expire with this contract.</p>
 
                 <h3 id="ownership">7.6  What transfers, and what does not</h3>
                 <p><strong>Yours on final payment:</strong> the completed manuscript, all book content, your brand assets, and the launch-kit materials. Every word is yours.</p>
-                <p><strong>Not yours, and this matters:</strong> the {{imprint.short}} house design, the interior design files, the production system, and the research methods, templates, processes and publishing methodology behind them. Those belong to {{imprint.parent}} and the {{imprint.short}} imprint. The design cannot be lifted and used on a title published elsewhere, or handed to another designer as a starting point.</p>
+                <p><strong>Not yours, and this matters:</strong> the {{publisher.short}} house design, the interior design files, the production system, and the research methods, templates, processes and publishing methodology behind them. Those belong to {{publisher.name}}. The design cannot be lifted and used on a title published elsewhere, or handed to another designer as a starting point.</p>
                 <p class="label">What you get instead, which is better</p>
                 <p><strong>Unlimited reprint rights in this design, for this book, forever.</strong> Reprint it as often as you like, in any quantity, with no further design fee and no permission needed.</p>
                 <p>And the part that makes the next book easy: you keep the <strong>Word authoring file</strong>. Write your next volume, second edition, or collaboration in it, hand it back, and it drops straight into the system already formatted — same look, same standard, days rather than months, for a nominal composition fee. That is the practical value of being inside an imprint rather than owning a set of files you would have to hire someone to drive.</p>
@@ -550,7 +550,7 @@
                       </tbody>
                     </table>
                 </div>
-                <p class="source">Prepared {{dates.proposal}} · {{studio.name}}, in association with {{imprint.parent}} · Set in the same system, and the same design, as the book it describes</p>
+                <p class="source">Prepared {{dates.proposal}} · {{studio.name}}, in association with {{publisher.name}} · Set in the same system, and the same design, as the book it describes</p>
             </div>
         </div>
     </div>
