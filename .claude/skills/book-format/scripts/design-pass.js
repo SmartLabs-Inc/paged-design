@@ -389,12 +389,18 @@ function designBody (children, state, options) {
     // An entry: the name, and every paragraph up to the next heading.
     if (node.name === 'h5' && hasClass(node, 'entry-name')) {
       entryNumber += 1
+      // An entry runs through its own paragraphs and stops at anything else.
+      // Stopping only at headings is not enough: when the references label
+      // stopped being an <h6> and became the paragraph it always was, every
+      // reference list in the book was swallowed into the entry above it,
+      // and pagination died on page 44.
       const body = []
       let scan = index + 1
       while (scan < children.length) {
         const following = children[scan]
         if (following.name === null) { scan += 1; continue }
-        if (/^h[1-6]$/.test(following.name)) break
+        if (following.name !== 'p') break
+        if (hasClass(following, 'reference-section') || hasClass(following, 'standfirst')) break
         body.push(following)
         scan += 1
       }
