@@ -292,6 +292,31 @@ function designPart (children, title, state) {
   return opener ? opener + '\n' + body : body
 }
 
+
+// A sub-section heading, its running head, and as much of its opening
+// paragraph as fits in a box that must not break. Whatever is left of the
+// paragraph comes back as `rest`, to be set normally below the box.
+function subsection (heading, following, state) {
+  const text = textOf(heading.html)
+  const runHead = '<h6 class="run-head">' + escapeAttr(text) + '</h6>'
+  tally.runHeads += 1
+  tally.keepLeads += 1
+  if (!following || following.name !== 'p' || !hasClass(following, 'standfirst')) {
+    return { box: heading.html + runHead, rest: '', consumed: 1 }
+  }
+  const split = splitParagraph(innerOf(following), SPAN_BUDGET)
+  if (!split) {
+    return { box: heading.html + runHead + following.html, rest: '', consumed: 2 }
+  }
+  capped.push(text + ' — standfirst held to ' + split[0].length + ' characters')
+  tally.spanCapped += 1
+  return {
+    box: heading.html + runHead + '<p class="standfirst">' + split[0] + '</p>',
+    rest: '<p class="standfirst lead-rest">' + split[1] + '</p>',
+    consumed: 2
+  }
+}
+
 // Everything below a part or chapter title.
 function designBody (children, state, options) {
   const out = []
@@ -319,11 +344,23 @@ function designBody (children, state, options) {
         index += 1
         continue
       }
-      out.push('<h6 class="run-head">' + escapeAttr(text) + '</h6>')
-      tally.runHeads += 1
       const id = /\bid="([^"]*)"/.exec(node.html)
-      out.push('<h2 class="section-head"' + (id ? ' id="' + id[1] + '"' : '') +
-        ' title="' + escapeAttr(text) + '">' + innerOf(node) + '</h2>')
+      const head = '<h2 class="section-head"' + (id ? ' id="' + id[1] + '"' : '') +
+        ' title="' + escapeAttr(text) + '">' + innerOf(node) + '</h2>' +
+        '<h6 class="run-head">' + escapeAttr(text) + '</h6>'
+      tally.runHeads += 1
+      // A sub-section box directly below is folded into the same spanner, or
+      // the two of them fight over the top of the page and neither wins.
+      const below = children[index + 1]
+      if (below && (below.name === 'h3' || below.name === 'h4')) {
+        const group = subsection(below, children[index + 2], state)
+        out.push('<div class="keep-lead lead-section section-opener">' + head +
+          group.box + '</div>')
+        if (group.rest) out.push(group.rest)
+        index += group.consumed + 1
+        continue
+      }
+      out.push('<div class="keep-lead section-opener">' + head + '</div>')
       index += 1
       continue
     }
@@ -342,30 +379,10 @@ function designBody (children, state, options) {
         continue
       }
       entryNumber = 0
-      const next = children[index + 1]
-      const parts = ['<h6 class="run-head">' + escapeAttr(text) + '</h6>']
-      tally.runHeads += 1
-      if (next && next.name === 'p' && hasClass(next, 'standfirst')) {
-        const inner = innerOf(next)
-        const split = splitParagraph(inner, SPAN_BUDGET)
-        if (split) {
-          capped.push(text + ' — standfirst held to ' + split[0].length + ' characters')
-          tally.spanCapped += 1
-          parts.push('<div class="keep-lead lead-section">' + node.html +
-            '<p class="standfirst">' + split[0] + '</p></div>')
-          parts.push('<p class="standfirst lead-rest">' + split[1] + '</p>')
-        } else {
-          parts.push('<div class="keep-lead lead-section">' + node.html +
-            '\n' + next.html + '</div>')
-        }
-        tally.keepLeads += 1
-        index += 2
-      } else {
-        parts.push('<div class="keep-lead">' + node.html + '</div>')
-        tally.keepLeads += 1
-        index += 1
-      }
-      out.push(parts.join('\n'))
+      const group = subsection(node, children[index + 1], state)
+      out.push('<div class="keep-lead lead-section">' + group.box + '</div>')
+      if (group.rest) out.push(group.rest)
+      index += group.consumed
       continue
     }
 
