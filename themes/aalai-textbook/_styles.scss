@@ -2063,6 +2063,14 @@ h4 + .standfirst,
 }
 
 // ---------------------------------------------------------------------------
+// A parenthetical in an entry name is a unit: it moves to the next line whole
+// rather than wrapping mid-phrase. Only short ones — a long parenthetical held
+// together strands half a line of white above it, which is worse than the
+// wrap it prevents.
+.entry-paren {
+    white-space: nowrap;
+}
+
 // The abbreviations glossary
 // ---------------------------------------------------------------------------
 // Six hundred-odd terms set as a flowing two-column list rather than a table.

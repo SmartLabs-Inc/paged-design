@@ -496,6 +496,7 @@ function splitComponents (body, context, defaults) {
         if (entry.role === 'title') {
           current.title = docx.textOf(node).trim()
           current.titleHtml = renderRuns(node, context)
+          current.titleClass = entry.class
           return
         }
       }
@@ -503,6 +504,7 @@ function splitComponents (body, context, defaults) {
       if (entry && entry.role === 'title' && current && !current.title) {
         current.title = docx.textOf(node).trim()
         current.titleHtml = renderRuns(node, context)
+        current.titleClass = entry.class
         return
       }
     }
@@ -678,7 +680,13 @@ function main () {
       parts.push('<p class="chapter-eyebrow">' + component.eyebrow + '</p>')
     }
     if (component.title) {
-      parts.push('<h' + level + book.titleClass(component.type) + ' id="' + id + '">' +
+      // A class the style map put on the title has to survive becoming the
+      // component's heading. Themes hang the `book-title` named string off
+      // `.title-page-title`, and without it every recto footer is empty.
+      const titleClass = component.titleClass
+        ? ' class="' + component.titleClass + '"'
+        : book.titleClass(component.type)
+      parts.push('<h' + level + titleClass + ' id="' + id + '">' +
         (component.titleHtml || book.escapeHtml(component.title)) +
         '</h' + level + '>')
     }
