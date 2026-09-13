@@ -21,7 +21,7 @@ const fs = require('fs')
 const path = require('path')
 const {
   requireRepoRoot, parseArgs, requirePlaywright, launchChromium, serveDirectory,
-  blockRemoteResources, waitForPagedJs
+  blockRemoteResources, watchForPagedJs, waitForPagedJs
 } = require('./common')
 
 const args = parseArgs(process.argv)
@@ -130,11 +130,13 @@ function setPush (html, mark, on) {
 
   async function paginate () {
     const page = await browser.newPage()
-    // Paged.js waits for every stylesheet and font it is told about, so one
-    // unreachable host hangs pagination for as long as the timeout allows —
-    // silently, with no error and no partial result. render-pdf.js has always
-    // blocked remote resources; this did not, and burned a thirty-minute
-    // timeout mid-build to find out.
+    // Both of these, or neither. Blocking remote resources stops an
+    // unreachable font host hanging pagination — but it also blocks MathJax,
+    // and pager.js holds pagination back until MathJax says it has finished.
+    // `watchForPagedJs` is what releases that gate when MathJax never loads.
+    // Adding the block on its own turned an intermittent hang into a certain
+    // one, and pagination then never started at all.
+    await watchForPagedJs(page)
     await blockRemoteResources(page, server.url)
     await page.goto(url, { waitUntil: 'load' })
     await waitForPagedJs(page, Number(args.timeout || 300000))

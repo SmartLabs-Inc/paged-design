@@ -20,7 +20,7 @@
 
 const {
   requireRepoRoot, parseArgs, requirePlaywright, launchChromium, serveDirectory,
-  blockRemoteResources, waitForPagedJs
+  blockRemoteResources, watchForPagedJs, waitForPagedJs
 } = require('./common')
 
 const args = parseArgs(process.argv)
@@ -275,7 +275,9 @@ function collect () {
   const server = await serveDirectory(root)
   const browser = await launchChromium(chromium)
   const page = await browser.newPage()
-  // See the note in fix-widows.js: an unreachable font host hangs Paged.js.
+  // Both of these, or neither — see the note in fix-widows.js. Blocking
+  // remote resources also blocks MathJax, and pager.js waits for MathJax.
+  await watchForPagedJs(page)
   await blockRemoteResources(page, server.url)
   const failures = []
   page.on('console', function (message) {
