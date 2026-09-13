@@ -8,6 +8,14 @@ package-lock.json
 content/proposal-*/
 content/checklist-*/
 content/client-*/
+# Built books from client manuscripts. The theme, the passes and the style map
+# are the asset and belong here; the author's text does not. `content/aet-raw/`
+# and `content/aet-tail/` predate this rule and are still tracked — see the
+# note in CLAUDE.md about client material.
+content/aet/
+content/aet-proof/
+content/book-*/
+
 
 # Deal files carry client names, fees and terms. The template they fill in is
 # committed; the values are not. `proposals/example-deal.json` is the exception.
