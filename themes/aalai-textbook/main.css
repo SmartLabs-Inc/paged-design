@@ -6765,6 +6765,9 @@ h4 + .standfirst,
 .section-head-first {
   break-before: auto; }
 
+.entry-paren {
+  white-space: nowrap; }
+
 .abbrev-list {
   margin: 0 0 17px 0;
   padding: 0; }

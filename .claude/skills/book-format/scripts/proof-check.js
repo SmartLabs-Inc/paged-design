@@ -166,9 +166,14 @@ function collect () {
           }
           previousTop = Math.round(rect.top)
         }
+        // Only a person's name counts. An entry name is a technical term and
+        // has to wrap somewhere: reporting "Amino / Acid" as a broken name
+        // buries the one that matters under twenty that do not.
+        const whole = (heading.textContent || '')
+        const isPersonLine = heading.classList.contains('title-page-author') ||
+          /\b(M\.\s?D\.|Ph\.\s?D\.|D\.O\.|Dr\.)/.test(whole)
+        if (!isPersonLine) return
         breaks.forEach(function (br) {
-          // A break between two capitalised words, or right after an initial or
-          // an honorific, is a broken name.
           const looksLikeName = /^[A-Z][a-z]+[,.]?$/.test(br.before) &&
             /^[A-Z]/.test(br.after)
           const afterHonorific = /^(Dr|Mr|Ms|Mrs|Prof|M\.D\.|Ph\.D\.)[.,]?$/i.test(br.before)
