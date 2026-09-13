@@ -96,17 +96,23 @@ function unmarkParagraphs (html) {
 }
 
 // Add or remove the push class on the paragraph carrying a given mark.
+//
+// It has to be `push-page`, not `push-column`. Paged.js re-implements
+// `break-before` only for the page-level values — always, page, left, right,
+// recto, verso — and drops everything else, so `break-before: column` has
+// never done anything at all. Three rounds of pushing a widow with it moved
+// nothing, which is what sent me to the polyfill source to check.
 function setPush (html, mark, on) {
   const pattern = new RegExp('<(p|li)([^>]*\\bdata-mark="' + mark + '"[^>]*)>')
   return html.replace(pattern, function (all, name, attrs) {
-    let cleaned = attrs.replace(/\s*\bpush-column\b/g, '')
+    let cleaned = attrs.replace(/\s*\bpush-page\b/g, '')
     if (!on) {
       return '<' + name + cleaned.replace(/\s*class="\s*"/, '') + '>'
     }
     if (/\bclass="/.test(cleaned)) {
-      return '<' + name + cleaned.replace(/class="/, 'class="push-column ') + '>'
+      return '<' + name + cleaned.replace(/class="/, 'class="push-page ') + '>'
     }
-    return '<' + name + cleaned + ' class="push-column">'
+    return '<' + name + cleaned + ' class="push-page">'
   })
 }
 
