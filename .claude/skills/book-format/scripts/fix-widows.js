@@ -21,7 +21,7 @@ const fs = require('fs')
 const path = require('path')
 const {
   requireRepoRoot, parseArgs, requirePlaywright, launchChromium, serveDirectory,
-  waitForPagedJs
+  blockRemoteResources, waitForPagedJs
 } = require('./common')
 
 const args = parseArgs(process.argv)
@@ -130,8 +130,14 @@ function setPush (html, mark, on) {
 
   async function paginate () {
     const page = await browser.newPage()
+    // Paged.js waits for every stylesheet and font it is told about, so one
+    // unreachable host hangs pagination for as long as the timeout allows —
+    // silently, with no error and no partial result. render-pdf.js has always
+    // blocked remote resources; this did not, and burned a thirty-minute
+    // timeout mid-build to find out.
+    await blockRemoteResources(page, server.url)
     await page.goto(url, { waitUntil: 'load' })
-    await waitForPagedJs(page, Number(args.timeout || 1800000))
+    await waitForPagedJs(page, Number(args.timeout || 300000))
     const faults = await page.evaluate(findFaults)
     const pages = await page.evaluate(function () {
       return document.querySelectorAll('.pagedjs_page').length

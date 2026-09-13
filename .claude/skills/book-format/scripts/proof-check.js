@@ -20,7 +20,7 @@
 
 const {
   requireRepoRoot, parseArgs, requirePlaywright, launchChromium, serveDirectory,
-  waitForPagedJs
+  blockRemoteResources, waitForPagedJs
 } = require('./common')
 
 const args = parseArgs(process.argv)
@@ -275,6 +275,8 @@ function collect () {
   const server = await serveDirectory(root)
   const browser = await launchChromium(chromium)
   const page = await browser.newPage()
+  // See the note in fix-widows.js: an unreachable font host hangs Paged.js.
+  await blockRemoteResources(page, server.url)
   const failures = []
   page.on('console', function (message) {
     const body = message.text()
@@ -284,7 +286,7 @@ function collect () {
   const url = server.url + '/' + args.content.replace(/^\.\//, '').replace(/\/$/, '') +
     '/index.html?theme=' + theme
   await page.goto(url, { waitUntil: 'load' })
-  await waitForPagedJs(page, Number(args.timeout || 1800000))
+  await waitForPagedJs(page, Number(args.timeout || 600000))
 
   const report = await page.evaluate(collect)
   report.paginationFailures = failures
