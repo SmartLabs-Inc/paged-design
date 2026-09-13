@@ -55,7 +55,7 @@
     },
 
     "References Heading": {
-      "element": "h6",
+      "element": "p",
       "class": "reference-section"
     },
     "Reference": {
