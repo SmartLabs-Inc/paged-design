@@ -216,7 +216,7 @@ const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
 
 const tally = {
   parts: 0, frontmatter: 0, endmatter: 0, runHeads: 0,
-  entries: 0, leadsSplit: 0, keepLeads: 0, spanCapped: 0, tables: 0
+  entries: 0, leadsSplit: 0, keepLeads: 0, spanCapped: 0, tables: 0, citations: 0
 }
 const capped = []
 
@@ -239,6 +239,7 @@ function designChapter (component, state) {
 
   const children = blocks(innerOf(innerDiv))
   let designed
+  state.inIndex = isIndex
 
   if (isPart) {
     state.part += 1
@@ -249,6 +250,7 @@ function designChapter (component, state) {
     else tally.endmatter += 1
     designed = designBody(children, state, { plain: true })
   }
+  if (!isIndex) designed = superscriptCitations(designed)
 
   let classes = 'chapter'
   if (isPart) classes += ' part-' + state.part
@@ -315,6 +317,31 @@ function subsection (heading, following, state) {
     rest: '<p class="standfirst lead-rest">' + split[1] + '</p>',
     consumed: 2
   }
+}
+
+
+// Citations arrive from Word as bracketed numbers in the running text —
+// "...development questions.[2]" — 1,772 of them. Set as superscripts they
+// stop interrupting the sentence, which is the whole point of a reference
+// mark. Runs of adjacent marks merge: [84][85] is one mark reading 84,85.
+function superscriptCitations (html) {
+  let out = ''
+  let index = 0
+  while (index < html.length) {
+    const next = html.indexOf('<', index)
+    const text = next === -1 ? html.slice(index) : html.slice(index, next)
+    out += text.replace(/(?:\[\d+(?:[-–,]\s?\d+)*\])+/g, function (run) {
+      const numbers = run.slice(1, -1).split(/\]\[/).join(',')
+      tally.citations += 1
+      return '<sup class="cite">' + numbers + '</sup>'
+    })
+    if (next === -1) break
+    const close = html.indexOf('>', next)
+    if (close === -1) { out += html.slice(next); break }
+    out += html.slice(next, close + 1)
+    index = close + 1
+  }
+  return out
 }
 
 // Everything below a part or chapter title.
@@ -522,7 +549,8 @@ console.log('  parts ' + tally.parts + ' · front matter ' + tally.frontmatter +
   ' · end matter ' + tally.endmatter)
 console.log('  entries ' + tally.entries + ' (' + tally.leadsSplit + ' leads split)' +
   ' · keep boxes ' + tally.keepLeads + ' (' + tally.spanCapped + ' capped)' +
-  ' · running heads ' + tally.runHeads + ' · tables ' + tally.tables)
+  ' · running heads ' + tally.runHeads + ' · tables ' + tally.tables +
+  ' · citation marks ' + tally.citations)
 
 if (args.report && capped.length) {
   console.log('\nCapped so the keep box cannot outgrow its column:')
