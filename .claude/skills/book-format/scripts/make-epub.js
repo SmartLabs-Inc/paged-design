@@ -142,8 +142,15 @@ function toXhtml (fragment) {
     })
   })
 
-  // Boolean attributes need a value in XML.
-  out = out.replace(/\s(checked|selected|disabled|hidden)(?=[\s>])/g, ' $1="$1"')
+  // Boolean attributes need a value in XML — but only inside a tag. Matching
+  // them in the text corrupts the book: this rewrote every occurrence of the
+  // word "selected" in running prose to selected="selected".
+  out = out.replace(/<([a-zA-Z][a-zA-Z0-9]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g,
+    function (all, name, attrs) {
+      const fixed = attrs.replace(/(^|\s)(checked|selected|disabled|hidden|multiple|readonly)(?=\s|$)/g,
+        '$1$2="$2"')
+      return '<' + name + fixed + '>'
+    })
   return out
 }
 
