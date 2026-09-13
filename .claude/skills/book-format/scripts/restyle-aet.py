@@ -144,7 +144,7 @@ print('  dropped paragraphs of escaped section-properties XML: %d' % len(stray))
 # Every new name needs a definition, or Word shows it as plain body text and
 # the author cannot see the structure they are being asked to keep.
 STYLE_DEFS = {
- 'Standfirst': '<w:style w:type="paragraph" w:styleId="Standfirst" w:customStyle="1"><w:name w:val="Standfirst"/><w:basedOn w:val="BodyText"/><w:next w:val="BodyText"/><w:qFormat/><w:pPr><w:keepLines/><w:spacing w:before="120" w:after="200"/><w:jc w:val="left"/></w:pPr><w:rPr><w:i/><w:color w:val="404040"/><w:sz w:val="23"/></w:rPr></w:style>',
+ 'Standfirst': '<w:style w:type="paragraph" w:styleId="Standfirst" w:customStyle="1"><w:name w:val="Standfirst"/><w:basedOn w:val="BodyText"/><w:next w:val="BodyText"/><w:qFormat/><w:pPr><w:keepNext/><w:keepLines/><w:widowControl/><w:spacing w:before="120" w:after="200"/><w:jc w:val="left"/></w:pPr><w:rPr><w:i/><w:color w:val="404040"/><w:sz w:val="23"/></w:rPr></w:style>',
  'Bullet': '<w:style w:type="paragraph" w:styleId="Bullet" w:customStyle="1"><w:name w:val="Bullet"/><w:basedOn w:val="BodyText"/><w:next w:val="BodyText"/><w:qFormat/><w:pPr><w:spacing w:before="40" w:after="40"/><w:contextualSpacing/><w:jc w:val="left"/></w:pPr><w:rPr></w:rPr></w:style>',
  'TableText': '<w:style w:type="paragraph" w:styleId="TableText" w:customStyle="1"><w:name w:val="Table Text"/><w:basedOn w:val="BodyText"/><w:next w:val="TableText"/><w:qFormat/><w:pPr><w:spacing w:before="20" w:after="20" w:line="240" w:lineRule="auto"/><w:jc w:val="left"/></w:pPr><w:rPr><w:sz w:val="18"/></w:rPr></w:style>',
  'Reference': '<w:style w:type="paragraph" w:styleId="Reference" w:customStyle="1"><w:name w:val="Reference"/><w:basedOn w:val="BodyText"/><w:next w:val="Reference"/><w:qFormat/><w:pPr><w:keepLines/><w:spacing w:before="0" w:after="40" w:line="240" w:lineRule="auto"/><w:contextualSpacing/><w:jc w:val="left"/></w:pPr><w:rPr><w:sz w:val="18"/></w:rPr></w:style>',
@@ -157,6 +157,49 @@ sx = sty.read_text(encoding='utf-8')
 have = set(re.findall(r'w:styleId="([^"]+)"', sx))
 added = [k for k in STYLE_DEFS if k not in have]
 sx = sx.replace('</w:styles>', ''.join(STYLE_DEFS[k] for k in added) + '</w:styles>')
+
+# --- widows, orphans and keep-with-next ------------------------------------
+# The document defaults carried no <w:widowControl> at all, so whether Word
+# kept a single line off the top of a page was left to the application. Say it.
+# A heading also has to hold on to what comes after it: a heading alone at the
+# foot of a page is the same fault as a widow and is the one an author notices.
+KEEP_WITH_NEXT = ('Heading1', 'Heading2', 'Heading3', 'Heading4', 'Heading5',
+                  'Heading6', 'EntryName', 'IndexLetter', 'ReferencesHeading',
+                  'Title', 'Subtitle', 'Standfirst', 'Caption', 'TableCaption')
+
+def ensure_in_ppr(style_xml, elements):
+    """Put each element into the style's <w:pPr>, replacing any 'false' form."""
+    for tag in elements:
+        style_xml = re.sub(r'<w:%s w:val="(?:false|0)"\s*/>' % tag, '', style_xml)
+        if re.search(r'<w:%s[ /]' % tag, style_xml):
+            continue
+        if '<w:pPr>' in style_xml:
+            style_xml = style_xml.replace('<w:pPr>', '<w:pPr><w:%s/>' % tag, 1)
+        else:
+            style_xml = style_xml.replace('</w:name>', '</w:name><w:pPr><w:%s/></w:pPr>' % tag, 1)
+            if '<w:pPr>' not in style_xml:  # no <w:name> either — rare, skip
+                continue
+    return style_xml
+
+def fix_style(match):
+    block = match.group(0)
+    sid = re.search(r'w:styleId="([^"]+)"', block).group(1)
+    if 'w:type="paragraph"' not in block:
+        return block
+    wanted = ['widowControl']
+    if sid in KEEP_WITH_NEXT:
+        wanted += ['keepLines', 'keepNext']
+    return ensure_in_ppr(block, wanted)
+
+sx, fixed = re.subn(r'<w:style [^>]*>.*?</w:style>', fix_style, sx, flags=re.S)
+
+# The same for the document defaults, which every style inherits from.
+if '<w:widowControl' not in re.search(r'<w:docDefaults>.*?</w:docDefaults>', sx, re.S).group(0):
+    sx = re.sub(r'(<w:pPrDefault>\s*<w:pPr>)', r'\1<w:widowControl/>', sx, count=1)
+    if '<w:pPrDefault>' not in sx:
+        sx = sx.replace('<w:docDefaults>',
+                        '<w:docDefaults><w:pPrDefault><w:pPr><w:widowControl/></w:pPr></w:pPrDefault>', 1)
+
 sty.write_text(sx, encoding='utf-8')
 
 # Nothing may name a style that is not defined.
@@ -178,6 +221,7 @@ with zipfile.ZipFile(OUT, 'w', zipfile.ZIP_DEFLATED) as z:
         if f != first: z.write(f, str(f.relative_to(work)))
 
 print('  style definitions added: %s' % (', '.join(added) or 'none'))
+print('  widow control and keep-with-next applied across %d styles' % fixed)
 print('  wrote %s (%.0f KB)' % (OUT, OUT.stat().st_size / 1024))
 print('  %-20s %s' % ('style', 'paragraphs'))
 for k in sorted(counts, key=lambda k: -counts[k]):
