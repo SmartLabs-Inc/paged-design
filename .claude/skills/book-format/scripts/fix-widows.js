@@ -125,7 +125,13 @@ function setPush (html, mark, on) {
   const { chromium } = requirePlaywright()
   const server = await serveDirectory(root)
   const browser = await launchChromium(chromium)
-  const url = server.url + '/' + args.content.replace(/^\.\//, '').replace(/\/$/, '') +
+  // The server is rooted at the repository, so the URL has to be the path
+  // relative to it. Concatenating whatever was passed on the command line
+  // works for a relative path and produces `http://host//home/user/...` for an
+  // absolute one — which 404s, so no book loads, so the wait for pages never
+  // ends. build-book.js passes an absolute path; that is the whole bug.
+  const url = server.url + '/' +
+    path.relative(root, path.resolve(args.content)).split(path.sep).join('/') +
     '/index.html?theme=' + theme
 
   async function paginate () {
