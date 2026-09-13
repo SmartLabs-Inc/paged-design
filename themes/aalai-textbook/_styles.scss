@@ -1224,14 +1224,16 @@ samp {
     column-fill: auto;
 }
 
-.references ol {
+.references ol,
+ol.references {
     font-size: $font-size-small;
     line-height: $baseline-grid-unit * 0.78;
     margin: 0 0 $baseline-grid-unit 0;
     padding-left: ($baseline-grid-unit * 1.1);
 }
 
-.references li {
+.references li,
+ol.references li {
     margin: 0 0 ($baseline-grid-unit / 3) 0;
     text-indent: 0;
     break-inside: avoid;

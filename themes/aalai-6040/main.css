@@ -47,7 +47,7 @@ table {
   border-spacing: 0; }
 
 body {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 13.3px;
   line-height: 17.5px; }
 
@@ -147,7 +147,7 @@ sub {
 
 hr {
   border: 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   text-align: center;
   margin: 17.5px 0; }
   hr:after {
@@ -348,7 +348,7 @@ h6 {
   @top-left-corner {
     content: normal; }
   @bottom-center {
-    content: string(h1-text, first); }
+    content: string(book-title); }
   @bottom-left {
     content: normal; }
   @bottom-right {
@@ -4266,14 +4266,14 @@ th, td {
   .title-page .title-page-title,
   .title-page .title-page-title {
     font-weight: bold;
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: "Charis SIL", Georgia, "Times New Roman", serif;
     font-size: 26.068px;
     line-height: 1.1;
     margin: 0;
     string-set: book-title content(); }
   .half-title-page .title-page-subtitle,
   .title-page .title-page-subtitle {
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: "Charis SIL", Georgia, "Times New Roman", serif;
     font-size: 18.62px;
     line-height: 1.1;
     margin: 17.5px 0 0 0;
@@ -4470,7 +4470,7 @@ th, td {
   box-shadow: 0px -1px 0px 0px var(--pagedjs-crop-shadow); }
 
 .label {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -4492,7 +4492,7 @@ th, td {
   color: #66717C; }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-weight: 400;
   color: #0D2035;
   break-after: avoid;
@@ -4509,7 +4509,7 @@ h3 {
   margin: 26.25px 0 8.75px 0; }
 
 h4 {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 11.5px;
   font-weight: 700;
   color: #137C7A;
@@ -4517,7 +4517,7 @@ h4 {
   margin: 17.5px 0 4.375px 0; }
 
 h5, h6 {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10px;
   font-weight: 700;
   color: #0D2035;
@@ -4575,7 +4575,7 @@ ul li:first-child {
   text-align: center; }
 
 .cover p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -4595,7 +4595,7 @@ ul li:first-child {
   margin-bottom: 87.5px; }
 
 .cover .cover-line-3 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 30px;
   line-height: 38.5px;
   letter-spacing: 0;
@@ -4617,7 +4617,7 @@ ul li:first-child {
   color: #B79A5B; }
 
 .chapter-eyebrow {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -4656,7 +4656,7 @@ ul li:first-child {
 
 .objectives li,
 .takeaways li {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -4687,7 +4687,7 @@ ul li:first-child {
 
 .checklist li,
 .ours li {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -4723,7 +4723,7 @@ ul li:first-child {
   border-bottom: 0.5pt solid #F4F6F7; }
 
 .week-number {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -4736,7 +4736,7 @@ ul li:first-child {
   break-after: avoid; }
 
 .week-dates {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 15px;
   color: #0D2035;
   margin: 0 0 8.75px 0;
@@ -4744,7 +4744,7 @@ ul li:first-child {
   break-after: avoid; }
 
 .list-label {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -4769,7 +4769,7 @@ ul li:first-child {
 
 .callout p,
 .panel p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -4780,7 +4780,7 @@ ul li:first-child {
   margin-bottom: 0; }
 
 .callout-label {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -4805,7 +4805,7 @@ ul li:first-child {
 
 .callout-dark .pullquote,
 .callout-accent .pullquote {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 12.5px;
   line-height: 17.5px;
   font-style: normal;
@@ -4821,7 +4821,7 @@ ul li:first-child {
   break-inside: avoid; }
 
 .figure-placeholder p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -4852,7 +4852,7 @@ ul li:first-child {
   align-items: center; }
 
 .level p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -4896,7 +4896,7 @@ tbody tr:first-child {
   break-after: avoid; }
 
 th {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -4911,7 +4911,7 @@ th {
   vertical-align: middle; }
 
 td {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -4925,7 +4925,7 @@ tbody tr:nth-child(odd) td {
 
 .table-caption,
 .figure-caption {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -4941,7 +4941,7 @@ figure img {
   max-height: 100%; }
 
 .pullquote {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 14px;
   line-height: 22.75px;
   color: #0D2035;
@@ -4954,7 +4954,7 @@ blockquote {
   border-left: 2pt solid #EAF3F3; }
 
 .source {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -4962,7 +4962,7 @@ blockquote {
   break-before: avoid; }
 
 .reference {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -4977,7 +4977,7 @@ blockquote {
   border-top: 0.5pt solid #66717C; }
 
 .footnotes p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -4988,7 +4988,7 @@ blockquote {
   text-decoration: none; }
 
 .title-page-title {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 26px;
   line-height: 35px;
   color: #0D2035;
@@ -4996,7 +4996,7 @@ blockquote {
   text-indent: 0; }
 
 .title-page-subtitle {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 11px;
   letter-spacing: 0.04em;
   color: #66717C;
@@ -5004,7 +5004,7 @@ blockquote {
 
 .title-page-author,
 .title-page-publisher {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -5012,7 +5012,7 @@ blockquote {
   text-indent: 0; }
 
 .toc-list li {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -5024,17 +5024,17 @@ blockquote {
 
 @page {
   @bottom-left {
-    font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     font-size: 9.5px;
     letter-spacing: 0.06em;
     color: #4A5560; }
   @bottom-right {
-    font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     font-size: 9.5px;
     letter-spacing: 0.06em;
     color: #4A5560; }
   @bottom-center {
-    font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     font-size: 9.5px;
     letter-spacing: 0.06em;
     color: #4A5560; } }
@@ -5049,7 +5049,7 @@ blockquote {
   break-inside: avoid; }
 
 .sidenote p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -5061,7 +5061,7 @@ blockquote {
   margin-bottom: 0; }
 
 .sidenote-label {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5098,7 +5098,7 @@ blockquote {
   color: #137C7A; }
 
 .step-number {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5111,7 +5111,7 @@ blockquote {
   margin-bottom: 4.375px; }
 
 .step-title {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5124,7 +5124,7 @@ blockquote {
   margin-bottom: 5.83333px; }
 
 .step p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -5142,7 +5142,7 @@ blockquote {
   break-inside: avoid; }
 
 .pillar-number {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5155,14 +5155,14 @@ blockquote {
   margin-bottom: 4.375px; }
 
 .pillar-title {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 15px;
   color: #0D2035;
   margin: 0 0 5.83333px 0;
   text-indent: 0; }
 
 .pillar p {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -5172,7 +5172,7 @@ blockquote {
   margin-bottom: 0; }
 
 .pillar .pillar-number {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5185,7 +5185,7 @@ blockquote {
   margin-bottom: 4.375px; }
 
 .pillar .pillar-title {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 13px;
   font-weight: 400;
   line-height: 1.25;
@@ -5194,7 +5194,7 @@ blockquote {
   text-indent: 0; }
 
 .step .step-number {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5206,7 +5206,7 @@ blockquote {
   color: #B79A5B; }
 
 .step .step-title {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5218,7 +5218,7 @@ blockquote {
   color: #0D2035; }
 
 .sidenote .sidenote-label {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5242,7 +5242,7 @@ blockquote {
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(h1-text, first); }
+    content: string(book-title); }
   @bottom-right {
     content: counter(page); } }
 
@@ -5271,7 +5271,7 @@ blockquote {
 .pagedjs_blank_page .pagedjs_page_content::after {
   content: "This page is intentionally blank";
   display: block;
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5281,6 +5281,76 @@ blockquote {
   text-indent: 0;
   font-size: 8px;
   color: #66717C; }
+
+@font-face {
+  font-family: "Charis SIL";
+  src: url("../../fonts/CharisSIL-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block; }
+
+@font-face {
+  font-family: "Charis SIL";
+  src: url("../../fonts/CharisSIL-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block; }
+
+@font-face {
+  font-family: "Charis SIL";
+  src: url("../../fonts/CharisSIL-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: block; }
+
+@font-face {
+  font-family: "Charis SIL";
+  src: url("../../fonts/CharisSIL-BoldItalic.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: block; }
+
+@font-face {
+  font-family: "Source Sans 3";
+  src: url("../../fonts/SourceSans3-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block; }
+
+@font-face {
+  font-family: "Source Sans 3";
+  src: url("../../fonts/SourceSans3-Semibold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: block; }
+
+@font-face {
+  font-family: "Source Sans 3";
+  src: url("../../fonts/SourceSans3-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block; }
+
+@font-face {
+  font-family: "Source Sans 3";
+  src: url("../../fonts/SourceSans3-It.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: block; }
+
+@font-face {
+  font-family: "Source Sans 3";
+  src: url("../../fonts/SourceSans3-BoldIt.ttf") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: block; }
+
+@font-face {
+  font-family: "Windorse";
+  src: url("../../fonts/Windorse-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block; }
 
 .chapter > div > div,
 .frontmatter > div > div,
@@ -5296,7 +5366,6 @@ blockquote {
 .part-contents,
 .section-head,
 .apparatus-head,
-.table-figure,
 .figure-span,
 .callout,
 .callout-dark,
@@ -5314,7 +5383,7 @@ blockquote {
   counter-reset: entry; }
 
 .chapter-eyebrow {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5332,7 +5401,7 @@ blockquote {
   line-height: 35px;
   margin: 0 0 8.75px 0;
   padding-bottom: 8.75px;
-  border-bottom: 3pt solid #B79A5B; }
+  border-bottom: 3pt solid #0D2035; }
 
 .section-head {
   break-before: page;
@@ -5346,7 +5415,7 @@ blockquote {
 .apparatus-head {
   break-before: auto;
   font-size: 12px;
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -5373,27 +5442,27 @@ h4 {
 
 .entry {
   counter-increment: entry;
-  margin: 19.25px 0; }
+  margin: 0 0 24.5px 0; }
 
 .entry > * {
-  border-left: 2.5pt solid #137C7A;
-  padding-left: 8.5px;
   margin-top: 0;
   margin-bottom: 0; }
 
-.entry > h5 {
+.entry > h5,
+.entry-lead > h5 {
   break-after: avoid;
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 11px;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 12.5px;
   font-style: normal;
   font-weight: 700;
   color: #0D2035;
   line-height: 17.5px;
-  padding-top: 5.83333px;
-  padding-bottom: 4.375px; }
+  padding-top: 0;
+  padding-bottom: 3.5px;
+  border-bottom: 1pt solid #0D2035;
+  margin-bottom: 4.375px; }
 
-.entry > h5::before {
-  content: counter(entry);
+.entry-number {
   display: inline-block;
   min-width: 13px;
   padding: 1px 3px 2px 3px;
@@ -5409,6 +5478,22 @@ h4 {
 .entry > p {
   padding-bottom: 9.625px; }
 
+.lead-head {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  text-align-last: justify; }
+
+.lead-rest {
+  margin-top: 0;
+  text-indent: 0;
+  padding-bottom: 9.625px; }
+
+.entry > .lead-rest:last-child {
+  padding-bottom: 0; }
+
+.entry > p:last-child {
+  padding-bottom: 0; }
+
 .standfirst {
   break-after: avoid;
   font-size: 14.63px;
@@ -5418,7 +5503,7 @@ h4 {
 
 .cite,
 sup.cite {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8px;
   font-weight: 700;
   line-height: 0;
@@ -5445,7 +5530,7 @@ a.cite {
   border-radius: 50%;
   background-color: #137C7A;
   color: #FFFFFF;
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 12px;
   font-weight: 700;
   line-height: 17px;
@@ -5462,13 +5547,15 @@ a.cite {
   margin-left: 8.5px; }
 
 .table-figure {
+  column-span: all;
+  break-inside: avoid;
   margin: 21px 0; }
 
 .table-figure caption.table-caption {
   caption-side: top;
   break-after: avoid;
   counter-increment: figure;
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5488,21 +5575,21 @@ a.cite {
 .table-figure > table {
   margin: 0; }
 
-@page {
-  @top-left {
-    font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    font-size: 7.5px;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    color: #137C7A;
-    vertical-align: bottom; }
-  @top-right {
-    font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    font-size: 7.5px;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    color: #137C7A;
-    vertical-align: bottom; } }
+.pagedjs_margin-top-left .pagedjs_margin-content,
+.pagedjs_margin-top-right .pagedjs_margin-content,
+.pagedjs_margin-bottom-center .pagedjs_margin-content {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #4A5560; }
+
+.pagedjs_margin-top-left .pagedjs_margin-content,
+.pagedjs_margin-top-right .pagedjs_margin-content {
+  font-size: 7.5px; }
+
+.pagedjs_margin-bottom-center .pagedjs_margin-content {
+  font-size: 8px; }
 
 .sidenote {
   width: 30mm;
@@ -5525,7 +5612,7 @@ a.cite {
   text-align: right; }
 
 .part-count {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5545,7 +5632,7 @@ a.cite {
 
 .part-contents li {
   counter-increment: partsection;
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 12px;
   line-height: 17.5px;
   color: #0D2035;
@@ -5570,7 +5657,7 @@ a.uri,
   padding: 8.75px 0; }
 
 .part-contents-count {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -5622,7 +5709,7 @@ a.uri,
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(h1-text, first); }
+    content: string(book-title); }
   @bottom-right {
     content: counter(page); }
   @right-top {
@@ -5681,7 +5768,7 @@ a.uri,
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(h1-text, first); }
+    content: string(book-title); }
   @bottom-right {
     content: counter(page); }
   @right-middle {
@@ -5740,7 +5827,7 @@ a.uri,
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(h1-text, first); }
+    content: string(book-title); }
   @bottom-right {
     content: counter(page); }
   @right-bottom {
@@ -5799,7 +5886,7 @@ a.uri,
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(h1-text, first); }
+    content: string(book-title); }
   @bottom-right {
     content: counter(page); }
   @right-top {
@@ -5858,7 +5945,7 @@ a.uri,
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(h1-text, first); }
+    content: string(book-title); }
   @bottom-right {
     content: counter(page); }
   @right-middle {
@@ -5917,7 +6004,7 @@ a.uri,
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(h1-text, first); }
+    content: string(book-title); }
   @bottom-right {
     content: counter(page); }
   @right-bottom {
@@ -5947,7 +6034,7 @@ a.uri,
 
 .chapter ol li a.uri,
 .chapter ul li a.uri {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   color: #66717C;
   text-decoration: none; }
@@ -5963,7 +6050,7 @@ a.uri,
   line-height: inherit; }
 
 .index h2 {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 13px;
   font-weight: 700;
   color: #FFFFFF;
@@ -5977,7 +6064,7 @@ a.uri,
   break-after: avoid; }
 
 .index > div > div > h2:first-of-type {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 27px;
   font-weight: 400;
   color: #0D2035;
@@ -5989,7 +6076,7 @@ a.uri,
 
 .chapter ol li a.uri,
 .chapter ul li a.uri {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   color: #66717C;
   text-decoration: none; }
@@ -6014,7 +6101,7 @@ a.uri,
   line-height: inherit; }
 
 .index h2 {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 13px;
   font-weight: 700;
   color: #FFFFFF;
@@ -6028,7 +6115,7 @@ a.uri,
   break-after: avoid; }
 
 .index > div > div > h2:first-of-type {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 27px;
   font-weight: 400;
   color: #0D2035;
@@ -6053,7 +6140,7 @@ a.uri,
   padding: 8.75px; }
 
 .figure-slot-id {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -6066,7 +6153,7 @@ a.uri,
   margin: 0 0 4.375px 0; }
 
 .figure-slot-size {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -6074,8 +6161,9 @@ a.uri,
   color: #66717C;
   margin: 0; }
 
-.figure > .figure-caption {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+.figure > .figure-caption,
+.figure-side > .figure-caption {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -6092,8 +6180,9 @@ a.uri,
   margin: 5.83333px 0 0 0;
   text-align: left; }
 
-.figure > .figure-brief {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+.figure > .figure-brief,
+.figure-side > .figure-brief {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 10.5px;
   line-height: 14px;
   text-indent: 0;
@@ -6106,7 +6195,8 @@ a.uri,
   text-align: left;
   hyphens: none; }
 
-.figure > .figure-brief::before {
+.figure > .figure-brief::before,
+.figure-side > .figure-brief::before {
   content: "To make or acquire  ";
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -6216,13 +6306,15 @@ samp {
 .references > div > div {
   column-fill: auto; }
 
-.references ol {
+.references ol,
+ol.references {
   font-size: 10.5px;
   line-height: 13.65px;
   margin: 0 0 17.5px 0;
   padding-left: 19.25px; }
 
-.references li {
+.references li,
+ol.references li {
   margin: 0 0 5.83333px 0;
   text-indent: 0;
   break-inside: avoid; }
@@ -6239,7 +6331,7 @@ samp {
   content: none; }
 
 .reference-section {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 9.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -6254,7 +6346,7 @@ samp {
   text-decoration: none; }
 
 .index-locators {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   color: #137C7A;
   white-space: nowrap; }
@@ -6283,6 +6375,18 @@ samp {
   white-space: nowrap;
   overflow: hidden; }
 
+.pagedjs_left_page .pagedjs_margin-top {
+  grid-template-columns: 1fr 0 0 !important; }
+
+.pagedjs_right_page .pagedjs_margin-top {
+  grid-template-columns: 0 0 1fr !important; }
+
+.pagedjs_left_page .pagedjs_margin-top-left .pagedjs_margin-content {
+  text-align: left; }
+
+.pagedjs_right_page .pagedjs_margin-top-right .pagedjs_margin-content {
+  text-align: right; }
+
 .part-panel {
   column-span: all;
   background-color: #F4F6F7;
@@ -6292,7 +6396,7 @@ samp {
   break-inside: avoid; }
 
 .part-panel-label {
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -6332,7 +6436,7 @@ samp {
 
 .needs-copy {
   column-span: all;
-  font-family: Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 9px;
   line-height: 13.125px;
   color: #D49B38;
@@ -6347,6 +6451,337 @@ samp {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase; }
+
+.split {
+  column-span: all;
+  display: flex;
+  gap: 12.25px;
+  align-items: flex-start;
+  break-inside: avoid;
+  margin: 17.5px 0; }
+
+.split > * {
+  margin-top: 0;
+  margin-bottom: 0; }
+
+.split-60-40 > *:first-child {
+  flex: 0 0 calc(60% - 6.125px); }
+
+.split-60-40 > *:last-child {
+  flex: 1 1 auto; }
+
+.split-40-60 > *:first-child {
+  flex: 0 0 calc(40% - 6.125px); }
+
+.split-40-60 > *:last-child {
+  flex: 1 1 auto; }
+
+.split-50-50 > * {
+  flex: 1 1 0; }
+
+.split-aside {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5px;
+  line-height: 14px;
+  text-indent: 0;
+  color: #66717C;
+  text-align: left;
+  hyphens: none; }
+
+.split-aside .figure-slot-id,
+.split-aside p:first-child {
+  margin-top: 0; }
+
+.band {
+  column-span: all;
+  background-color: #EAF3F3;
+  padding: 17.5px 21px;
+  margin: 21px 0;
+  break-inside: avoid; }
+
+.band-dark {
+  background-color: #0D2035; }
+
+.band p {
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
+  font-size: 16.625px;
+  line-height: 22.75px;
+  color: #0D2035;
+  text-align: left;
+  margin: 0; }
+
+.band > .callout-label {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 0 0 8.75px 0;
+  text-indent: 0;
+  font-size: 8px;
+  color: #137C7A;
+  margin: 0 0 5.83333px 0; }
+
+.band-dark > .callout-label {
+  color: #B79A5B; }
+
+.band-dark p {
+  color: #FFFFFF; }
+
+.band .callout-label {
+  color: #137C7A; }
+
+.band-dark .callout-label {
+  color: #B79A5B; }
+
+.figure-side {
+  display: flex;
+  flex-direction: column; }
+
+.figure-side > .figure-caption {
+  margin-top: 0; }
+
+.facets {
+  column-span: all;
+  break-inside: avoid;
+  margin: 21px 0; }
+
+.facets > h4 {
+  margin-top: 0; }
+
+.facet-grid {
+  display: grid;
+  gap: 8.75px;
+  align-items: stretch; }
+
+.facet-across-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.facet-across-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.facet-across-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.facet-grid > .panel {
+  margin: 0; }
+
+.facets > .band {
+  margin-bottom: 0; }
+
+.push-column {
+  break-before: column; }
+
+.push-page {
+  break-before: page; }
+
+h3 + p,
+h4 + p,
+h3 + .standfirst,
+h4 + .standfirst,
+.entry > h5 + p {
+  orphans: 5; }
+
+.entry-lead {
+  break-inside: avoid; }
+
+.entry > .entry-lead > * {
+  margin-top: 0;
+  margin-bottom: 0; }
+
+.keep-lead {
+  break-inside: avoid; }
+
+.cite {
+  overflow-wrap: anywhere;
+  word-break: break-word; }
+
+.table-wide {
+  column-span: all;
+  break-before: page;
+  margin: 0 0 21px 0; }
+
+.index-entry > a:last-child::after {
+  content: normal; }
+
+.index-list {
+  column-count: 1;
+  list-style: none;
+  margin: 0;
+  padding: 0; }
+
+.index-letter {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5px;
+  line-height: 14px;
+  text-indent: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+  background-color: #137C7A;
+  line-height: 17.5px;
+  padding: 0 5.83333px;
+  margin: 14px 0 5.83333px 0;
+  display: block;
+  width: 24.5px;
+  text-align: center;
+  break-after: avoid; }
+
+.index h2 {
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
+  font-size: 27px;
+  font-weight: 400;
+  color: #0D2035;
+  background-color: transparent;
+  display: block;
+  padding: 0;
+  margin: 0 0 17.5px 0;
+  text-align: left; }
+
+.index h2.index-letter {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #FFFFFF;
+  background-color: #137C7A;
+  line-height: 17.5px;
+  padding: 0 5.83333px;
+  margin: 14px 0 5.83333px 0;
+  display: inline-block;
+  min-width: 17.5px;
+  text-align: center;
+  break-after: avoid; }
+
+.index-title {
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
+  font-size: 27px;
+  font-weight: 400;
+  color: #0D2035;
+  line-height: 29.75px;
+  margin: 0 0 8.75px 0;
+  padding-bottom: 5.83333px;
+  border-bottom: 2pt solid #0D2035;
+  column-span: auto; }
+
+.index {
+  column-count: auto; }
+
+.index-entry {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5px;
+  line-height: 14px;
+  text-indent: 0;
+  font-size: 9.66px;
+  line-height: 13.65px;
+  margin: 0 0 3.85px 0;
+  text-align: left;
+  hyphens: none;
+  break-inside: avoid; }
+
+.index-letter {
+  margin-top: 15.75px; }
+
+.title-page h1,
+.part-title,
+.part-name,
+.index-title {
+  font-family: "Windorse", "Charis SIL", Georgia, serif; }
+
+.keep-lead {
+  column-span: all;
+  margin: 28px 0 21px 0; }
+
+.keep-lead.lead-section {
+  background-color: #EAF3F3;
+  border-left: 3pt solid #137C7A;
+  padding: 15.75px 19.25px; }
+
+.keep-lead > h3 {
+  margin-top: 0; }
+  .keep-lead > h3::after {
+    content: none; }
+
+.keep-lead > p:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0; }
+
+.entry-whole {
+  break-inside: avoid; }
+
+.references,
+.apparatus-head {
+  column-span: all; }
+
+.chapter > div > div,
+.frontmatter > div > div {
+  column-fill: balance; }
+
+.toc-entry-sub {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5px;
+  line-height: 14px;
+  text-indent: 0;
+  font-size: 9.66px;
+  padding-left: 17.5px;
+  color: #66717C; }
+
+.toc-entry-sub > a {
+  color: inherit;
+  text-decoration: none; }
+
+.table-figure td:first-child,
+.table-figure th:first-child {
+  white-space: nowrap;
+  hyphens: none; }
+
+.table-figure th,
+.table-figure caption {
+  hyphens: none; }
+
+.table-figure.table-tight {
+  font-size: 9.5px; }
+  .table-figure.table-tight td,
+  .table-figure.table-tight th {
+    padding-top: 1.4px;
+    padding-bottom: 1.4px;
+    line-height: 12px; }
+  .table-figure.table-tight p {
+    line-height: 12px; }
+
+.table-own-page {
+  break-before: page; }
+
+.table-here {
+  break-before: auto; }
+
+.section-head-first {
+  break-before: auto; }
+
+.abbrev-list {
+  margin: 0 0 17.5px 0;
+  padding: 0; }
+
+.abbrev {
+  break-inside: avoid;
+  padding-left: 1.1em;
+  text-indent: -1.1em;
+  margin-bottom: 3.5px;
+  line-height: 17.5px; }
+
+.abbrev > dt,
+.abbrev > dd {
+  display: inline;
+  margin: 0; }
+
+.abbrev > dt {
+  float: none; }
+
+.abbrev > dt {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  color: #0D2035;
+  margin-right: 0.5em; }
 
 .chapter > div > div,
 .frontmatter > div > div,
