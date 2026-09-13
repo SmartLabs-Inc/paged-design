@@ -276,7 +276,8 @@ function designPart (children, title, state) {
   // theme draws: the name large, the numeral as an eyebrow above it.
   const rest = children.slice()
   let opener = ''
-  for (let i = 0; i < rest.length; i += 1) {
+  const alreadyOpened = rest.some(function (b) { return hasClass(b, 'part-title') })
+  for (let i = 0; i < rest.length && !alreadyOpened; i += 1) {
     if (rest[i].name === 'h2') {
       const id = /\bid="([^"]*)"/.exec(rest[i].html)
       opener = '<h1 class="part-name">' + escapeAttr(name) + '</h1>\n' +
@@ -287,7 +288,8 @@ function designPart (children, title, state) {
       break
     }
   }
-  return opener + '\n' + designBody(rest, state, { plain: false })
+  const body = designBody(rest, state, { plain: false })
+  return opener ? opener + '\n' + body : body
 }
 
 // Everything below a part or chapter title.
@@ -312,11 +314,16 @@ function designBody (children, state, options) {
     if (node.name === 'h2' && !options.plain) {
       const text = textOf(node.html)
       entryNumber = 0
+      if (hasClass(node, 'section-head') || hasClass(node, 'part-title')) {
+        out.push(node.html)
+        index += 1
+        continue
+      }
       out.push('<h6 class="run-head">' + escapeAttr(text) + '</h6>')
       tally.runHeads += 1
-      out.push(node.html
-        .replace(/^<h2/, '<h2 class="section-head" title="' + escapeAttr(text) + '"')
-        .replace(/class="section-head" title="([^"]*)"([^>]*)\bclass="[^"]*"/, 'class="section-head" title="$1"$2'))
+      const id = /\bid="([^"]*)"/.exec(node.html)
+      out.push('<h2 class="section-head"' + (id ? ' id="' + id[1] + '"' : '') +
+        ' title="' + escapeAttr(text) + '">' + innerOf(node) + '</h2>')
       index += 1
       continue
     }
@@ -325,6 +332,15 @@ function designBody (children, state, options) {
     // together, across both columns, in a tinted panel.
     if ((node.name === 'h3' || node.name === 'h4') && !options.plain) {
       const text = textOf(node.html)
+      // On a second run the heading arrives with the running head this pass
+      // gave it last time, immediately before it. Anything else in that slot —
+      // the group built for the heading above, say — is not that.
+      const previous = (out[out.length - 1] || '').trim()
+      if (/^<h6 class="run-head">.*<\/h6>$/.test(previous) && textOf(previous) === text) {
+        out.push(node.html)
+        index += 1
+        continue
+      }
       entryNumber = 0
       const next = children[index + 1]
       const parts = ['<h6 class="run-head">' + escapeAttr(text) + '</h6>']
