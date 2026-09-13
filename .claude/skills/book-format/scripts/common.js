@@ -77,6 +77,38 @@ function requirePlaywright () {
 
 // Serve a directory over HTTP so Paged.js can fetch CSS, fonts and images.
 // Returns { url, close }.
+// Playwright insists on the browser build its own version pins, and refuses a
+// perfectly good Chromium that is one build off. Managed containers ship a
+// browser and no network to fetch another, so look for one before giving up.
+function launchChromium (chromium, options) {
+  const launchOptions = Object.assign({}, options)
+  if (!launchOptions.executablePath) {
+    const found = findChromium()
+    if (found) launchOptions.executablePath = found
+  }
+  return chromium.launch(launchOptions)
+}
+
+function findChromium () {
+  if (process.env.CHROMIUM_PATH) return process.env.CHROMIUM_PATH
+  const base = process.env.PLAYWRIGHT_BROWSERS_PATH
+  if (!base || !fs.existsSync(base)) return null
+  const candidates = []
+  for (const dir of fs.readdirSync(base)) {
+    if (!dir.startsWith('chromium')) continue
+    for (const exe of ['chrome-linux/chrome', 'chrome-linux/headless_shell',
+      'chrome-headless-shell-linux64/chrome-headless-shell']) {
+      const full = path.join(base, dir, exe)
+      if (fs.existsSync(full)) candidates.push(full)
+    }
+  }
+  // A full browser paginates the same as the headless shell and complains less.
+  candidates.sort(function (a, b) {
+    return (a.indexOf('headless') === -1 ? 0 : 1) - (b.indexOf('headless') === -1 ? 0 : 1)
+  })
+  return candidates[0] || null
+}
+
 function serveDirectory (rootDir) {
   const http = require('http')
 
@@ -247,6 +279,8 @@ module.exports = {
   requireRepoRoot,
   parseArgs,
   requirePlaywright,
+  launchChromium,
+  findChromium,
   serveDirectory,
   blockRemoteResources,
   watchForPagedJs,
