@@ -1646,8 +1646,12 @@ $text-block: $page-width - $margin-inside - $margin-outside;
 // a sheet white. At the foot of the last column a column break is a page
 // break, which is what the rule asks for.
 
+// Paged.js re-implements `break-before` only for the page-level values —
+// always, page, left, right, recto, verso — and silently drops the rest, so
+// this does nothing and never has. Kept named so the next person looking for
+// it finds this note instead of the property.
 .push-column {
-    break-before: column;
+    break-before: column; // no-op under Paged.js; use .push-page
 }
 
 .push-page {
