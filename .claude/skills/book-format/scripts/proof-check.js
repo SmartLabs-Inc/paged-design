@@ -52,7 +52,7 @@ const max = Number(args.max || 20)
 function collect () {
   const report = {
     pages: 0, widows: [], orphans: [], splitNames: [], shortPages: [],
-    strandedHeadings: [], unevenColumns: [], runningHeads: [], missingHeads: [],
+    strandedHeadings: [], unevenColumns: [], runningHeads: [], clippedHeads: [],
     hyphenStacks: []
   }
 
@@ -99,6 +99,20 @@ function collect () {
         if (/^counter\(/.test(value)) value = '#'
         margins[slot] = (value || box.textContent || '').replace(/\s+/g, ' ').trim()
       })
+    // A running head set `nowrap; overflow: hidden` is clipped in silence:
+    // the page looks fine and the section name is simply cut. Compare what the
+    // box wants against what it has.
+    'top-left top-center top-right'.split(' ').forEach(function (slot) {
+      const box = page.querySelector('.pagedjs_margin-' + slot + ' .pagedjs_margin-content')
+      if (!box || !margins[slot]) return
+      if (box.scrollWidth > box.clientWidth + 1) {
+        report.clippedHeads.push({
+          page: number, slot: slot, text: margins[slot],
+          over: Math.round(box.scrollWidth - box.clientWidth)
+        })
+      }
+    })
+
     report.runningHeads.push({
       page: number,
       side: page.classList.contains('pagedjs_left_page') ? 'verso' : 'recto',
@@ -310,6 +324,9 @@ function collect () {
   section('Headings with nothing under them', report.strandedHeadings, function (r) {
     return 'p' + r.page + '  ' + r.text
   })
+  section('Running heads clipped by the margin box', report.clippedHeads, function (r) {
+    return 'p' + r.page + '  ' + r.over + 'px over  ' + r.text
+  })
   section('Pages under 55% full', report.shortPages, function (r) {
     return 'p' + r.page + '  ' + r.fill + '%  ' + r.text
   })
@@ -338,7 +355,8 @@ function collect () {
   if (groups.length > max) console.log('  … and ' + (groups.length - max) + ' more patterns')
 
   const total = report.widows.length + report.orphans.length + report.splitNames.length +
-    report.strandedHeadings.length + report.paginationFailures.length
+    report.strandedHeadings.length + report.paginationFailures.length +
+    report.clippedHeads.length
   console.log('\n' + total + ' faults that a reader would see.')
   if (args.strict && total) process.exit(1)
 })()
