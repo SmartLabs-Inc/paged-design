@@ -18,6 +18,7 @@
 // paragraph that simply happens to be one line long.
 'use strict'
 
+const path = require('path')
 const {
   requireRepoRoot, parseArgs, requirePlaywright, launchChromium, serveDirectory,
   blockRemoteResources, watchForPagedJs, waitForPagedJs
@@ -285,7 +286,13 @@ function collect () {
     if (/Layout repeated|Unable to layout/.test(body)) failures.push(body.slice(0, 120))
   })
 
-  const url = server.url + '/' + args.content.replace(/^\.\//, '').replace(/\/$/, '') +
+  // The server is rooted at the repository, so the URL has to be the path
+  // relative to it. Concatenating whatever was passed on the command line
+  // works for a relative path and produces `http://host//home/user/...` for an
+  // absolute one — which 404s, so no book loads, so the wait for pages never
+  // ends. build-book.js passes an absolute path; that is the whole bug.
+  const url = server.url + '/' +
+    path.relative(root, path.resolve(args.content)).split(path.sep).join('/') +
     '/index.html?theme=' + theme
   await page.goto(url, { waitUntil: 'load' })
   await waitForPagedJs(page, Number(args.timeout || 600000))
