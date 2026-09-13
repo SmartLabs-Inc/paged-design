@@ -1919,6 +1919,22 @@ h4 + .standfirst,
 // is looking for. A topic opener inside one takes the full measure and the
 // space above it, but no ground: two tinted boxes back to back read as one box
 // that has been broken, not as two levels of heading.
+// A section head is a spanner and so is the box below it. Two spanners in a
+// row cannot both be placed at the top of a fresh page: Paged.js sets the
+// first, then pushes the second to the page after, leaving the section opener
+// four per cent full. Twelve pages in this book were nearly empty that way.
+//
+// The design pass therefore merges the two into one box when they meet, and
+// the head stops spanning on its own account inside it.
+.keep-lead.section-opener {
+    break-before: page;
+}
+
+.keep-lead .section-head {
+    column-span: none;
+    break-before: auto;
+}
+
 .keep-lead.lead-section {
     background-color: $color-tint;
     border-left: 3pt solid $color-teal;
