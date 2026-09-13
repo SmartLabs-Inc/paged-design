@@ -50,6 +50,8 @@ in_table = set()
 for tbl in body.iter(W + 'tbl'):
     for p in tbl.iter(W + 'p'): in_table.add(id(p))
 
+HEADINGS = ('Heading1', 'Heading2', 'Heading3', 'Heading4',
+            'ReferencesHeading', 'Title', 'Subtitle')
 REFS = re.compile(r'^references\b', re.I)
 NUMBERED = re.compile(r'^\d+\.\s')
 # Six paragraphs in the manuscript hold section properties that were escaped
@@ -61,6 +63,7 @@ chapter = ''          # current Heading1 text
 in_refs = False       # inside a reference list
 in_index = False      # inside the alphabetical index
 grouped = False       # inside a numbered group inside the current section
+last_heading = None   # the style of the last non-empty paragraph seen
 counts = {}
 drop = []
 stray = []
@@ -112,7 +115,11 @@ for el in list(body):
     elif st == 'EntryName':
         new = 'IndexLetter' if len(txt) <= 2 else 'EntryName'
     elif st == 'FirstParagraph':
-        new = 'Standfirst'
+        # Word applies "First Paragraph" after *any* heading, so 69 of these
+        # are the first body paragraph of an entry rather than the standfirst
+        # of a section. Downstream that matters: a standfirst ends an entry, so
+        # those entries came out empty and their names stranded at page feet.
+        new = 'Standfirst' if last_heading in HEADINGS else 'BodyText'
     elif st == 'BodyText':
         new = 'IndexEntry' if in_index else 'BodyText'
     elif st == 'Compact':
@@ -124,6 +131,8 @@ for el in list(body):
     if new != st or st == 'Compact':
         set_style(el, new)
     counts[new] = counts.get(new, 0) + 1
+    if txt:
+        last_heading = new
 
 for el in drop + stray: body.remove(el)
 # Word wants the standalone declaration; ElementTree will not write one.
