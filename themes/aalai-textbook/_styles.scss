@@ -1104,11 +1104,28 @@ samp {
     column-fill: auto;
 }
 
-.frontmatter h2,
-.endmatter h2,
+// The index is end matter but it is not a section: its letter dividers are h2
+// and there are twenty-seven of them. Spanning each one starts a new column
+// set, and three spanners in a row — title, standfirst, first letter — opened
+// the index on a page that stayed completely empty. Only a heading that is
+// the section's own title spans.
+.frontmatter > div > div > h2,
+.endmatter:not(.index) h2,
+.index > div > div > h2:first-of-type,
 .frontmatter > div > div > p:first-of-type,
 .endmatter > div > div > p:first-of-type {
     column-span: all;
+}
+
+.index h2.index-letter {
+    column-span: none;
+}
+
+// Two spanners in a row cannot both open a page — the same fault that left
+// section openers four per cent full. The index's title spans; its standfirst
+// sits in the first column under it.
+.index > div > div > p:first-of-type {
+    column-span: none;
 }
 
 .frontmatter > div > div > h2,
@@ -2069,6 +2086,19 @@ h4 + .standfirst,
 // wrap it prevents.
 .entry-paren {
     white-space: nowrap;
+}
+
+// ---------------------------------------------------------------------------
+// Never a single line
+// ---------------------------------------------------------------------------
+// Chromium honours `widows` and `orphans` inside a multi-column set, and the
+// theme had never set either: the only reason widows were rare is that most
+// paragraphs here are long. Two lines minimum on both sides of every break,
+// in the body and in the apparatus alike.
+
+p, li, dd, .lead-rest, .standfirst {
+    orphans: 2;
+    widows: 2;
 }
 
 // The abbreviations glossary
