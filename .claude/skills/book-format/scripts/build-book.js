@@ -42,6 +42,9 @@ if (args.help || !args.src) {
     '                    family; skip it for one already written to a template.',
     '  --out-dir <dir>   Where the PDF and EPUB go. Default: alongside content.',
     '  --no-pdf          Skip the print render.',
+    '  --no-widows       Skip the widow pass. It paginates several times, so',
+    '                    it is the slow step; the book still renders without it.',
+    '  --rounds <n>      Widow-pass attempts. Default 6.',
     '  --no-epub         Skip the EPUB.',
     '  --no-check        Skip the layout check.',
     '',
@@ -103,6 +106,12 @@ if (!args['no-epub']) {
 
 stage('Design — part openers, entry cards, keep boxes')
 run('node', [path.join(here, 'design-pass.js'), '--content', contentDir])
+
+if (!args['no-pdf'] && !args['no-widows']) {
+  stage('Widows — push what CSS cannot reach across a page break')
+  run('node', [path.join(here, 'fix-widows.js'), '--content', contentDir,
+    '--theme', theme, '--rounds', String(args.rounds || 6)])
+}
 
 if (!args['no-pdf']) {
   stage('CSS — compile the theme')
