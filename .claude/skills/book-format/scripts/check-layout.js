@@ -10,7 +10,7 @@ const fs = require('fs')
 const path = require('path')
 const { execFileSync } = require('child_process')
 const {
-  requireRepoRoot, parseArgs, requirePlaywright, serveDirectory,
+  requireRepoRoot, parseArgs, requirePlaywright, launchChromium, serveDirectory,
   blockRemoteResources, watchForPagedJs, waitForPagedJs
 } = require('./common')
 
@@ -356,7 +356,7 @@ async function main () {
   const server = await serveDirectory(root)
   const relativePath = path.relative(root, indexFile).split(path.sep).join('/')
 
-  const browser = await chromium.launch()
+  const browser = await launchChromium(chromium)
   const page = await browser.newPage()
 
   if (!args['allow-remote']) await blockRemoteResources(page, server.url)
