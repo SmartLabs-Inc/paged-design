@@ -337,8 +337,15 @@ function renderBlocks (container, context, depth) {
     const entry = context.lookup(paragraphStyleId(node)) || {}
     const list = listInfo(node, context.numbering)
 
+    // A style map that names a role for this style is an explicit statement of
+    // intent; Word's own numbering is whatever the author happened to press.
+    // So the map wins — but only where it says something a list would destroy,
+    // or a body paragraph the author bullet-listed by hand would lose its list.
+    const mapped = entry.group || entry.component || entry.drop ||
+      (entry.element && entry.element !== 'p')
+
     // Consecutive list paragraphs become one list.
-    if (list) {
+    if (list && !mapped) {
       const items = []
       const ordered = list.ordered
       while (index < nodes.length && nodes[index].name === 'w:p') {
