@@ -182,6 +182,21 @@ the master; the exporter lists those at the end of every run. Every package is
 checked structurally before it is written, but InDesign is the only real test.
 See `references/indesign.md`.
 
+## The whole pipeline in one command
+
+For a book that has been through this before, the stages are wired together:
+
+```bash
+node .claude/skills/book-format/scripts/build-book.js \
+  --src Manuscript.docx --slug my-book --map my-book --theme my-theme --restyle
+```
+
+It restyles the manuscript to a closed style vocabulary, converts it, builds
+the EPUB **before** the design pass and the PDF after, then runs the layout
+check. Read `references/pipeline.md` before relying on it — particularly the
+rule that no keep-together box may be taller than its column, which is what
+decides whether the book paginates to the end or stops silently in the middle.
+
 ## Client proposals
 
 A proposal set in the same design, at the same trim, as the book it is selling
@@ -243,6 +258,9 @@ Read these when the task reaches them; they are not needed up front.
 - `references/themes.md` — the shipped themes and when to pick each.
 - `references/proposals.md` — building a client proposal from a deal file, and
   how to change the template without breaking a document you already sent.
+- `references/pipeline.md` — the manuscript-to-PDF-and-EPUB run: what each
+  stage does, why the EPUB forks before the design pass, and how to tell a
+  finished book from one that stopped paginating.
 - `references/troubleshooting.md` — Paged.js limitations and fixes for
   overflow, widows, orphans, bad breaks, and missing running heads.
 - `references/prepress.md` — what has to be true before a printer sees the
