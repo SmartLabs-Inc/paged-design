@@ -207,6 +207,90 @@ function slug (text) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
+
+// ---------------------------------------------------------------------------
+// Things that must not break
+// ---------------------------------------------------------------------------
+
+// A person's name is one word as far as a line break is concerned. This ran
+// as "…AND THOMA S / GRINBERG" across the foot of the title page, which is the
+// sort of thing that gets a proof sent back.
+//
+// Only display type is treated this way. Doing it in running text would fight
+// justification for no benefit — a name broken across two lines of a
+// justified column is ordinary, a name broken in a title is a fault.
+function protectNames (html) {
+  return outsideTags(html, function (text) {
+    return text
+      // An honorific or a degree stays with the name it belongs to.
+      .replace(/,\s+(M\.\s?D\.|Ph\.\s?D\.|D\.O\.|M\.S\.|R\.N\.|M\.B\.A\.)/g, ',\u00A0$1')
+      // Given name and surname, with any middle initials.
+      .replace(/\b([A-Z][a-z]{2,})\s+((?:[A-Z]\.\s*)*)([A-Z][a-z]{2,})\b/g,
+        function (all, first, initials, last) {
+          return first + '\u00A0' + initials.replace(/\s+/g, '\u00A0') + last
+        })
+  })
+}
+
+// Apply a text transform to everything that is not inside a tag.
+function outsideTags (html, transform) {
+  let out = ''
+  let index = 0
+  while (index < html.length) {
+    const next = html.indexOf('<', index)
+    if (next === -1) { out += transform(html.slice(index)); break }
+    out += transform(html.slice(index, next))
+    const close = html.indexOf('>', next)
+    if (close === -1) { out += html.slice(next); break }
+    out += html.slice(next, close + 1)
+    index = close + 1
+  }
+  return out
+}
+
+// An entry name's parenthetical is a unit. Where it fits on a line of its own
+// it moves there whole rather than wrapping mid-phrase; where it is too long
+// for that it wraps normally, because a 60-character parenthetical held
+// together would leave half a line white above it.
+const PAREN_HOLDS = 34
+
+function holdParenthetical (inner) {
+  return inner.replace(/\s*\(([^()]{1,200})\)/g, function (all, body) {
+    if (body.length > PAREN_HOLDS) return all
+    return ' <span class="entry-paren">(' + body + ')</span>'
+  })
+}
+
+// The abbreviations glossary arrives from Word as a two-column table, which
+// sets it full width, one term to a line, over four pages with a third of each
+// page white. The theme sets it as a flowing two-column list instead; this is
+// the markup that rule wants. The wrapping div inside the dl is not optional:
+// `break-inside` on a dt/dd pair does not hold the two together.
+function abbreviationList (table) {
+  const rows = table.html.match(/<tr\b[\s\S]*?<\/tr>/g) || []
+  const pairs = []
+  rows.forEach(function (row) {
+    if (/<th\b/.test(row)) return
+    const cells = row.match(/<td\b[^>]*>([\s\S]*?)<\/td>/g) || []
+    if (cells.length !== 2) return
+    const values = cells.map(function (cell) {
+      return cell.replace(/^<td\b[^>]*>/, '').replace(/<\/td>$/, '').trim()
+    })
+    if (!values[0]) return
+    pairs.push('<div class="abbrev"><dt>' + values[0] + '</dt><dd>' + values[1] + '</dd></div>')
+  })
+  if (pairs.length < 4) return null
+  tally.abbreviations = pairs.length
+  return '<dl class="abbrev-list">\n' + pairs.join('\n') + '\n</dl>'
+}
+
+// Is this the abbreviations table rather than a table of data?
+function isAbbreviationTable (table) {
+  const head = /<t[hd]\b[^>]*>([\s\S]*?)<\/t[hd]>/.exec(table.html)
+  if (!head) return false
+  return /abbreviation|acronym/i.test(textOf(head[1]))
+}
+
 // ---------------------------------------------------------------------------
 // The pass
 // ---------------------------------------------------------------------------
@@ -216,7 +300,7 @@ const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
 
 const tally = {
   parts: 0, frontmatter: 0, endmatter: 0, runHeads: 0,
-  entries: 0, leadsSplit: 0, keepLeads: 0, spanCapped: 0, tables: 0, citations: 0
+  entries: 0, leadsSplit: 0, keepLeads: 0, spanCapped: 0, tables: 0, citations: 0, abbreviations: 0, stubsDropped: 0, numeralsStripped: 0
 }
 const capped = []
 
@@ -345,7 +429,36 @@ function superscriptCitations (html) {
 }
 
 // Everything below a part or chapter title.
-function designBody (children, state, options) {
+function designBody (allChildren, state, options) {
+  // Clean the headings before anything looks at them. Doing it inline missed
+  // the ones a section opener swallows in its look-ahead, which was all three
+  // of the "1. Introduction" stubs.
+  //
+  // "1. Introduction" is not a heading — it is Word's outline showing through,
+  // and the paragraph under it belongs to the section above. A heading that
+  // arrives numbered carries a numeral the design does not use.
+  const children = []
+  allChildren.forEach(function (child) {
+    if (!/^h[2-6]$/.test(child.name) || hasClass(child, 'section-head')) {
+      children.push(child)
+      return
+    }
+    const text = textOf(child.html)
+    if (/^\d+\.\s*introductions?$/i.test(text) || /^introductions?$/i.test(text)) {
+      tally.stubsDropped += 1
+      return
+    }
+    if (/^\d+\.\s+\S/.test(text)) {
+      tally.numeralsStripped += 1
+      children.push({
+        name: child.name,
+        html: child.html.replace(/(<[^>]*>)\s*\d+\.\s+/, '$1')
+      })
+      return
+    }
+    children.push(child)
+  })
+
   const out = []
   let index = 0
   let entryNumber = 0
@@ -381,8 +494,8 @@ function designBody (children, state, options) {
       const below = children[index + 1]
       if (below && (below.name === 'h3' || below.name === 'h4')) {
         const group = subsection(below, children[index + 2], state)
-        out.push('<div class="keep-lead lead-section section-opener">' + head +
-          group.box + '</div>')
+        out.push('<div class="keep-lead lead-section section-opener">' + protectNames(head) +
+          protectNames(group.box) + '</div>')
         if (group.rest) out.push(group.rest)
         index += group.consumed + 1
         continue
@@ -407,7 +520,7 @@ function designBody (children, state, options) {
       }
       entryNumber = 0
       const group = subsection(node, children[index + 1], state)
-      out.push('<div class="keep-lead lead-section">' + group.box + '</div>')
+      out.push('<div class="keep-lead lead-section">' + protectNames(group.box) + '</div>')
       if (group.rest) out.push(group.rest)
       index += group.consumed
       continue
@@ -438,6 +551,10 @@ function designBody (children, state, options) {
     }
 
     if (node.name === 'table') {
+      if (isAbbreviationTable(node)) {
+        const list = abbreviationList(node)
+        if (list) { out.push(list); index += 1; continue }
+      }
       out.push('<div class="table-figure">' + node.html + '</div>')
       tally.tables += 1
       index += 1
@@ -456,7 +573,7 @@ function designBody (children, state, options) {
 function buildEntry (heading, body, number) {
   const text = textOf(heading.html)
   const id = 'e-' + slug(text)
-  let name = innerOf(heading)
+  const name = protectNames(holdParenthetical(innerOf(heading)))
   const head = '<h5 id="' + id + '"><span class="entry-number">' + number +
     '</span>' + name + '</h5>'
 
@@ -498,7 +615,7 @@ function splitTitlePage (component) {
   for (const child of children) {
     const isTitleMatter = child.name === 'h1' ||
       hasClass(child, 'title-page-subtitle') || hasClass(child, 'title-page-author')
-    if (isTitleMatter && move.length === 0) keep.push(child.html)
+    if (isTitleMatter && move.length === 0) keep.push(protectNames(child.html))
     else move.push(child.html)
   }
   if (!move.length) return null
@@ -550,7 +667,12 @@ console.log('  parts ' + tally.parts + ' · front matter ' + tally.frontmatter +
 console.log('  entries ' + tally.entries + ' (' + tally.leadsSplit + ' leads split)' +
   ' · keep boxes ' + tally.keepLeads + ' (' + tally.spanCapped + ' capped)' +
   ' · running heads ' + tally.runHeads + ' · tables ' + tally.tables +
-  ' · citation marks ' + tally.citations)
+  ' · citation marks ' + tally.citations +
+  (tally.abbreviations ? ' · abbreviations set as a list ' + tally.abbreviations : ''))
+if (tally.stubsDropped || tally.numeralsStripped) {
+  console.log('  dropped ' + tally.stubsDropped + ' "N. Introduction" stubs · ' +
+    'stripped ' + tally.numeralsStripped + ' heading numerals')
+}
 
 if (args.report && capped.length) {
   console.log('\nCapped so the keep box cannot outgrow its column:')
