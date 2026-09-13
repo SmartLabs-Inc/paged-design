@@ -167,18 +167,60 @@ KEEP_WITH_NEXT = ('Heading1', 'Heading2', 'Heading3', 'Heading4', 'Heading5',
                   'Heading6', 'EntryName', 'IndexLetter', 'ReferencesHeading',
                   'Title', 'Subtitle', 'Standfirst', 'Caption', 'TableCaption')
 
+# CT_PPrBase is a *sequence*, so its children have one legal order and Word
+# refuses the file outright if they are out of it. Inserting <w:widowControl/>
+# at the front of <w:pPr> — before keepNext and keepLines, which precede it —
+# produced a styles.xml that parses perfectly and that Word will not open.
+PPR_ORDER = [
+    'pStyle', 'keepNext', 'keepLines', 'pageBreakBefore', 'framePr',
+    'widowControl', 'numPr', 'suppressLineNumbers', 'pBdr', 'shd', 'tabs',
+    'suppressAutoHyphens', 'kinsoku', 'wordWrap', 'overflowPunct',
+    'topLinePunct', 'autoSpaceDE', 'autoSpaceDN', 'bidi', 'adjustRightInd',
+    'snapToGrid', 'spacing', 'ind', 'contextualSpacing', 'mirrorIndents',
+    'suppressOverlap', 'jc', 'textDirection', 'textAlignment',
+    'textboxTightWrap', 'outlineLvl', 'divId', 'cnfStyle', 'rPr', 'sectPr',
+    'pPrChange',
+]
+
+
+def insert_in_order(ppr_inner, tag):
+    """Place <w:tag/> at its one legal position in a <w:pPr>'s children."""
+    rank = PPR_ORDER.index(tag)
+    for match in re.finditer(r'<w:([a-zA-Z]+)[ />]', ppr_inner):
+        name = match.group(1)
+        if name in PPR_ORDER and PPR_ORDER.index(name) > rank:
+            return ppr_inner[:match.start()] + '<w:%s/>' % tag + ppr_inner[match.start():]
+    return ppr_inner + '<w:%s/>' % tag
+
+
 def ensure_in_ppr(style_xml, elements):
     """Put each element into the style's <w:pPr>, replacing any 'false' form."""
     for tag in elements:
         style_xml = re.sub(r'<w:%s w:val="(?:false|0)"\s*/>' % tag, '', style_xml)
         if re.search(r'<w:%s[ /]' % tag, style_xml):
             continue
-        if '<w:pPr>' in style_xml:
-            style_xml = style_xml.replace('<w:pPr>', '<w:pPr><w:%s/>' % tag, 1)
+        match = re.search(r'<w:pPr>(.*?)</w:pPr>', style_xml, re.S)
+        if match:
+            fixed = insert_in_order(match.group(1), tag)
+            style_xml = style_xml[:match.start(1)] + fixed + style_xml[match.end(1):]
+        elif '<w:pPr/>' in style_xml:
+            style_xml = style_xml.replace('<w:pPr/>', '<w:pPr><w:%s/></w:pPr>' % tag, 1)
         else:
-            style_xml = style_xml.replace('</w:name>', '</w:name><w:pPr><w:%s/></w:pPr>' % tag, 1)
-            if '<w:pPr>' not in style_xml:  # no <w:name> either — rare, skip
+            # A style with no <w:pPr> needs one, and it goes after the last of
+            # the elements that precede it in CT_Style — not after <w:name>,
+            # which would put it before basedOn and next.
+            anchor = None
+            for name in ('qFormat', 'locked', 'unhideWhenUsed', 'semiHidden',
+                         'uiPriority', 'autoRedefine', 'link', 'next',
+                         'basedOn', 'aliases', 'name'):
+                found = re.search(r'</w:%s>|<w:%s[^>]*/>' % (name, name), style_xml)
+                if found:
+                    anchor = found.end()
+                    break
+            if anchor is None:
                 continue
+            style_xml = (style_xml[:anchor] + '<w:pPr><w:%s/></w:pPr>' % tag +
+                         style_xml[anchor:])
     return style_xml
 
 def fix_style(match):
@@ -194,11 +236,16 @@ def fix_style(match):
 sx, fixed = re.subn(r'<w:style [^>]*>.*?</w:style>', fix_style, sx, flags=re.S)
 
 # The same for the document defaults, which every style inherits from.
-if '<w:widowControl' not in re.search(r'<w:docDefaults>.*?</w:docDefaults>', sx, re.S).group(0):
-    sx = re.sub(r'(<w:pPrDefault>\s*<w:pPr>)', r'\1<w:widowControl/>', sx, count=1)
-    if '<w:pPrDefault>' not in sx:
-        sx = sx.replace('<w:docDefaults>',
-                        '<w:docDefaults><w:pPrDefault><w:pPr><w:widowControl/></w:pPr></w:pPrDefault>', 1)
+defaults = re.search(r'<w:docDefaults>.*?</w:docDefaults>', sx, re.S).group(0)
+if '<w:widowControl' not in defaults:
+    inner = re.search(r'<w:pPrDefault>\s*<w:pPr>(.*?)</w:pPr>', defaults, re.S)
+    if inner:
+        patched_defaults = defaults[:inner.start(1)] + \
+            insert_in_order(inner.group(1), 'widowControl') + defaults[inner.end(1):]
+    else:
+        patched_defaults = defaults.replace('<w:docDefaults>',
+            '<w:docDefaults><w:pPrDefault><w:pPr><w:widowControl/></w:pPr></w:pPrDefault>', 1)
+    sx = sx.replace(defaults, patched_defaults, 1)
 
 sty.write_text(sx, encoding='utf-8')
 
