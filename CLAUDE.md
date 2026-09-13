@@ -20,6 +20,25 @@ produced it ends, it gets out of `/tmp`:
    to Drive, Dropbox or anything else means client data leaving the machine, so
    it is the user's call, not a default.
 
+### The tools count as work, not as scaffolding
+
+The rule above was written about deliverables and it was read too narrowly. The
+next thing lost was not a file anyone would call final: eleven build passes for
+the textbook — the lead-line splitter, the entry wrapper, the table placer, the
+break fixer — that existed only in the scratchpad and went with it. They were
+worth more than the proof they produced, because the proof rebuilds from them
+and they rebuild from nothing.
+
+A script that took more than one attempt to get right is finished work. If it
+was arrived at by measuring the rendered page and correcting a wrong answer —
+the way the lead splitter was — the reasoning is in the script and nowhere
+else, and rewriting it means making the same mistakes again.
+
+So: **commit a working script before using it**, not after the output looks
+good. Not at the end of the task, not once it is tidy. A pass that runs is a
+pass that gets committed, in the state it runs in; tidying it is a later
+commit. The repository is allowed to hold every one of them.
+
 ### The Drive connector creates, it does not replace
 
 Uploading a file that is already there makes a second copy under the same
