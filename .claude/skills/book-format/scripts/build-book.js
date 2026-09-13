@@ -107,6 +107,13 @@ if (!args['no-epub']) {
 stage('Design — part openers, entry cards, keep boxes')
 run('node', [path.join(here, 'design-pass.js'), '--content', contentDir])
 
+if (!args['no-pdf']) {
+  stage('CSS — compile the theme')
+  run('node', [path.join(here, 'build-css.js'), theme])
+}
+
+// After the CSS, because it paginates: it has to measure the same book the
+// renderer will print, not the one the last build compiled.
 if (!args['no-pdf'] && !args['no-widows']) {
   stage('Widows — push what CSS cannot reach across a page break')
   run('node', [path.join(here, 'fix-widows.js'), '--content', contentDir,
@@ -114,9 +121,6 @@ if (!args['no-pdf'] && !args['no-widows']) {
 }
 
 if (!args['no-pdf']) {
-  stage('CSS — compile the theme')
-  run('node', [path.join(here, 'build-css.js'), theme])
-
   stage('Render — paginate and print')
   run('node', [path.join(here, 'render-pdf.js'), '--content', contentDir,
     '--theme', theme, '--out', path.join(outDir, slug + '.pdf'), '--no-build',
