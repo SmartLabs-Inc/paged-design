@@ -12,9 +12,12 @@ content/client-*/
 # are the asset and belong here; the author's text does not. `content/aet-raw/`
 # and `content/aet-tail/` predate this rule and are still tracked — see the
 # note in CLAUDE.md about client material.
-content/aet/
-content/aet-proof/
+# Any built book from a client manuscript, whatever it is called this week.
+# A narrow list of slugs is how a 4 MB copy of the author's text ended up in
+# the branch twice: the rule has to cover the next name too, not the last one.
+content/aet*/
 content/book-*/
+content/client-*/
 
 
 # Deal files carry client names, fees and terms. The template they fill in is
