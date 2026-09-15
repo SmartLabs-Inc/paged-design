@@ -1,0 +1,173 @@
+#!/usr/bin/env node
+//
+// Put the book's front and back matter in order.
+//
+// The converter turns the manuscript into components in the order the author
+// wrote them. A book needs more than that order: a dedication, an
+// acknowledgements page, a reserved recto for a sponsor's notice, and the
+// classes that tell the theme which component is the reference list and which
+// is the index.
+//
+// Every insertion is a real page in the PDF. A page reserved for something to
+// be dropped in later still has to be there, still has to fall on the right
+// side of the spread, and still has to be counted — otherwise every folio
+// after it is wrong in the printed book.
+'use strict'
+
+const fs = require('fs')
+const path = require('path')
+const { parseArgs } = require('./common')
+
+const args = parseArgs(process.argv)
+
+if (args.help || !args.content) {
+  console.log([
+    'Usage: node front-matter.js --content <dir> [options]',
+    '',
+    '  --content <dir>    Book directory holding index.html, rewritten in place.',
+    '  --sponsor-page     Reserve a blank recto before the contents.',
+    '  --dedication       Add a dedication page after the copyright page.',
+    '  --acknowledgements Add an acknowledgements page in the back matter.',
+    '  --drop-generated-contents',
+    '                     Remove the contents page the converter generated,',
+    '                     keeping the author\'s own.',
+    '',
+    'Also classes the reference list, the index and the front matter so the',
+    'theme can set each the way it should be set.'
+  ].join('\n'))
+  process.exit(args.help ? 0 : 1)
+}
+
+const indexFile = path.join(path.resolve(args.content), 'index.html')
+let html = fs.readFileSync(indexFile, 'utf8')
+
+// ---------------------------------------------------------------------------
+// Finding components
+// ---------------------------------------------------------------------------
+// Each is a top-level div carrying the title in data-header, so a component
+// can be found by name without parsing the whole document.
+
+function findComponent (title) {
+  const pattern = new RegExp('<div class="[^"]*"[^>]*data-header="' +
+    title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '"[^>]*>')
+  const open = pattern.exec(html)
+  if (!open) return null
+  const end = matchingClose(open.index)
+  if (end === -1) return null
+  return { start: open.index, end: end, openTag: open[0] }
+}
+
+function matchingClose (from) {
+  const tag = /<(\/?)div\b[^>]*>/g
+  tag.lastIndex = from
+  let depth = 0
+  let match
+  while ((match = tag.exec(html)) !== null) {
+    if (match[1] === '/') {
+      depth -= 1
+      if (depth === 0) return tag.lastIndex
+    } else depth += 1
+  }
+  return -1
+}
+
+const slug = (/<div class="([a-z0-9-]+) /.exec(html) || [])[1] || 'book'
+const done = []
+
+function component (classes, header, inner) {
+  return '<div class="' + slug + ' ' + classes + '"' +
+    (header ? ' data-header="' + header + '"' : '') + '>\n        <div>\n' +
+    '            <div>\n' + inner + '\n            </div>\n        </div>\n    </div>'
+}
+
+// ---------------------------------------------------------------------------
+// Give the components their classes
+// ---------------------------------------------------------------------------
+// The theme sets the reference list small and the index tight; both need to
+// know which component they are looking at.
+
+function addClasses (title, classes) {
+  const found = findComponent(title)
+  if (!found) return false
+  const updated = found.openTag.replace(/class="([^"]*)"/, function (all, existing) {
+    const already = existing.split(/\s+/)
+    const added = classes.split(' ').filter(function (c) { return already.indexOf(c) === -1 })
+    return 'class="' + existing + (added.length ? ' ' + added.join(' ') : '') + '"'
+  })
+  html = html.slice(0, found.start) + updated + html.slice(found.start + found.openTag.length)
+  return true
+}
+
+if (addClasses('References', 'references endmatter')) done.push('References classed')
+if (addClasses('Index', 'index endmatter')) done.push('Index classed')
+if (addClasses('About Alexander Grinberg, M.D.', 'endmatter')) done.push('About classed')
+;['Copyright', 'Medical and Legal Disclaimer', 'Methodology and Sources',
+  'How to Read This Book', 'Preface', 'List of Abbreviations'].forEach(function (title) {
+  if (addClasses(title, 'frontmatter')) done.push(title + ' classed')
+})
+
+// ---------------------------------------------------------------------------
+// The converter's contents page duplicates the author's
+// ---------------------------------------------------------------------------
+// The manuscript carries its own contents, with the full hierarchy and a link
+// on every line. The converter builds one too, from the component titles
+// alone. Keeping both puts two tables of contents in the book, and the
+// shallower one first.
+
+if (args['drop-generated-contents']) {
+  const generated = /<div class="[^"]*\bcontents-page\b[^"]*"[^>]*>/.exec(html)
+  if (generated) {
+    const end = matchingClose(generated.index)
+    if (end !== -1) {
+      html = html.slice(0, generated.index) + html.slice(end)
+      done.push('generated contents page removed')
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Insert the reserved and new pages
+// ---------------------------------------------------------------------------
+
+function insertBefore (title, markup, label) {
+  const found = findComponent(title)
+  if (!found) return false
+  html = html.slice(0, found.start) + markup + '\n\n    ' + html.slice(found.start)
+  done.push(label)
+  return true
+}
+
+function insertAfter (title, markup, label) {
+  const found = findComponent(title)
+  if (!found) return false
+  html = html.slice(0, found.end) + '\n\n    ' + markup + html.slice(found.end)
+  done.push(label)
+  return true
+}
+
+if (args['sponsor-page'] && !/\bsponsor-page\b/.test(html)) {
+  // Reserved for a printing sponsor's notice, dropped into the PDF later. It
+  // carries no text of its own, but it is a numbered recto so that everything
+  // after it falls where the finished book expects.
+  insertBefore('Contents', component('sponsor-page frontmatter', '', ''),
+    'sponsor recto reserved before the contents')
+}
+
+if (args.dedication && !/\bdedication-page\b/.test(html)) {
+  insertAfter('Copyright',
+    component('dedication-page frontmatter', 'Dedication',
+      '                <h1 class="heading-2">Dedication</h1>'),
+    'dedication page added')
+}
+
+if (args.acknowledgements && !/\backnowledgements-page\b/.test(html)) {
+  insertBefore('About Alexander Grinberg, M.D.',
+    component('acknowledgements-page endmatter', 'Acknowledgements',
+      '                <h1 class="heading-2">Acknowledgements</h1>'),
+    'acknowledgements page added')
+}
+
+fs.writeFileSync(indexFile, html)
+
+console.log('Front and back matter in ' + path.relative(process.cwd(), indexFile))
+done.forEach(function (line) { console.log('  ' + line) })

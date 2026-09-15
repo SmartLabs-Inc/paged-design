@@ -6352,6 +6352,43 @@ ol.references li {
   color: #66717C;
   text-decoration: none; }
 
+.references > div > div {
+  column-count: 2;
+  column-gap: 17px;
+  column-fill: auto; }
+
+.references p {
+  font-size: 8pt;
+  line-height: 12.24px;
+  margin: 0 0 4.25px 0;
+  padding-left: 1.4em;
+  text-indent: -1.4em;
+  text-align: left;
+  hyphens: none;
+  break-inside: avoid; }
+
+.references .ref-number {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  color: #137C7A;
+  white-space: nowrap; }
+
+.references a {
+  word-break: break-all;
+  color: #66717C;
+  text-decoration: none; }
+
+.sponsor-page,
+.dedication-page,
+.acknowledgements-page {
+  break-before: recto; }
+
+.sponsor-page > div > div {
+  column-count: 1; }
+
+.pagedjs_page:has(.sponsor-page) .pagedjs_margin-content::after {
+  content: none !important; }
+
 .index-locators {
   font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-size: 8.5px;
