@@ -42,6 +42,9 @@ ERRATUM = re.compile(r'\b(erratum|corrigend)', re.I)
 CORRECTION = re.compile(r'\bcorrection\b', re.I)
 WITHDRAWN = re.compile(r'\bwithdrawn\b', re.I)
 PREPRINT = re.compile(r'\b(biorxiv|medrxiv|preprint|ssrn)\b', re.I)
+# Internal source-control tags — [@f03-r9]: — left in the citation text. They
+# are invisible to the author in Word and print in the book.
+EDITORIAL_MARKER = re.compile(r'\[@[^\]]+\]:?\s*')
 NONCLINICAL_SOURCE = re.compile(
     r'\b(peptutor|reddit|forum|community|practitioner report|self-experiment|'
     r'blog|youtube|telegram|discord)\b', re.I)
@@ -53,7 +56,8 @@ def normalise_doi(value):
 
 def normalise_title(text):
     """Enough of the citation to recognise the same paper written twice."""
-    stripped = re.sub(r'^\d+\.\s*', '', text)
+    stripped = EDITORIAL_MARKER.sub('', text)
+    stripped = re.sub(r'^\d+\.\s*', '', stripped)
     stripped = re.sub(r'https?://\S+', '', stripped)
     stripped = re.sub(r'\b(doi|pmid|pmcid)\b.*$', '', stripped, flags=re.I)
     stripped = re.sub(r'[^a-z0-9 ]', '', stripped.lower())
@@ -137,6 +141,10 @@ def audit(entries, order, citations):
             findings['preprint'].append((number, 'preprint or preprint server', text))
         if NONCLINICAL_SOURCE.search(text):
             findings['nonclinical_source'].append((number, 'non-clinical source', text))
+        if EDITORIAL_MARKER.search(text):
+            findings['editorial_marker'].append(
+                (number, 'internal marker %s left in the text'
+                 % EDITORIAL_MARKER.search(text).group(0).strip(), text))
         if entry['repeated_number']:
             findings['repeated_number'].append((number, 'this number appears more than once', text))
 
@@ -220,6 +228,7 @@ def main():
         ('flagged_correction', 'Mentions a correction'),
         ('preprint', 'Preprint or preprint server'),
         ('nonclinical_source', 'Non-clinical source (forum, practitioner report)'),
+        ('editorial_marker', 'Internal editorial marker left in the text'),
     ]
     for key, label in labels:
         print('%-50s %5d' % (label, len(findings.get(key, []))))
