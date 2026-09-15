@@ -145,7 +145,14 @@ function makeTitlePage () {
 
   // The heading becomes the h1 the theme's `$title-page-title` selector wants,
   // and the two paragraphs under it are the subtitle and the author.
-  block = block.replace(/<h[1-6]([^>]*)>([\s\S]*?)<\/h[1-6]>/, '<h1$1>$2</h1>')
+  //
+  // It also carries `title-page-title`, which is not decoration: the parent
+  // theme hangs `string-set: book-title` off that class, and the recto footer
+  // prints that string on every right-hand page of the book. Without the
+  // class the string is never set and the footer is blank — the same fault,
+  // from the same cause, that the Word route had.
+  block = block.replace(/<h[1-6]([^>]*)>([\s\S]*?)<\/h[1-6]>/,
+    '<h1 class="title-page-title"$1>$2</h1>')
   let seen = 0
   block = block.replace(/<p>/g, function () {
     seen += 1

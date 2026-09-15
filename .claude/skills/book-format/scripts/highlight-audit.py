@@ -146,6 +146,37 @@ def main():
     counts['TAG'] = len(re.findall(r'flag-tag"', tail))
 
     markup = head + body + tail
+    # ---------------------------------------------------------------------
+    # Keep the marks out of the running heads
+    # ---------------------------------------------------------------------
+    # The running head and the part name are not printed from the page: they
+    # are named strings, and a named string is the element's text. So a code
+    # badge painted inside one does not show as a badge in the margin — it
+    # shows as letters welded to the end of the heading, and the top of the
+    # page reads "MicropeptidesSTYLE" for as long as that part runs.
+    #
+    # The two invisible marker paragraphs lose the marking altogether, since
+    # nobody reads them. The part name keeps its highlight and loses only the
+    # badge, so the flag is still visible where the title is actually set.
+
+    def strip_all(match):
+        inner = re.sub(r'<span class="flag-code">[^<]*</span>', '', match.group(2))
+        inner = re.sub(r'</?mark[^>]*>', '', inner)
+        return match.group(1) + inner + match.group(3)
+
+    def strip_badges(match):
+        return (match.group(1) +
+                re.sub(r'<span class="flag-code">[^<]*</span>', '', match.group(2)) +
+                match.group(3))
+
+    cleaned = 0
+    for pattern, strip in (
+            (r'(<p class="run-head">)(.*?)(</p>)', strip_all),
+            (r'(<p class="topic-head">)(.*?)(</p>)', strip_all),
+            (r'(<h1 class="part-name">)(.*?)(</h1>)', strip_badges),
+            (r'(<h[1-6][^>]*class="[^"]*part-title[^"]*"[^>]*>)(.*?)(</h[1-6]>)', strip_badges)):
+        markup, count = re.subn(pattern, strip, markup, flags=re.S)
+        cleaned += count
 
     # --- the legend ---------------------------------------------------------
     slug = (re.search(r'<div class="([a-z0-9-]+) ', markup) or ['', 'book'])[1]
@@ -173,6 +204,7 @@ def main():
     for code in CODES:
         if counts.get(code):
             print('  %-9s %6d' % (code, counts[code]))
+    print('  running heads and part names cleared of badges: %d' % cleaned)
     print('  legend page added at the front')
 
 
