@@ -461,3 +461,69 @@ breaks on a paragraph that runs into the next column, where line four sits
 characters and count a new line whenever one starts lower than the last **or
 further left** — the second test is what carries the count across a column
 boundary.
+
+## Two-column pages
+
+### The second column never opens
+
+A theme that sets the whole book in two columns puts `column-count` on the
+component's inner div — the element the book's content actually flows in.
+`column-fill` then decides everything, and the default the parent theme
+carried, `auto`, is wrong for that element:
+
+> `column-fill: auto` fills the first column to **the height of its
+> container**. The container here is as tall as its content, so there is no
+> height to fill to, the first column takes all of it and the second is never
+> opened.
+
+The symptom is not an error. It is a book where every page is half white and
+the extent is exactly double what the type size predicts. It was found by
+photographing a page; nothing in a build log shows it.
+
+`column-fill: balance` is the fix, but it has to out-specify what set `auto`.
+In this project that was `.endmatter:not(.index) > div > div`, whose `:not()`
+gives it two classes' worth of specificity — so the obvious
+`.chapter > div > div` loses silently on every component carrying two of those
+classes, which is most of them. Doubling the class (`.chapter.chapter > div >
+div`) is enough and says why in the selector itself.
+
+### Do not put the columns on the page box
+
+`.pagedjs_page_content` looks like the right element — Paged.js gives it a
+definite height and `column-fill: auto`, which is exactly what multicol wants.
+It is not available. Paged.js sets an inline style on it:
+
+```
+column-width: 480px;
+column-gap: calc(var(--pagedjs-margin-right) + var(--pagedjs-margin-left) + …);
+```
+
+The page box is already a multi-column element, used by Paged.js for its own
+layout. A `column-count: 2` from the stylesheet loses to the inline
+`column-width`, and the inline gap — the width of both margins and both bleeds
+— computes to more than the measure, so Chrome falls back to one column and
+the stylesheet appears to do nothing at all.
+
+### Do not give the column container a definite height either
+
+The obvious repair for `column-fill: auto` is to give the container a height
+to fill, by chaining `height: inherit` down from the page box. It paginates a
+1,300-page book to **one page**. With a definite height the container never
+overflows vertically, Paged.js never finds a break, and everything after the
+first page is laid out invisibly beyond it and written to the PDF as nothing.
+A build that reports one page is the good case; the same mechanism is what
+silently truncates a book that still looks plausible.
+
+### What balancing costs
+
+`column-fill: balance` works, and it wastes about a quarter of the book.
+Measured over 280 pages of reference list, the fill is bimodal: 132 pages are
+full and 144 are a little over half full, alternating. Paged.js fills the page,
+finds the overflow and cuts — and Chrome then re-balances what is left into two
+shorter columns. The page has already been committed at that point, so the
+recovered space is lost.
+
+The content on those 280 pages would set in about 210. Removing
+`break-inside: avoid` from the entries makes it worse, not better (370 pages),
+so the entry boxes are not the cause. No fix is known; the number to quote for
+a two-column Paged.js book is the measured extent, not the calculated one.
