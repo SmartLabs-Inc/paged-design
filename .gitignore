@@ -1,3 +1,35 @@
 .sass-cache/
 node_modules
 package-lock.json
+
+# Client work carries names, pricing, terms and schedules. Kept out of the
+# repository — the design and the tooling are the reusable asset, not the
+# documents built from them.
+content/proposal-*/
+content/checklist-*/
+content/client-*/
+# Built books from client manuscripts. The theme, the passes and the style map
+# are the asset and belong here; the author's text does not. `content/aet-raw/`
+# and `content/aet-tail/` predate this rule and are still tracked — see the
+# note in CLAUDE.md about client material.
+# Any built book from a client manuscript, whatever it is called this week.
+# A narrow list of slugs is how a 4 MB copy of the author's text ended up in
+# the branch twice: the rule has to cover the next name too, not the last one.
+content/aet*/
+content/book-*/
+content/client-*/
+# Slices of a manuscript cut for timing a render. Same rule, same reason.
+content/test-*/
+
+
+# Deal files carry client names, fees and terms. The template they fill in is
+# committed; the values are not. `proposals/example-deal.json` is the exception.
+.claude/skills/book-format/proposals/deals/
+
+# Licensed fonts. The client holds the licence; the repository does not get to
+# redistribute it. The @font-face wiring is committed, the binary is not.
+fonts/Windorse-*
+
+# Python bytecode, which has been turning up as a change on every run
+__pycache__/
+*.pyc

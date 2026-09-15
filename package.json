@@ -5,6 +5,7 @@
   "main": "index.js",
   "devDependencies": {
     "http-server": "^14.1.1",
+    "hyphen": "^1.14.1",
     "node-sass": "^8.0.0",
     "nodemon": "^2.0.20",
     "npm-run-all": "^4.1.5",
@@ -25,5 +26,8 @@
   "bugs": {
     "url": "https://github.com/electricbookworks/paged-design/issues"
   },
-  "homepage": "https://github.com/electricbookworks/paged-design#readme"
+  "homepage": "https://github.com/electricbookworks/paged-design#readme",
+  "dependencies": {
+    "playwright": "^1.63.0"
+  }
 }

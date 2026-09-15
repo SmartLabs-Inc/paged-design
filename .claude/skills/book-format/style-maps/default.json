@@ -1,0 +1,46 @@
+{
+  "name": "Default",
+  "description": "Maps the built-in Word styles every author already has. Use this when a manuscript was written without a house template: apply Heading 1 to chapter titles, Heading 2/3 to sections, Quote to block quotations, and Word's list buttons to lists.",
+
+  "defaults": {
+    "component": "chapter"
+  },
+
+  "styles": {
+    "Title": { "component": "title-page", "element": "p", "class": "title-page-title", "role": "title" },
+    "Subtitle": { "element": "p", "class": "title-page-subtitle" },
+
+    "Heading 1": { "component": "chapter", "role": "title" },
+    "Heading 2": { "element": "h3" },
+    "Heading 3": { "element": "h4" },
+    "Heading 4": { "element": "h5" },
+    "Heading 5": { "element": "h6" },
+    "Heading 6": { "element": "h6" },
+
+    "Quote": { "element": "blockquote" },
+    "Intense Quote": { "element": "p", "class": "pullquote" },
+    "Caption": { "element": "p", "class": "figure-caption" },
+
+    "Body Text": { "element": "p" },
+    "Body Text 2": { "element": "p" },
+    "Body Text 3": { "element": "p" },
+    "No Spacing": { "element": "p" },
+    "List Paragraph": { "element": "p" },
+
+    "Header": { "drop": true },
+    "Footer": { "drop": true },
+    "TOC Heading": { "drop": true }
+  },
+
+  "runStyles": {
+    "Emphasis": "emphasis",
+    "Strong": "strong",
+    "Book Title": "book-title",
+    "Subtle Emphasis": "subtle-emphasis",
+    "Intense Emphasis": "intense-emphasis"
+  },
+
+  "fills": {
+    "default": "box"
+  }
+}
