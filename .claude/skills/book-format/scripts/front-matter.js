@@ -246,6 +246,30 @@ if (args.acknowledgements && !/\backnowledgements-page\b/.test(html)) {
 }
 
 // ---------------------------------------------------------------------------
+// A component with no h1 leaves the last one showing
+// ---------------------------------------------------------------------------
+// The verso footer prints `string(h1-text, first)`, and the converter gives a
+// component from a top-level heading an `h2`. So the reference section, which
+// has no h1 anywhere in it, printed ACKNOWLEDGEMENTS at the foot of all 238
+// of its pages — the last h1 before it — and so did the index.
+//
+// The heading is promoted rather than a hidden marker added, because that is
+// what the dedication and acknowledgements pages already are: an h1 wearing
+// `.heading-2`, which is the size an opening heading is set at here.
+
+let promoted = 0
+html = html.replace(/<div class="[^"]*"[^>]*data-header="[^"]*"[^>]*>[\s\S]*?(?=\n    <div class=|<\/body>)/g,
+  function (block) {
+    if (/<h1[\s>]/.test(block)) return block
+    return block.replace(/<h2([^>]*)>([\s\S]*?)<\/h2>/, function (all, attrs, text) {
+      promoted += 1
+      return '<h1 class="heading-2"' + attrs + '>' + text + '</h1>'
+    })
+  })
+if (promoted) done.push(promoted + ' component heading' + (promoted === 1 ? '' : 's') +
+  ' promoted so the footer names the section')
+
+// ---------------------------------------------------------------------------
 // One id, one place
 // ---------------------------------------------------------------------------
 // The converter leaves an empty anchor at the foot of each component for the

@@ -2079,11 +2079,26 @@ h4 + .standfirst,
 // book title a plain `h1` and only the subtitle and the author line carry
 // classes, so the rule that named a class matched nothing and the title on
 // page one set in the text face while every part title set in the display one.
+// `.title-page .title-page-title` as well as `.title-page h1`: the class is
+// there because the parent theme hangs `string-set: book-title` off it, and
+// the parent theme also sets the text face on it, at a specificity the plain
+// `h1` rule loses to. The title page came out in the reading face while every
+// part title was in the display one.
 .title-page h1,
+.title-page h1.title-page-title,
 .part-title,
 .part-name,
 .index-title {
     font-family: $font-display-hero;
+}
+
+// A title page is one column. Set in column one of two, a centred title sits
+// a quarter of the way across the page and looks like a mistake — which it
+// is. The doubled class clears the parent theme's two-class rule.
+.title-page.title-page > div > div,
+.dedication-page.dedication-page > div > div,
+.acknowledgements-page.acknowledgements-page > div > div {
+    column-count: 1;
 }
 
 // --- Variety in the grid -----------------------------------------------------
