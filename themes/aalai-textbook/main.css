@@ -5509,7 +5509,8 @@ sup.cite {
   line-height: 0;
   vertical-align: super;
   color: #137C7A;
-  letter-spacing: 0.02em; }
+  letter-spacing: 0.02em;
+  white-space: nowrap; }
 
 .cite a,
 a.cite {
