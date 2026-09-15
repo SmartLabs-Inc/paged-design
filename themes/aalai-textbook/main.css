@@ -6386,8 +6386,22 @@ ol.references li {
 .sponsor-page > div > div {
   column-count: 1; }
 
-.pagedjs_page:has(.sponsor-page) .pagedjs_margin-content::after {
-  content: none !important; }
+.sponsor-page {
+  page: sponsor; }
+
+@page sponsor {
+  @top-left {
+    content: none; }
+  @top-center {
+    content: none; }
+  @top-right {
+    content: none; }
+  @bottom-left {
+    content: none; }
+  @bottom-center {
+    content: none; }
+  @bottom-right {
+    content: none; } }
 
 .index-locators {
   font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;

@@ -1347,8 +1347,22 @@ ol.references li {
 }
 
 // Nothing in the margins of a page whose content is not ours.
-.pagedjs_page:has(.sponsor-page) .pagedjs_margin-content::after {
-    content: none !important;
+//
+// Not with `:has()`. Chromium re-evaluates a `:has()` against every page box
+// as the page set grows, so on a nine-hundred-page book it turns pagination
+// from seven minutes into something far worse — it was still going at
+// eighteen. A named page costs nothing: Paged.js resolves it once.
+.sponsor-page {
+    page: sponsor;
+}
+
+@page sponsor {
+    @top-left { content: none; }
+    @top-center { content: none; }
+    @top-right { content: none; }
+    @bottom-left { content: none; }
+    @bottom-center { content: none; }
+    @bottom-right { content: none; }
 }
 
 // ---------------------------------------------------------------------------
