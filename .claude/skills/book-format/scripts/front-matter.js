@@ -28,6 +28,9 @@ if (args.help || !args.content) {
     '  --sponsor-page     Reserve a blank recto before the contents.',
     '  --dedication       Add a dedication page after the copyright page.',
     '  --acknowledgements Add an acknowledgements page in the back matter.',
+    '  --acknowledgement-from <text>',
+    '                     Move the paragraph containing this text — wherever it',
+    '                     is — onto the acknowledgements page.',
     '  --drop-generated-contents',
     '                     Remove the contents page the converter generated,',
     '                     keeping the author\'s own.',
@@ -238,10 +241,37 @@ if (args.dedication && !/\bdedication-page\b/.test(html)) {
     'dedication page added')
 }
 
+// A thank-you the author wrote into the Preface, lifted out and set where it
+// belongs. It is done here rather than in the manuscript because the
+// manuscript is the file the author delivered and the book is rebuilt from it
+// on every run: an edit made in the delivered file is an edit that disappears
+// the next time he sends a new one, and an edit made only in the built HTML
+// is an edit that disappears on the next build.
+//
+// The paragraph is found by a fragment of its own text rather than by
+// position, so it still moves if the Preface is rewritten around it, and the
+// run says plainly whether it found it.
+
+let lifted = ''
+if (args['acknowledgement-from']) {
+  const fragment = String(args['acknowledgement-from'])
+  const paragraph = new RegExp('<p>([^<]*' +
+    fragment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^<]*)</p>\\s*')
+  const found = paragraph.exec(html)
+  if (found) {
+    lifted = found[1]
+    html = html.slice(0, found.index) + html.slice(found.index + found[0].length)
+    done.push('moved to the acknowledgements: "' + lifted.slice(0, 60) + '…"')
+  } else {
+    done.push('WARNING: nothing containing "' + fragment + '" to move to the acknowledgements')
+  }
+}
+
 if (args.acknowledgements && !/\backnowledgements-page\b/.test(html)) {
   insertBefore('About Alexander Grinberg, M.D.',
     component('acknowledgements-page endmatter', 'Acknowledgements',
-      '                <h1 class="heading-2">Acknowledgements</h1>'),
+      '                <h1 class="heading-2">Acknowledgements</h1>' +
+      (lifted ? '\n                <p>' + lifted + '</p>' : '')),
     'acknowledgements page added')
 }
 
