@@ -6796,10 +6796,16 @@ h4 + .standfirst,
   margin-top: 15.3px; }
 
 .title-page h1,
+.title-page h1.title-page-title,
 .part-title,
 .part-name,
 .index-title {
   font-family: "Windorse", "Charis SIL", Georgia, serif; }
+
+.title-page.title-page > div > div,
+.dedication-page.dedication-page > div > div,
+.acknowledgements-page.acknowledgements-page > div > div {
+  column-count: 1; }
 
 .keep-lead {
   column-span: all;
