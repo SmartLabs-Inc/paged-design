@@ -1289,6 +1289,57 @@ ol.references li {
 }
 
 // ---------------------------------------------------------------------------
+// Audit marks, for a proof read with the author
+// ---------------------------------------------------------------------------
+// A highlighter on a page, not an annotation system. The yellow carries the
+// eye; the code says which question is being asked. Both are set so they add
+// no height to a line — a proof whose marks reflow the text is not a proof of
+// the book.
+
+mark.flag {
+    background: #FFF07A;
+    color: inherit;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    padding: 0 0.1em;
+}
+
+.flag-code {
+    font-family: $font-display-secondary;
+    font-size: 0.62em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #A8323C;
+    vertical-align: 0.35em;
+    line-height: 0;
+    margin-left: 0.15em;
+    white-space: nowrap;
+}
+
+// A flagged reference is marked at its number rather than across the whole
+// citation: the entry stays readable and the codes sit where the eye lands.
+mark.flag-ref {
+    background: #FFF07A;
+    padding: 0 0.15em;
+}
+
+.legend-page .legend-row {
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    padding-left: 3.4em;
+    text-indent: -3.4em;
+    font-size: $font-size-small;
+    line-height: $baseline-grid-unit * 0.8;
+}
+
+.legend-page .legend-row .flag-code {
+    background: #FFF07A;
+    padding: 0.1em 0.3em;
+    vertical-align: 0;
+    line-height: inherit;
+    font-size: 0.8em;
+}
+
+// ---------------------------------------------------------------------------
 // The reference list
 // ---------------------------------------------------------------------------
 // Four thousand references. At body size they run to 187 pages; at 8pt in two
