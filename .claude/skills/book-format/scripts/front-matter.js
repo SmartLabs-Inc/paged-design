@@ -117,7 +117,7 @@ function addClasses (title, classes) {
 function makeTitlePage () {
   const first = /<div class="([^"]*)"[^>]*data-header="([^"]*)"[^>]*>/.exec(html)
   if (!first) return false
-  if (/\btitle-page\b/.test(first[1])) return false
+  if (/\btitle-page\b|\bcontents-page\b/.test(first[1])) return false
 
   // The empty component ahead of it holds the manuscript's own anchors. They
   // are link targets, so they move onto the title page rather than being
@@ -167,7 +167,6 @@ function makeTitlePage () {
   return true
 }
 
-makeTitlePage()
 
 if (addClasses('References', 'references endmatter')) done.push('References classed')
 if (addClasses('Index', 'index endmatter')) done.push('Index classed')
@@ -195,6 +194,14 @@ if (args['drop-generated-contents']) {
     }
   }
 }
+
+// After the generated contents page is gone, not before. The converter puts
+// that page at the top of the document, so it is the first component with a
+// title — and the title-page pass, run any earlier, dressed *it* as the title
+// page and then watched the removal above take it away again. The book came
+// out with no title page and no sign in the log that anything had gone wrong,
+// twice, because running the pass a second time on the finished file works.
+makeTitlePage()
 
 // ---------------------------------------------------------------------------
 // Insert the reserved and new pages
