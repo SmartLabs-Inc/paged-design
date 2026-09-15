@@ -273,6 +273,67 @@ parsed.forEach(function (component) {
   navPoints.push({ href: name, title: heading, children: sectionsIn(inner) })
 })
 
+// ---------------------------------------------------------------------------
+// Links that cross a document boundary
+// ---------------------------------------------------------------------------
+// The print book is one HTML file, so a citation is written `href="#ref-123"`
+// and lands. An EPUB is one file per component, and in an EPUB `#ref-123`
+// means *this document* — so every one of the 6,867 citations pointed at
+// nothing, and so did every index entry. A reader tapping a reference number
+// got no response at all, which is the same complaint the Word route drew.
+//
+// Nothing has to change in the book: the targets all exist, they are just in
+// a different file, so each fragment link is given the file its target is in.
+
+// One id can only live in one place. The converter leaves an empty anchor at
+// the end of each component for the component that follows, so the References
+// section's id exists twice: once on that anchor, at the foot of the index,
+// and once on the heading itself. In one HTML file the first one wins and the
+// link lands on the wrong section; in an EPUB it is also invalid. The empty
+// anchor is the one to drop, and only where something real carries the id.
+
+const holders = {}
+files.forEach(function (file) {
+  let match
+  const id = /\bid="([^"]+)"/g
+  while ((match = id.exec(file.data)) !== null) {
+    holders[match[1]] = (holders[match[1]] || 0) + 1
+  }
+})
+
+let duplicates = 0
+files.forEach(function (file) {
+  file.data = file.data.replace(/<a id="([^"]+)"><\/a>\s*/g, function (all, target) {
+    if ((holders[target] || 0) < 2) return all
+    holders[target] -= 1
+    duplicates += 1
+    return ''
+  })
+})
+
+const homeOf = {}
+files.forEach(function (file) {
+  const base = file.name.replace(/^text\//, '')
+  let match
+  const id = /\bid="([^"]+)"/g
+  while ((match = id.exec(file.data)) !== null) {
+    if (homeOf[match[1]] === undefined) homeOf[match[1]] = base
+  }
+})
+
+let retargeted = 0
+let unresolved = 0
+files.forEach(function (file) {
+  const base = file.name.replace(/^text\//, '')
+  file.data = file.data.replace(/href="#([^"]+)"/g, function (all, target) {
+    const home = homeOf[decodeURIComponent(target)] || homeOf[target]
+    if (!home) { unresolved += 1; return all }
+    if (home === base) return all
+    retargeted += 1
+    return 'href="' + home + '#' + target + '"'
+  })
+})
+
 // Second-level navigation: the section heads inside a component.
 function sectionsIn (fragment) {
   const found = []
@@ -348,5 +409,8 @@ fs.writeFileSync(outFile, writeZip(entries))
 const size = fs.statSync(outFile).size
 console.log('Wrote ' + path.relative(process.cwd(), outFile) + ' — ' + files.length +
   ' documents, ' + (size / 1024).toFixed(0) + ' KB')
+console.log('  links pointed at the document holding their target: ' + retargeted)
+if (duplicates) console.log('  duplicate ids removed from empty anchors: ' + duplicates)
+if (unresolved) console.log('  WARNING: ' + unresolved + ' fragment links whose target is in no document')
 console.log('  title  ' + title)
 if (author) console.log('  author ' + author)
