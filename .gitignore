@@ -18,6 +18,8 @@ content/client-*/
 content/aet*/
 content/book-*/
 content/client-*/
+# Slices of a manuscript cut for timing a render. Same rule, same reason.
+content/test-*/
 
 
 # Deal files carry client names, fees and terms. The template they fill in is
