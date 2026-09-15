@@ -425,6 +425,9 @@ sup.cite {
     vertical-align: super;
     color: $color-teal;
     letter-spacing: 0.02em;
+    // A run of sources is one mark and breaks nowhere: 12–14 split over a
+    // line ending reads as two different citations.
+    white-space: nowrap;
 }
 
 .cite a,
