@@ -6411,6 +6411,17 @@ mark.flag-ref {
   hyphens: none;
   break-inside: avoid; }
 
+.references.chunked > div > div {
+  column-count: 1; }
+
+.ref-page {
+  column-count: 2;
+  column-gap: 17px;
+  break-after: page; }
+
+.ref-page:last-child {
+  break-after: auto; }
+
 .references .ref-number {
   font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   font-weight: 700;
