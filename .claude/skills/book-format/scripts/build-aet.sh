@@ -1,0 +1,44 @@
+#!/bin/sh
+# Build the AET proof, end to end.
+#
+# Six passes, in this order, each of which has broken when run out of order:
+# the front-matter pass looks for the contents the converter generated, the
+# design pass looks for the headings the converter made, and the audit marks
+# are painted last so that nothing after them can move a mark off its word.
+#
+#   usage: build-aet.sh <source.md> <work-dir> [<out.pdf>]
+#
+# <source.md> is the manuscript as delivered — not the prepared copy. The
+# prepared copy is written into <work-dir> and is regenerable from this.
+set -e
+
+SRC="$1"
+WORK="$2"
+OUT="${3:-$WORK/aet-proof.pdf}"
+[ -n "$SRC" ] && [ -n "$WORK" ] || { echo "usage: build-aet.sh <source.md> <work-dir> [<out.pdf>]" >&2; exit 2; }
+
+HERE=$(dirname "$0")
+REPO=$(cd "$HERE/../../../.." && pwd)
+CONTENT="$REPO/content/aet-md"
+
+mkdir -p "$WORK"
+PREPPED="$WORK/aet.md"
+
+echo "== 1/6 prepare the Markdown"
+python3 "$HERE/prep-aet-markdown.py" "$SRC" "$PREPPED"
+
+echo "== 2/6 convert to book HTML"
+node "$HERE/md-to-book.js" --src "$PREPPED" --out "$CONTENT" --split h1 --slug aet-md
+
+echo "== 3/6 front matter"
+node "$HERE/front-matter.js" --content "$CONTENT" \
+    --sponsor-page --dedication --acknowledgements --drop-generated-contents
+
+echo "== 4/6 design"
+node "$HERE/design-md.js" --content "$CONTENT" --report
+
+echo "== 5/6 audit marks"
+python3 "$HERE/highlight-audit.py" --content "$CONTENT" --manuscript "$SRC"
+
+echo "== 6/6 render"
+node "$HERE/render-pdf.js" --content "$CONTENT" --theme aalai-textbook --out "$OUT"
