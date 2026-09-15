@@ -6807,6 +6807,29 @@ h4 + .standfirst,
 .acknowledgements-page.acknowledgements-page > div > div {
   column-count: 1; }
 
+.title-page,
+.title-page > div,
+.dedication-page,
+.dedication-page > div {
+  height: inherit; }
+
+.title-page.title-page > div > div,
+.dedication-page.dedication-page > div > div {
+  height: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; }
+
+.title-page.title-page,
+.dedication-page.dedication-page {
+  margin-top: 0; }
+
+.dedication-page.dedication-page,
+.dedication-page.dedication-page h1,
+.dedication-page.dedication-page p {
+  text-align: center;
+  text-indent: 0; }
+
 .keep-lead {
   column-span: all;
   margin: 27.2px 0 20.4px 0; }

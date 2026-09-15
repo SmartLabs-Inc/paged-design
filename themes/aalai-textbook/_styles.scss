@@ -2101,6 +2101,48 @@ h4 + .standfirst,
     column-count: 1;
 }
 
+// A title page is centred on the page, not hung from the top of the text
+// block. The height to centre within comes from Paged.js's page box, which is
+// the only element in the chain that has one, so it is passed down.
+//
+// This is the same `height: inherit` that paginates a whole book to a single
+// page when it is applied to every component: a container with a definite
+// height never overflows, so Paged.js never finds a break and everything
+// after the first page is laid out invisibly. It is safe here and nowhere
+// else — these two hold a title and a dedication and are one page by
+// definition.
+.title-page,
+.title-page > div,
+.dedication-page,
+.dedication-page > div {
+    height: inherit;
+}
+
+.title-page.title-page > div > div,
+.dedication-page.dedication-page > div > div {
+    height: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+// The parent theme hangs the title block off the top of the text area. With
+// the page centred that margin is a lean to one side.
+.title-page.title-page,
+.dedication-page.dedication-page {
+    margin-top: 0;
+}
+
+// A dedication is centred across the measure as well as down the page. It is
+// a placeholder until the text arrives, and a placeholder that is set wrong
+// gets read as the design.
+.dedication-page.dedication-page,
+.dedication-page.dedication-page h1,
+.dedication-page.dedication-page p {
+    text-align: center;
+    text-indent: 0;
+}
+
 // --- Variety in the grid -----------------------------------------------------
 // Two even columns for three hundred pages is a texture, not a design. These
 // are the places the page opens out to the full measure, so the eye gets a
