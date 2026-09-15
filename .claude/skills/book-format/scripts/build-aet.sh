@@ -32,7 +32,8 @@ node "$HERE/md-to-book.js" --src "$PREPPED" --out "$CONTENT" --split h1 --slug a
 
 echo "== 3/8 front matter"
 node "$HERE/front-matter.js" --content "$CONTENT" \
-    --sponsor-page --dedication --acknowledgements --drop-generated-contents
+    --sponsor-page --dedication --acknowledgements --drop-generated-contents \
+    --acknowledgement-from "grateful to my son Thomas"
 
 echo "== 4/8 design"
 node "$HERE/design-md.js" --content "$CONTENT" --report
