@@ -6821,8 +6821,9 @@ h4 + .standfirst,
 .apparatus-head {
   column-span: all; }
 
-.chapter > div > div,
-.frontmatter > div > div {
+.chapter.chapter > div > div,
+.frontmatter.frontmatter > div > div,
+.endmatter.endmatter > div > div {
   column-fill: balance; }
 
 .toc-entry-sub {
