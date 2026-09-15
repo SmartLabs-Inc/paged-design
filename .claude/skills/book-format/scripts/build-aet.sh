@@ -1,7 +1,7 @@
 #!/bin/sh
 # Build the AET proof, end to end.
 #
-# Seven passes, in this order, each of which has broken when run out of order:
+# Eight passes, in this order, each of which has broken when run out of order:
 # the front-matter pass looks for the contents the converter generated, the
 # design pass looks for the headings the converter made, and the audit marks
 # are painted last so that nothing after them can move a mark off its word.
@@ -24,28 +24,33 @@ CONTENT="$REPO/content/aet-md"
 mkdir -p "$WORK"
 PREPPED="$WORK/aet.md"
 
-echo "== 1/7 prepare the Markdown"
+echo "== 1/8 prepare the Markdown"
 python3 "$HERE/prep-aet-markdown.py" "$SRC" "$PREPPED"
 
-echo "== 2/7 convert to book HTML"
+echo "== 2/8 convert to book HTML"
 node "$HERE/md-to-book.js" --src "$PREPPED" --out "$CONTENT" --split h1 --slug aet-md
 
-echo "== 3/7 front matter"
+echo "== 3/8 front matter"
 node "$HERE/front-matter.js" --content "$CONTENT" \
     --sponsor-page --dedication --acknowledgements --drop-generated-contents
 
-echo "== 4/7 design"
+echo "== 4/8 design"
 node "$HERE/design-md.js" --content "$CONTENT" --report
 
-echo "== 5/7 audit marks"
+echo "== 5/8 audit marks"
 python3 "$HERE/highlight-audit.py" --content "$CONTENT" --manuscript "$SRC"
 
-# After the marks, not before: the blocks are measured with everything that
-# will print in them.
-echo "== 6/7 reference blocks"
+# Before the blocks are measured, because hyphenation changes how many lines
+# an entry takes.
+echo "== 6/8 hyphens"
+node "$HERE/hyphenate.js" --content "$CONTENT"
+
+# After the marks and the hyphens, not before: the blocks are measured with
+# everything that will print in them.
+echo "== 7/8 reference blocks"
 node "$HERE/chunk-references.js" --content "$CONTENT"
 
-echo "== 7/7 render"
+echo "== 8/8 render"
 # Pagination of this book takes about half an hour. The renderer's default
 # wait is five minutes, which reports a timeout on a build that was working.
 node "$HERE/render-pdf.js" --content "$CONTENT" --theme aalai-textbook \
