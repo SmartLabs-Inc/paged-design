@@ -245,6 +245,30 @@ if (args.acknowledgements && !/\backnowledgements-page\b/.test(html)) {
     'acknowledgements page added')
 }
 
+// ---------------------------------------------------------------------------
+// One id, one place
+// ---------------------------------------------------------------------------
+// The converter leaves an empty anchor at the foot of each component for the
+// component that follows it, so a section's id can exist twice: once on that
+// anchor and once on the heading itself. In one HTML file the first one wins,
+// which is the anchor — so the contents entry for "References" resolves to the
+// foot of the index, and prints the index's page number.
+
+const holders = {}
+let ids = /\bid="([^"]+)"/g
+let found
+while ((found = ids.exec(html)) !== null) holders[found[1]] = (holders[found[1]] || 0) + 1
+
+let duplicates = 0
+html = html.replace(/<a id="([^"]+)"><\/a>\s*/g, function (all, target) {
+  if ((holders[target] || 0) < 2) return all
+  holders[target] -= 1
+  duplicates += 1
+  return ''
+})
+if (duplicates) done.push(duplicates + ' duplicate id' + (duplicates === 1 ? '' : 's') +
+  ' removed from empty anchors')
+
 fs.writeFileSync(indexFile, html)
 
 console.log('Front and back matter in ' + path.relative(process.cwd(), indexFile))
