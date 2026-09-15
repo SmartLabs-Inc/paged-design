@@ -45,7 +45,9 @@ if (args.help || !args.content) {
     '  --theme <name>   Theme whose CSS sets the column. Default: aalai-textbook.',
     '  --height <px>    Height of one column. Default: 816 (a 10in page at this',
     '                   theme\'s margins). Measure it, do not assume it.',
-    '  --width <px>     Column width. Default: measured from the theme.',
+    '  --width <px>     Column width. Default: worked out from --text-width.',
+    '  --text-width <px> Width of the text block. Default: 502.',
+    '  --safety <px>    Slack left at the foot of each block. Default: 26.',
     '  --first <px>     Content height available on the first block\'s page,',
     '                   which carries the section title. Default: height - 120.'
   ].join('\n'))
@@ -104,13 +106,18 @@ if (!entries.length) { console.error('No reference entries found.'); process.exi
     entries.join('\n') +
     '</div></div></div></body></html>', { waitUntil: 'load' })
 
-  const width = Number(args.width) || await page.evaluate(function () {
+  // The host is as wide as the browser window, not as wide as the text block,
+  // so the column width has to be worked out from the text block's width
+  // rather than read off the host. Measured once with page-shots: 502px.
+  const textWidth = Number(args['text-width']) || 502
+  const width = Number(args.width) || await page.evaluate(function (block) {
     const flow = document.getElementById('flow')
+    flow.style.width = block + 'px'
     const style = getComputedStyle(flow)
     const count = parseInt(style.columnCount, 10) || 1
     const gap = parseFloat(style.columnGap) || 0
-    return (flow.getBoundingClientRect().width - gap * (count - 1)) / count
-  })
+    return (block - gap * (count - 1)) / count
+  }, textWidth)
 
   const heights = await page.evaluate(function (columnWidth) {
     const flow = document.getElementById('flow')
@@ -127,11 +134,15 @@ if (!entries.length) { console.error('No reference entries found.'); process.exi
 
   // Fill blocks to two columns' worth. The first block shares its page with
   // the section title, so it gets less.
+  // Two lines of slack. Without it a block that measures a hair over the page
+  // spills its last line onto a leaf of its own — one line of text on an
+  // otherwise blank page, which is what the pass exists to prevent.
+  const safety = args.safety === undefined ? 26 : Number(args.safety)
   const firstBudget = Number(args.first) || (columnHeight - 120)
   const blocks = []
   let current = []
   let used = 0
-  let budget = firstBudget + columnHeight
+  let budget = firstBudget + columnHeight - safety
 
   entries.forEach(function (entry, index) {
     const height = heights[index]
@@ -141,7 +152,7 @@ if (!entries.length) { console.error('No reference entries found.'); process.exi
       blocks.push(current)
       current = []
       used = 0
-      budget = columnHeight * 2
+      budget = columnHeight * 2 - safety
     }
     current.push(entry)
     used += height
