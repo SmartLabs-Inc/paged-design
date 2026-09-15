@@ -192,7 +192,8 @@ def main():
                          'citations': citations.get(number, 0),
                          'text': re.sub(r'\s+', ' ', text)[:300]})
 
-    report = Path(args.out + '.csv')
+    # `--out audit.csv` should write audit.csv, not audit.csv.csv.
+    report = Path(args.out if args.out.endswith('.csv') else args.out + '.csv')
     with report.open('w', newline='', encoding='utf-8') as handle:
         writer = csv.DictWriter(handle, fieldnames=['check', 'reference', 'citations',
                                                     'detail', 'text'])
