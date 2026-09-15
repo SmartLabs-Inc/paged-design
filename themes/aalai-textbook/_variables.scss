@@ -104,8 +104,8 @@ $icon-size: 17px;                // the circled component markers
 // gets all three columns instead of one — and the build emits the full title,
 // because a topic named "Tissue Repair and Wound…" is not a topic a reader
 // can look up.
-$verso-top-left: string(h6-text, first);
-$recto-top-right: string(h6-text, first);
+$verso-top-left: string(section-name, start);
+$recto-top-right: string(topic-name, start);
 
 // The foot names the part, not the section. The section is already across the
 // top, and `string(h2-text)` gave the section there too, because the part title

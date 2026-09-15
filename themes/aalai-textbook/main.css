@@ -320,7 +320,7 @@ h6 {
   @top-right {
     content: normal; }
   @top-left {
-    content: string(h6-text, first); }
+    content: string(section-name, start); }
   @top-right-corner {
     content: normal; }
   @top-left-corner {
@@ -340,7 +340,7 @@ h6 {
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h6-text, first); }
+    content: string(topic-name, start); }
   @top-left {
     content: normal; }
   @top-right-corner {
@@ -5683,7 +5683,7 @@ a.uri,
 
 @page part1:left {
   @top-left {
-    content: string(h6-text, first); }
+    content: string(section-name, start); }
   @top-center {
     content: normal; }
   @top-right {
@@ -5705,7 +5705,7 @@ a.uri,
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h6-text, first); }
+    content: string(topic-name, start); }
   @bottom-left {
     content: normal; }
   @bottom-center {
@@ -5742,7 +5742,7 @@ a.uri,
 
 @page part2:left {
   @top-left {
-    content: string(h6-text, first); }
+    content: string(section-name, start); }
   @top-center {
     content: normal; }
   @top-right {
@@ -5764,7 +5764,7 @@ a.uri,
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h6-text, first); }
+    content: string(topic-name, start); }
   @bottom-left {
     content: normal; }
   @bottom-center {
@@ -5801,7 +5801,7 @@ a.uri,
 
 @page part3:left {
   @top-left {
-    content: string(h6-text, first); }
+    content: string(section-name, start); }
   @top-center {
     content: normal; }
   @top-right {
@@ -5823,7 +5823,7 @@ a.uri,
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h6-text, first); }
+    content: string(topic-name, start); }
   @bottom-left {
     content: normal; }
   @bottom-center {
@@ -5860,7 +5860,7 @@ a.uri,
 
 @page part4:left {
   @top-left {
-    content: string(h6-text, first); }
+    content: string(section-name, start); }
   @top-center {
     content: normal; }
   @top-right {
@@ -5882,7 +5882,7 @@ a.uri,
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h6-text, first); }
+    content: string(topic-name, start); }
   @bottom-left {
     content: normal; }
   @bottom-center {
@@ -5919,7 +5919,7 @@ a.uri,
 
 @page part5:left {
   @top-left {
-    content: string(h6-text, first); }
+    content: string(section-name, start); }
   @top-center {
     content: normal; }
   @top-right {
@@ -5941,7 +5941,7 @@ a.uri,
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h6-text, first); }
+    content: string(topic-name, start); }
   @bottom-left {
     content: normal; }
   @bottom-center {
@@ -5978,7 +5978,7 @@ a.uri,
 
 @page part6:left {
   @top-left {
-    content: string(h6-text, first); }
+    content: string(section-name, start); }
   @top-center {
     content: normal; }
   @top-right {
@@ -6000,7 +6000,7 @@ a.uri,
   @top-center {
     content: normal; }
   @top-right {
-    content: string(h6-text, first); }
+    content: string(topic-name, start); }
   @bottom-left {
     content: normal; }
   @bottom-center {
@@ -6237,6 +6237,13 @@ samp {
     overflow: hidden; } }
 
 .run-head {
+  string-set: section-name content(); }
+
+.topic-head {
+  string-set: topic-name content(); }
+
+.run-head,
+.topic-head {
   font-size: 0;
   line-height: 0;
   height: 0;

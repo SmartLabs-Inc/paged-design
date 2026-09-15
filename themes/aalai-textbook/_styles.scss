@@ -1079,9 +1079,29 @@ samp {
     @top-right { white-space: nowrap; overflow: hidden; }
 }
 
-// The zero-size heading that carries the shortened string. Present in the flow
-// because an element that is not laid out never sets its string.
+// The two running-head strings.
+//
+// `start` rather than `first`: the value in force as the page opens, so a
+// reader flipping through sees the section they are in on the left and the
+// topic they are reading on the right — not whichever heading happens to
+// begin partway down.
+//
+// One selector each, because Paged.js keeps a single selector per string
+// identifier and the last rule in the stylesheet wins globally. These must
+// not be h6: the manuscript has 928 of those inside entries, and every one
+// would set the string to "Applications".
 .run-head {
+    string-set: section-name content();
+}
+
+.topic-head {
+    string-set: topic-name content();
+}
+
+// The zero-size markers that carry them. Present in the flow because an
+// element that is not laid out never sets its string.
+.run-head,
+.topic-head {
     font-size: 0;
     line-height: 0;
     height: 0;
