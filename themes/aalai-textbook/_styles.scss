@@ -1387,6 +1387,26 @@ mark.flag-ref {
     break-inside: avoid;
 }
 
+// Each block is one page of entries, measured at the column width before the
+// book is paginated, so it balances into two full columns on its own and
+// Paged.js is never asked to find an overflow inside a balanced pair. Left to
+// itself it cuts at the foot of column one, pushes the whole of column two to
+// the next page, and commits the page at just over half full — 144 pages of
+// 280. `chunk-references.js` has the measurements.
+.references.chunked > div > div {
+    column-count: 1;
+}
+
+.ref-page {
+    column-count: 2;
+    column-gap: $baseline-grid-unit;
+    break-after: page;
+}
+
+.ref-page:last-child {
+    break-after: auto;
+}
+
 // The number is the thing the reader is looking for, so it stays with its
 // entry and does not hyphenate or wrap away from the first word.
 .references .ref-number {
