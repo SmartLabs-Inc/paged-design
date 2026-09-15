@@ -41,4 +41,7 @@ echo "== 5/6 audit marks"
 python3 "$HERE/highlight-audit.py" --content "$CONTENT" --manuscript "$SRC"
 
 echo "== 6/6 render"
-node "$HERE/render-pdf.js" --content "$CONTENT" --theme aalai-textbook --out "$OUT"
+# Pagination of this book takes about half an hour. The renderer's default
+# wait is five minutes, which reports a timeout on a build that was working.
+node "$HERE/render-pdf.js" --content "$CONTENT" --theme aalai-textbook \
+    --out "$OUT" --timeout 3600000
