@@ -2145,10 +2145,23 @@ h4 + .standfirst,
 }
 
 // Balance the columns rather than filling the first to the foot and leaving
-// the second short. `column-fill: auto` is what put an inch of white in
-// column one while column two ran to the bottom.
-.chapter > div > div,
-.frontmatter > div > div {
+// the second short.
+//
+// `column-fill: auto` fills the first column to the height of its container,
+// and this container has no height of its own — it is as tall as its content.
+// So the first column takes everything and the second is never opened: half
+// of every page white, in a book set in two columns throughout. It was
+// measured on the reference section, which came out at 410 pages against an
+// estimate of 205 — exactly twice, because exactly half the page was being
+// used.
+//
+// The doubled class is not a typo. The `auto` comes from
+// `.endmatter:not(.index) > div > div` in the parent theme, whose `:not()`
+// gives it two classes' worth of specificity; a plain `.chapter > div > div`
+// has one and loses, silently, on the components that carry both classes.
+.chapter.chapter > div > div,
+.frontmatter.frontmatter > div > div,
+.endmatter.endmatter > div > div {
     column-fill: balance;
 }
 

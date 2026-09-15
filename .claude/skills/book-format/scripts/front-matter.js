@@ -98,6 +98,70 @@ function addClasses (title, classes) {
   return true
 }
 
+// ---------------------------------------------------------------------------
+// The book has to open on a title page
+// ---------------------------------------------------------------------------
+// The converter makes one component per top-level heading and classes them all
+// `chapter`, so the book's own title page arrives as chapter zero: an h2 and
+// two paragraphs. That is not only a design problem. The theme hangs the
+// `book-title` named string off the title page, and the recto footer prints
+// that string — so with no title page, every right-hand footer in the book is
+// blank. It has been blank once before, for a different reason, and was found
+// by looking at a proof rather than by anything in a log.
+//
+// Anything before that heading is the anchors the manuscript carries for its
+// own cross-references. They belong on the title page, not on a page of their
+// own, which is what they were getting: one blank leaf at the front of the
+// book.
+
+function makeTitlePage () {
+  const first = /<div class="([^"]*)"[^>]*data-header="([^"]*)"[^>]*>/.exec(html)
+  if (!first) return false
+  if (/\btitle-page\b/.test(first[1])) return false
+
+  // The empty component ahead of it holds the manuscript's own anchors. They
+  // are link targets, so they move onto the title page rather than being
+  // dropped, and the blank leaf they were getting goes away.
+  let carried = ''
+  const stray = /<div class="[^"]*"(?![^>]*data-header)[^>]*>/.exec(html.slice(0, first.index))
+  if (stray) {
+    const strayEnd = matchingClose(stray.index)
+    const inner = strayEnd === -1 ? '' : html.slice(stray.index, strayEnd)
+    if (strayEnd !== -1 && strayEnd <= first.index && !/<(?:p|h[1-6]|table|ul|ol)[ >]/.test(inner)) {
+      carried = (inner.match(/<a id="[^"]*"><\/a>/g) || []).join('\n')
+      html = html.slice(0, stray.index) + html.slice(strayEnd)
+      done.push('empty opening component folded into the title page')
+    }
+  }
+
+  const open = /<div class="([^"]*)"[^>]*data-header="([^"]*)"[^>]*>/.exec(html)
+  const end = matchingClose(open.index)
+  if (end === -1) return false
+  let block = html.slice(open.index, end)
+
+  block = block.replace(/class="([^"]*)"/, function (all, existing) {
+    return 'class="' + existing.replace(/\bchapter\b/, 'title-page') + ' frontmatter"'
+  })
+
+  // The heading becomes the h1 the theme's `$title-page-title` selector wants,
+  // and the two paragraphs under it are the subtitle and the author.
+  block = block.replace(/<h[1-6]([^>]*)>([\s\S]*?)<\/h[1-6]>/, '<h1$1>$2</h1>')
+  let seen = 0
+  block = block.replace(/<p>/g, function () {
+    seen += 1
+    if (seen === 1) return '<p class="title-page-subtitle">'
+    if (seen === 2) return '<p class="title-page-author">'
+    return '<p>'
+  })
+  if (carried) block = block.replace(/<\/h1>/, '</h1>\n' + carried)
+
+  html = html.slice(0, open.index) + block + html.slice(end)
+  done.push('title page made from "' + open[2] + '"')
+  return true
+}
+
+makeTitlePage()
+
 if (addClasses('References', 'references endmatter')) done.push('References classed')
 if (addClasses('Index', 'index endmatter')) done.push('Index classed')
 if (addClasses('About Alexander Grinberg, M.D.', 'endmatter')) done.push('About classed')
