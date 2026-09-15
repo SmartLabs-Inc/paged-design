@@ -14,6 +14,13 @@ Three things happen here, and the third is the one that matters most.
    be matched: replacing only the `[[123]]` label leaves the `(#ref-123)`
    behind as visible text next to every one of the 6,867 marks.
 
+   Marks that sit next to each other are set as one mark. The manuscript
+   writes a run of sources with nothing between them, so three citations in a
+   row print as the single unreadable number 121314; there are 1,498 such
+   runs, one of them 28 marks long. They are punctuated here, and a run of
+   consecutive numbers closes up into a range — the convention every journal
+   uses, and the only way a run of 28 is readable at all.
+
 2. The reference list is left numbered exactly as the author numbered it.
 
 3. **The number on each reference is wrapped in HTML so Markdown cannot
@@ -60,14 +67,46 @@ body, refs = text[:head], text[head:]
 citations = 0
 
 
+runs = 0
+
+ONE = re.compile(r'\[\[(\d+)\]\]\(#([^)]+)\)')
+
+
+def anchor(number, target):
+    return '<a href="#%s">%s</a>' % (target, number)
+
+
 def link(match):
-    global citations
-    citations += 1
-    number, target = match.group(1), match.group(2)
-    return ('<sup class="cite"><a href="#%s">%s</a></sup>' % (target, number))
+    """One mark, or a whole run of them set as one."""
+    global citations, runs
+    marks = ONE.findall(match.group(0))
+    citations += len(marks)
+    if len(marks) > 1:
+        runs += 1
+
+    # Group consecutive numbers, in the order the author wrote them. Three or
+    # more in a row become a range; two stay as two, because 6–7 saves nothing
+    # over 6,7 and reads as a page span.
+    groups = []
+    for number, target in marks:
+        value = int(number)
+        if groups and value == groups[-1][-1][0] + 1:
+            groups[-1].append((value, number, target))
+        else:
+            groups.append([(value, number, target)])
+
+    parts = []
+    for group in groups:
+        if len(group) >= 3:
+            parts.append(anchor(group[0][1], group[0][2]) + '\u2013' +
+                         anchor(group[-1][1], group[-1][2]))
+        else:
+            parts.append(','.join(anchor(n, t) for _, n, t in group))
+
+    return '<sup class="cite">' + ','.join(parts) + '</sup>'
 
 
-body = re.sub(r'\[\[(\d+)\]\]\(#([^)]+)\)', link, body)
+body = re.sub(r'(?:\[\[\d+\]\]\(#[^)]+\))+', link, body)
 
 leftover = len(re.findall(r'\[\[\d+\]\]', body))
 
@@ -135,6 +174,7 @@ stray_anchors = len(re.findall(r'^<a id="ref-\d+"></a>\s*$', refs, flags=re.M))
 OUT.write_text(body + refs, encoding='utf-8')
 
 print('  citations turned into superscript links: %d' % citations)
+print('  adjacent runs punctuated and closed up: %d' % runs)
 if leftover:
     print('  WARNING: %d [[n]] marks left unlinked' % leftover)
 print('  reference numbers frozen against renumbering: %d' % escaped)
