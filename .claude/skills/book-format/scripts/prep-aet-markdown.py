@@ -26,6 +26,22 @@ Three things happen here, and the third is the one that matters most.
    A backslash escape does not work here: the converter passes `1886\.`
    through and the reader sees the backslash. A span does work, and gives the
    number something to be styled by.
+
+4. **Each entry is wrapped in its own paragraph, here, in HTML.** This was
+   found by rendering: the reference section came out at 556 pages when it
+   should be under 200, and the reason was that there were no paragraphs in it
+   at all. An entry line begins with a `<span>`, so the converter hands the
+   whole run to the page as raw inline text — one continuous flow of 3,750
+   citations with nothing for `.references p` to style and nothing for the
+   paginator to break between. The 8pt two-column rule was matching zero
+   elements.
+
+   Wrapping the entries means the inline Markdown inside them is ours to
+   convert too, because a raw HTML block is passed through untouched: the 3,139
+   `<https://…>` autolinks are the urgent ones. Left alone the browser parses
+   `<https://pubmed.ncbi.nlm.nih.gov/36753958/>` as a start tag and the URL
+   vanishes from the page — every reference silently losing the one thing a
+   reader would use to check it.
 """
 import re
 import sys
@@ -70,10 +86,59 @@ def freeze(match):
 
 refs = re.sub(r'^(\d{1,4})\.\s+(?=\S)', freeze, refs, flags=re.M)
 
+# 4. Each entry becomes one paragraph, and its inline Markdown is converted
+#    here because a raw HTML block is passed through untouched downstream.
+
+ENTITY = re.compile(r'&(?:[A-Za-z][A-Za-z0-9]{1,31}|#\d{1,7}|#[Xx][0-9A-Fa-f]{1,6});')
+
+
+def inline(text):
+    """Markdown inline syntax, in a fragment that is already HTML."""
+    # Ampersands first, so nothing written below is escaped twice.
+    text = ENTITY.sub(lambda m: '\x00%s\x00' % m.group(0)[1:-1], text)
+    text = text.replace('&', '&amp;')
+    text = re.sub(r'\x00([^\x00]+)\x00', r'&\1;', text)
+
+    # <https://…> — the construct that disappears if it is left alone.
+    text = re.sub(r'<(https?://[^>\s]+)>',
+                  lambda m: '<a class="uri" href="%s">%s</a>' % (m.group(1), m.group(1)),
+                  text)
+    text = re.sub(r'\[([^\]]+)\]\((https?://[^)\s]+)\)',
+                  lambda m: '<a class="uri" href="%s">%s</a>' % (m.group(2), m.group(1)),
+                  text)
+    text = re.sub(r'(?<![\w*])\*([^*\n]+)\*(?![\w*])', r'<em>\1</em>', text)
+
+    # Anything still angled is a stray, and prints rather than disappears.
+    text = re.sub(r'<(?![/a-zA-Z])', '&lt;', text)
+    return text
+
+
+wrapped = 0
+
+
+def entry(match):
+    global wrapped
+    wrapped += 1
+    number, body_text = match.group(1), match.group(2).strip()
+    # The anchor stays exactly where it was: 6,867 citations point at it.
+    return ('<p class="reference"><a id="ref-%s"></a>'
+            '<span class="ref-number">%s.</span> %s</p>'
+            % (number, number, inline(body_text)))
+
+
+refs = re.sub(
+    r'<a id="ref-(\d+)"></a>\s*\n\s*\n<span class="ref-number">\d+\.</span>(.*)',
+    entry, refs)
+
+stray_anchors = len(re.findall(r'^<a id="ref-\d+"></a>\s*$', refs, flags=re.M))
+
 OUT.write_text(body + refs, encoding='utf-8')
 
 print('  citations turned into superscript links: %d' % citations)
 if leftover:
     print('  WARNING: %d [[n]] marks left unlinked' % leftover)
 print('  reference numbers frozen against renumbering: %d' % escaped)
+print('  reference entries wrapped in their own paragraph: %d' % wrapped)
+if stray_anchors:
+    print('  WARNING: %d reference anchors with no entry after them' % stray_anchors)
 print('  wrote %s (%.1f MB)' % (OUT, OUT.stat().st_size / 1e6))
