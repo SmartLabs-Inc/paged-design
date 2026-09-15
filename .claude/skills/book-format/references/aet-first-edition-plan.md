@@ -18,19 +18,42 @@ in Word). This is the real book, not the sample we have been rehearsing on.
 | Reference lines | 6,562 (5,081 citations + 1,481 bare URLs) |
 | Index entries | 598 |
 
-### Estimated extent at 7 × 10in, two columns
+### Extent at 7 × 10in, two columns — estimated, then measured
 
-| Region | Words | Pages |
+| Region | Estimated | Measured |
 | --- | --- | --- |
-| Front matter | 1,786 | ~12 |
-| Body | 268,411 | ~383 |
-| References | 130,841 | ~187 |
-| Index (rebuilt) | 2,451 | ~10 |
-| **Total** | | **~590** |
+| Front matter | ~12 | 26 |
+| Body | ~383 | 684 |
+| Index | ~10 | 20 |
+| References | ~187 | 238 |
+| **Total** | **~590** | **972** |
 
-Word's 1,273 pages are single-column 12pt. Two columns at the house size
-roughly halves it. 590pp is a real book but a normal one for a clinical
-reference; it binds without trouble.
+The estimate was arithmetic on the word count: 268,411 words at about 700
+words to a two-column page. That number is right for solid text and wrong for
+this book, which is not solid text. It is 463 entry cards, 928 tracked-out
+labels, 136 section openers and 109 sub-section panels that span the measure,
+and all of that structure is what makes the book usable at arm's length. The
+measured rate is **392 words to the page** — 56% of solid setting. The other
+44% is the design.
+
+So 972pp is not waste. Page fill is 90% and only 42 body pages in 684 are
+under 70% full, most of those section openers that are meant to be. It is
+simply what this design costs, and the decision is editorial rather than
+technical.
+
+**If it has to come down**, in order of how little each one costs the reader:
+
+| Lever | Saves | Cost |
+| --- | --- | --- |
+| References to three columns at 7.5pt | ~50pp | nothing; it is apparatus |
+| Tighten entry and label spacing by a third | ~50pp | the grid gets busier |
+| Body to 9pt on 11.9pt | ~48pp | a size down, still comfortable |
+| All three | ~150pp → **~820** | |
+| Two volumes, split at Part IV | — | two spines, two ISBNs |
+
+At 972pp on 50lb the block is about 2.2in — bindable, but it is a case-bound
+book with a hinge problem, not a paperback. Confirm with the printer before
+locking anything.
 
 ## The Markdown changes everything
 
