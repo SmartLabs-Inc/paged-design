@@ -111,7 +111,8 @@ def main():
                 rows.append({'group': group, 'term': label, 'section': locate(match.start()),
                              'matched': match.group(0), 'context': snippet.strip()})
 
-    report = Path(args.out + '.csv')
+    # `--out audit.csv` should write audit.csv, not audit.csv.csv.
+    report = Path(args.out if args.out.endswith('.csv') else args.out + '.csv')
     with report.open('w', newline='', encoding='utf-8') as handle:
         writer = csv.DictWriter(handle, fieldnames=['group', 'term', 'section',
                                                     'matched', 'context'])
