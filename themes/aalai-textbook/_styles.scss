@@ -1289,6 +1289,69 @@ ol.references li {
 }
 
 // ---------------------------------------------------------------------------
+// The reference list
+// ---------------------------------------------------------------------------
+// Four thousand references. At body size they run to 187 pages; at 8pt in two
+// columns they are a reference apparatus rather than a second book. Ragged
+// right, because a citation is looked up rather than read and justifying a
+// two-line citation to a narrow measure opens rivers in every entry.
+
+.references > div > div {
+    column-count: 2;
+    column-gap: $baseline-grid-unit;
+    column-fill: auto;
+}
+
+.references p {
+    font-size: 8pt;
+    line-height: $baseline-grid-unit * 0.72;
+    margin: 0 0 ($baseline-grid-unit / 4) 0;
+    padding-left: 1.4em;
+    text-indent: -1.4em;
+    text-align: left;
+    hyphens: none;
+    break-inside: avoid;
+}
+
+// The number is the thing the reader is looking for, so it stays with its
+// entry and does not hyphenate or wrap away from the first word.
+.references .ref-number {
+    font-family: $font-display-secondary;
+    font-weight: 700;
+    color: $color-teal;
+    white-space: nowrap;
+}
+
+// A URL is set to break anywhere rather than push a column open.
+.references a {
+    word-break: break-all;
+    color: $color-mid;
+    text-decoration: none;
+}
+
+// ---------------------------------------------------------------------------
+// Pages held for something that arrives later
+// ---------------------------------------------------------------------------
+// A recto reserved for the printing sponsor's notice. It is blank here and
+// filled in the PDF afterwards, but it is a real, counted page: leave it out
+// and every folio after it is wrong in the printed book.
+
+.sponsor-page,
+.dedication-page,
+.acknowledgements-page {
+    break-before: recto;
+}
+
+.sponsor-page > div > div {
+    column-count: 1;
+}
+
+// Nothing in the margins of a page whose content is not ours.
+.pagedjs_page:has(.sponsor-page) .pagedjs_margin-content::after {
+    content: none !important;
+}
+
+// ---------------------------------------------------------------------------
 // Index locators
 // ---------------------------------------------------------------------------
 // The page numbers are found after the book is paginated and written back into
