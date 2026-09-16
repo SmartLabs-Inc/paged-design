@@ -1424,6 +1424,58 @@ mark.flag-ref {
 }
 
 // ---------------------------------------------------------------------------
+// A figure that has not arrived
+// ---------------------------------------------------------------------------
+// An `<img>` with no file prints as nothing, and nothing is invisible in a
+// nine-hundred-page proof. A ruled slot at the size the figure will occupy is
+// visible from across the room, carries the filename the book is asking for,
+// and prints the description already written for it — so the author can find
+// what is missing while turning pages, and whoever draws it has the brief in
+// place.
+
+.figure-slot {
+    display: block;
+    border: 1pt dashed $color-teal;
+    border-radius: 2pt;
+    background: rgba($color-teal, 0.04);
+    padding: $baseline-grid-unit ($baseline-grid-unit * 0.8);
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    text-align: center;
+    break-inside: avoid;
+}
+
+.figure-slot-label {
+    @include sans-small();
+    display: block;
+    font-size: $font-size-label;
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+    color: $color-teal;
+    margin-bottom: ($baseline-grid-unit / 3);
+}
+
+.figure-slot-file {
+    display: block;
+    font-family: $font-text-secondary;
+    font-size: $font-size-small;
+    font-weight: 700;
+    color: $color-navy;
+    word-break: break-all;
+    margin-bottom: ($baseline-grid-unit / 3);
+}
+
+.figure-slot-alt {
+    display: block;
+    font-size: $font-size-small;
+    font-style: italic;
+    line-height: $baseline-grid-unit * 0.78;
+    color: $color-mid;
+    text-align: left;
+    hyphens: none;
+}
+
+// ---------------------------------------------------------------------------
 // Pages held for something that arrives later
 // ---------------------------------------------------------------------------
 // A recto reserved for the printing sponsor's notice. It is blank here and

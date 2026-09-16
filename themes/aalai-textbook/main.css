@@ -6433,6 +6433,47 @@ mark.flag-ref {
   color: #66717C;
   text-decoration: none; }
 
+.figure-slot {
+  display: block;
+  border: 1pt dashed #137C7A;
+  border-radius: 2pt;
+  background: rgba(19, 124, 122, 0.04);
+  padding: 17px 13.6px;
+  margin: 0 0 8.5px 0;
+  text-align: center;
+  break-inside: avoid; }
+
+.figure-slot-label {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5px;
+  line-height: 13.6px;
+  text-indent: 0;
+  display: block;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin-bottom: 5.66667px; }
+
+.figure-slot-file {
+  display: block;
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #0D2035;
+  word-break: break-all;
+  margin-bottom: 5.66667px; }
+
+.figure-slot-alt {
+  display: block;
+  font-size: 10.5px;
+  font-style: italic;
+  line-height: 13.26px;
+  color: #66717C;
+  text-align: left;
+  hyphens: none; }
+
 .sponsor-page,
 .dedication-page,
 .acknowledgements-page {

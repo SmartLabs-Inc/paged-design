@@ -28,7 +28,9 @@
 //   * the reference entries, set ragged with `hyphens: none`, where a soft
 //     hyphen would never be used;
 //   * the invisible marker paragraphs that carry the running heads;
-//   * anything with a digit in it — doses, identifiers, gene names.
+//   * anything with a digit in it — doses, identifiers, gene names;
+//   * the filename in a figure slot, where a soft hyphen is
+//     indistinguishable from a real one.
 'use strict'
 
 const fs = require('fs')
@@ -63,7 +65,7 @@ if (html.indexOf(SOFT) !== -1) {
 
 // Elements whose text is never broken.
 const CLOSED = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'code', 'pre', 'title', 'script', 'style']
-const CLOSED_CLASSES = /\b(?:reference|run-head|topic-head|flag-code|label|chapter-eyebrow|part-title|part-name|index-letter|standfirst)\b/
+const CLOSED_CLASSES = /\b(?:reference|run-head|topic-head|flag-code|label|chapter-eyebrow|part-title|part-name|index-letter|standfirst|figure-slot-file)\b/
 
 let hyphenated = 0
 
