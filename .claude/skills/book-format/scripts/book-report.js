@@ -33,7 +33,9 @@ if (args.help || !args.content) {
     '  --theme <name>   Theme. Default: aalai-textbook.',
     '  --pages <list>   1-based page numbers to photograph, comma separated.',
     '  --out <dir>      Where the .png files go. Default: the working directory.',
-    '  --json <file>    Also write the whole report as JSON.'
+    '  --json <file>    Also write the whole report as JSON.',
+    '  --find <sel>     Report which pages carry this selector, and photograph',
+    '                   the first few of them.'
   ].join('\n'))
   process.exit(args.help ? 0 : 1)
 }
@@ -61,8 +63,17 @@ if (wanted.length) fs.mkdirSync(outDir, { recursive: true })
   await waitForPagedJs(page, 3600000)
   console.log('  paginated in ' + Math.round((Date.now() - started) / 1000) + 's')
 
-  const report = await page.evaluate(function () {
+  const report = await page.evaluate(function (selector) {
     const pages = Array.from(document.querySelectorAll('.pagedjs_page'))
+
+    // Which pages carry a thing you are looking for. A figure slot, a callout,
+    // anything you would otherwise find by turning nine hundred pages.
+    const carrying = []
+    if (selector) {
+      pages.forEach(function (box, index) {
+        if (box.querySelector(selector)) carrying.push(index + 1)
+      })
+    }
 
     // Where each component starts. A component is spread over many page
     // boxes, and each box keeps the component's own classes, so the first box
@@ -105,12 +116,13 @@ if (wanted.length) fs.mkdirSync(outDir, { recursive: true })
       meanFill: Math.round(mean * 100),
       regions: regions,
       short: short,
+      carrying: carrying,
       lastPageText: (function () {
         const area = pages[pages.length - 1].querySelector('.pagedjs_page_content')
         return area ? area.textContent.replace(/\s+/g, ' ').trim().slice(-160) : ''
       })()
     }
-  })
+  }, args.find || null)
 
   console.log('')
   console.log('  ' + report.pages + ' pages, ' + report.blank + ' of them blank, mean fill ' +
@@ -132,6 +144,15 @@ if (wanted.length) fs.mkdirSync(outDir, { recursive: true })
   console.log('')
   // The one check worth making on every build: that the book got to the end.
   console.log('  Last page ends: …' + report.lastPageText)
+
+  if (args.find) {
+    console.log('')
+    console.log('  Pages carrying ' + args.find + ': ' + report.carrying.length +
+      (report.carrying.length ? '  ' + report.carrying.join(', ') : ''))
+    report.carrying.slice(0, 4).forEach(function (n) {
+      if (wanted.indexOf(n) === -1) wanted.push(n)
+    })
+  }
 
   for (const number of wanted) {
     if (!(number >= 1 && number <= report.pages)) { console.log('  page ' + number + ' — out of range'); continue }
