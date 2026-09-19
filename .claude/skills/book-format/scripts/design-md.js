@@ -249,7 +249,9 @@ function designPart (children, title) {
   let opener = ''
   const already = rest.some(function (b) { return hasClass(b, 'part-title') })
   for (let i = 0; i < rest.length && !already; i += 1) {
-    if (rest[i].name === 'h2') {
+    // `h1` as well, so that a pass which promotes the heading before this one
+    // runs cannot quietly leave the part without an opener.
+    if (rest[i].name === 'h2' || rest[i].name === 'h1') {
       opener = '<h1 class="part-name">' + escapeAttr(name) + '</h1>\n' +
         '<p class="chapter-eyebrow">Part ' + numeral + '</p>\n' +
         '<h2 class="part-title" id="' + (idOf(rest[i]) || 'part-' + tally.parts) +
