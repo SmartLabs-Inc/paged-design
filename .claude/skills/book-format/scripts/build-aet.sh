@@ -6,16 +6,21 @@
 # design pass looks for the headings the converter made, and the audit marks
 # are painted last so that nothing after them can move a mark off its word.
 #
-#   usage: build-aet.sh <source.md> <work-dir> [<out.pdf>]
+#   usage: build-aet.sh [--clean] <source.md> <work-dir> [<out.pdf>]
 #
 # <source.md> is the manuscript as delivered — not the prepared copy. The
 # prepared copy is written into <work-dir> and is regenerable from this.
 set -e
 
+# --clean leaves the audit marks off: a proof for a printer rather than one
+# for the author to argue with. It is the same book either way.
+MARKS=yes
+if [ "$1" = "--clean" ]; then MARKS=no; shift; fi
+
 SRC="$1"
 WORK="$2"
 OUT="${3:-$WORK/aet-proof.pdf}"
-[ -n "$SRC" ] && [ -n "$WORK" ] || { echo "usage: build-aet.sh <source.md> <work-dir> [<out.pdf>]" >&2; exit 2; }
+[ -n "$SRC" ] && [ -n "$WORK" ] || { echo "usage: build-aet.sh [--clean] <source.md> <work-dir> [<out.pdf>]" >&2; exit 2; }
 
 HERE=$(dirname "$0")
 REPO=$(cd "$HERE/../../../.." && pwd)
@@ -38,8 +43,12 @@ node "$HERE/front-matter.js" --content "$CONTENT" \
 echo "== 4/9 design"
 node "$HERE/design-md.js" --content "$CONTENT" --report
 
-echo "== 5/9 audit marks"
-python3 "$HERE/highlight-audit.py" --content "$CONTENT" --manuscript "$SRC"
+if [ "$MARKS" = yes ]; then
+    echo "== 5/9 audit marks"
+    python3 "$HERE/highlight-audit.py" --content "$CONTENT" --manuscript "$SRC"
+else
+    echo "== 5/9 audit marks — skipped (--clean)"
+fi
 
 # After the marks, so the marker never paints inside a slot; before the
 # hyphens, so the slot's description is hyphenated like everything else.

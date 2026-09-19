@@ -207,6 +207,66 @@ if (args['drop-generated-contents']) {
 makeTitlePage()
 
 // ---------------------------------------------------------------------------
+// The contents, the copyright notice and the abbreviations
+// ---------------------------------------------------------------------------
+// Three pages that each follow a convention of their own, and each needs
+// markup the converter cannot infer from a heading and a list.
+
+if (addClasses('Copyright', 'copyright-page')) done.push('Copyright page classed')
+if (addClasses('Contents', 'contents-page')) done.push('Contents page classed')
+
+// A contents is a list of links until it is told it is a contents. The class
+// is what turns the page number on: the theme prints
+// `target-counter(attr(href), page)` against the right margin, so the numbers
+// come from the pagination itself rather than from a second pass over the
+// book.
+let tocLists = 0
+{
+  const contents = findComponent('Contents')
+  if (contents) {
+    const block = html.slice(contents.start, contents.end)
+    let first = true
+    const listed = block.replace(/<ul>/g, function () {
+      tocLists += 1
+      if (first) { first = false; return '<ul class="toc-list">' }
+      return '<ul>'
+    })
+    html = html.slice(0, contents.start) + listed + html.slice(contents.end)
+    if (tocLists) done.push('contents set as a list with page numbers')
+  }
+}
+
+// The abbreviations arrive as a two-column table, which sets as a table: one
+// pair to a row, the width of the page, sixty-five rows and four pages of it.
+// As a definition list the same pairs flow in two columns and take one page,
+// and the theme already knows how to set one — the Word route built this and
+// the Markdown route never did, which is why it came back wrong.
+{
+  const abbreviations = findComponent('List of Abbreviations')
+  if (abbreviations) {
+    const block = html.slice(abbreviations.start, abbreviations.end)
+    const table = /<div class="table-figure">\s*<table>[\s\S]*?<\/table>\s*<\/div>/.exec(block)
+    if (table) {
+      const pairs = []
+      const row = /<tr>\s*<td>([\s\S]*?)<\/td>\s*<td>([\s\S]*?)<\/td>\s*<\/tr>/g
+      let found
+      while ((found = row.exec(table[0])) !== null) {
+        const term = found[1].replace(/<\/?strong>/g, '').trim()
+        const expansion = found[2].replace(/<\/?strong>/g, '').trim()
+        if (term) pairs.push('<div class="abbrev"><dt>' + term + '</dt><dd>' + expansion + '</dd></div>')
+      }
+      if (pairs.length) {
+        const list = '<dl class="abbrev-list">\n' + pairs.join('\n') + '\n</dl>'
+        const rebuilt = block.slice(0, table.index) + list + block.slice(table.index + table[0].length)
+        html = html.slice(0, abbreviations.start) + rebuilt + html.slice(abbreviations.end)
+        done.push(pairs.length + ' abbreviations set as a list rather than a table')
+      }
+    }
+  }
+}
+
+
+// ---------------------------------------------------------------------------
 // Insert the reserved and new pages
 // ---------------------------------------------------------------------------
 
