@@ -245,7 +245,9 @@ let tocLists = 0
   const abbreviations = findComponent('List of Abbreviations')
   if (abbreviations) {
     const block = html.slice(abbreviations.start, abbreviations.end)
-    const table = /<div class="table-figure">\s*<table>[\s\S]*?<\/table>\s*<\/div>/.exec(block)
+    // A bare `<table>` at this stage: the design pass, which wraps tables in
+    // `.table-figure`, has not run yet and must not find one here to wrap.
+    const table = /(?:<div class="table-figure">\s*)?<table>[\s\S]*?<\/table>(?:\s*<\/div>)?/.exec(block)
     if (table) {
       const pairs = []
       const row = /<tr>\s*<td>([\s\S]*?)<\/td>\s*<td>([\s\S]*?)<\/td>\s*<\/tr>/g

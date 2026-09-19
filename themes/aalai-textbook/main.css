@@ -6441,19 +6441,20 @@ mark.flag-ref {
   color: #66717C;
   text-decoration: none; }
 
-.copyright-page {
+.copyright-page.copyright-page {
   break-before: verso; }
 
-.copyright-page,
-.copyright-page > div {
-  height: inherit; }
-
 .copyright-page.copyright-page > div > div {
-  height: inherit;
-  column-count: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end; }
+  column-count: 1; }
+
+.copyright-page.copyright-page > div > div > h1,
+.copyright-page.copyright-page > div > div > h2,
+.copyright-page.copyright-page > div > div > p,
+.title-page.title-page > div > div > h1,
+.title-page.title-page > div > div > p,
+.dedication-page.dedication-page > div > div > h1,
+.dedication-page.dedication-page > div > div > p {
+  column-span: none; }
 
 .copyright-page.copyright-page p,
 .copyright-page.copyright-page li {
@@ -7064,8 +7065,8 @@ p, li, dd, .lead-rest, .standfirst {
   break-inside: avoid;
   padding-left: 1.1em;
   text-indent: -1.1em;
-  margin-bottom: 3.4px;
-  line-height: 17px; }
+  margin-bottom: 1.7px;
+  line-height: 15.98px; }
 
 .abbrev > dt,
 .abbrev > dd {
