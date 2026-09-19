@@ -35,6 +35,29 @@ the column on the right says which.
 | Citations set as superscripts, not as bracketed numbers in the text | `superscriptCitations()` |
 | Heading numerals the design does not use are stripped, and "N. Introduction" stubs are dropped | pre-pass in `designBody()` |
 
+## The front and back matter
+
+These came back wrong on the Markdown route after they had been settled on the
+Word route, and four of them had the same cause: the Word converter built
+markup that the Markdown converter does not, so the rules that styled it were
+matching nothing. The fifth was a change of mine that unhooked the lot.
+
+| Rule | Where it is enforced |
+| --- | --- |
+| A title never sets inside a column — every `h1`, and any component's own heading, spans the measure | `h1 { column-span: all }` and the front/back-matter rules, keyed on `h1` **and** `h2` |
+| The copyright notice is a verso, at the foot of the page, one column, 12pt, ranged left, single-spaced, off the grid | `.copyright-page.copyright-page`; the doubled class beats `.chapter`'s `break-before: recto` |
+| A copyright page carries no visible heading | the parent theme hides `h1[id="copyright"]` — this is deliberate, not a fault |
+| The contents is one column with a page number against the right margin | `class="toc-list"` added by `front-matter.js`; the numbers come from `target-counter`, so there is no second pass |
+| The abbreviations are a two-column flowing list on one page, never a table | `front-matter.js` rebuilds the table as `dl.abbrev-list` |
+| A table's caption goes inside the block it names | `design-md.js` folds it in; `break-before: avoid` on the **table**, never `break-after: avoid` on the caption — Paged.js honours the first and ignores the second |
+
+**The one to watch.** The build promotes each component's heading to an `h1`
+so the verso footer can print `string(h1-text, first)` and name its section.
+Every front- and back-matter rule used to be keyed on `> h2`. That one
+promotion silently removed the spanning title, the teal rule under it and the
+standfirst from every page of front and back matter, and nothing in any log
+said so. Any rule that keys on a heading level here must name both.
+
 ## Still open
 
 These are known, and saying so is part of the proof.
