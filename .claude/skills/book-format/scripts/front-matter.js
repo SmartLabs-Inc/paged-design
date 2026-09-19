@@ -349,9 +349,16 @@ if (args.acknowledgements && !/\backnowledgements-page\b/.test(html)) {
 // what the dedication and acknowledgements pages already are: an h1 wearing
 // `.heading-2`, which is the size an opening heading is set at here.
 
+// Front and back matter only. A part opener's heading is not a heading yet —
+// the design pass reads that `h2` and builds the opener out of it, the part
+// name in the display face over a tracked-out "Part III" — and promoting it
+// here left the pass nothing to find. Five part openers came out as a plain
+// line of text on a four-per-cent page, which is what "the section title
+// pages have lost their format" turned out to mean.
 let promoted = 0
-html = html.replace(/<div class="[^"]*"[^>]*data-header="[^"]*"[^>]*>[\s\S]*?(?=\n    <div class=|<\/body>)/g,
-  function (block) {
+html = html.replace(/<div class="([^"]*)"[^>]*data-header="[^"]*"[^>]*>[\s\S]*?(?=\n    <div class=|<\/body>)/g,
+  function (block, classes) {
+    if (!/\b(?:frontmatter|endmatter|contents-page)\b/.test(classes)) return block
     if (/<h1[\s>]/.test(block)) return block
     return block.replace(/<h2([^>]*)>([\s\S]*?)<\/h2>/, function (all, attrs, text) {
       promoted += 1
