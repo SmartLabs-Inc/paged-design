@@ -1456,24 +1456,31 @@ mark.flag-ref {
 // else in the chain has a height. Safe here because this is one page by
 // definition.
 
-// On the left. `verso` is resolved by Paged.js from the stylesheet rather
-// than the cascade, which is exactly what is wanted here: it is a property of
-// the book, not of one build.
-.copyright-page {
+// On the left. The doubled class is load-bearing: the component also carries
+// `.chapter`, which sets `break-before: recto` at the same specificity, and
+// the copyright notice went to a right-hand page.
+.copyright-page.copyright-page {
     break-before: verso;
 }
 
-.copyright-page,
-.copyright-page > div {
-    height: inherit;
+// The foot of the page comes from the parent theme, which already sets this
+// component `position: absolute; bottom: 0`. Only the column count and the
+// type are ours. An earlier attempt at flexing it to the bottom collapsed the
+// heading to nothing: a `column-span: all` element inside a flex container is
+// not a spanner, it is a zero-height box pushed off the top of the page.
+.copyright-page.copyright-page > div > div {
+    column-count: 1;
 }
 
-.copyright-page.copyright-page > div > div {
-    height: inherit;
-    column-count: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+// Nothing on this page spans, because nothing on it is in columns.
+.copyright-page.copyright-page > div > div > h1,
+.copyright-page.copyright-page > div > div > h2,
+.copyright-page.copyright-page > div > div > p,
+.title-page.title-page > div > div > h1,
+.title-page.title-page > div > div > p,
+.dedication-page.dedication-page > div > div > h1,
+.dedication-page.dedication-page > div > div > p {
+    column-span: none;
 }
 
 .copyright-page.copyright-page p,
@@ -2584,10 +2591,15 @@ p, li, dd, .lead-rest, .standfirst {
     break-inside: avoid;
     padding-left: 1.1em;
     text-indent: -1.1em;
-    // A fifth of the baseline, not a third: at a third the list ran three
-    // terms past the page and left a second page nine-tenths white for them.
-    margin-bottom: ($baseline-grid-unit / 5);
-    line-height: $baseline-grid-unit;
+    // A tenth of the baseline, not a fifth and certainly not a third. At a
+    // third the list ran three terms past the page; at a fifth it ran six
+    // lines past and left a second page nine-tenths white for them. Sixty-five
+    // terms either fit on one page or waste a leaf, and the space between
+    // them is the only adjustment that does not change the type.
+    margin-bottom: ($baseline-grid-unit / 10);
+    // And a hair off the leading, which was the last two lines. The list is
+    // looked up, not read down, so it carries a tighter line than the text.
+    line-height: $baseline-grid-unit * 0.94;
 }
 
 .abbrev > dt,
