@@ -1132,11 +1132,30 @@ samp {
 // set, and three spanners in a row — title, standfirst, first letter — opened
 // the index on a page that stayed completely empty. Only a heading that is
 // the section's own title spans.
+// `h1` as well as `h2`, and this is why: the build promotes each component's
+// heading to an `h1` so that the verso footer, which prints
+// `string(h1-text, first)`, names the section it is under. That promotion
+// silently unhooked every rule below — the spanning title, the rule under it,
+// the standfirst — and the front and back matter lost its whole treatment in
+// one change. Matching both means the treatment no longer depends on which
+// level the heading happens to be.
+//
+// A heading that is a section's own title always spans. A two-column measure
+// is for reading down; a title set into one column of two reads as a
+// subheading of the column rather than the name of the section.
+.frontmatter > div > div > h1,
 .frontmatter > div > div > h2,
+.endmatter:not(.index) h1,
 .endmatter:not(.index) h2,
+.index > div > div > h1:first-of-type,
 .index > div > div > h2:first-of-type,
 .frontmatter > div > div > p:first-of-type,
 .endmatter > div > div > p:first-of-type {
+    column-span: all;
+}
+
+// And every h1 anywhere, which is the general form of the rule above.
+h1 {
     column-span: all;
 }
 
@@ -1151,7 +1170,9 @@ samp {
     column-span: none;
 }
 
+.frontmatter > div > div > h1,
 .frontmatter > div > div > h2,
+.endmatter > div > div > h1,
 .endmatter > div > div > h2 {
     font-size: 26px;
     line-height: $baseline-grid-unit * 1.5;
@@ -1421,6 +1442,150 @@ mark.flag-ref {
     word-break: break-all;
     color: $color-mid;
     text-decoration: none;
+}
+
+// ---------------------------------------------------------------------------
+// The copyright page
+// ---------------------------------------------------------------------------
+// A verso, set at the foot of the page, one column, ranged left and not on
+// the book's grid. It is a legal notice rather than a page anyone reads
+// through, and every convention it follows is a different one from the text.
+//
+// The height it sits at the foot of comes from Paged.js's page box, passed
+// down the same way the title page does it, and for the same reason: nothing
+// else in the chain has a height. Safe here because this is one page by
+// definition.
+
+// On the left. `verso` is resolved by Paged.js from the stylesheet rather
+// than the cascade, which is exactly what is wanted here: it is a property of
+// the book, not of one build.
+.copyright-page {
+    break-before: verso;
+}
+
+.copyright-page,
+.copyright-page > div {
+    height: inherit;
+}
+
+.copyright-page.copyright-page > div > div {
+    height: inherit;
+    column-count: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.copyright-page.copyright-page p,
+.copyright-page.copyright-page li {
+    font-size: 12pt;
+    line-height: 1.15;
+    text-align: left;
+    text-indent: 0;
+    hyphens: none;
+    margin: 0 0 0.6em 0;
+}
+
+// The heading is part of the notice, not a section title: no rule under it,
+// no display size, no air above it.
+.copyright-page.copyright-page > div > div > h1,
+.copyright-page.copyright-page > div > div > h2 {
+    font-size: 12pt;
+    line-height: 1.15;
+    font-weight: 700;
+    color: $color-navy;
+    border-bottom: none;
+    padding-bottom: 0;
+    margin: 0 0 0.6em 0;
+}
+
+// The standfirst treatment does not apply to a copyright notice either.
+.copyright-page.copyright-page > div > div > p:first-of-type {
+    font-size: 12pt;
+    font-style: normal;
+    line-height: 1.15;
+    color: inherit;
+    margin-bottom: 0.6em;
+}
+
+// ---------------------------------------------------------------------------
+// The contents
+// ---------------------------------------------------------------------------
+// One column, with a page number against the right margin. A contents set in
+// two columns is a list a reader has to search twice.
+
+.contents-list.contents-list > div > div,
+.contents-page.contents-page > div > div {
+    column-count: 1;
+}
+
+.toc-list,
+.toc-list ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.toc-list li {
+    margin: 0 0 ($baseline-grid-unit / 4) 0;
+    text-indent: 0;
+    break-inside: avoid;
+}
+
+.toc-list a {
+    display: block;
+    color: $color-navy;
+    text-decoration: none;
+    // Room at the right for the page number, which floats into it.
+    padding-right: 3em;
+}
+
+.toc-list li a::after {
+    content: target-counter(attr(href), page);
+    float: right;
+    margin-right: -3em;
+    font-family: $font-text-secondary;
+    font-size: $font-size-small;
+    color: $color-mid;
+}
+
+// A part is the level a reader navigates by, so it is set up and given air.
+.toc-list > li > a {
+    font-family: $font-display-secondary;
+    font-weight: 700;
+    color: $color-navy;
+}
+
+.toc-list > li {
+    margin-top: ($baseline-grid-unit / 2);
+}
+
+// Everything under it is indented a level and set a size down.
+.toc-list ul a {
+    padding-left: $baseline-grid-unit;
+    font-size: $font-size-small;
+    color: $color-mid;
+}
+
+.toc-list ul ul a {
+    padding-left: ($baseline-grid-unit * 2);
+}
+
+// ---------------------------------------------------------------------------
+// A table keeps its caption
+// ---------------------------------------------------------------------------
+// `break-before: avoid` on the table, not `break-after: avoid` on the caption.
+// Paged.js honours the first and ignores the second, so a caption asked to
+// keep with what follows it is a caption that will sooner or later be left
+// alone at the foot of a column.
+
+.table-figure table {
+    break-before: avoid;
+}
+
+.table-caption {
+    break-after: avoid;
+    margin-bottom: ($baseline-grid-unit / 4);
 }
 
 // ---------------------------------------------------------------------------

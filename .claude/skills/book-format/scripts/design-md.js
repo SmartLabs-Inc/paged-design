@@ -187,7 +187,7 @@ const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
 
 const tally = {
   parts: 0, sections: 0, subsections: 0, entries: 0, labels: 0,
-  tables: 0, figures: 0, capped: 0
+  tables: 0, captions: 0, figures: 0, capped: 0
 }
 const capped = []
 
@@ -377,7 +377,15 @@ function designBody (allChildren, options) {
 
     if (node.name === 'table') {
       tally.tables += 1
-      out.push('<div class="table-figure">' + node.html + '</div>')
+      // A caption belongs inside the block it names. Left as the paragraph
+      // before it, it is free to end a column with its table starting the
+      // next one — which is how a table comes to be introduced on the page
+      // after the one that introduces it.
+      const caption = out.length && /^<p><strong>(?:Table|TABLE)\b/.test(out[out.length - 1])
+        ? out.pop().replace(/^<p>/, '<p class="table-caption">')
+        : ''
+      if (caption) tally.captions += 1
+      out.push('<div class="table-figure">' + caption + node.html + '</div>')
       index += 1
       continue
     }
@@ -505,6 +513,7 @@ console.log('Designed ' + path.relative(process.cwd(), indexFile))
 console.log('  parts ' + tally.parts + ' · sections ' + tally.sections +
   ' · sub-sections ' + tally.subsections)
 console.log('  entries ' + tally.entries + ' · labels ' + tally.labels +
-  ' · tables ' + tally.tables + ' · figures ' + tally.figures)
+  ' · tables ' + tally.tables + ' (' + tally.captions + ' captioned)' +
+  ' · figures ' + tally.figures)
 console.log('  keep boxes capped ' + tally.capped)
 if (args.report) capped.slice(0, 30).forEach(function (l) { console.log('    ' + l) })
