@@ -369,6 +369,53 @@ if (promoted) done.push(promoted + ' component heading' + (promoted === 1 ? '' :
   ' promoted so the footer names the section')
 
 // ---------------------------------------------------------------------------
+// An anchor belongs to the section it names
+// ---------------------------------------------------------------------------
+// The converter leaves each section's anchors at the foot of the section
+// before it — that is where they sit in the manuscript, ahead of the heading
+// they introduce. In a scrolling document that is close enough. In a paginated
+// one it is a page number that is simply wrong: every contents entry resolved
+// to the last page of the preceding section, so the Disclaimer, which begins
+// on page 5, printed as page 2.
+//
+// It is not only the contents. Every index locator in the book comes from the
+// same anchors and was wrong the same way.
+//
+// So a run of empty anchors at the end of a component moves to the top of the
+// next one, ahead of its heading, where the section it names actually starts.
+
+let carried = 0
+{
+  const opening = /<div class="[^"]*"[^>]*>\n\s*<div>\n\s*<div>/g
+  const components = []
+  let found
+  while ((found = opening.exec(html)) !== null) {
+    components.push({ start: found.index, contentAt: found.index + found[0].length })
+  }
+
+  const trailingAnchors = /((?:\s*<a id="[^"]*"><\/a>)+)\s*$/
+
+  // Back to front, and within each step the later edit first, so no offset is
+  // used after something before it has moved.
+  for (let i = components.length - 2; i >= 0; i -= 1) {
+    const bodyStart = components[i].contentAt
+    const bodyEnd = html.lastIndexOf('</div>', html.lastIndexOf('</div>',
+      html.lastIndexOf('</div>', components[i + 1].start)  - 1) - 1)
+    const body = html.slice(bodyStart, bodyEnd)
+    const match = trailingAnchors.exec(body)
+    if (!match) continue
+
+    const anchors = match[1].trim()
+    carried += (anchors.match(/<a /g) || []).length
+
+    const into = components[i + 1].contentAt
+    html = html.slice(0, into) + '\n' + anchors + html.slice(into)
+    html = html.slice(0, bodyStart + match.index) + html.slice(bodyStart + match.index + match[1].length)
+  }
+  if (carried) done.push(carried + ' anchors moved to the section they name')
+}
+
+// ---------------------------------------------------------------------------
 // One id, one place
 // ---------------------------------------------------------------------------
 // The converter leaves an empty anchor at the foot of each component for the
