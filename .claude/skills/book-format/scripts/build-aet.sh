@@ -11,6 +11,12 @@
 # Set ART to a folder of figure artwork and whatever matches a filename the
 # book asks for is copied in on the way past.
 #
+# End to end this takes about twenty-five minutes, which is longer than some
+# task runners will let a single command live: twice now the build has been
+# cut off in the middle of the lead-cut pass, which is the longest step. If
+# that happens, the passes are all idempotent — run them one at a time from
+# where it stopped, or run 1-7 and 8-10 as two commands.
+#
 # <source.md> is the manuscript as delivered — not the prepared copy. The
 # prepared copy is written into <work-dir> and is regenerable from this.
 set -e
