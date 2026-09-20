@@ -388,23 +388,14 @@ function designBody (allChildren, options) {
 
     // h6 — a label inside an entry: Applications, Practical Considerations.
     if (node.name === 'h6') {
-      tally.labels += 1
-      out.push('<p class="label">' + innerOf(node) + '</p>')
-      index += 1
+      const held = holdLabel(node, children[index + 1])
+      out.push(held.html)
+      index += held.consumed
       continue
     }
 
     if (node.name === 'table') {
-      tally.tables += 1
-      // A caption belongs inside the block it names. Left as the paragraph
-      // before it, it is free to end a column with its table starting the
-      // next one — which is how a table comes to be introduced on the page
-      // after the one that introduces it.
-      const caption = out.length && /^<p><strong>(?:Table|TABLE)\b/.test(out[out.length - 1])
-        ? out.pop().replace(/^<p>/, '<p class="table-caption">')
-        : ''
-      if (caption) tally.captions += 1
-      out.push('<div class="table-figure">' + caption + node.html + '</div>')
+      out.push(bindCaption(out, node))
       index += 1
       continue
     }
@@ -455,17 +446,71 @@ function dressEntryBody (nodes) {
       i += figure.consumed - 1
       continue
     }
+
+    // A table's caption goes inside the block it names — here as well as in
+    // the main loop. Only one of the two was doing it, so fifteen of the
+    // twenty-seven tables kept a loose caption and Table 3 ended a column with
+    // its table starting the next page.
+    if (node.name === 'table') {
+      out.push(bindCaption(out, node))
+      continue
+    }
+
+    // A label and the opening of what it introduces, held together.
+    if (node.name === 'h6') {
+      const held = holdLabel(node, nodes[i + 1])
+      out.push(held.html)
+      i += held.consumed - 1
+      continue
+    }
+
     out.push(dressOne(node))
   }
   return out
 }
 
+// A caption belongs inside the block it names. `break-before: avoid` on the
+// table then keeps the two together — Paged.js honours that and ignores
+// `break-after: avoid` on the caption.
+function bindCaption (out, node) {
+  tally.tables += 1
+  const caption = out.length && /^<p><strong>(?:Table|TABLE)\b/.test(out[out.length - 1])
+    ? out.pop().replace(/^<p>/, '<p class="table-caption">')
+    : ''
+  if (caption) tally.captions += 1
+  return '<div class="table-figure">' + caption + node.html + '</div>'
+}
+
+// APPLICATIONS, PRACTICAL CONSIDERATIONS, KEY RISKS — and the first lines of
+// whatever they introduce, in a box that cannot break.
+//
+// `break-after: avoid` on the label is already set and does nothing: Paged.js
+// takes every `break-after` out of the stylesheet and re-implements breaking
+// itself. `break-inside` is the one it leaves alone, so holding a heading to
+// its text has to be structural. The entry names have had this since the
+// first proof; the labels never did, and one ended a column on page 25 with
+// its section starting the next one.
+function holdLabel (node, following) {
+  tally.labels += 1
+  const label = '<p class="label">' + innerOf(node) + '</p>'
+  if (!following || following.name !== 'p' || /<img\b/.test(following.html)) {
+    return { html: label, consumed: 1 }
+  }
+  const inner = innerOf(following)
+  const split = splitParagraph(inner, KEEP_BUDGET)
+  if (!split) {
+    return { html: '<div class="keep-label">' + label + '<p>' + inner + '</p></div>', consumed: 2 }
+  }
+  return {
+    html: '<div class="keep-label">' + label +
+      '<p class="lead-head">' + split[0] + '</p></div>\n' +
+      '<p class="lead-rest">' + split[1] + '</p>',
+    consumed: 2
+  }
+}
+
 function dressOne (node) {
   return [node].map(function (node) {
-    if (node.name === 'h6') {
-      tally.labels += 1
-      return '<p class="label">' + innerOf(node) + '</p>'
-    }
     if (node.name === 'table') {
       tally.tables += 1
       return '<div class="table-figure">' + node.html + '</div>'

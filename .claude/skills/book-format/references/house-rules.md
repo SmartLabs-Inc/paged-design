@@ -13,6 +13,8 @@ the column on the right says which.
 | --- | --- |
 | Never a widow — one line of a paragraph at the top of a page or column | `widows: 2` in the theme, then `fix-widows.js` for what CSS cannot reach across a Paged.js page break; `proof-check.js` reports what is left |
 | Never a widow in a title, and never a heading alone at the foot of a page | keep boxes in `design-pass.js`; `proof-check.js` reports stranded headings |
+| **Never a heading at the foot of a column or a page — every heading keeps with what follows it** | a `break-inside: avoid` box built by the design pass. `break-after: avoid` cannot do this: Paged.js takes every `break-after` out of the stylesheet and re-implements breaking itself, so the declaration computes to `auto` and does nothing. Entry names, sub-section headings and labels each need their own box |
+| Never a table caption without its table | the caption goes *inside* `.table-figure`, and `break-before: avoid` goes on the table — Paged.js honours that and ignores `break-after: avoid` on the caption |
 | Never split a person's name across two lines | `protectNames()` in `design-pass.js`, display type only |
 | Never truncate the section name in the running head | full name into `<h6 class="run-head">`, and the top margin row is widened to the full measure |
 | Never leave an orphan just to balance columns — finishing the entry in column one comes first | `column-fill: auto` on the body; eyes |
