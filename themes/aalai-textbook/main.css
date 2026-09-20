@@ -6165,21 +6165,22 @@ a.uri,
 .figure > .figure-caption,
 .figure-side > .figure-caption {
   font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 8.5px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #137C7A;
-  margin: 0 0 8.5px 0;
+  font-size: 10.5px;
+  line-height: 13.6px;
   text-indent: 0;
-  font-size: 8px;
-  color: #0D2035;
-  text-transform: none;
-  letter-spacing: 0;
+  font-size: 10.5px;
+  font-weight: 400;
+  color: #66717C;
+  line-height: 13.94px;
+  margin: 8.5px 0 0 0;
+  text-align: left;
+  hyphens: none; }
+
+.figure > .figure-caption > em:first-child,
+.figure-side > .figure-caption > em:first-child {
+  font-style: normal;
   font-weight: 700;
-  line-height: 11.9px;
-  margin: 5.66667px 0 0 0;
-  text-align: left; }
+  color: #0D2035; }
 
 .figure > .figure-brief,
 .figure-side > .figure-brief {
@@ -6538,6 +6539,25 @@ mark.flag-ref {
 
 .label {
   font-size: 11.17px; }
+
+.figure {
+  column-span: all;
+  break-inside: avoid;
+  text-align: center;
+  margin: 20.4px 0 20.4px 0; }
+
+.figure img {
+  display: block;
+  margin: 0 auto;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 140mm; }
+
+.figure .figure-caption {
+  text-align: left;
+  margin: 8.5px auto 0 auto;
+  max-width: 118mm; }
 
 .figure-slot {
   display: block;

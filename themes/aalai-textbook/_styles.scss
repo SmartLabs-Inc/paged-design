@@ -981,17 +981,31 @@ $part-tabs:
     margin: 0;
 }
 
+// A caption is read, so it is set to be read: the caption size the rest of the
+// book uses, in the ordinary weight. It was six point and bold — a label size
+// carrying four sentences of explanation, which is neither legible nor what a
+// caption is.
+//
+// The figure's own label keeps the emphasis. That is the distinction the
+// author's notes asked for: the caption in regular weight, apart from the
+// figure label.
 .figure > .figure-caption,
 .figure-side > .figure-caption {
-    @include label();
-    font-size: 8px;
-    color: $color-navy;
-    text-transform: none;
-    letter-spacing: 0;
-    font-weight: 700;
-    line-height: $baseline-grid-unit * 0.7;
-    margin: ($baseline-grid-unit / 3) 0 0 0;
+    @include sans-small();
+    font-size: $font-size-small;
+    font-weight: 400;
+    color: $color-mid;
+    line-height: $baseline-grid-unit * 0.82;
+    margin: ($baseline-grid-unit / 2) 0 0 0;
     text-align: left;
+    hyphens: none;
+}
+
+.figure > .figure-caption > em:first-child,
+.figure-side > .figure-caption > em:first-child {
+    font-style: normal;
+    font-weight: 700;
+    color: $color-navy;
 }
 
 // The commissioning note. Marked as production apparatus by an em rule and the
@@ -1614,6 +1628,44 @@ mark.flag-ref {
 
 .label {
     font-size: 11.17px;
+}
+
+// ---------------------------------------------------------------------------
+// A diagram runs across the measure, not down a column
+// ---------------------------------------------------------------------------
+// These are dense schematics carrying small type. In a 64mm column they are
+// decoration; across the 133mm measure they can be read, which is what the
+// author's notes asked for.
+//
+// The height is capped, and that cap is not cosmetic. An element with
+// `break-inside: avoid` that is taller than its column is what makes Paged.js
+// push, measure, push again and then give up — it stops paginating and writes
+// a short book without reporting anything. The artwork is 3600px wide at
+// 600dpi, so the cap only ever scales a drawing down; none of them lose
+// resolution the page could show.
+
+.figure {
+    column-span: all;
+    break-inside: avoid;
+    text-align: center;
+    margin: ($baseline-grid-unit * 1.2) 0 ($baseline-grid-unit * 1.2) 0;
+}
+
+.figure img {
+    display: block;
+    margin: 0 auto;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 140mm;
+}
+
+// The caption reads as text, so it goes back to the left and to the measure a
+// caption is read at rather than the full width of the drawing above it.
+.figure .figure-caption {
+    text-align: left;
+    margin: ($baseline-grid-unit / 2) auto 0 auto;
+    max-width: 118mm;
 }
 
 // ---------------------------------------------------------------------------

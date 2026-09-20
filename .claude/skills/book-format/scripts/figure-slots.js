@@ -47,20 +47,36 @@ function attribute (tag, name) {
   return found ? found[1] : ''
 }
 
-// Artwork usually arrives in a folder of its own rather than already in the
-// book directory. Anything in there whose name the book asks for is copied in
-// before the check runs, so a delivery of figures needs no other step.
+// Artwork arrives in a folder of its own, and rarely under the name the
+// manuscript uses for it. The book asks for `Humanin_BAX_20260908.svg`; what
+// turns up is `Humanin_BAX_20260908_PRINT.png`, the same drawing exported for
+// print. Matching on the exact filename finds nothing and leaves twelve slots
+// empty for no better reason than a file extension.
+//
+// So the match is on the stem, and the `src` is rewritten to whatever was
+// actually supplied. Renaming a PNG to .svg would not do: the server types a
+// file by its extension, and a PNG served as image/svg+xml does not draw.
+
+const IMAGE = /\.(?:svg|png|jpg|jpeg|webp|gif|pdf)$/i
+
+function stemOf (file) {
+  return file.replace(IMAGE, '').replace(/[-_](?:print|final|web|rgb|cmyk)$/i, '').toLowerCase()
+}
+
 let copied = 0
+const supplied = new Map()
 if (args.art) {
   const artDir = path.resolve(args.art)
   if (fs.existsSync(artDir)) {
-    for (const file of fs.readdirSync(artDir)) {
-      const target = path.join(dir, file)
-      if (fs.existsSync(target)) continue
-      if (!html.includes('"' + file + '"')) continue
-      fs.copyFileSync(path.join(artDir, file), target)
-      copied += 1
+    const walk = function (here) {
+      for (const entry of fs.readdirSync(here, { withFileTypes: true })) {
+        const full = path.join(here, entry.name)
+        if (entry.isDirectory()) { walk(full); continue }
+        if (!IMAGE.test(entry.name)) continue
+        if (!supplied.has(stemOf(entry.name))) supplied.set(stemOf(entry.name), full)
+      }
     }
+    walk(artDir)
   } else {
     console.log('  no such art directory: ' + artDir)
   }
@@ -68,11 +84,39 @@ if (args.art) {
 
 const missing = []
 const present = []
+const renamed = []
+
+// A slot goes back to being an image when the artwork turns up. Without this
+// the pass is one-way — the first run replaces the `<img>` with a slot, and
+// the second has nothing left to fill — and a late delivery of figures costs
+// a rebuild of the whole book rather than one pass over it.
+let filled = 0
+html = html.replace(
+  /<span class="figure-slot">[\s\S]*?<span class="figure-slot-file">([^<]*)<\/span>(?:<span class="figure-slot-alt">([\s\S]*?)<\/span>)?<\/span>/g,
+  function (all, wanted, alt) {
+    const match = supplied.get(stemOf(wanted))
+    if (!match) return all
+    const name = path.basename(match)
+    if (!fs.existsSync(path.join(dir, name))) { fs.copyFileSync(match, path.join(dir, name)); copied += 1 }
+    filled += 1
+    if (name !== wanted) renamed.push(wanted + ' → ' + name)
+    return '<img src="' + name + '" alt="' + (alt || '').replace(/"/g, '&quot;') + '" />'
+  })
 
 html = html.replace(/<img\b[^>]*>/g, function (tag) {
   const src = attribute(tag, 'src')
   if (!src || /^(?:https?:|data:)/.test(src)) return tag
   if (fs.existsSync(path.join(dir, src))) { present.push(src); return tag }
+
+  // Supplied under another name or in another format.
+  const match = supplied.get(stemOf(src))
+  if (match) {
+    const name = path.basename(match)
+    if (!fs.existsSync(path.join(dir, name))) { fs.copyFileSync(match, path.join(dir, name)); copied += 1 }
+    present.push(name)
+    if (name !== src) renamed.push(src + ' → ' + name)
+    return tag.replace(/src="[^"]*"/, 'src="' + name + '"')
+  }
 
   missing.push(src)
   const alt = attribute(tag, 'alt')
@@ -87,6 +131,8 @@ fs.writeFileSync(indexFile, html)
 
 console.log('Figure slots in ' + path.relative(process.cwd(), indexFile))
 if (copied) console.log('  artwork copied in from --art: ' + copied)
+if (filled) console.log('  slots filled with artwork that has since arrived: ' + filled)
+renamed.forEach(function (line) { console.log('    ' + line) })
 console.log('  images present: ' + present.length)
 console.log('  images missing: ' + missing.length)
 missing.forEach(function (file) { console.log('    ' + file) })
