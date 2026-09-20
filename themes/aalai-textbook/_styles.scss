@@ -209,8 +209,13 @@
 // leaves, and it buys the single most useful thing in a reference book: a
 // reader turning pages can see a section begin without reading a word.
 
+// No forced page. A section used to open one, and with the sub-section panel
+// spanning straight after it — two spanning elements in a row, of which
+// Paged.js will only let the first open a page — the opener came out with a
+// title, a panel and eight inches of white. The section still reads as a break
+// because it spans the measure with a rule over it; it no longer costs a leaf
+// to say so.
 .section-head {
-    break-before: page;
     font-size: 21px;
     line-height: $baseline-grid-unit * 1.5;
     color: $color-navy;
@@ -282,7 +287,8 @@ h4 {
 // that is ending, not the one that is starting.
 .entry {
     counter-increment: entry;
-    margin: 0 0 ($baseline-grid-unit * 1.4) 0;
+    // One line between one entry and the next.
+    margin: 0 0 $baseline-grid-unit 0;
 }
 
 // The rule is drawn on the blocks inside the entry, not on the entry itself.
@@ -1631,6 +1637,22 @@ mark.flag-ref {
 }
 
 // ---------------------------------------------------------------------------
+// Three columns, two of them equal
+// ---------------------------------------------------------------------------
+// The first column of a comparison table is a name and sets narrow; the two
+// that carry the comparison should be the same width, or the eye reads the
+// wider one as the more important. `:nth-last-child` is what makes this apply
+// to three-column tables only.
+
+.table-figure table th:first-child:nth-last-child(3) {
+    width: 26%;
+}
+
+.table-figure table th:first-child:nth-last-child(3) ~ th {
+    width: 37%;
+}
+
+// ---------------------------------------------------------------------------
 // A diagram runs across the measure, not down a column
 // ---------------------------------------------------------------------------
 // These are dense schematics carrying small type. In a 64mm column they are
@@ -2176,6 +2198,20 @@ h4 + .standfirst,
     break-inside: avoid;
 }
 
+// And for a label — APPLICATIONS, PRACTICAL CONSIDERATIONS — with the opening
+// of what it introduces. A heading never sits at the foot of a column or a
+// page; since `break-after: avoid` is taken out of the stylesheet by Paged.js,
+// the only way to say so is a box that cannot break.
+.keep-label {
+    break-inside: avoid;
+}
+
+.entry > .keep-label > *,
+.keep-label > * {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
 // A citation mark carrying many numbers is one unbreakable "word" to the line
 // breaker. The build sets consecutive runs as ranges, which fixes the common
 // case; this is the backstop for a mark that is still long because its numbers
@@ -2458,7 +2494,10 @@ h4 + .standfirst,
 // in it does not stop a thumbing eye. The panel does both.
 .keep-lead {
     column-span: all;
-    margin: ($baseline-grid-unit * 1.6) 0 ($baseline-grid-unit * 1.2) 0;
+    // One line above it, not one and a half. At 1.6 the panel floated free of
+    // the text it belongs to and read as a gap in the page rather than the
+    // start of something.
+    margin: $baseline-grid-unit 0 ($baseline-grid-unit * 0.8) 0;
 }
 
 // The panel is for a sub-section — the level a reader skimming for structure
@@ -2472,8 +2511,16 @@ h4 + .standfirst,
 //
 // The design pass therefore merges the two into one box when they meet, and
 // the head stops spanning on its own account inside it.
+// And it no longer opens a page of its own. A section that begins a page and
+// then leaves the rest of it white costs a leaf to say something the spanning
+// rule already says. The content flows on under it.
+//
+// What the merge above is still for: two spanners in a row cannot both be
+// placed at the top of a fresh page, and a merged box is one spanner rather
+// than two. That reasoning holds wherever the box lands, not only at a page
+// top.
 .keep-lead.section-opener {
-    break-before: page;
+    break-before: auto;
 }
 
 .keep-lead .section-head {

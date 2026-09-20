@@ -55,19 +55,26 @@ const indexFile = path.join(path.resolve(args.content), 'index.html')
 let html = fs.readFileSync(indexFile, 'utf8')
 
 // Each pair, as it stands: the half in the box, and the half after it.
-const PAIR = /<p class="([^"]*\blead-head\b[^"]*)">([\s\S]*?)<\/p>([\s\S]{0,40}?)<p class="([^"]*\blead-rest\b[^"]*)">([\s\S]*?)<\/p>/g
+// Every lead head in document order, whether or not a second half follows it.
+// The page is counted the same way, so the two lists line up — a head whose
+// `lead-rest` is missing (the end of a slice, a paragraph that needed no cut)
+// is carried as a head with nothing to move rather than throwing the whole
+// run out of step.
+const HEAD = /<p class="([^"]*\blead-head\b[^"]*)">([\s\S]*?)<\/p>/g
+const REST = /^([\s\S]{0,40}?)<p class="([^"]*\blead-rest\b[^"]*)">([\s\S]*?)<\/p>/
 
 const pairs = []
 let match
-while ((match = PAIR.exec(html)) !== null) {
+while ((match = HEAD.exec(html)) !== null) {
+  const after = REST.exec(html.slice(match.index + match[0].length))
   pairs.push({
     start: match.index,
-    end: match.index + match[0].length,
+    end: match.index + match[0].length + (after ? after[0].length : 0),
     headClass: match[1],
     head: match[2],
-    between: match[3],
-    restClass: match[4],
-    rest: match[5]
+    between: after ? after[1] : '',
+    restClass: after ? after[2] : '',
+    rest: after ? after[3] : null
   })
 }
 
@@ -118,7 +125,27 @@ function cutAt (inner, budget) {
   console.log('  paginated in ' + Math.round((Date.now() - started) / 1000) + 's')
 
   const measured = await page.evaluate(function (shortRatio) {
-    return Array.prototype.map.call(document.querySelectorAll('.lead-head'), function (el) {
+    // One entry per source element, not per fragment. When Paged.js splits an
+    // element across a column it clones the classes onto every piece, so a
+    // lead head that broke appears twice in the page and once in the file and
+    // the two lists stop lining up. The pieces share a `data-ref`, which is
+    // the only thing that identifies them as one element — this version marks
+    // continuations no other way.
+    const byRef = new Map()
+    const heads = []
+    document.querySelectorAll('.lead-head').forEach(function (el) {
+      const ref = el.getAttribute('data-ref')
+      if (ref && byRef.has(ref)) { byRef.get(ref).pieces += 1; return }
+      const record = { el: el, pieces: 1 }
+      if (ref) byRef.set(ref, record)
+      heads.push(record)
+    })
+
+    return heads.map(function (record) {
+      const el = record.el
+      // A head that was split is being measured across a break, where the
+      // last line is short for a reason this pass cannot fix.
+      if (record.pieces > 1) return { split: true }
       // With the last line justified, every last line is the full measure and
       // a short one cannot be told from a full one. Un-justify it to look.
       const was = el.style.textAlignLast
@@ -176,6 +203,7 @@ function cutAt (inner, budget) {
   for (let i = pairs.length - 1; i >= 0; i -= 1) {
     const pair = pairs[i]
     const info = measured[i]
+    if (pair.rest === null || info.split) { already += 1; continue }
     if (!info.short || !info.lastLineStart) { already += 1; continue }
 
     const joined = pair.head + ' ' + pair.rest
