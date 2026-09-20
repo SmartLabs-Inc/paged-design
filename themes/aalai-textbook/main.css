@@ -6494,8 +6494,10 @@ mark.flag-ref {
 
 .toc-list li {
   margin: 0 0 4.25px 0;
-  text-indent: 0;
-  break-inside: avoid; }
+  text-indent: 0; }
+
+.toc-list > li > ul {
+  break-before: avoid; }
 
 .toc-list a {
   display: block;
@@ -6533,6 +6535,9 @@ mark.flag-ref {
 .table-caption {
   break-after: avoid;
   margin-bottom: 4.25px; }
+
+.label {
+  font-size: 11.17px; }
 
 .figure-slot {
   display: block;

@@ -187,7 +187,7 @@ const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
 
 const tally = {
   parts: 0, sections: 0, subsections: 0, entries: 0, labels: 0,
-  tables: 0, captions: 0, figures: 0, capped: 0
+  tables: 0, captions: 0, figures: 0, capped: 0, partContents: 0
 }
 const capped = []
 
@@ -260,8 +260,25 @@ function designPart (children, title) {
       break
     }
   }
+  // What is in this part, on the page that opens it. The theme has always
+  // styled `.part-contents` — a numbered list of the part's sections with a
+  // hairline under each — and nothing was building it, so five part openers
+  // carried a title and then nothing at all.
+  let contents = ''
+  if (opener) {
+    const sections = rest.filter(function (b) { return b.name === 'h3' })
+      .map(function (b) { return textOf(innerOf(b)).trim() })
+      .filter(Boolean)
+    if (sections.length) {
+      tally.partContents += 1
+      contents = '<ol class="part-contents">\n' + sections.map(function (name) {
+        return '<li>' + escapeAttr(name) + '</li>'
+      }).join('\n') + '\n</ol>'
+    }
+  }
+
   const body = designBody(rest, { plain: false })
-  return opener ? opener + '\n' + body : body
+  return opener ? opener + '\n' + contents + '\n' + body : body
 }
 
 // A sub-section heading and the opening of the paragraph under it, held
@@ -512,7 +529,8 @@ const rebuilt = components.map(function (component) {
 fs.writeFileSync(indexFile, head + '\n    ' + rebuilt.join('\n\n    ') + '\n' + tail)
 
 console.log('Designed ' + path.relative(process.cwd(), indexFile))
-console.log('  parts ' + tally.parts + ' · sections ' + tally.sections +
+console.log('  parts ' + tally.parts + ' (' + tally.partContents + ' with contents)' +
+  ' · sections ' + tally.sections +
   ' · sub-sections ' + tally.subsections)
 console.log('  entries ' + tally.entries + ' · labels ' + tally.labels +
   ' · tables ' + tally.tables + ' (' + tally.captions + ' captioned)' +
