@@ -38,7 +38,11 @@ async function writeThemeData () {
       // generated file shows up as a change to the repository after every
       // build, with nothing in it actually different.
       const themesJSON = JSON.stringify(themesData, Object.keys(themesData).sort())
-      fsPromises.writeFile(pathToThemesJSON, themesJSON, { encoding: 'utf-8' })
+      // Awaited, so the file is on disk before the process exits. Without it
+      // the build can finish, the shell can move on, and the write lands
+      // afterwards — which is how a freshly built file gets committed in its
+      // previous state.
+      await fsPromises.writeFile(pathToThemesJSON, themesJSON, { encoding: 'utf-8' })
     }
   })
 }
