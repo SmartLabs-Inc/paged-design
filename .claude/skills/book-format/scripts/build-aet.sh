@@ -32,6 +32,12 @@ CONTENT="$REPO/content/aet-md"
 mkdir -p "$WORK"
 PREPPED="$WORK/aet.md"
 
+# The old PDF goes first. A build that stops in the middle leaves whatever was
+# there before, and a stale proof that looks plausible is worse than no proof
+# at all — that is how a book got reported as finished when pagination had
+# stopped eleven pages from the end.
+rm -f "$OUT"
+
 echo "== 1/10 prepare the Markdown"
 python3 "$HERE/prep-aet-markdown.py" "$SRC" "$PREPPED"
 
@@ -78,3 +84,9 @@ echo "== 10/10 render"
 # wait is five minutes, which reports a timeout on a build that was working.
 node "$HERE/render-pdf.js" --content "$CONTENT" --theme aalai-textbook \
     --out "$OUT" --timeout 3600000
+
+# And say so plainly if it is not there. `set -e` stops the script on a failed
+# step but says nothing, and the last thing printed is the step that started
+# rather than the one that failed.
+[ -s "$OUT" ] || { echo "FAILED: no proof was written to $OUT" >&2; exit 1; }
+echo "Done: $OUT"
