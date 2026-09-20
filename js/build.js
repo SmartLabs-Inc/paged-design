@@ -33,7 +33,11 @@ async function writeThemeData () {
 
     if (directoryCounter === themeDirectories.length) {
       const pathToThemesJSON = path.normalize('js/themes.json')
-      const themesJSON = JSON.stringify(themesData)
+      // Sorted, because the themes are read in whatever order the filesystem
+      // hands them back and the order changes between runs. Unsorted, this
+      // generated file shows up as a change to the repository after every
+      // build, with nothing in it actually different.
+      const themesJSON = JSON.stringify(themesData, Object.keys(themesData).sort())
       fsPromises.writeFile(pathToThemesJSON, themesJSON, { encoding: 'utf-8' })
     }
   })
