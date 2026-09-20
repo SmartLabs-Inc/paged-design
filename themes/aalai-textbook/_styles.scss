@@ -1536,7 +1536,16 @@ mark.flag-ref {
 .toc-list li {
     margin: 0 0 ($baseline-grid-unit / 4) 0;
     text-indent: 0;
-    break-inside: avoid;
+}
+
+// A part's entry in the contents holds every section under it, so holding the
+// whole `li` together moves a page of entries at a time: Part III ended a
+// page at forty-three per cent because its block would not fit in what was
+// left. The list breaks wherever it needs to now, and the only thing held is
+// the part title to the first line under it — `break-before: avoid` on the
+// nested list, which is the direction Paged.js honours.
+.toc-list > li > ul {
+    break-before: avoid;
 }
 
 .toc-list a {
@@ -1593,6 +1602,18 @@ mark.flag-ref {
 .table-caption {
     break-after: avoid;
     margin-bottom: ($baseline-grid-unit / 4);
+}
+
+// ---------------------------------------------------------------------------
+// The labels inside an entry
+// ---------------------------------------------------------------------------
+// APPLICATIONS, PRACTICAL CONSIDERATIONS, KEY RISKS. Two points up from the
+// parent theme's label size: at six and a half points, tracked out and set in
+// caps in a 63mm column, they were being read as part of the paragraph above
+// rather than as the divisions of the entry they are.
+
+.label {
+    font-size: 11.17px;
 }
 
 // ---------------------------------------------------------------------------

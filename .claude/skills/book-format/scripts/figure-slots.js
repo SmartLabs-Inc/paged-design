@@ -29,6 +29,8 @@ if (args.help || !args.content) {
     'Usage: node figure-slots.js --content <dir>',
     '',
     '  --content <dir>  Book directory holding index.html, rewritten in place.',
+    '  --art <dir>      Look for the artwork here and copy in whatever matches',
+    '                   the filename the book is asking for.',
     '',
     'Replaces every <img> whose file is missing with a ruled slot carrying the',
     'filename and the description, and lists what it could not find.'
@@ -43,6 +45,25 @@ let html = fs.readFileSync(indexFile, 'utf8')
 function attribute (tag, name) {
   const found = new RegExp(name + '="([^"]*)"').exec(tag)
   return found ? found[1] : ''
+}
+
+// Artwork usually arrives in a folder of its own rather than already in the
+// book directory. Anything in there whose name the book asks for is copied in
+// before the check runs, so a delivery of figures needs no other step.
+let copied = 0
+if (args.art) {
+  const artDir = path.resolve(args.art)
+  if (fs.existsSync(artDir)) {
+    for (const file of fs.readdirSync(artDir)) {
+      const target = path.join(dir, file)
+      if (fs.existsSync(target)) continue
+      if (!html.includes('"' + file + '"')) continue
+      fs.copyFileSync(path.join(artDir, file), target)
+      copied += 1
+    }
+  } else {
+    console.log('  no such art directory: ' + artDir)
+  }
 }
 
 const missing = []
@@ -65,6 +86,7 @@ html = html.replace(/<img\b[^>]*>/g, function (tag) {
 fs.writeFileSync(indexFile, html)
 
 console.log('Figure slots in ' + path.relative(process.cwd(), indexFile))
+if (copied) console.log('  artwork copied in from --art: ' + copied)
 console.log('  images present: ' + present.length)
 console.log('  images missing: ' + missing.length)
 missing.forEach(function (file) { console.log('    ' + file) })
