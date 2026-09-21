@@ -101,6 +101,23 @@ async function main () {
     process.exit(1)
   }
 
+  // Every face fully loaded before anything is printed.
+  //
+  // Paged.js finishing is not the same as the fonts being ready. With
+  // `font-display: block` a face is still loading while the first pages are
+  // laid out, and Chromium wrote the display face into the PDF twice: once as
+  // a real embedded TrueType subset for the five part openers, and once — for
+  // the first page that used it — as a **Type 3** font, glyph-drawing
+  // procedures with no font program behind them. A Type 3 face reads as
+  // embedded to a byte scan, prints unpredictably, and some RIPs refuse it.
+  //
+  // One line, and it is the difference between a book title that is a font
+  // and one that is a set of drawing instructions.
+  const pending = await page.evaluate(function () {
+    return document.fonts.ready.then(function () { return document.fonts.status })
+  })
+  if (pending !== 'loaded') console.log('  fonts reported "' + pending + '" rather than "loaded"')
+
   await page.pdf({
     path: outFile,
     printBackground: true,
