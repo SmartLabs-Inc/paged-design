@@ -7,8 +7,8 @@ entirely in Liberation Serif without anything reporting it.
 
 | File | Role | Licence |
 | --- | --- | --- |
-| `Windorse-Regular.woff` | The licensed file as supplied | **Commercial, licensed to the client. Not redistributable — gitignored.** |
-| `Windorse-Regular.ttf` | Display only — book title, part titles, index title. Built from the WOFF; see below | **Same licence. Not redistributable — gitignored.** |
+| `Windorse-Regular.ttf` | Display only — book title, part titles, index title | **Commercial. (C) 2021 UICreative, licensed to Wow Is Me, Inc. Committed here; excluded from the repository's CC0 — see the NOTICE at the top of `LICENSE`.** |
+| `Windorse-Regular.woff`, `.otf` | The other two formats as supplied, kept as the originals | Same licence |
 | `CharisSIL-*.ttf` | Text face — running prose, headings, tables | SIL Open Font Licence 1.1 |
 | `SourceSans3-*.ttf` | The sans — labels, entry names, running heads, folios | SIL Open Font Licence 1.1 (`SourceSans3-LICENSE.md`) |
 
@@ -59,9 +59,16 @@ book's own characters before committing to it:
     node .claude/skills/book-format/scripts/font-check.js fonts/Your-Font.otf \
       --content content/<book>
 
-## Why the display face is converted to TrueType
+## Why the display face is TrueType and not the WOFF
 
-The licence supplies Windorse as a WOFF wrapping CFF (PostScript) outlines.
+**The supplied `.ttf` already carries TrueType outlines**, so the conversion
+below is no longer part of the build — it is kept because the trap it avoids
+is real and the next licensed face may well arrive as CFF only. Verified on
+this file: it has `glyf` and `loca` tables and no `CFF `, and a rendered proof
+embeds it as `CIDFontType2` with no Type 3 anywhere.
+
+Earlier deliveries supplied Windorse as a WOFF wrapping CFF (PostScript)
+outlines.
 Chromium will not embed a CFF web font in the PDF it prints: it emits the
 glyphs as a **Type 3** font — drawing procedures rather than a font program —
 which is not a real embedded face, prints unpredictably, and is refused by
