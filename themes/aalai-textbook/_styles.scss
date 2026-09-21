@@ -1691,6 +1691,22 @@ mark.flag-ref {
 }
 
 // ---------------------------------------------------------------------------
+// The ornament on a blank page
+// ---------------------------------------------------------------------------
+// The parent theme sets ◈ (U+25C8) there. Neither of this book's text faces
+// has that character, so Chromium reached past them, found DejaVu Sans on the
+// machine and embedded a fourth font into the PDF to draw one ornament on
+// thirteen otherwise blank pages. It prints — but it is a face nobody chose,
+// arriving silently, which is the fault the fonts README was written about.
+//
+// ◆ (U+25C6) is in Source Sans 3, which the book already embeds.
+
+.pagedjs_blank_page .pagedjs_page_content::before {
+    content: "\25C6";
+    font-family: $font-display-secondary;
+}
+
+// ---------------------------------------------------------------------------
 // A figure that has not arrived
 // ---------------------------------------------------------------------------
 // An `<img>` with no file prints as nothing, and nothing is invisible in a
@@ -2423,6 +2439,17 @@ h4 + .standfirst,
 .part-name,
 .index-title {
     font-family: $font-display-hero;
+    // Never ask this face for a weight it does not have. Windorse ships one
+    // weight and no italic. The parent theme sets the title page's own title
+    // bold, so Chromium synthesised a bold by smearing the regular — and
+    // synthesised bold is not a font program, so it prints as a **Type 3**
+    // font: drawing procedures, no embedded face, refused by some RIPs.
+    //
+    // The part titles never asked for bold and always embedded correctly.
+    // The book title asked, and was the one page in the proof that came out
+    // unembedded.
+    font-weight: 400;
+    font-style: normal;
 }
 
 // A title page is one column. Set in column one of two, a centred title sits

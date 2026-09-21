@@ -6564,6 +6564,10 @@ mark.flag-ref {
   margin: 8.5px auto 0 auto;
   max-width: 118mm; }
 
+.pagedjs_blank_page .pagedjs_page_content::before {
+  content: "\25C6";
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif; }
+
 .figure-slot {
   display: block;
   border: 1pt dashed #137C7A;
@@ -6980,7 +6984,9 @@ h4 + .standfirst,
 .part-title,
 .part-name,
 .index-title {
-  font-family: "Windorse", "Charis SIL", Georgia, serif; }
+  font-family: "Windorse", "Charis SIL", Georgia, serif;
+  font-weight: 400;
+  font-style: normal; }
 
 .title-page.title-page > div > div,
 .dedication-page.dedication-page > div > div,
