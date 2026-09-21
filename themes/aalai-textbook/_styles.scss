@@ -1163,7 +1163,7 @@ samp {
 // A heading that is a section's own title always spans. A two-column measure
 // is for reading down; a title set into one column of two reads as a
 // subheading of the column rather than the name of the section.
-.frontmatter > div > div > h1,
+.frontmatter:not(.title-page) > div > div > h1,
 .frontmatter > div > div > h2,
 .endmatter:not(.index) h1,
 .endmatter:not(.index) h2,
@@ -1190,8 +1190,13 @@ h1 {
     column-span: none;
 }
 
-.frontmatter > div > div > h1,
-.frontmatter > div > div > h2,
+// A section title, with the rule that marks it as one. Not on the title page
+// or the dedication: those are display pages, not sections, and the rule cut
+// straight across the book's own title — which is what happens when a
+// treatment written for `> h2` is widened to `> h1` without checking which
+// pages have one.
+.frontmatter:not(.title-page):not(.dedication-page) > div > div > h1,
+.frontmatter:not(.title-page):not(.dedication-page) > div > div > h2,
 .endmatter > div > div > h1,
 .endmatter > div > div > h2 {
     font-size: 26px;
