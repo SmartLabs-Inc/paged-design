@@ -44,6 +44,10 @@ if (args.help || !args.content) {
     '  --drop-references  Lift the reference list out of the book, and its line',
     '                     out of the contents. The citation superscripts stay:',
     '                     they key into the list wherever it is published.',
+    '  --references-at <url>',
+    '                     Lift the list out but keep the section, replaced by a',
+    '                     page telling the reader where to get it. Implies',
+    '                     --drop-references and keeps the contents line.',
     '  --acknowledgements-front',
     '                     Put the acknowledgements after the dedication rather',
     '                     than in the back matter.',
@@ -99,6 +103,13 @@ const done = []
 // and three chances to miss one — the page would simply stop being classed,
 // and the only sign would be a biography set like a chapter. Read once from
 // the document instead.
+// Anchors, then the component's own heading, then the body. The heading is an
+// `h2` here and an `h1` after the promotion pass below has run, and matching
+// only `h1` meant this worked on a file that had already been through the
+// script once and did nothing at all on a fresh build — the failure this
+// pipeline keeps finding, in a new place.
+const COMPONENT_BODY = /^([\s\S]*?<div>\s*<div>\s*(?:<a id="[^"]*"><\/a>\s*)*(?:<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>)?)([\s\S]*?)(\n?\s*<\/div>\s*<\/div>\s*<\/div>\s*)$/
+
 const ABOUT_PAGE = (/data-header="(About [^"]*)"/.exec(html) || [])[1] || 'About the Author'
 
 function component (classes, header, inner) {
@@ -230,7 +241,40 @@ if (args['drop-generated-contents']) {
 // The citation superscripts stay exactly where they are. They are the key into
 // the list, and they are correct whether the list is bound in or handed over
 // on its own.
-if (args['drop-references']) {
+if (args['references-at']) {
+  // The list goes, the section stays. A reader who meets superscript 3,591 and
+  // turns to the back needs to find something there; an absence is not an
+  // answer, and the contents entry still has a real page to point at.
+  const url = String(args['references-at'])
+  const found = findComponent('References')
+  if (!found) {
+    done.push('WARNING: no reference list to replace')
+  } else {
+    const block = html.slice(found.start, found.end)
+    const body = COMPONENT_BODY.exec(block)
+    if (!body) {
+      done.push('WARNING: could not find the reference list body to replace')
+    } else {
+      const shown = url.replace(/^https?:\/\//, '')
+      const notice =
+        '<p>The sources cited throughout this book are published as a separate ' +
+        'reference list, so that it can be corrected and extended between ' +
+        'printings without reissuing the volume.</p>\n' +
+        '<p class="references-url"><a href="' + url + '">' + shown + '</a></p>\n' +
+        '<p>The superscript numbers in the text are the keys into that list. ' +
+        'They are stable: a number printed here will always name the same ' +
+        'source.</p>'
+      // Off with `references`, which sets this component two-column at eight
+      // point. That is right for 3,750 entries and wrong for three sentences.
+      const head = body[1].replace(/class="([^"]*)"/, function (all, cls) {
+        return 'class="' + cls.replace(/\breferences\b/, 'references-notice') + '"'
+      })
+      html = html.slice(0, found.start) + head + '\n' + notice + body[3] +
+        html.slice(found.end)
+      done.push('reference list replaced by a pointer to ' + shown)
+    }
+  }
+} else if (args['drop-references']) {
   const found = findComponent('References')
   if (!found) {
     done.push('WARNING: no reference list to drop')
@@ -339,12 +383,6 @@ function bodyMarkup (source, headings) {
     }).join('\n')
 }
 
-// Anchors, then the component's own heading, then the body. The heading is an
-// `h2` here and an `h1` after the promotion pass below has run, and matching
-// only `h1` meant this worked on a file that had already been through the
-// script once and did nothing at all on a fresh build — the failure this
-// pipeline keeps finding, in a new place.
-const COMPONENT_BODY = /^([\s\S]*?<div>\s*<div>\s*(?:<a id="[^"]*"><\/a>\s*)*(?:<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>)?)([\s\S]*?)(\n?\s*<\/div>\s*<\/div>\s*<\/div>\s*)$/
 
 function replaceCopy (what, found, option, headings, arrange) {
   if (!args[option]) return

@@ -83,7 +83,8 @@ echo "== 3/10 front matter"
 node "$HERE/front-matter.js" --content "$CONTENT" \
     --sponsor-page --dedication --acknowledgements --drop-generated-contents \
     --acknowledgement-from "grateful to my son Thomas" \
-    --drop-references --acknowledgements-front --about-last \
+    --references-at "https://aalai.org/AET/References" \
+    --acknowledgements-front --about-last \
     ${COPYRIGHT:+--copyright-from "$COPYRIGHT"} \
     ${ABOUT:+--about-from "$ABOUT"} \
     ${PORTRAIT:+--about-portrait "$PORTRAIT"} \

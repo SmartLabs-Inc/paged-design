@@ -6535,6 +6535,29 @@ mark.flag-ref {
   height: auto;
   max-height: 95mm; }
 
+.references-notice.references-notice > div > div {
+  column-count: 1; }
+
+.references-notice.references-notice > div > div > p {
+  font-size: 12.8px;
+  line-height: 17px;
+  text-align: left;
+  text-indent: 0;
+  max-width: 92mm;
+  margin: 0 0 17px 0; }
+
+.references-notice.references-notice > div > div > p.references-url {
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 17.28px;
+  line-height: 23.8px;
+  color: #0D2035;
+  margin: 8.5px 0 20.4px 0; }
+
+.references-notice.references-notice > div > div > p.references-url a {
+  color: #0D2035;
+  text-decoration: none;
+  border-bottom: 1.5pt solid #137C7A; }
+
 .contents-list.contents-list > div > div,
 .contents-page.contents-page > div > div {
   column-count: 1; }
