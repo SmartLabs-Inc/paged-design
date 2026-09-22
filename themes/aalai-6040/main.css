@@ -6509,18 +6509,15 @@ mark.flag-ref {
   margin-bottom: 0.55em; }
 
 .copyright-page.copyright-page > div > div > p.copyright-title {
-  font-size: 15pt;
-  line-height: 1.1;
+  font-weight: 400;
   font-style: normal;
-  color: #0D2035;
-  margin: 0 0 0.2em 0; }
+  color: inherit;
+  margin: 0; }
 
 .copyright-page.copyright-page > div > div > p.copyright-subtitle {
-  font-size: 10pt;
-  line-height: 1.25;
-  font-style: italic;
-  color: #66717C;
-  margin: 0 0 1em 0; }
+  font-weight: 400;
+  font-style: normal;
+  color: inherit; }
 
 .contents-list.contents-list > div > div,
 .contents-page.contents-page > div > div {
@@ -7023,7 +7020,6 @@ h4 + .standfirst,
 .title-page h1.title-page-title,
 .part-title,
 .part-name,
-.copyright-title,
 .index-title {
   font-family: "Windorse", "Charis SIL", Georgia, serif;
   font-weight: 400;

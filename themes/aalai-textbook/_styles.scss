@@ -1586,31 +1586,30 @@ mark.flag-ref {
 }
 
 // The notice opens by naming the work it covers: the book's title and
-// subtitle, which the publisher's copy supplies as its first two lines. They
-// are not a section heading — the only heading on this page is the word
-// "Copyright", which the parent theme hides so it survives into the PDF
-// bookmarks without printing — so they are set as what they are, the title
-// of the work, a little above the notice and nothing else on the page.
+// subtitle, which the publisher's copy supplies as its first two lines.
 //
-// These two selectors tie with the one above at three classes and three
-// elements, so the order they sit in decides which wins. They go after it
-// deliberately: the rule above exists to cancel the front-matter standfirst
-// on whatever the first paragraph happens to be, and the first paragraph is
-// now the title.
+// They are set at the size of the notice and no heavier — the same face, the
+// same weight, the same colour as the paragraph under them. A copyright page
+// is not a place to say the title again loudly; the title page did that, and
+// this page only has to record which book the notice belongs to. All these
+// two rules do is hold the pair together: no gap between the title and its
+// subtitle, the ordinary paragraph gap under the pair.
+//
+// These selectors tie with the one above at three classes and three elements,
+// so the order they sit in decides which wins. They go after it deliberately:
+// the rule above exists to cancel the front-matter standfirst on whatever the
+// first paragraph happens to be, and the first paragraph is now the title.
 .copyright-page.copyright-page > div > div > p.copyright-title {
-    font-size: 15pt;
-    line-height: 1.1;
+    font-weight: 400;
     font-style: normal;
-    color: $color-navy;
-    margin: 0 0 0.2em 0;
+    color: inherit;
+    margin: 0;
 }
 
 .copyright-page.copyright-page > div > div > p.copyright-subtitle {
-    font-size: 10pt;
-    line-height: 1.25;
-    font-style: italic;
-    color: $color-mid;
-    margin: 0 0 1em 0;
+    font-weight: 400;
+    font-style: normal;
+    color: inherit;
 }
 
 // ---------------------------------------------------------------------------
@@ -2515,7 +2514,6 @@ h4 + .standfirst,
 .title-page h1.title-page-title,
 .part-title,
 .part-name,
-.copyright-title,
 .index-title {
     font-family: $font-display-hero;
     // Never ask this face for a weight it does not have. Windorse ships one
