@@ -297,7 +297,12 @@ if (args['copyright-from']) {
     done.push('WARNING: no copyright page to replace the copy on')
   } else {
     const block = html.slice(copyright.start, copyright.end)
-    const body = /([\s\S]*<\/h1>)([\s\S]*?)(\n\s*<\/div>\s*<\/div>\s*<\/div>\s*)$/
+    // Anchors, then the component's own heading, then the body. The heading is
+    // an `h2` here and an `h1` after the promotion pass below has run, and
+    // matching only `h1` meant this worked on a file that had already been
+    // through the script once and did nothing at all on a fresh build — the
+    // failure this pipeline keeps finding, in a new place.
+    const body = /^([\s\S]*?<div>\s*<div>\s*(?:<a id="[^"]*"><\/a>\s*)*(?:<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>)?)([\s\S]*?)(\n?\s*<\/div>\s*<\/div>\s*<\/div>\s*)$/
       .exec(block)
     if (!body) {
       done.push('WARNING: could not find the copyright page body to replace')
