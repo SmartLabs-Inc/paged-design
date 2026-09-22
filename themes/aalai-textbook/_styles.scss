@@ -1653,6 +1653,45 @@ mark.flag-ref {
 }
 
 // ---------------------------------------------------------------------------
+// Where the reference list went
+// ---------------------------------------------------------------------------
+// One page standing in for the section, set one column at reading size. The
+// `references` class it would otherwise carry sets this component two-column
+// at eight point, which is right for 3,750 entries and wrong for three
+// sentences.
+
+.references-notice.references-notice > div > div {
+    column-count: 1;
+}
+
+.references-notice.references-notice > div > div > p {
+    font-size: $font-size-default;
+    line-height: $baseline-grid-unit;
+    text-align: left;
+    text-indent: 0;
+    max-width: 92mm;
+    margin: 0 0 $baseline-grid-unit 0;
+}
+
+// The address is the one thing on this page a reader has to carry away, so it
+// is the one thing set larger than the prose around it. Same shape of selector
+// as the paragraph rule above: written plainly it ties on nothing and loses,
+// and the address came out at reading size.
+.references-notice.references-notice > div > div > p.references-url {
+    font-family: $font-text-secondary;
+    font-size: $font-size-default * 1.35;
+    line-height: $baseline-grid-unit * 1.4;
+    color: $color-navy;
+    margin: ($baseline-grid-unit * 0.5) 0 ($baseline-grid-unit * 1.2) 0;
+}
+
+.references-notice.references-notice > div > div > p.references-url a {
+    color: $color-navy;
+    text-decoration: none;
+    border-bottom: 1.5pt solid $color-teal;
+}
+
+// ---------------------------------------------------------------------------
 // The contents
 // ---------------------------------------------------------------------------
 // One column, with a page number against the right margin. A contents set in
