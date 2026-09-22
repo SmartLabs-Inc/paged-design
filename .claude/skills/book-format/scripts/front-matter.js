@@ -33,6 +33,8 @@ if (args.help || !args.content) {
     '                     is — onto the acknowledgements page.',
     '  --copyright-from <file>',
     '                     Replace the copyright page copy with this file.',
+    '  --about-from <file>',
+    '                     Replace the About the Author copy with this file.',
     '  --drop-generated-contents',
     '                     Remove the contents page the converter generated,',
     '                     keeping the author\'s own.',
@@ -55,6 +57,18 @@ let html = fs.readFileSync(indexFile, 'utf8')
 function findComponent (title) {
   const pattern = new RegExp('<div class="[^"]*"[^>]*data-header="' +
     title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '"[^>]*>')
+  const open = pattern.exec(html)
+  if (!open) return null
+  const end = matchingClose(open.index)
+  if (end === -1) return null
+  return { start: open.index, end: end, openTag: open[0] }
+}
+
+// The same, for a component whose exact title is the author's name and so is
+// not something this script should be spelling out.
+function findComponentStarting (prefix) {
+  const pattern = new RegExp('<div class="[^"]*"[^>]*data-header="' +
+    prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^"]*"[^>]*>')
   const open = pattern.exec(html)
   if (!open) return null
   const end = matchingClose(open.index)
@@ -253,7 +267,12 @@ let tocLists = 0
 // are what the contents page counts a page number from — this replaces the
 // body under them and nothing else.
 
-function copyrightMarkup (source) {
+// Markdown thin enough to be worth doing here: paragraphs, `**bold**`,
+// `*italic*`, and — for the copyright page — a `#` title and `##` subtitle.
+// `headings` decides what those two become, and a caller that passes nothing
+// gets them as ordinary paragraphs rather than markup nobody has looked at on
+// a page.
+function bodyMarkup (source, headings) {
   function escapeText (text) {
     return text
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -278,9 +297,8 @@ function copyrightMarkup (source) {
       // paragraph spacing with it.
       const heading = /^(#{1,2})\s+(.*)$/.exec(para)
       if (heading) {
-        return '<p class="copyright-' +
-          (heading[1].length === 1 ? 'title' : 'subtitle') + '">' +
-          inline(heading[2].trim()) + '</p>'
+        const text = inline(heading[2].trim())
+        return headings ? headings(heading[1].length, text) : '<p>' + text + '</p>'
       }
       return '<p>' + para.split('\n').map(function (line) {
         return inline(line.trim())
@@ -288,34 +306,51 @@ function copyrightMarkup (source) {
     }).join('\n')
 }
 
-if (args['copyright-from']) {
-  const file = path.resolve(args['copyright-from'])
-  const copyright = findComponent('Copyright')
+// Anchors, then the component's own heading, then the body. The heading is an
+// `h2` here and an `h1` after the promotion pass below has run, and matching
+// only `h1` meant this worked on a file that had already been through the
+// script once and did nothing at all on a fresh build — the failure this
+// pipeline keeps finding, in a new place.
+const COMPONENT_BODY = /^([\s\S]*?<div>\s*<div>\s*(?:<a id="[^"]*"><\/a>\s*)*(?:<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>)?)([\s\S]*?)(\n?\s*<\/div>\s*<\/div>\s*<\/div>\s*)$/
+
+function replaceCopy (what, found, option, headings) {
+  if (!args[option]) return
+  const file = path.resolve(args[option])
   if (!fs.existsSync(file)) {
-    done.push('WARNING: no such copyright file: ' + file)
-  } else if (!copyright) {
-    done.push('WARNING: no copyright page to replace the copy on')
-  } else {
-    const block = html.slice(copyright.start, copyright.end)
-    // Anchors, then the component's own heading, then the body. The heading is
-    // an `h2` here and an `h1` after the promotion pass below has run, and
-    // matching only `h1` meant this worked on a file that had already been
-    // through the script once and did nothing at all on a fresh build — the
-    // failure this pipeline keeps finding, in a new place.
-    const body = /^([\s\S]*?<div>\s*<div>\s*(?:<a id="[^"]*"><\/a>\s*)*(?:<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>)?)([\s\S]*?)(\n?\s*<\/div>\s*<\/div>\s*<\/div>\s*)$/
-      .exec(block)
-    if (!body) {
-      done.push('WARNING: could not find the copyright page body to replace')
-    } else {
-      const markup = copyrightMarkup(fs.readFileSync(file, 'utf8'))
-      html = html.slice(0, copyright.start) +
-        body[1] + '\n' + markup + body[3] +
-        html.slice(copyright.end)
-      done.push('copyright copy replaced from ' + path.basename(file) +
-        ' (' + markup.split('<p').length + ' paragraphs)')
-    }
+    done.push('WARNING: no such ' + what + ' file: ' + file)
+    return
   }
+  if (!found) {
+    done.push('WARNING: no ' + what + ' page to replace the copy on')
+    return
+  }
+  const body = COMPONENT_BODY.exec(html.slice(found.start, found.end))
+  if (!body) {
+    done.push('WARNING: could not find the ' + what + ' body to replace')
+    return
+  }
+  const markup = bodyMarkup(fs.readFileSync(file, 'utf8'), headings)
+  html = html.slice(0, found.start) + body[1] + '\n' + markup + body[3] +
+    html.slice(found.end)
+  done.push(what + ' copy replaced from ' + path.basename(file) +
+    ' (' + (markup.match(/<p[ >]/g) || []).length + ' paragraphs)')
 }
+
+replaceCopy('copyright', findComponent('Copyright'), 'copyright-from',
+  function (level, text) {
+    return '<p class="copyright-' + (level === 1 ? 'title' : 'subtitle') +
+      '">' + text + '</p>'
+  })
+
+// The author's biography is the other page the manuscript cannot be the source
+// of truth for. It is written for a different reader than the book — a
+// programme committee, a conference chair — it is checked against a CV rather
+// than against the text, and it goes stale on a schedule of its own. Same
+// mechanism, same reason: the delivered manuscript is not edited.
+//
+// Found by prefix rather than by the author's name, which is hard-coded twice
+// already in this file and should not be a third time.
+replaceCopy('about the author', findComponentStarting('About '), 'about-from')
 
 // ---------------------------------------------------------------------------
 // The abbreviations arrive as a two-column table, which sets as a table: one

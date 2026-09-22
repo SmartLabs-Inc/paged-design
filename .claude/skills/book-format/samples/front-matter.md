@@ -30,3 +30,7 @@ and the rules under them can be seen.
 ## III. The Third Section
 
 The last one.
+
+# About the Author
+
+Placeholder copy. A real build replaces all of this from a file.
