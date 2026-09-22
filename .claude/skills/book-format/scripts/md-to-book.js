@@ -119,12 +119,24 @@ function renderInline (text, context) {
     return context.footnoteReference(id)
   })
 
+  // Markdown escapes the brackets it uses for its own syntax. Nothing
+  // downstream understands the backslashes, so they print.
+  function unescapeBrackets (text) {
+    return text.replace(/\\([[\]])/g, '$1')
+  }
+
   // Inline links: [text](url "title")
+  //
+  // The label may contain escaped brackets. `[^\]]*` stops at the first `]`,
+  // so a term like `[Ac-SDKP (Goralatide / Tbeta4\[1-4\])](#...)` did not
+  // match at all and printed as raw Markdown — two index entries and one entry
+  // heading in this book, found by reading the rendered index rather than by
+  // anything in a log.
   result = result.replace(
-    /\[([^\]]*)\]\(([^)\s]+)(?:\s+["\u201c]([^"\u201d]*)["\u201d])?\)/g,
+    /\[((?:\\[\s\S]|[^\]\\])*)\]\(([^)\s]+)(?:\s+["\u201c]([^"\u201d]*)["\u201d])?\)/g,
     function (match, label, href, title) {
       return '<a href="' + href + '"' +
-        (title ? ' title="' + title + '"' : '') + '>' + label + '</a>'
+        (title ? ' title="' + title + '"' : '') + '>' + unescapeBrackets(label) + '</a>'
     }
   )
 
@@ -154,6 +166,11 @@ function renderInline (text, context) {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;') + '</code>'
   })
+
+  // Markdown's own escapes come off last, after every rule that needed to see
+  // them. Only the brackets: they are what this manuscript escapes, and taking
+  // the general case would strip backslashes out of chemistry and code.
+  result = unescapeBrackets(result)
 
   return result.replace(/\ue001HTML(\d+)\ue001/g, function (match, index) {
     return htmlTags[index]
