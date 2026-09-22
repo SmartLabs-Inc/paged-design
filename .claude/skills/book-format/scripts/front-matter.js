@@ -27,6 +27,9 @@ if (args.help || !args.content) {
     '  --content <dir>    Book directory holding index.html, rewritten in place.',
     '  --sponsor-page     Reserve a blank recto before the contents.',
     '  --dedication       Add a dedication page after the copyright page.',
+    '  --dedication-from <file>',
+    '                     Set that page with this copy. Without it the page is',
+    '                     reserved and blank, which is still a counted recto.',
     '  --acknowledgements Add an acknowledgements page in the back matter.',
     '  --acknowledgement-from <text>',
     '                     Move the paragraph containing this text — wherever it',
@@ -504,10 +507,30 @@ if (args['sponsor-page'] && !/\bsponsor-page\b/.test(html)) {
 }
 
 if (args.dedication && !/\bdedication-page\b/.test(html)) {
-  insertAfter('Copyright',
-    component('dedication-page frontmatter', 'Dedication',
-      '                <h1 class="heading-2">Dedication</h1>'),
-    'dedication page added')
+  // The copy is set here rather than replaced afterwards, because this page
+  // does not exist until this line runs. Without a file the page is reserved
+  // and blank — still a counted recto, so every folio after it stays put when
+  // the wording finally arrives.
+  //
+  // `has-dedication` is what hides the word "Dedication" above the text. The
+  // h1 stays in the document either way: it is what the PDF bookmarks and the
+  // verso footer read. On a page that is still blank it is the only thing on
+  // it, and a reserved page that says what it is reserved for is worth more
+  // in a proof than an empty leaf.
+  let classes = 'dedication-page frontmatter'
+  let inner = '                <h1 class="heading-2">Dedication</h1>'
+  let label = 'dedication page added'
+  if (args['dedication-from']) {
+    const file = path.resolve(args['dedication-from'])
+    if (!fs.existsSync(file)) {
+      done.push('WARNING: no such dedication file: ' + file)
+    } else {
+      classes += ' has-dedication'
+      inner += '\n' + bodyMarkup(fs.readFileSync(file, 'utf8'), null)
+      label += ' and set from ' + path.basename(file)
+    }
+  }
+  insertAfter('Copyright', component(classes, 'Dedication', inner), label)
 }
 
 // A thank-you the author wrote into the Preface, lifted out and set where it

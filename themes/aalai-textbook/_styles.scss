@@ -2602,6 +2602,37 @@ h4 + .standfirst,
     margin-top: 0;
 }
 
+// Once the dedication itself is on the page, the word "Dedication" above it is
+// not a heading anyone wants — the same call the copyright page makes, and for
+// the same reason: the h1 stays in the document for the PDF bookmarks and the
+// footer, and simply does not print. On a page still reserved for wording that
+// has not arrived, it does print, because a proof reader should be able to see
+// what the blank leaf is for.
+.dedication-page.has-dedication > div > div > h1 {
+    display: none;
+}
+
+// The dedication itself: a little above the reading size, a line and a half of
+// leading, and italic, because it is read as a stanza rather than as prose.
+//
+// Every paragraph, not just the first. The theme sets the opening paragraph of
+// any front-matter page as a standfirst — italic, navy, larger — which on a
+// dedication of two stanzas set the first one in one face and colour and the
+// second in another. Doubled class so this wins on specificity rather than on
+// where the two rules fall in the file.
+.dedication-page.has-dedication.has-dedication > div > div > p,
+.dedication-page.has-dedication.has-dedication > div > div > p:first-of-type {
+    font-size: $font-size-default * 1.15;
+    line-height: $baseline-grid-unit * 1.35;
+    font-style: italic;
+    color: $color-text-main;
+    margin: 0 0 ($baseline-grid-unit * 1.5) 0;
+}
+
+.dedication-page.has-dedication > div > div > p:last-child {
+    margin-bottom: 0;
+}
+
 // A dedication is centred across the measure as well as down the page. It is
 // a placeholder until the text arrives, and a placeholder that is set wrong
 // gets read as the design.

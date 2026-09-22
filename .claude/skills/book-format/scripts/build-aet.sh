@@ -56,7 +56,8 @@ CONTENT="$REPO/content/aet-md"
 [ -n "$COPYRIGHT" ] || { [ -f "$REPO/content/aet-front/copyright.md" ]   && COPYRIGHT="$REPO/content/aet-front/copyright.md"; }
 [ -n "$ABOUT" ]     || { [ -f "$REPO/content/aet-front/about-author.md" ] && ABOUT="$REPO/content/aet-front/about-author.md"; }
 [ -n "$PORTRAIT" ]  || { [ -f "$REPO/content/aet-art/author-portrait.png" ] && PORTRAIT="author-portrait.png"; }
-echo "   art: ${ART:-none} · copyright: ${COPYRIGHT:-manuscript} · about: ${ABOUT:-manuscript} · portrait: ${PORTRAIT:-none}"
+[ -n "$DEDICATION" ] || { [ -f "$REPO/content/aet-front/dedication.md" ] && DEDICATION="$REPO/content/aet-front/dedication.md"; }
+echo "   art: ${ART:-none} · copyright: ${COPYRIGHT:-manuscript} · about: ${ABOUT:-manuscript} · portrait: ${PORTRAIT:-none} · dedication: ${DEDICATION:-reserved blank}"
 
 mkdir -p "$WORK"
 PREPPED="$WORK/aet.md"
@@ -79,7 +80,8 @@ node "$HERE/front-matter.js" --content "$CONTENT" \
     --acknowledgement-from "grateful to my son Thomas" \
     ${COPYRIGHT:+--copyright-from "$COPYRIGHT"} \
     ${ABOUT:+--about-from "$ABOUT"} \
-    ${PORTRAIT:+--about-portrait "$PORTRAIT"}
+    ${PORTRAIT:+--about-portrait "$PORTRAIT"} \
+    ${DEDICATION:+--dedication-from "$DEDICATION"}
 
 echo "== 4/10 design"
 node "$HERE/design-md.js" --content "$CONTENT" --report \
