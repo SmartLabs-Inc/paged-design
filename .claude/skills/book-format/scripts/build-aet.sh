@@ -16,7 +16,9 @@
 # manuscript carries. The manuscript ships with a short placeholder; the real
 # page — imprint, ISBN, rights, the text-and-data-mining reservation — arrives
 # from the publisher separately and late, and editing it into a delivered
-# manuscript would mean re-editing it on the next delivery.
+# manuscript would mean re-editing it on the next delivery. ABOUT does the
+# same for the author's biography, which is checked against a CV rather than
+# against the book and goes stale on a schedule of its own.
 #
 # End to end this takes about twenty-five minutes. Every pass is idempotent,
 # so a build that stops part way can be continued one pass at a time from
@@ -66,7 +68,8 @@ echo "== 3/10 front matter"
 node "$HERE/front-matter.js" --content "$CONTENT" \
     --sponsor-page --dedication --acknowledgements --drop-generated-contents \
     --acknowledgement-from "grateful to my son Thomas" \
-    ${COPYRIGHT:+--copyright-from "$COPYRIGHT"}
+    ${COPYRIGHT:+--copyright-from "$COPYRIGHT"} \
+    ${ABOUT:+--about-from "$ABOUT"}
 
 echo "== 4/10 design"
 node "$HERE/design-md.js" --content "$CONTENT" --report \
