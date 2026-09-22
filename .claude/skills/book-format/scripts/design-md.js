@@ -38,6 +38,8 @@ if (args.help || !args.content) {
     '  --content <dir>   Book directory holding index.html, rewritten in place.',
     '  --part-art <dir>  Look here for part opener artwork named part-1, part-2,',
     '                    and so on. Any image extension; the first match wins.',
+    '  --part-credit <text>',
+    '                    Credit line to set under every part opener banner.',
     '  --report          List what was capped.',
     '',
     'Adds part openers, section heads, sub-section panels, entry cards and the',
@@ -302,8 +304,14 @@ function designPart (children, title) {
       // No alt text: the caption a diagram this dense deserves has to come
       // from the author, and a made-up one is worse than none. The slot the
       // figure pass leaves for a missing file carries the filename instead.
+      // The credit belongs to the artwork, so it goes inside the box that
+      // cannot break rather than after it. A credit on the page after its
+      // picture is a credit for the wrong picture.
+      const credit = args['part-credit']
+        ? '<p class="part-figure-credit">' + escapeAttr(String(args['part-credit'])) + '</p>'
+        : ''
       banner = '<div class="part-figure"><img src="' + escapeAttr(file) +
-        '" alt="" /></div>'
+        '" alt="" />' + credit + '</div>'
     }
   }
 

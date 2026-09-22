@@ -222,6 +222,26 @@
     margin: 0 auto;
 }
 
+// The credit, ranged right under the picture it belongs to. Set like a figure
+// caption rather than like a label: a label is uppercase, and OpenAI is not a
+// word to flatten.
+//
+// Scoped as a child of the banner rather than left bare, for the reason the
+// figure note above it records — a bare class loses to any rule carrying a
+// class and an element, and the way it loses is that the credit sets centred
+// and justified with the body text and nobody sees it until the proof.
+.part-figure > .part-figure-credit {
+    @include sans-small();
+    font-size: $font-size-small * 0.85;
+    font-weight: 400;
+    color: $color-mid;
+    line-height: $baseline-grid-unit * 0.7;
+    margin: ($baseline-grid-unit / 3) 0 0 0;
+    text-align: right;
+    text-indent: 0;
+    hyphens: none;
+}
+
 // ---------------------------------------------------------------------------
 // Section head
 // ---------------------------------------------------------------------------

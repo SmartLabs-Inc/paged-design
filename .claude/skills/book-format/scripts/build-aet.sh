@@ -69,7 +69,8 @@ node "$HERE/front-matter.js" --content "$CONTENT" \
     ${COPYRIGHT:+--copyright-from "$COPYRIGHT"}
 
 echo "== 4/10 design"
-node "$HERE/design-md.js" --content "$CONTENT" --report ${ART:+--part-art "$ART"}
+node "$HERE/design-md.js" --content "$CONTENT" --report \
+    ${ART:+--part-art "$ART" --part-credit "Illustration: AALAI / OpenAI, 2026"}
 
 if [ "$MARKS" = yes ]; then
     echo "== 5/10 audit marks"
