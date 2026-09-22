@@ -2463,6 +2463,60 @@ h4 + .standfirst,
 // it just introduced a spanning region the engine could not fragment, and the
 // index stopped a third of the way down its opening page.
 
+// --- The index entries are not the parent theme's shape ----------------------
+// The parent theme's index convention is: the term as plain text, followed by
+// one or more empty `<a>` links whose visible text is replaced by the page
+// number. It does that with `.index a { font-size: 0 }` and a `::before`
+// carrying `target-counter`.
+//
+// This book's index arrives the other way round — the term IS the link text:
+//
+//     <a id="index-row-0003"></a>
+//     <ul><li><a href="#f19-aav-follistatin">AAV-Follistatin Gene Therapy</a></li></ul>
+//
+// So `font-size: 0` erased all 481 terms and printed only their folios, and
+// the 558 row anchors, which carry an id and no href, resolved
+// `target-counter(attr(href), page)` to 0 and printed a column of zeroes. Nine
+// pages of numbers with no words against them, in every proof so far.
+//
+// Doubled class to clear the parent's `.index a` rather than rely on the order
+// the partials happen to be imported in.
+
+.index.index a {
+    font-size: inherit;
+    color: $color-navy;
+    text-decoration: none;
+}
+
+.index.index a::before {
+    content: normal;
+}
+
+// The folio goes after the term it belongs to, which is the way round a reader
+// scans an index.
+.index.index li > a[href]::after {
+    content: "  " target-counter(attr(href), page);
+    font-family: $font-text-secondary;
+    font-size: 8.5px;
+    color: $color-teal;
+    white-space: nowrap;
+}
+
+// A row anchor is a landing place for a cross-reference, not an entry. It has
+// an id and no href, and everything the parent hangs off `.index a` has to
+// come off it or it prints as a locator to page zero.
+.index.index a:not([href])::before,
+.index.index a:not([href])::after {
+    content: normal;
+}
+
+// "Adiponectin. See Adiponectin-Receptor Signaling" — a cross-reference names
+// another entry, and naming it is the whole instruction. The page it happens
+// to sit on in the index is not a locator for the subject and reads as one.
+.index.index li > a[href^="#index-row"]::after {
+    content: normal;
+}
+
 // --- The index title -------------------------------------------------------
 // Its own class, not `.part-title` scoped under `.index`. Two reasons, both
 // measured rather than assumed.
