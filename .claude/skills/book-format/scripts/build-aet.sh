@@ -31,6 +31,11 @@
 # by a grep looking for the words it expected. The build was blamed on a time
 # limit it never hit.
 #
+# This edition publishes its reference list separately, so the build lifts it
+# out and drops its line from the contents. The citation superscripts stay:
+# they are the key into that list wherever it is delivered. Remove
+# --drop-references to bind it back in.
+#
 # <source.md> is the manuscript as delivered — not the prepared copy. The
 # prepared copy is written into <work-dir> and is regenerable from this.
 set -e
@@ -78,6 +83,7 @@ echo "== 3/10 front matter"
 node "$HERE/front-matter.js" --content "$CONTENT" \
     --sponsor-page --dedication --acknowledgements --drop-generated-contents \
     --acknowledgement-from "grateful to my son Thomas" \
+    --drop-references --acknowledgements-front --about-last \
     ${COPYRIGHT:+--copyright-from "$COPYRIGHT"} \
     ${ABOUT:+--about-from "$ABOUT"} \
     ${PORTRAIT:+--about-portrait "$PORTRAIT"} \

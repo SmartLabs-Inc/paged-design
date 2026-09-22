@@ -348,7 +348,7 @@ h6 {
   @top-left-corner {
     content: normal; }
   @bottom-center {
-    content: string(book-title); }
+    content: string(book-title) "  · UNCORRECTED PROOF"; }
   @bottom-left {
     content: normal; }
   @bottom-right {
@@ -5242,7 +5242,7 @@ blockquote {
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(book-title); }
+    content: string(book-title) "  · UNCORRECTED PROOF"; }
   @bottom-right {
     content: counter(page); } }
 
@@ -5735,7 +5735,7 @@ a.uri,
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(book-title); }
+    content: string(book-title) "  · UNCORRECTED PROOF"; }
   @bottom-right {
     content: counter(page); }
   @right-top {
@@ -5794,7 +5794,7 @@ a.uri,
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(book-title); }
+    content: string(book-title) "  · UNCORRECTED PROOF"; }
   @bottom-right {
     content: counter(page); }
   @right-middle {
@@ -5853,7 +5853,7 @@ a.uri,
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(book-title); }
+    content: string(book-title) "  · UNCORRECTED PROOF"; }
   @bottom-right {
     content: counter(page); }
   @right-bottom {
@@ -5912,7 +5912,7 @@ a.uri,
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(book-title); }
+    content: string(book-title) "  · UNCORRECTED PROOF"; }
   @bottom-right {
     content: counter(page); }
   @right-top {
@@ -5971,7 +5971,7 @@ a.uri,
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(book-title); }
+    content: string(book-title) "  · UNCORRECTED PROOF"; }
   @bottom-right {
     content: counter(page); }
   @right-middle {
@@ -6030,7 +6030,7 @@ a.uri,
   @bottom-left {
     content: normal; }
   @bottom-center {
-    content: string(book-title); }
+    content: string(book-title) "  · UNCORRECTED PROOF"; }
   @bottom-right {
     content: counter(page); }
   @right-bottom {

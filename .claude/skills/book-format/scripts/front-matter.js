@@ -41,6 +41,13 @@ if (args.help || !args.content) {
     '  --about-portrait <filename>',
     '                     Open that page with this image, named as the book',
     '                     asks for it — the figure pass supplies the file.',
+    '  --drop-references  Lift the reference list out of the book, and its line',
+    '                     out of the contents. The citation superscripts stay:',
+    '                     they key into the list wherever it is published.',
+    '  --acknowledgements-front',
+    '                     Put the acknowledgements after the dedication rather',
+    '                     than in the back matter.',
+    '  --about-last       Move the About the Author page to the end of the book.',
     '  --drop-generated-contents',
     '                     Remove the contents page the converter generated,',
     '                     keeping the author\'s own.',
@@ -212,6 +219,31 @@ if (args['drop-generated-contents']) {
       html = html.slice(0, generated.index) + html.slice(end)
       done.push('generated contents page removed')
     }
+  }
+}
+
+// The reference list is published separately for this edition. Lifting it here
+// rather than cutting it out of the manuscript keeps one source of truth: the
+// manuscript still carries every entry, and the decision about where the list
+// is delivered stays a build option.
+//
+// The citation superscripts stay exactly where they are. They are the key into
+// the list, and they are correct whether the list is bound in or handed over
+// on its own.
+if (args['drop-references']) {
+  const found = findComponent('References')
+  if (!found) {
+    done.push('WARNING: no reference list to drop')
+  } else {
+    html = html.slice(0, found.start) + html.slice(found.end)
+    // And its line in the contents, which would otherwise print a page number
+    // for a section that is not there. Only that line: an earlier attempt at
+    // this matched on the word "reference" and took two real index entries
+    // with it.
+    const n = (html.match(/\n?\s*<li><a href="#references">[^<]*<\/a><\/li>/g) || []).length
+    html = html.replace(/\n?\s*<li><a href="#references">[^<]*<\/a><\/li>/g, '')
+    done.push('reference list lifted out (' + n + ' contents line' +
+      (n === 1 ? '' : 's') + ' removed)')
   }
 }
 
@@ -560,7 +592,16 @@ if (args['acknowledgement-from']) {
 }
 
 if (args.acknowledgements && !/\backnowledgements-page\b/.test(html)) {
-  insertBefore(ABOUT_PAGE,
+  // In the front, after the dedication, when asked. A thank-you the reader
+  // meets on the way in reads as the author's; the same page at the back of a
+  // reference book is never reached.
+  if (args['acknowledgements-front']) {
+    insertAfter('Dedication',
+      component('acknowledgements-page frontmatter', 'Acknowledgements',
+        '                <h1 class="heading-2">Acknowledgements</h1>' +
+        (lifted ? '\n                <p>' + lifted + '</p>' : '')),
+      'acknowledgements page added after the dedication')
+  } else insertBefore(ABOUT_PAGE,
     component('acknowledgements-page endmatter', 'Acknowledgements',
       '                <h1 class="heading-2">Acknowledgements</h1>' +
       (lifted ? '\n                <p>' + lifted + '</p>' : '')),
@@ -622,6 +663,31 @@ html = html.replace(/<a id="([^"]+)"><\/a>\s*/g, function (all, target) {
 })
 if (duplicates) done.push(duplicates + ' duplicate id' + (duplicates === 1 ? '' : 's') +
   ' removed from empty anchors')
+
+// ---------------------------------------------------------------------------
+// The author goes last
+// ---------------------------------------------------------------------------
+// After every insertion above, so "last" means last. The component moves
+// whole, with its classes and its anchors, and the index ends up ahead of it —
+// which is the order a reference book wants: the reader finishes with the
+// apparatus, then the person who wrote it.
+
+if (args['about-last']) {
+  const about = findComponent(ABOUT_PAGE)
+  if (!about) {
+    done.push('WARNING: no About page to move')
+  } else {
+    const block = html.slice(about.start, about.end)
+    const rest = html.slice(0, about.start) + html.slice(about.end)
+    const body = rest.lastIndexOf('</body>')
+    if (body === -1) {
+      done.push('WARNING: no </body> to move the About page before')
+    } else {
+      html = rest.slice(0, body) + '\n    ' + block.trim() + '\n\n' + rest.slice(body)
+      done.push('About the Author moved to the last page')
+    }
+  }
+}
 
 fs.writeFileSync(indexFile, html)
 

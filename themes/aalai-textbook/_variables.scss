@@ -123,7 +123,11 @@ $recto-top-right: string(topic-name, start);
 // sets on the title page — see _selectors.scss for why it was empty until now.
 // It is set once and persists, so every right-hand page reads it.
 $verso-bottom: string(h1-text, first);
-$recto-bottom: string(book-title);
+// Every recto carries the notice until the corrected print. Set $proof-notice
+// to `""` for the final file — it is one variable so nobody has to remember
+// where in the stylesheet the footer is built.
+$proof-notice: "  \00B7  UNCORRECTED PROOF";
+$recto-bottom: string(book-title) $proof-notice;
 
 // ---------------------------------------------------------------------------
 // Faces
