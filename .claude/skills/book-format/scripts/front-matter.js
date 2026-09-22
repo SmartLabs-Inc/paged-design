@@ -35,6 +35,9 @@ if (args.help || !args.content) {
     '                     Replace the copyright page copy with this file.',
     '  --about-from <file>',
     '                     Replace the About the Author copy with this file.',
+    '  --about-portrait <filename>',
+    '                     Open that page with this image, named as the book',
+    '                     asks for it — the figure pass supplies the file.',
     '  --drop-generated-contents',
     '                     Remove the contents page the converter generated,',
     '                     keeping the author\'s own.',
@@ -64,18 +67,6 @@ function findComponent (title) {
   return { start: open.index, end: end, openTag: open[0] }
 }
 
-// The same, for a component whose exact title is the author's name and so is
-// not something this script should be spelling out.
-function findComponentStarting (prefix) {
-  const pattern = new RegExp('<div class="[^"]*"[^>]*data-header="' +
-    prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[^"]*"[^>]*>')
-  const open = pattern.exec(html)
-  if (!open) return null
-  const end = matchingClose(open.index)
-  if (end === -1) return null
-  return { start: open.index, end: end, openTag: open[0] }
-}
-
 function matchingClose (from) {
   const tag = /<(\/?)div\b[^>]*>/g
   tag.lastIndex = from
@@ -92,6 +83,13 @@ function matchingClose (from) {
 
 const slug = (/<div class="([a-z0-9-]+) /.exec(html) || [])[1] || 'book'
 const done = []
+
+// The About page's title is the author's name. It was written out in full in
+// three places in this file, which is three places to change for the next book
+// and three chances to miss one — the page would simply stop being classed,
+// and the only sign would be a biography set like a chapter. Read once from
+// the document instead.
+const ABOUT_PAGE = (/data-header="(About [^"]*)"/.exec(html) || [])[1] || 'About the Author'
 
 function component (classes, header, inner) {
   return '<div class="' + slug + ' ' + classes + '"' +
@@ -189,7 +187,7 @@ function makeTitlePage () {
 
 if (addClasses('References', 'references endmatter')) done.push('References classed')
 if (addClasses('Index', 'index endmatter')) done.push('Index classed')
-if (addClasses('About Alexander Grinberg, M.D.', 'endmatter')) done.push('About classed')
+if (addClasses(ABOUT_PAGE, 'endmatter about-page')) done.push('About classed')
 ;['Copyright', 'Medical and Legal Disclaimer', 'Methodology and Sources',
   'How to Read This Book', 'Preface', 'List of Abbreviations'].forEach(function (title) {
   if (addClasses(title, 'frontmatter')) done.push(title + ' classed')
@@ -313,7 +311,7 @@ function bodyMarkup (source, headings) {
 // pipeline keeps finding, in a new place.
 const COMPONENT_BODY = /^([\s\S]*?<div>\s*<div>\s*(?:<a id="[^"]*"><\/a>\s*)*(?:<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>)?)([\s\S]*?)(\n?\s*<\/div>\s*<\/div>\s*<\/div>\s*)$/
 
-function replaceCopy (what, found, option, headings) {
+function replaceCopy (what, found, option, headings, arrange) {
   if (!args[option]) return
   const file = path.resolve(args[option])
   if (!fs.existsSync(file)) {
@@ -329,9 +327,10 @@ function replaceCopy (what, found, option, headings) {
     done.push('WARNING: could not find the ' + what + ' body to replace')
     return
   }
-  const markup = bodyMarkup(fs.readFileSync(file, 'utf8'), headings)
-  html = html.slice(0, found.start) + body[1] + '\n' + markup + body[3] +
-    html.slice(found.end)
+  let markup = bodyMarkup(fs.readFileSync(file, 'utf8'), headings)
+  if (arrange) markup = arrange(markup)
+  html = html.slice(0, found.start) + body[1] + '\n' + markup +
+    body[3] + html.slice(found.end)
   done.push(what + ' copy replaced from ' + path.basename(file) +
     ' (' + (markup.match(/<p[ >]/g) || []).length + ' paragraphs)')
 }
@@ -350,7 +349,46 @@ replaceCopy('copyright', findComponent('Copyright'), 'copyright-from',
 //
 // Found by prefix rather than by the author's name, which is hard-coded twice
 // already in this file and should not be a third time.
-replaceCopy('about the author', findComponentStarting('About '), 'about-from')
+{
+  const about = findComponent(ABOUT_PAGE)
+
+  // The portrait goes at the head of the first column, at the width of that
+  // column. `src` is the bare filename, the same contract the part banners
+  // work to: the figure pass copies whatever the book asks for out of the art
+  // folder, and leaves a marked slot when it is not there yet.
+  //
+  // The alt text is the subject's name, read off the component's own title
+  // rather than written here. A portrait is the one image on this page whose
+  // alt text is not a judgement call.
+  //
+  // It goes first, at the head of the column, and the theme stops the opening
+  // paragraph of this one page from spanning so that it can. Both orders were
+  // tried on the page and both failed, in different ways.
+  //
+  // The theme spans a back-matter page's heading and its opening paragraph
+  // across both columns. Between those two spanners the picture opens a
+  // two-column region containing nothing else: it fills the first column and
+  // the second stays empty for its whole height, which cost the page a third
+  // of its capacity and ran the biography twelve lines onto a second page.
+  // Moved below the standfirst instead, it became a keep box immediately
+  // after a spanner, which Paged.js could not place at all — it pushed the
+  // entire region to the next page and left the standfirst alone on an
+  // otherwise empty leaf.
+  //
+  // With the standfirst not spanning there is one column region, and the
+  // picture heads it with the whole biography to flow past it.
+  let portrait = ''
+  if (args['about-portrait'] && about) {
+    const title = /data-header="About\s+([^"]*)"/.exec(about.openTag)
+    portrait = '<div class="author-portrait"><img src="' +
+      String(args['about-portrait']).replace(/"/g, '&quot;') + '" alt="' +
+      (title ? title[1] : 'The author').replace(/"/g, '&quot;') + '" /></div>\n'
+  }
+
+  replaceCopy('about the author', about, 'about-from', null, function (markup) {
+    return portrait + markup
+  })
+}
 
 // ---------------------------------------------------------------------------
 // The abbreviations arrive as a two-column table, which sets as a table: one
@@ -499,7 +537,7 @@ if (args['acknowledgement-from']) {
 }
 
 if (args.acknowledgements && !/\backnowledgements-page\b/.test(html)) {
-  insertBefore('About Alexander Grinberg, M.D.',
+  insertBefore(ABOUT_PAGE,
     component('acknowledgements-page endmatter', 'Acknowledgements',
       '                <h1 class="heading-2">Acknowledgements</h1>' +
       (lifted ? '\n                <p>' + lifted + '</p>' : '')),

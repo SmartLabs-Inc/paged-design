@@ -1613,6 +1613,38 @@ mark.flag-ref {
 }
 
 // ---------------------------------------------------------------------------
+// The author's portrait
+// ---------------------------------------------------------------------------
+// At the head of the first column on the About page, at the width of that
+// column. Not spanning: a portrait stretched across both columns is a band of
+// white either side of a narrow picture, and this page has no other image to
+// balance it against.
+
+.author-portrait {
+    break-inside: avoid;
+    margin: 0 0 ($baseline-grid-unit * 0.8) 0;
+}
+
+// The one back-matter page whose opening paragraph does not span. Everywhere
+// else that standfirst crossing the measure is the design; here it would sit
+// between the heading and the picture and open a column region with only the
+// picture in it, half of which is then blank for the height of the picture.
+// Doubled class so this is decided by specificity rather than by where the
+// two rules happen to fall in the file.
+.about-page.about-page > div > div > p:first-of-type {
+    column-span: none;
+}
+
+.author-portrait img {
+    display: block;
+    width: 100%;
+    height: auto;
+    // A portrait taller than this is one Paged.js cannot place in the column,
+    // and an unplaceable keep box is how pagination stops without saying so.
+    max-height: 95mm;
+}
+
+// ---------------------------------------------------------------------------
 // The contents
 // ---------------------------------------------------------------------------
 // One column, with a page number against the right margin. A contents set in

@@ -49,6 +49,15 @@ HERE=$(dirname "$0")
 REPO=$(cd "$HERE/../../../.." && pwd)
 CONTENT="$REPO/content/aet-md"
 
+# ART, COPYRIGHT and ABOUT default to where this book keeps them, so a plain
+# run is the whole book rather than the whole book minus whatever the caller
+# forgot to export. Each is only used if it is actually there.
+[ -n "$ART" ]       || { [ -d "$REPO/content/aet-art" ]                 && ART="$REPO/content/aet-art"; }
+[ -n "$COPYRIGHT" ] || { [ -f "$REPO/content/aet-front/copyright.md" ]   && COPYRIGHT="$REPO/content/aet-front/copyright.md"; }
+[ -n "$ABOUT" ]     || { [ -f "$REPO/content/aet-front/about-author.md" ] && ABOUT="$REPO/content/aet-front/about-author.md"; }
+[ -n "$PORTRAIT" ]  || { [ -f "$REPO/content/aet-art/author-portrait.png" ] && PORTRAIT="author-portrait.png"; }
+echo "   art: ${ART:-none} · copyright: ${COPYRIGHT:-manuscript} · about: ${ABOUT:-manuscript} · portrait: ${PORTRAIT:-none}"
+
 mkdir -p "$WORK"
 PREPPED="$WORK/aet.md"
 
@@ -69,7 +78,8 @@ node "$HERE/front-matter.js" --content "$CONTENT" \
     --sponsor-page --dedication --acknowledgements --drop-generated-contents \
     --acknowledgement-from "grateful to my son Thomas" \
     ${COPYRIGHT:+--copyright-from "$COPYRIGHT"} \
-    ${ABOUT:+--about-from "$ABOUT"}
+    ${ABOUT:+--about-from "$ABOUT"} \
+    ${PORTRAIT:+--about-portrait "$PORTRAIT"}
 
 echo "== 4/10 design"
 node "$HERE/design-md.js" --content "$CONTENT" --report \

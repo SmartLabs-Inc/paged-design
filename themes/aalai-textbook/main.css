@@ -6519,6 +6519,19 @@ mark.flag-ref {
   font-style: normal;
   color: inherit; }
 
+.author-portrait {
+  break-inside: avoid;
+  margin: 0 0 13.6px 0; }
+
+.about-page.about-page > div > div > p:first-of-type {
+  column-span: none; }
+
+.author-portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 95mm; }
+
 .contents-list.contents-list > div > div,
 .contents-page.contents-page > div > div {
   column-count: 1; }
