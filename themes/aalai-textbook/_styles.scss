@@ -481,6 +481,14 @@ sup.cite {
     white-space: nowrap;
 }
 
+// Except when the run is wider than the column, at which point `nowrap` stops
+// protecting the citation and starts walking it across the gutter into the
+// next one. The prep pass marks a run of five or more and puts a zero-width
+// space after each comma, so the break can only ever land between citations.
+sup.cite-long {
+    white-space: normal;
+}
+
 .cite a,
 a.cite {
     color: $color-teal;
