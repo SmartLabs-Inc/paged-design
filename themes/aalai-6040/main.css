@@ -7060,6 +7060,20 @@ h4 + .standfirst,
 .dedication-page.dedication-page {
   margin-top: 0; }
 
+.dedication-page.has-dedication > div > div > h1 {
+  display: none; }
+
+.dedication-page.has-dedication.has-dedication > div > div > p,
+.dedication-page.has-dedication.has-dedication > div > div > p:first-of-type {
+  font-size: 15.295px;
+  line-height: 23.625px;
+  font-style: italic;
+  color: #17202A;
+  margin: 0 0 26.25px 0; }
+
+.dedication-page.has-dedication > div > div > p:last-child {
+  margin-bottom: 0; }
+
 .dedication-page.dedication-page,
 .dedication-page.dedication-page h1,
 .dedication-page.dedication-page p {
