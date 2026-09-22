@@ -33,9 +33,11 @@ const args = parseArgs(process.argv)
 
 if (args.help || !args.content) {
   console.log([
-    'Usage: node design-md.js --content <dir> [--report]',
+    'Usage: node design-md.js --content <dir> [--part-art <dir>] [--report]',
     '',
     '  --content <dir>   Book directory holding index.html, rewritten in place.',
+    '  --part-art <dir>  Look here for part opener artwork named part-1, part-2,',
+    '                    and so on. Any image extension; the first match wins.',
     '  --report          List what was capped.',
     '',
     'Adds part openers, section heads, sub-section panels, entry cards and the',
@@ -187,9 +189,38 @@ const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
 
 const tally = {
   parts: 0, sections: 0, subsections: 0, entries: 0, labels: 0,
-  tables: 0, captions: 0, figures: 0, capped: 0, partContents: 0
+  tables: 0, captions: 0, figures: 0, capped: 0, partContents: 0, partArt: 0
 }
 const capped = []
+
+// ---------------------------------------------------------------------------
+// Part opener artwork
+// ---------------------------------------------------------------------------
+// One banner per part, supplied by the author and named for the part it opens:
+// `part-1`, `part-2`, and so on, in whatever image format it arrived as. The
+// `src` written here is the bare filename, which is the contract the figure
+// pass already works to — it copies whatever the book asks for out of the art
+// folder and into the book directory on the way past. So a part whose artwork
+// has not arrived yet gets the same marked slot as any other missing figure,
+// rather than a broken image or a silently missing banner.
+
+const PART_IMAGE = /\.(?:png|jpe?g|gif|webp|svg|tiff?)$/i
+
+const partArt = new Map()
+if (args['part-art']) {
+  const dir = path.resolve(args['part-art'])
+  if (fs.existsSync(dir)) {
+    fs.readdirSync(dir).forEach(function (file) {
+      const match = /^part-(\d+)\b/i.exec(file)
+      if (!match || !PART_IMAGE.test(file)) return
+      const number = Number(match[1])
+      if (!partArt.has(number)) partArt.set(number, file)
+    })
+  } else {
+    console.log('  no such part-art directory: ' + dir)
+  }
+}
+
 
 // The running heads. Two named strings, each set from exactly one selector,
 // because Paged.js keeps one selector per string identifier and the last rule
@@ -260,6 +291,22 @@ function designPart (children, title) {
       break
     }
   }
+  // The banner under the title. It goes between the title and the contents
+  // list — below the title, which is where the author asked for it, and above
+  // the list so the page reads title, image, contents from the top down.
+  let banner = ''
+  if (opener) {
+    const file = partArt.get(tally.parts)
+    if (file) {
+      tally.partArt += 1
+      // No alt text: the caption a diagram this dense deserves has to come
+      // from the author, and a made-up one is worse than none. The slot the
+      // figure pass leaves for a missing file carries the filename instead.
+      banner = '<div class="part-figure"><img src="' + escapeAttr(file) +
+        '" alt="" /></div>'
+    }
+  }
+
   // What is in this part, on the page that opens it. The theme has always
   // styled `.part-contents` — a numbered list of the part's sections with a
   // hairline under each — and nothing was building it, so five part openers
@@ -278,7 +325,9 @@ function designPart (children, title) {
   }
 
   const body = designBody(rest, { plain: false })
-  return opener ? opener + '\n' + contents + '\n' + body : body
+  return opener
+    ? [opener, banner, contents, body].filter(Boolean).join('\n')
+    : body
 }
 
 // A sub-section heading and the opening of the paragraph under it, held
@@ -574,7 +623,8 @@ const rebuilt = components.map(function (component) {
 fs.writeFileSync(indexFile, head + '\n    ' + rebuilt.join('\n\n    ') + '\n' + tail)
 
 console.log('Designed ' + path.relative(process.cwd(), indexFile))
-console.log('  parts ' + tally.parts + ' (' + tally.partContents + ' with contents)' +
+console.log('  parts ' + tally.parts + ' (' + tally.partContents + ' with contents, ' +
+  tally.partArt + ' with artwork)' +
   ' · sections ' + tally.sections +
   ' · sub-sections ' + tally.subsections)
 console.log('  entries ' + tally.entries + ' · labels ' + tally.labels +

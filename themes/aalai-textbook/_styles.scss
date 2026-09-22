@@ -138,6 +138,7 @@
 .chapter-subtitle,
 .part-title,
 .part-count,
+.part-figure,
 .part-contents,
 .section-head,
 .apparatus-head,
@@ -195,6 +196,30 @@
     // title is structural, and the navy is what the brand leads with — it is
     // the ground of the prototype's cover.
     border-bottom: 3pt solid $color-navy;
+}
+
+// The banner under the part title. It is the one picture on the opener, it
+// carries the subject of the part in one image, and it is the width of the
+// page because nothing else on this page is in columns yet.
+//
+// The height is capped rather than left to the artwork. A part opener is a
+// run of spanning elements — title, banner, contents — and Paged.js cannot
+// place a `break-inside: avoid` box taller than the column it is going into:
+// it pushes, measures, pushes again, gives up, and silently stops paginating
+// the rest of the book. The banners supplied are all 1884 x 835, which sets
+// at about 59mm across this measure, so the cap is not doing anything today.
+// It is there for the one that arrives square.
+.part-figure {
+    break-inside: avoid;
+    margin: $baseline-grid-unit 0 ($baseline-grid-unit * 1.2) 0;
+}
+
+.part-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 62mm;
+    margin: 0 auto;
 }
 
 // ---------------------------------------------------------------------------
@@ -1510,19 +1535,19 @@ mark.flag-ref {
 
 .copyright-page.copyright-page p,
 .copyright-page.copyright-page li {
-    font-size: 12pt;
-    line-height: 1.15;
+    font-size: 10pt;
+    line-height: 1.2;
     text-align: left;
     text-indent: 0;
     hyphens: none;
-    margin: 0 0 0.6em 0;
+    margin: 0 0 0.55em 0;
 }
 
 // The heading is part of the notice, not a section title: no rule under it,
 // no display size, no air above it.
 .copyright-page.copyright-page > div > div > h1,
 .copyright-page.copyright-page > div > div > h2 {
-    font-size: 12pt;
+    font-size: 10pt;
     line-height: 1.15;
     font-weight: 700;
     color: $color-navy;
@@ -1533,11 +1558,39 @@ mark.flag-ref {
 
 // The standfirst treatment does not apply to a copyright notice either.
 .copyright-page.copyright-page > div > div > p:first-of-type {
-    font-size: 12pt;
+    font-size: 10pt;
     font-style: normal;
-    line-height: 1.15;
+    line-height: 1.2;
     color: inherit;
-    margin-bottom: 0.6em;
+    margin-bottom: 0.55em;
+}
+
+// The notice opens by naming the work it covers: the book's title and
+// subtitle, which the publisher's copy supplies as its first two lines. They
+// are not a section heading — the only heading on this page is the word
+// "Copyright", which the parent theme hides so it survives into the PDF
+// bookmarks without printing — so they are set as what they are, the title
+// of the work, a little above the notice and nothing else on the page.
+//
+// These two selectors tie with the one above at three classes and three
+// elements, so the order they sit in decides which wins. They go after it
+// deliberately: the rule above exists to cancel the front-matter standfirst
+// on whatever the first paragraph happens to be, and the first paragraph is
+// now the title.
+.copyright-page.copyright-page > div > div > p.copyright-title {
+    font-size: 15pt;
+    line-height: 1.1;
+    font-style: normal;
+    color: $color-navy;
+    margin: 0 0 0.2em 0;
+}
+
+.copyright-page.copyright-page > div > div > p.copyright-subtitle {
+    font-size: 10pt;
+    line-height: 1.25;
+    font-style: italic;
+    color: $color-mid;
+    margin: 0 0 1em 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -2442,6 +2495,7 @@ h4 + .standfirst,
 .title-page h1.title-page-title,
 .part-title,
 .part-name,
+.copyright-title,
 .index-title {
     font-family: $font-display-hero;
     // Never ask this face for a weight it does not have. Windorse ships one

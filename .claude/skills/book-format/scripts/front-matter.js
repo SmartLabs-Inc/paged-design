@@ -31,6 +31,8 @@ if (args.help || !args.content) {
     '  --acknowledgement-from <text>',
     '                     Move the paragraph containing this text — wherever it',
     '                     is — onto the acknowledgements page.',
+    '  --copyright-from <file>',
+    '                     Replace the copyright page copy with this file.',
     '  --drop-generated-contents',
     '                     Remove the contents page the converter generated,',
     '                     keeping the author\'s own.',
@@ -236,6 +238,81 @@ let tocLists = 0
   }
 }
 
+// The copyright page is the publisher's, not the author's
+// ---------------------------------------------------------------------------
+// Imprint, edition, ISBN, the rights reservation and the text-and-data-mining
+// notice all come from the publisher, arrive after the manuscript does, and
+// change again between the proof and the press. The manuscript carries a short
+// placeholder so the page is never empty; `--copyright-from` swaps the real
+// copy in at build time. Editing it into the delivered manuscript instead
+// would mean editing it back in on every redelivery, which is how the
+// disclaimer went stale once already.
+//
+// The heading and the anchors above it stay exactly where they are. The h1 is
+// hidden by the theme but it is what the verso footer reads, and the anchors
+// are what the contents page counts a page number from — this replaces the
+// body under them and nothing else.
+
+function copyrightMarkup (source) {
+  function escapeText (text) {
+    return text
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      // The rest of the book is set with typographic punctuation by the
+      // converter. This text never passes through it, so it is done here or
+      // the one page in the book with straight quotes is the legal one.
+      .replace(/(^|[\s([])"/g, '$1“').replace(/"/g, '”')
+      .replace(/(^|[\s([])'/g, '$1‘').replace(/'/g, '’')
+  }
+  function inline (text) {
+    return escapeText(text)
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+  }
+  return source.replace(/\r\n?/g, '\n').split(/\n{2,}/)
+    .map(function (para) { return para.trim() })
+    .filter(Boolean)
+    .map(function (para) {
+      // A single newline inside a paragraph is a line the publisher wants
+      // kept — "All rights reserved." under the copyright line, the ISBN
+      // under the edition — not a paragraph of its own, which would take the
+      // paragraph spacing with it.
+      const heading = /^(#{1,2})\s+(.*)$/.exec(para)
+      if (heading) {
+        return '<p class="copyright-' +
+          (heading[1].length === 1 ? 'title' : 'subtitle') + '">' +
+          inline(heading[2].trim()) + '</p>'
+      }
+      return '<p>' + para.split('\n').map(function (line) {
+        return inline(line.trim())
+      }).join('<br />') + '</p>'
+    }).join('\n')
+}
+
+if (args['copyright-from']) {
+  const file = path.resolve(args['copyright-from'])
+  const copyright = findComponent('Copyright')
+  if (!fs.existsSync(file)) {
+    done.push('WARNING: no such copyright file: ' + file)
+  } else if (!copyright) {
+    done.push('WARNING: no copyright page to replace the copy on')
+  } else {
+    const block = html.slice(copyright.start, copyright.end)
+    const body = /([\s\S]*<\/h1>)([\s\S]*?)(\n\s*<\/div>\s*<\/div>\s*<\/div>\s*)$/
+      .exec(block)
+    if (!body) {
+      done.push('WARNING: could not find the copyright page body to replace')
+    } else {
+      const markup = copyrightMarkup(fs.readFileSync(file, 'utf8'))
+      html = html.slice(0, copyright.start) +
+        body[1] + '\n' + markup + body[3] +
+        html.slice(copyright.end)
+      done.push('copyright copy replaced from ' + path.basename(file) +
+        ' (' + markup.split('<p').length + ' paragraphs)')
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // The abbreviations arrive as a two-column table, which sets as a table: one
 // pair to a row, the width of the page, sixty-five rows and four pages of it.
 // As a definition list the same pairs flow in two columns and take one page,

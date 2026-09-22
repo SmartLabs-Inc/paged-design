@@ -9,7 +9,14 @@
 #   usage: build-aet.sh [--clean] <source.md> <work-dir> [<out.pdf>]
 #
 # Set ART to a folder of figure artwork and whatever matches a filename the
-# book asks for is copied in on the way past.
+# book asks for is copied in on the way past. The same folder supplies the
+# part opener banners, which are named `part-1`, `part-2` and so on.
+#
+# Set COPYRIGHT to a file of copyright-page copy and it replaces what the
+# manuscript carries. The manuscript ships with a short placeholder; the real
+# page — imprint, ISBN, rights, the text-and-data-mining reservation — arrives
+# from the publisher separately and late, and editing it into a delivered
+# manuscript would mean re-editing it on the next delivery.
 #
 # End to end this takes about twenty-five minutes. Every pass is idempotent,
 # so a build that stops part way can be continued one pass at a time from
@@ -58,10 +65,11 @@ node "$HERE/md-to-book.js" --src "$PREPPED" --out "$CONTENT" --split h1 --slug a
 echo "== 3/10 front matter"
 node "$HERE/front-matter.js" --content "$CONTENT" \
     --sponsor-page --dedication --acknowledgements --drop-generated-contents \
-    --acknowledgement-from "grateful to my son Thomas"
+    --acknowledgement-from "grateful to my son Thomas" \
+    ${COPYRIGHT:+--copyright-from "$COPYRIGHT"}
 
 echo "== 4/10 design"
-node "$HERE/design-md.js" --content "$CONTENT" --report
+node "$HERE/design-md.js" --content "$CONTENT" --report ${ART:+--part-art "$ART"}
 
 if [ "$MARKS" = yes ]; then
     echo "== 5/10 audit marks"
