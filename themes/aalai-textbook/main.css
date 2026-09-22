@@ -5363,6 +5363,7 @@ blockquote {
 .chapter-subtitle,
 .part-title,
 .part-count,
+.part-figure,
 .part-contents,
 .section-head,
 .apparatus-head,
@@ -5402,6 +5403,17 @@ blockquote {
   margin: 0 0 8.5px 0;
   padding-bottom: 8.5px;
   border-bottom: 3pt solid #0D2035; }
+
+.part-figure {
+  break-inside: avoid;
+  margin: 17px 0 20.4px 0; }
+
+.part-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 62mm;
+  margin: 0 auto; }
 
 .section-head {
   font-size: 21px;
@@ -6458,16 +6470,16 @@ mark.flag-ref {
 
 .copyright-page.copyright-page p,
 .copyright-page.copyright-page li {
-  font-size: 12pt;
-  line-height: 1.15;
+  font-size: 10pt;
+  line-height: 1.2;
   text-align: left;
   text-indent: 0;
   hyphens: none;
-  margin: 0 0 0.6em 0; }
+  margin: 0 0 0.55em 0; }
 
 .copyright-page.copyright-page > div > div > h1,
 .copyright-page.copyright-page > div > div > h2 {
-  font-size: 12pt;
+  font-size: 10pt;
   line-height: 1.15;
   font-weight: 700;
   color: #0D2035;
@@ -6476,11 +6488,25 @@ mark.flag-ref {
   margin: 0 0 0.6em 0; }
 
 .copyright-page.copyright-page > div > div > p:first-of-type {
-  font-size: 12pt;
+  font-size: 10pt;
   font-style: normal;
-  line-height: 1.15;
+  line-height: 1.2;
   color: inherit;
-  margin-bottom: 0.6em; }
+  margin-bottom: 0.55em; }
+
+.copyright-page.copyright-page > div > div > p.copyright-title {
+  font-size: 15pt;
+  line-height: 1.1;
+  font-style: normal;
+  color: #0D2035;
+  margin: 0 0 0.2em 0; }
+
+.copyright-page.copyright-page > div > div > p.copyright-subtitle {
+  font-size: 10pt;
+  line-height: 1.25;
+  font-style: italic;
+  color: #66717C;
+  margin: 0 0 1em 0; }
 
 .contents-list.contents-list > div > div,
 .contents-page.contents-page > div > div {
@@ -6983,6 +7009,7 @@ h4 + .standfirst,
 .title-page h1.title-page-title,
 .part-title,
 .part-name,
+.copyright-title,
 .index-title {
   font-family: "Windorse", "Charis SIL", Georgia, serif;
   font-weight: 400;
