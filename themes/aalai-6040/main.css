@@ -5537,6 +5537,9 @@ sup.cite {
   letter-spacing: 0.02em;
   white-space: nowrap; }
 
+sup.cite-long {
+  white-space: normal; }
+
 .cite a,
 a.cite {
   color: #137C7A;

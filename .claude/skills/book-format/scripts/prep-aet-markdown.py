@@ -72,6 +72,12 @@ runs = 0
 ONE = re.compile(r'\[\[(\d+)\]\]\(#([^)]+)\)')
 
 
+
+# Marks in one run before it is allowed to break across lines. Five keeps the
+# original rule intact for the 4,501 runs that fit and releases the 32 that
+# do not.
+LONG_RUN = 5
+
 def anchor(number, target):
     return '<a href="#%s">%s</a>' % (target, number)
 
@@ -103,6 +109,20 @@ def link(match):
         else:
             parts.append(','.join(anchor(n, t) for _, n, t in group))
 
+    # A run of sources is one mark and breaks nowhere, which is right: 12-14
+    # split over a line ending reads as two different citations. But a long
+    # enough run is wider than the column, and `nowrap` then walks it straight
+    # across the gutter into the next one -- twenty-six marks did exactly that
+    # on page 193.
+    #
+    # So the rule is kept and narrowed. A long run is marked, and a zero-width
+    # space after each comma gives the line breaker somewhere to break: between
+    # citations, never inside a number. Nothing is dropped; a reference book
+    # about evidence boundaries is the last place to lose sources to fit a
+    # column.
+    if len(parts) >= LONG_RUN:
+        return ('<sup class="cite cite-long">' +
+                ',\u200b'.join(parts) + '</sup>')
     return '<sup class="cite">' + ','.join(parts) + '</sup>'
 
 
