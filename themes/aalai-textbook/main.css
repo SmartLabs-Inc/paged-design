@@ -7000,6 +7000,28 @@ h4 + .standfirst,
   text-align: center;
   break-after: avoid; }
 
+.index.index a {
+  font-size: inherit;
+  color: #0D2035;
+  text-decoration: none; }
+
+.index.index a::before {
+  content: normal; }
+
+.index.index li > a[href]::after {
+  content: "  " target-counter(attr(href), page);
+  font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 8.5px;
+  color: #137C7A;
+  white-space: nowrap; }
+
+.index.index a:not([href])::before,
+.index.index a:not([href])::after {
+  content: normal; }
+
+.index.index li > a[href^="#index-row"]::after {
+  content: normal; }
+
 .index-title {
   font-family: "Charis SIL", Georgia, "Times New Roman", serif;
   font-size: 27px;
