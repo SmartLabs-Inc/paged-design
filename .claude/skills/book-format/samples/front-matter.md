@@ -1,26 +1,3 @@
-<!--
-A four-page book that exercises the passes a full build would otherwise take
-half an hour to reach: the title page, the copyright replacement, and a part
-opener with its banner and its list of sections.
-
-    node scripts/md-to-book.js   --src samples/front-matter.md \
-                                 --out content/test-front --split h1 --slug test-front
-    node scripts/front-matter.js --content content/test-front \
-                                 --drop-generated-contents --copyright-from <file>
-    node scripts/design-md.js    --content content/test-front --part-art <art-dir> --report
-    node scripts/figure-slots.js --content content/test-front --art <art-dir>
-    node scripts/render-pdf.js   --content content/test-front --theme aalai-textbook \
-                                 --out front-test.pdf
-
-`content/test-*` is ignored, so the built copy stays out of the repository.
-
-It has already earned its keep. The copyright replacement matched the body
-after an `h1`, which is what the copyright page carries *after* the heading
-promotion at the end of the same script — so it worked perfectly on a file
-that had been through the script once and did nothing at all on a fresh
-build, where the heading is still an `h2`. Four pages found that in a minute.
--->
-
 # The Book's Title Goes Here
 
 A subtitle long enough to wrap, so that the title page shows what a real one does
@@ -29,7 +6,7 @@ An Author, M.D.
 
 # Copyright
 
-Placeholder copy. A real build replaces all of this with `--copyright-from`.
+Placeholder copy. A real build replaces all of this from a file.
 
 # Part I. The First Part
 

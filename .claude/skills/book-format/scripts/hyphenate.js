@@ -65,7 +65,7 @@ if (html.indexOf(SOFT) !== -1) {
 
 // Elements whose text is never broken.
 const CLOSED = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'code', 'pre', 'title', 'script', 'style']
-const CLOSED_CLASSES = /\b(?:reference|run-head|topic-head|flag-code|label|chapter-eyebrow|part-title|part-name|index-letter|standfirst|figure-slot-file)\b/
+const CLOSED_CLASSES = /\b(?:reference|run-head|topic-head|flag-code|label|chapter-eyebrow|part-title|part-name|index-letter|standfirst|figure-slot-file|part-figure-credit)\b/
 
 let hyphenated = 0
 
