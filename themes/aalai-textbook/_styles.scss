@@ -2366,8 +2366,19 @@ h4 + .standfirst,
 }
 
 // The same group for a topic heading and the paragraph it introduces.
+// The sub-section panel is allowed to break.
+//
+// It could not, and being a spanner it therefore had to fit inside one column,
+// which is why the build cut its opening paragraph to five lines and set the
+// remainder loose outside the box. That cut is what the author kept finding:
+// a sentence ending mid-clause with no full stop and the rest of it resuming
+// below the panel in italic.
+//
+// A heading left at the foot of a column is the risk this rule was carrying,
+// and it is the smaller of the two — it is also a keep the build can put back
+// around the heading alone, which is where it belongs.
 .keep-lead {
-    break-inside: avoid;
+    break-inside: auto;
 }
 
 // And for a label — APPLICATIONS, PRACTICAL CONSIDERATIONS — with the opening
