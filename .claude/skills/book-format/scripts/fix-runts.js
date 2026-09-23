@@ -159,20 +159,29 @@ console.log('  candidates tagged: ' + tagged)
       return lines
     }
 
-    function worstGap (lines, space) {
+    // `count` is true only on a paragraph's first measurement. This runs again
+    // for every rung of the tracking ladder, and counting each time made the
+    // book's line total depend on how many paragraphs happened to qualify —
+    // so the same book measured 46,543 lines at one threshold and 37,805 at
+    // another, and the two rates could not be compared.
+    //
+    // The tally is a histogram rather than a single threshold, so one run
+    // answers the question at every ceiling instead of one.
+    function worstGap (lines, space, count) {
       let worst = 0
-      // Counted across the book as well as within the paragraph: one strained
-      // line in a nineteen-line paragraph is not the same fault as a paragraph
-      // strained throughout, and a per-paragraph total cannot tell them apart.
       for (let i = 0; i < lines.length - 1; i += 1) {
-        totalLines += 1
         const ws = lines[i].words
         let lineWorst = 0
         for (let j = 0; j < ws.length - 1; j += 1) {
           const g = (ws[j + 1].x - ws[j].r) / space
           if (g > lineWorst) lineWorst = g
         }
-        if (lineWorst > input.maxGap) wideLines += 1
+        if (count) {
+          totalLines += 1
+          const bucket = Math.min(Math.floor(lineWorst), 9)
+          hist[bucket] = (hist[bucket] || 0) + 1
+        }
+        if (lineWorst > worst) worst = lineWorst
       }
       for (let i = 0; i < lines.length - 1; i += 1) {
         const ws = lines[i].words
@@ -196,7 +205,7 @@ console.log('  candidates tagged: ' + tagged)
     let split = 0
     const samples = []
     let totalLines = 0
-    let wideLines = 0
+    const hist = {}
     document.querySelectorAll('[data-runt]').forEach(function (el) {
       const id = el.getAttribute('data-runt')
       if (seen.has(id)) { split += 1; return }
@@ -213,7 +222,7 @@ console.log('  candidates tagged: ' + tagged)
       lines.forEach(function (l) { if (l.width > width) width = l.width })
       if (!width) return
       const isRunt = lines[lines.length - 1].width <= width * tail
-      const worstBefore = worstGap(lines, space)
+      const worstBefore = worstGap(lines, space, true)
       const isLoose = worstBefore > input.maxGap
       if (!isRunt && !isLoose) return
       if (isRunt) runts += 1
@@ -229,14 +238,14 @@ console.log('  candidates tagged: ' + tagged)
         const now = linesOf(wordBoxes(el))
         if (now.length < before) { fixed[id] = steps[i]; break }
         if (isLoose && now.length === before &&
-            worstGap(now, space) < worstBefore - 0.15) { fixed[id] = steps[i]; break }
+            worstGap(now, space, false) < worstBefore - 0.15) { fixed[id] = steps[i]; break }
       }
       // Whatever happened, put the element back: this pass reports, the file
       // is edited afterwards. A style left behind here would be measured by
       // the next paragraph as if it were the page's own.
       el.style.letterSpacing = original
     })
-    return { runts: runts, loose: looseCount, split: split, fixed: fixed, samples: samples, totalLines: totalLines, wideLines: wideLines }
+    return { runts: runts, loose: looseCount, split: split, fixed: fixed, samples: samples, totalLines: totalLines, hist: hist }
   }, { steps: steps, tail: tail, maxGap: maxGap })
 
   await browser.close()
@@ -265,8 +274,15 @@ console.log('  candidates tagged: ' + tagged)
   console.log('  paragraphs measured: ' + (tagged - result.split))
   console.log('  ending in a runt: ' + result.runts)
   console.log('  with a word gap over ' + maxGap + ' spaces: ' + result.loose)
-  console.log('  lines over ' + maxGap + ' spaces: ' + result.wideLines + ' of ' +
-    result.totalLines + ' (' + Math.round(1000 * result.wideLines / Math.max(result.totalLines, 1)) / 10 + '%)')
+  // Every ceiling from one run, so two rates are never compared across two.
+  const total = Math.max(result.totalLines, 1)
+  console.log('  lines measured: ' + result.totalLines)
+  for (let g = 2; g <= 5; g += 1) {
+    let over = 0
+    Object.keys(result.hist).forEach(function (k) { if (Number(k) >= g) over += result.hist[k] })
+    console.log('    over ' + g + ' spaces: ' + over + ' (' +
+      Math.round(1000 * over / total) / 10 + '%)')
+  }
   console.log('  pulled back: ' + written +
     (written ? ' (' + steps.map(function (s) {
       return s + 'em: ' + (byStep[s] || 0)
