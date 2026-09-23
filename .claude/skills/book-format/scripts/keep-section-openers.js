@@ -55,6 +55,42 @@ html = html.replace(PAIR, function (block) {
   return '<div class="section-group">' + block + '</div>'
 })
 
+// The same fault, one level down. An entry whose first block is a label rather
+// than a paragraph gets an `.entry-lead` holding nothing but the heading —
+// there is no opening sentence to put in it — so the entry name sits alone in
+// its unbreakable box and the label and text below it are free to move. That
+// is p258's "20 Adiponectin-Receptor Signaling as a Metabolic Target" at the
+// foot of column one with its body in column two, and p262's entry 22 at the
+// foot of the page with its body overleaf. 136 entries in the book are built
+// this way, so every reflow puts a different handful of them on a break.
+//
+// Here the two boxes merge rather than nest. `.keep-label` and `.entry-lead`
+// zero their children's margins with the same two declarations, and every
+// other rule that reaches these elements is written on a class or on
+// `.entry-lead > h5`, so pouring the label and the lead paragraph into the
+// entry-lead changes no styling and keeps `.entry-lead` a direct child of
+// `.entry` — which a wrapper would not have done, and `.entry > *` and
+// `.entry > p:last-child` both depend on it.
+//
+// The anchor between the two moves above the merged box so the section link
+// still lands on the entry name rather than inside it.
+const HEADING_ALONE = /<div class="entry-lead">((?:(?!lead-head)[\s\S])*?)<\/div>\s*((?:<a id="[^"]*"><\/a>\s*)*)<div class="keep-label">([\s\S]*?)<\/div>/g
+
+let merged = 0
+html = html.replace(HEADING_ALONE, function (all, lead, anchors, label) {
+  merged += 1
+  return anchors + '<div class="entry-lead">' + lead + label + '</div>'
+})
+
+// Two entries open with a bare label paragraph instead of a `.keep-label` box.
+// They are left alone: the paragraph after them is a whole one rather than the
+// three-line lead the build cuts, and a keep box that swallows it could end up
+// taller than the column — which does not overflow, it stalls pagination.
+const BARE = /<div class="entry-lead">(?:(?!lead-head)[\s\S])*?<\/div>\s*(?:<a id="[^"]*"><\/a>\s*)*<p class="label">/g
+const bare = (html.match(BARE) || []).length
+
 fs.writeFileSync(indexFile, html)
 console.log('Section openers in ' + indexFile)
 console.log('  title and panel held together: ' + wrapped)
+console.log('  entry name merged into its label box: ' + merged)
+if (bare) console.log('  entry name left alone (bare label follows): ' + bare)
