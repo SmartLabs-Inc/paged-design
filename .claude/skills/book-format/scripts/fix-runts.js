@@ -42,7 +42,7 @@ if (args.help || !args.content) {
     '  --steps <list>   Tracking ladder in em, tightest last.',
     '                   Default "-0.006,-0.01".',
     '  --tail <n>       Treat a last line under this fraction of the measure',
-    '                   as a runt. Default 0.30.',
+    '                   as a runt. Default 0.18 — about two words.',
     '  --max-gap <n>    The widest word space a justified line may carry, in',
     '                   multiples of the space in the font. Default 3.',
     '  --timeout <ms>   Pagination timeout. Default 1800000.',
@@ -58,7 +58,7 @@ const dir = path.resolve(args.content)
 const indexFile = path.join(dir, 'index.html')
 const steps = String(args.steps || '-0.006,-0.01').split(',')
   .map(function (s) { return Number(s.trim()) }).filter(function (n) { return n < 0 })
-const tail = Number(args.tail || 0.30)
+const tail = Number(args.tail || 0.18)
 const maxGap = Number(args['max-gap'] || 3)
 
 // Tag the candidates before pagination so the measured element can be found
@@ -161,6 +161,19 @@ console.log('  candidates tagged: ' + tagged)
 
     function worstGap (lines, space) {
       let worst = 0
+      // Counted across the book as well as within the paragraph: one strained
+      // line in a nineteen-line paragraph is not the same fault as a paragraph
+      // strained throughout, and a per-paragraph total cannot tell them apart.
+      for (let i = 0; i < lines.length - 1; i += 1) {
+        totalLines += 1
+        const ws = lines[i].words
+        let lineWorst = 0
+        for (let j = 0; j < ws.length - 1; j += 1) {
+          const g = (ws[j + 1].x - ws[j].r) / space
+          if (g > lineWorst) lineWorst = g
+        }
+        if (lineWorst > input.maxGap) wideLines += 1
+      }
       for (let i = 0; i < lines.length - 1; i += 1) {
         const ws = lines[i].words
         for (let j = 0; j < ws.length - 1; j += 1) {
@@ -182,6 +195,8 @@ console.log('  candidates tagged: ' + tagged)
     let looseCount = 0
     let split = 0
     const samples = []
+    let totalLines = 0
+    let wideLines = 0
     document.querySelectorAll('[data-runt]').forEach(function (el) {
       const id = el.getAttribute('data-runt')
       if (seen.has(id)) { split += 1; return }
@@ -221,7 +236,7 @@ console.log('  candidates tagged: ' + tagged)
       // the next paragraph as if it were the page's own.
       el.style.letterSpacing = original
     })
-    return { runts: runts, loose: looseCount, split: split, fixed: fixed, samples: samples }
+    return { runts: runts, loose: looseCount, split: split, fixed: fixed, samples: samples, totalLines: totalLines, wideLines: wideLines }
   }, { steps: steps, tail: tail, maxGap: maxGap })
 
   await browser.close()
@@ -250,6 +265,8 @@ console.log('  candidates tagged: ' + tagged)
   console.log('  paragraphs measured: ' + (tagged - result.split))
   console.log('  ending in a runt: ' + result.runts)
   console.log('  with a word gap over ' + maxGap + ' spaces: ' + result.loose)
+  console.log('  lines over ' + maxGap + ' spaces: ' + result.wideLines + ' of ' +
+    result.totalLines + ' (' + Math.round(1000 * result.wideLines / Math.max(result.totalLines, 1)) / 10 + '%)')
   console.log('  pulled back: ' + written +
     (written ? ' (' + steps.map(function (s) {
       return s + 'em: ' + (byStep[s] || 0)
