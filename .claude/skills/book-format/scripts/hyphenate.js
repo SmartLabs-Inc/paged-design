@@ -70,7 +70,26 @@ const CLOSED = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'code', 'pre', 'title',
 // accident. The class is now carried by every shaded sub-section panel in the
 // book — twelve lines of it at the full measure — and those had no break
 // points at all, which is where the widest word gaps in the book are.
-const CLOSED_CLASSES = /\b(?:reference|run-head|topic-head|flag-code|label|chapter-eyebrow|part-title|part-name|index-letter|figure-slot-file|part-figure-credit)\b/
+// Matched as whole class tokens, not as a substring of the attribute.
+//
+// This was a regex with `\b` either side, and a hyphen is a word boundary — so
+// `label` matched `keep-label`, and the exclusion meant for the one-word
+// APPLICATIONS label closed the entire keep-label box around it. The paragraph
+// under every label in the book, 874 of them, had no break points, which is
+// why "phosphorylation and ubiquitination" sat on a line of its own with
+// inch-wide gaps either side of it.
+const CLOSED_CLASSES = new Set(['reference', 'run-head', 'topic-head', 'flag-code',
+  'label', 'chapter-eyebrow', 'part-title', 'part-name', 'index-letter',
+  'figure-slot-file', 'part-figure-credit'])
+
+function isClosedClass (value) {
+  if (!value) return false
+  const names = value.split(/\s+/)
+  for (let i = 0; i < names.length; i += 1) {
+    if (CLOSED_CLASSES.has(names[i])) return true
+  }
+  return false
+}
 
 let hyphenated = 0
 
@@ -135,7 +154,7 @@ while (index < html.length) {
   if (!closing) {
     depth += 1
     if (closedAt === null &&
-        (CLOSED.indexOf(name) !== -1 || CLOSED_CLASSES.test((/class="([^"]*)"/.exec(tag) || [''])[1] || ''))) {
+        (CLOSED.indexOf(name) !== -1 || isClosedClass((/class="([^"]*)"/.exec(tag) || [''])[1]))) {
       closedAt = depth
     }
   } else {

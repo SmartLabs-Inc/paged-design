@@ -6955,6 +6955,11 @@ h4 + .standfirst,
   margin-top: 0;
   margin-bottom: 0; }
 
+.keep-lead.keep-lead > p,
+.keep-lead.keep-lead > .standfirst,
+.keep-lead.keep-lead > .lead-head {
+  text-align: left; }
+
 .keep-lead {
   break-inside: auto; }
 
