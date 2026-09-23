@@ -95,29 +95,13 @@ console.log('  candidates tagged: ' + tagged)
   const result = await page.evaluate(function (input) {
     const steps = input.steps
     const tail = input.tail
-    function lineRects (el) {
-      const range = document.createRange()
-      range.selectNodeContents(el)
-      return Array.from(range.getClientRects())
-        .filter(function (r) { return r.width > 0.5 && r.height > 0.5 })
-    }
-    // The widest space between two words on any line but the last, measured
-    // in multiples of the font's own space.
+    // Everything is measured from the words themselves.
     //
-    // Justification has no ceiling in CSS: `text-align: justify` shares out
-    // whatever slack a line has across its gaps however wide that makes them.
-    // So the limit cannot be a stylesheet rule; it has to be measured per
-    // paragraph, which is what this is.
-    //
-    // Measured with Ranges over the text nodes rather than by wrapping the
-    // words in spans — the paragraph carries `sup`, `em` and `a`, and
-    // rewriting its innerHTML to wrap words corrupts them.
-    //
-    // Lines are grouped by top AND by column. A paragraph flowing across a
-    // two-column page is one element whose rects land in both columns, and
-    // grouping on vertical position alone merges the two — which reports the
-    // gutter as a five-space word gap and sends you looking for a fault that
-    // is not there.
+    // `Range.getClientRects()` was the obvious source and is the wrong one: it
+    // returns a rect per inline box, not per line. Every `sup` citation, `em`
+    // and `a` splits a line into several, so its length is not a line count
+    // and its final entry is usually a superscript a few pixels wide — which
+    // reported nine paragraphs in ten as ending in a runt.
     function spaceWidth (el) {
       const probe = document.createElement('span')
       probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre'
@@ -128,6 +112,9 @@ console.log('  candidates tagged: ' + tagged)
       return w || 3
     }
 
+    // Word boxes in document order. Ranges over the text nodes rather than
+    // spans wrapped round the words: these paragraphs carry markup, and
+    // rewriting innerHTML to wrap words corrupts it.
     function wordBoxes (el) {
       const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null)
       const boxes = []
@@ -151,25 +138,35 @@ console.log('  candidates tagged: ' + tagged)
       return boxes
     }
 
-    function worstGap (el, space, boxes) {
-      if (boxes.length < 3) return 0
-      // Consecutive in document order and on the same row: that pair has a
-      // real space between them. The last word of column one and the first of
-      // column two are consecutive in document order too, but they sit at
-      // different heights, so they never pair — which is how the gutter stops
-      // being mistaken for a word gap without having to guess its width.
-      //
-      // Grouping by row and sorting by x does the opposite: it puts the two
-      // columns on one line and reports the gutter as a five-space gap. That
-      // was the first version of this, and the fault it invented sent me
-      // looking at a paragraph that was fine.
-      const lastY = boxes[boxes.length - 1].y
+    // A line is a maximal run of consecutive words sharing a row. Document
+    // order keeps the two columns apart without having to know the gutter:
+    // the last word of one column and the first of the next are consecutive
+    // but sit at different heights, so they never join.
+    function linesOf (boxes) {
+      const lines = []
+      let run = null
+      for (let i = 0; i < boxes.length; i += 1) {
+        if (run && boxes[i].y === run.y) {
+          run.right = boxes[i].r
+          run.words.push(boxes[i])
+        } else {
+          if (run) lines.push(run)
+          run = { y: boxes[i].y, left: boxes[i].x, right: boxes[i].r, words: [boxes[i]] }
+        }
+      }
+      if (run) lines.push(run)
+      lines.forEach(function (l) { l.width = l.right - l.left })
+      return lines
+    }
+
+    function worstGap (lines, space) {
       let worst = 0
-      for (let i = 0; i < boxes.length - 1; i += 1) {
-        if (boxes[i].y !== boxes[i + 1].y) continue
-        if (boxes[i].y === lastY) continue      // the ragged last line may be short
-        const gap = (boxes[i + 1].x - boxes[i].r) / space
-        if (gap > worst) worst = gap
+      for (let i = 0; i < lines.length - 1; i += 1) {
+        const ws = lines[i].words
+        for (let j = 0; j < ws.length - 1; j += 1) {
+          const gap = (ws[j + 1].x - ws[j].r) / space
+          if (gap > worst) worst = gap
+        }
       }
       return worst
     }
@@ -184,49 +181,47 @@ console.log('  candidates tagged: ' + tagged)
     let runts = 0
     let looseCount = 0
     let split = 0
+    const samples = []
     document.querySelectorAll('[data-runt]').forEach(function (el) {
       const id = el.getAttribute('data-runt')
       if (seen.has(id)) { split += 1; return }
       seen.add(id)
       const ref = el.getAttribute('data-ref')
       if (ref) { if (byRef.has(ref)) { split += 1; return } byRef.set(ref, id) }
-      const rects = lineRects(el)
-      if (rects.length < 2) return
-      // The measure is the column, not the element. In a two-column flow the
-      // element's own width is both columns and the gutter, and testing a last
-      // line against that made nine paragraphs in ten look like a runt.
-      let width = 0
-      for (let i = 0; i < rects.length; i += 1) {
-        if (rects[i].width > width) width = rects[i].width
-      }
-      if (!width) return
-      const isRunt = rects[rects.length - 1].width <= width * tail
       const space = spaceWidth(el)
-      const worstBefore = worstGap(el, space, wordBoxes(el))
+      let lines = linesOf(wordBoxes(el))
+      if (lines.length < 2) return
+      // The measure is the widest line the paragraph has — a full line by
+      // definition. Not the element's own width: in a two-column flow that is
+      // both columns and the gutter.
+      let width = 0
+      lines.forEach(function (l) { if (l.width > width) width = l.width })
+      if (!width) return
+      const isRunt = lines[lines.length - 1].width <= width * tail
+      const worstBefore = worstGap(lines, space)
       const isLoose = worstBefore > input.maxGap
       if (!isRunt && !isLoose) return
       if (isRunt) runts += 1
       if (isLoose) looseCount += 1
-      const before = rects.length
+      if (samples.length < 6) {
+        samples.push({ lines: lines.length, last: Math.round(100 * lines[lines.length - 1].width / width),
+          gap: Math.round(worstBefore * 10) / 10, text: el.textContent.slice(0, 44) })
+      }
+      const before = lines.length
       const original = el.style.letterSpacing
       for (let i = 0; i < steps.length; i += 1) {
         el.style.letterSpacing = steps[i] + 'em'
-        const now = lineRects(el)
-        // A step is kept if it costs the paragraph a line, or if it pulls the
-        // worst line up without costing one. Never if it makes the worst line
-        // worse — tracking can move a word down as easily as up.
+        const now = linesOf(wordBoxes(el))
         if (now.length < before) { fixed[id] = steps[i]; break }
         if (isLoose && now.length === before &&
-            worstGap(el, space, wordBoxes(el)) < worstBefore - 0.15) {
-          fixed[id] = steps[i]; break
-        }
+            worstGap(now, space) < worstBefore - 0.15) { fixed[id] = steps[i]; break }
       }
       // Whatever happened, put the element back: this pass reports, the file
       // is edited afterwards. A style left behind here would be measured by
       // the next paragraph as if it were the page's own.
       el.style.letterSpacing = original
     })
-    return { runts: runts, loose: looseCount, split: split, fixed: fixed }
+    return { runts: runts, loose: looseCount, split: split, fixed: fixed, samples: samples }
   }, { steps: steps, tail: tail, maxGap: maxGap })
 
   await browser.close()
@@ -260,4 +255,9 @@ console.log('  candidates tagged: ' + tagged)
       return s + 'em: ' + (byStep[s] || 0)
     }).join(', ') + ')' : ''))
   console.log('  left alone: ' + (result.runts - written))
+  // A few of what it found, so the numbers can be disbelieved on sight.
+  result.samples.forEach(function (s) {
+    console.log('    ' + s.lines + ' lines, last ' + s.last + '% of measure, worst gap ' +
+      s.gap + ' spaces — ' + JSON.stringify(s.text))
+  })
 })()
