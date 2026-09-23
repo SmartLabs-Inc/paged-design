@@ -2638,6 +2638,19 @@ h4 + .standfirst,
     column-count: auto;
 }
 
+// The index fills its columns; it does not balance them.
+//
+// `column-fill: balance` comes down from the chapter rule and is right there —
+// a chapter's last page should not end with one long column beside a short
+// one. But the index is a single flow thirteen pages long, and Chromium
+// balances every fragment of a continuing flow rather than only the last, so
+// each index page was being asked to even itself out against content that had
+// not arrived yet. The first page held sixteen entries where the pages after
+// it hold forty, and both its columns stopped half way down.
+.index.index > div > div {
+    column-fill: auto;
+}
+
 // Index entries are look-up lines, not paragraphs. They set tight, and they
 // carry their locators on the same line. The leading rules further up target
 // `li`, which the entries no longer are — set as body paragraphs the index ran
