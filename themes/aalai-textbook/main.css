@@ -7067,7 +7067,7 @@ h4 + .standfirst,
 .index {
   column-count: auto; }
 
-.index.index > div > div {
+.index.index.index > div > div {
   column-fill: auto; }
 
 .index-entry {
