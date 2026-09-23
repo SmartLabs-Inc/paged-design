@@ -347,15 +347,22 @@ function subsection (heading, following) {
   if (!following || following.name !== 'p' || hasClass(following, 'run-head')) {
     return { box: heading.html + mark, rest: '', consumed: 1 }
   }
-  const split = splitParagraph(innerOf(following), SPAN_BUDGET)
-  if (!split) {
-    return { box: heading.html + mark + following.html, rest: '', consumed: 2 }
-  }
-  capped.push(text + ' — held to ' + split[0].length + ' characters')
-  tally.capped += 1
+  // The whole paragraph, inside the panel, whatever length it is.
+  //
+  // It used to be cut to five lines, with the remainder set outside the panel
+  // in italic. The panel is a spanner that cannot break, so it had to fit one
+  // column, and the cut was how it was made to fit. What it produced on the
+  // page was a sentence stopping mid-clause with no full stop, the rest of it
+  // resuming below the box — or in the next column, or overleaf — still in the
+  // standfirst italic and reading as a fragment of something else. Six
+  // separate notes in one review, all of them this.
+  //
+  // The panel can break now, so nothing has to be cut. What that costs is
+  // checked in the render, not here: a spanning region that fragments is the
+  // thing Paged.js is worst at, and the page count is the proof.
   return {
-    box: heading.html + mark + '<p class="standfirst">' + split[0] + '</p>',
-    rest: '<p class="standfirst lead-rest">' + split[1] + '</p>',
+    box: heading.html + mark + '<p class="standfirst">' + innerOf(following) + '</p>',
+    rest: '',
     consumed: 2
   }
 }
