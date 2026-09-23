@@ -151,38 +151,25 @@ console.log('  candidates tagged: ' + tagged)
       return boxes
     }
 
-    function worstGap (el, space) {
-      const boxes = wordBoxes(el)
+    function worstGap (el, space, boxes) {
       if (boxes.length < 3) return 0
-      // Column boundaries from the words themselves: a new column starts where
-      // a word sits left of the one before it on the same visual row.
-      // Group by row, then split a row where the gutter interrupts it.
-      const byY = new Map()
-      boxes.forEach(function (b) {
-        if (!byY.has(b.y)) byY.set(b.y, [])
-        byY.get(b.y).push(b)
-      })
-      const lines = []
-      byY.forEach(function (list) {
-        list.sort(function (a, b) { return a.x - b.x })
-        let run = [list[0]]
-        for (let i = 1; i < list.length; i += 1) {
-          // A jump far wider than any word gap is the gutter, not a space.
-          if (list[i].x - list[i - 1].r > space * 8) { lines.push(run); run = [] }
-          run.push(list[i])
-        }
-        if (run.length) lines.push(run)
-      })
-      if (lines.length < 2) return 0
-      // The visually last line of each column is allowed to be short.
-      lines.sort(function (a, b) { return a[0].y - b[0].y })
+      // Consecutive in document order and on the same row: that pair has a
+      // real space between them. The last word of column one and the first of
+      // column two are consecutive in document order too, but they sit at
+      // different heights, so they never pair — which is how the gutter stops
+      // being mistaken for a word gap without having to guess its width.
+      //
+      // Grouping by row and sorting by x does the opposite: it puts the two
+      // columns on one line and reports the gutter as a five-space gap. That
+      // was the first version of this, and the fault it invented sent me
+      // looking at a paragraph that was fine.
+      const lastY = boxes[boxes.length - 1].y
       let worst = 0
-      for (let i = 0; i < lines.length - 1; i += 1) {
-        const ws = lines[i]
-        for (let j = 0; j < ws.length - 1; j += 1) {
-          const gap = (ws[j + 1].x - ws[j].r) / space
-          if (gap > worst) worst = gap
-        }
+      for (let i = 0; i < boxes.length - 1; i += 1) {
+        if (boxes[i].y !== boxes[i + 1].y) continue
+        if (boxes[i].y === lastY) continue      // the ragged last line may be short
+        const gap = (boxes[i + 1].x - boxes[i].r) / space
+        if (gap > worst) worst = gap
       }
       return worst
     }
@@ -205,11 +192,17 @@ console.log('  candidates tagged: ' + tagged)
       if (ref) { if (byRef.has(ref)) { split += 1; return } byRef.set(ref, id) }
       const rects = lineRects(el)
       if (rects.length < 2) return
-      const width = el.getBoundingClientRect().width
+      // The measure is the column, not the element. In a two-column flow the
+      // element's own width is both columns and the gutter, and testing a last
+      // line against that made nine paragraphs in ten look like a runt.
+      let width = 0
+      for (let i = 0; i < rects.length; i += 1) {
+        if (rects[i].width > width) width = rects[i].width
+      }
       if (!width) return
       const isRunt = rects[rects.length - 1].width <= width * tail
       const space = spaceWidth(el)
-      const worstBefore = worstGap(el, space)
+      const worstBefore = worstGap(el, space, wordBoxes(el))
       const isLoose = worstBefore > input.maxGap
       if (!isRunt && !isLoose) return
       if (isRunt) runts += 1
@@ -224,7 +217,9 @@ console.log('  candidates tagged: ' + tagged)
         // worse — tracking can move a word down as easily as up.
         if (now.length < before) { fixed[id] = steps[i]; break }
         if (isLoose && now.length === before &&
-            worstGap(el, space) < worstBefore - 0.15) { fixed[id] = steps[i]; break }
+            worstGap(el, space, wordBoxes(el)) < worstBefore - 0.15) {
+          fixed[id] = steps[i]; break
+        }
       }
       // Whatever happened, put the element back: this pass reports, the file
       // is edited afterwards. A style left behind here would be measured by
