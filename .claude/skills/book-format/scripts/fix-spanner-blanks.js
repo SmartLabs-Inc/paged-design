@@ -30,14 +30,24 @@
 // note saying a spanner which always starts a page "is never pushed and never
 // trips the loop" is simply wrong.
 //
-// So the mark goes on the entry that owns the spanner — an ordinary in-column
-// box, where `break-before: page` behaves. The entry starts a fresh page, the
-// spanner below it finds the room it could not find before, and there is
-// nothing to re-lay-out. It costs no pages: the blank sheet it replaces was
-// already being spent. Measured after the change: 713 pages, the count the
-// untouched book gives.
+// So the mark goes on an ordinary in-column block, where `break-before: page`
+// behaves. That block starts a fresh page, the spanner below it finds the room
+// it could not find before, and there is nothing to re-lay-out. It costs no
+// pages: the blank sheet it replaces was already being spent.
 //
-// Only the entries that actually fault are marked.
+// Which block matters. The first version marked the entry that owns the
+// spanner — the first block of the duplicated run — and that works, but it
+// moves everything between the entry name and the table. Page 80 came out
+// ending halfway down both columns, because entry 34's name and its whole
+// opening paragraph went to the next page when only Table 3 needed to. The
+// mark belongs on the LAST in-column block before the spanner instead: the
+// least text that still gives the spanner a page with room in it.
+//
+// That is also why paragraphs are numbered here and not only the boxes. With
+// only the boxes marked, the nearest thing above a table was the entry lead,
+// which is exactly the too-early cut.
+//
+// Only the spanners that actually fault are marked.
 'use strict'
 
 const fs = require('fs')
@@ -73,13 +83,19 @@ const indexFile = path.join(path.resolve(args.content), 'index.html')
 // paginated page can be traced back to the source. Paged.js copies the
 // attribute onto the fragment along with the classes.
 const SPANNERS = /<div\b([^>]*\bclass="[^"]*\b(?:table-figure|figure|entry-lead|keep-lead)\b[^"]*"[^>]*)>/g
+const PARA = /<(p|li)\b([^>]*)>/g
 
 function markSpanners (html) {
   let counter = 0
-  return html.replace(SPANNERS, function (all, attrs) {
+  html = html.replace(SPANNERS, function (all, attrs) {
     if (/\bdata-span=/.test(attrs)) return all
     counter += 1
     return '<div' + attrs + ' data-span="' + counter + '">'
+  })
+  return html.replace(PARA, function (all, name, attrs) {
+    if (/\bdata-span=/.test(attrs)) return all
+    counter += 1
+    return '<' + name + attrs + ' data-span="' + counter + '">'
   })
 }
 
@@ -88,11 +104,14 @@ function unmarkSpanners (html) {
 }
 
 function setPush (html, mark, on) {
-  const pattern = new RegExp('<div([^>]*\\bdata-span="' + mark + '"[^>]*)>')
-  return html.replace(pattern, function (all, attrs) {
+  const pattern = new RegExp('<(div|p|li)([^>]*\\bdata-span="' + mark + '"[^>]*)>')
+  return html.replace(pattern, function (all, name, attrs) {
     const cleaned = attrs.replace(/\s*\bpush-page\b/g, '')
-    if (!on) return '<div' + cleaned + '>'
-    return '<div' + cleaned.replace(/class="/, 'class="push-page ') + '>'
+    if (!on) return '<' + name + cleaned.replace(/\s*class="\s*"/, '') + '>'
+    if (/\bclass="/.test(cleaned)) {
+      return '<' + name + cleaned.replace(/class="/, 'class="push-page ') + '>'
+    }
+    return '<' + name + cleaned + ' class="push-page">'
   })
 }
 
@@ -124,18 +143,19 @@ function findBlanks () {
     if (next) {
       const area = next.querySelector('.pagedjs_page_content')
       const all = area ? area.querySelectorAll('[data-span]') : []
-      // The first spanner on the page is the cause; the first marked block
-      // above it is the start of the duplicated run and is what may be marked,
-      // because it sits in a column.
+      // The first spanner on the page is the cause. The block to mark is the
+      // LAST one in a column above it — the least text that still hands the
+      // spanner a page with room. Marking the first one instead empties half
+      // the page before it.
       for (let i = 0; i < all.length; i += 1) {
-        if (window.getComputedStyle(all[i]).columnSpan !== 'all') {
-          if (!mark) {
-            mark = all[i].getAttribute('data-span')
-            what = (all[i].textContent || '').replace(/\s+/g, ' ').trim().slice(0, 50)
-          }
-          continue
-        }
-        break
+        const el = all[i]
+        if (el.parentElement.closest('[data-span]')) continue
+        const r = el.getBoundingClientRect()
+        if (r.height < 2 || r.width < 1) continue
+        if (window.getComputedStyle(el).columnSpan === 'all') break
+        if (el.classList.contains('push-page')) continue
+        mark = el.getAttribute('data-span')
+        what = (el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 50)
       }
     }
     out.push({ page: index + 1, mark: mark, what: what })
