@@ -3154,3 +3154,27 @@ p, li, dd, .lead-rest, .standfirst {
     // generated space would survive the preview and vanish from the PDF.
     margin-right: 0.5em;
 }
+
+// ---------------------------------------------------------------------------
+// Section title held to its panel
+// ---------------------------------------------------------------------------
+// The group title and the shaded opener panel below it are two sibling boxes,
+// each unbreakable on its own and nothing holding them together — so a page
+// break fell between them and left the title alone at the foot of a page.
+//
+// Neither keep-with-next spelling reaches this pair. Paged.js drops
+// `break-after: avoid` at a page break, and the `break-before: avoid` it does
+// normally honour has no effect on a `column-span: all` element, because a
+// spanner is fragmented on Paged.js's own terms rather than the stylesheet's.
+// One unbreakable box is the only thing that holds, which is the skill's own
+// rule: wrap the group rather than chaining the keep.
+//
+// Spanning here makes the children's own `column-span: all` inert — they are
+// no longer in a multicol context — and they fill the wrapper's width instead,
+// which is the same width. Together they run to about 300px of an 815px
+// column, well short of the height at which an unbreakable box stalls
+// pagination.
+.section-group {
+    column-span: all;
+    break-inside: avoid;
+}

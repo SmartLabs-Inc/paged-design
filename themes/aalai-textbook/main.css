@@ -7269,3 +7269,7 @@ p, li, dd, .lead-rest, .standfirst {
   font-weight: 700;
   color: #0D2035;
   margin-right: 0.5em; }
+
+.section-group {
+  column-span: all;
+  break-inside: avoid; }
