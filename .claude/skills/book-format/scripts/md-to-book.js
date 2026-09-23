@@ -127,13 +127,15 @@ function renderInline (text, context) {
 
   // Inline links: [text](url "title")
   //
-  // The label may contain escaped brackets. `[^\]]*` stops at the first `]`,
+  // The label may contain brackets — escaped, as Markdown writes them, or
+  // literal, as this manuscript's tables carry them. `[^\]]*` stops at the
+  // first `]`,
   // so a term like `[Ac-SDKP (Goralatide / Tbeta4\[1-4\])](#...)` did not
   // match at all and printed as raw Markdown — two index entries and one entry
   // heading in this book, found by reading the rendered index rather than by
   // anything in a log.
   result = result.replace(
-    /\[((?:\\[\s\S]|[^\]\\])*)\]\(([^)\s]+)(?:\s+["\u201c]([^"\u201d]*)["\u201d])?\)/g,
+    /\[((?:\\[\s\S]|\[[^\[\]]*\]|[^\]\\])*)\]\(([^)\s]+)(?:\s+["\u201c]([^"\u201d]*)["\u201d])?\)/g,
     function (match, label, href, title) {
       return '<a href="' + href + '"' +
         (title ? ' title="' + title + '"' : '') + '>' + unescapeBrackets(label) + '</a>'
