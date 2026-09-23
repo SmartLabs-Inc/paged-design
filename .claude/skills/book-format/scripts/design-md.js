@@ -560,15 +560,14 @@ function holdLabel (node, following) {
   if (!following || following.name !== 'p' || /<img\b/.test(following.html)) {
     return { html: label, consumed: 1 }
   }
-  const inner = innerOf(following)
-  const split = splitParagraph(inner, KEEP_BUDGET)
-  if (!split) {
-    return { html: '<div class="keep-label">' + label + '<p>' + inner + '</p></div>', consumed: 2 }
-  }
+  // Whole, inside the keep — the same decision as the sub-section panel above,
+  // for the same reason and at the level below it. This used to cut the
+  // paragraph at a character budget and set the remainder loose after the box,
+  // twelve hundred times, and a whole pass existed downstream to shuffle each
+  // of those cuts onto a line ending so the seam did not show. The box can
+  // break now, so there is no seam to hide.
   return {
-    html: '<div class="keep-label">' + label +
-      '<p class="lead-head">' + split[0] + '</p></div>\n' +
-      '<p class="lead-rest">' + split[1] + '</p>',
+    html: '<div class="keep-label">' + label + '<p>' + innerOf(following) + '</p></div>',
     consumed: 2
   }
 }
