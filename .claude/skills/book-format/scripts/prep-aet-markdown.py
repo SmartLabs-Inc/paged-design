@@ -126,6 +126,37 @@ def link(match):
     return '<sup class="cite">' + ','.join(parts) + '</sup>'
 
 
+# ---------------------------------------------------------------------------
+# A sentence that ends in a citation still ends in a full stop
+# ---------------------------------------------------------------------------
+# The manuscript is inconsistent about this and its own majority is the rule:
+# 1,461 citation runs are already preceded by a stop. The rest end the sentence
+# on the superscript, which prints as text simply stopping.
+#
+# Only the unambiguous case is closed: a run that ends its line or its table
+# cell, with a word character in front of it. A paragraph that ends on a
+# citation and no punctuation is missing punctuation, whatever else is true.
+#
+# The 534 runs that sit mid-text with a capital after them are left alone. Most
+# are sentence ends too, but a proper noun continuing a sentence looks
+# identical from here, and inventing a full stop in the middle of an author's
+# sentence is worse than leaving one off the end.
+CITE_RUN = r'(?:\[\[\d+\]\]\(#[^)]+\))+'
+closed = 0
+
+
+def close_sentence(match):
+    global closed
+    closed += 1
+    return match.group(1) + '.' + match.group(2)
+
+
+body, n1 = re.subn(r'([A-Za-z0-9\)\]])(' + CITE_RUN + r')(?=[ \t]*\n)',
+                   close_sentence, body)
+body, n2 = re.subn(r'([A-Za-z0-9\)\]])(' + CITE_RUN + r')(?=[ \t]*\|)',
+                   close_sentence, body)
+print('  sentences closed before a citation: %d' % (n1 + n2))
+
 body = re.sub(r'(?:\[\[\d+\]\]\(#[^)]+\))+', link, body)
 
 leftover = len(re.findall(r'\[\[\d+\]\]', body))
