@@ -2818,6 +2818,22 @@ h4 + .standfirst,
     break-before: avoid;
 }
 
+// A section title and the panel under it are two spanning divs with the
+// manuscript's anchors between them, so their margins never collapse: the
+// title's own bottom margin, the opener's, the panel's top margin and the
+// panel's padding all land end to end. Four gaps where the design asks for
+// one, and reported as doubled spacing under every title.
+//
+// The space belongs to the panel's top margin. Everything above it gives up
+// its own.
+.keep-lead.section-opener {
+    margin-bottom: 0;
+}
+
+.keep-lead.section-opener > .section-head {
+    margin-bottom: 0;
+}
+
 .keep-lead {
     column-span: all;
     // Exactly one line above and one below. At 1.6 above the panel floated

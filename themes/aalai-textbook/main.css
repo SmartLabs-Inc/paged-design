@@ -7145,6 +7145,12 @@ h4 + .standfirst,
 .entry-lead > p {
   break-before: avoid; }
 
+.keep-lead.section-opener {
+  margin-bottom: 0; }
+
+.keep-lead.section-opener > .section-head {
+  margin-bottom: 0; }
+
 .keep-lead {
   column-span: all;
   margin: 17px 0 17px 0; }
