@@ -7138,6 +7138,13 @@ h4 + .standfirst,
   margin-top: 0;
   margin-bottom: 8.75px; }
 
+.keep-lead > .standfirst,
+.keep-lead > p {
+  break-before: avoid; }
+
+.entry-lead > p {
+  break-before: avoid; }
+
 .keep-lead {
   column-span: all;
   margin: 17.5px 0 17.5px 0; }

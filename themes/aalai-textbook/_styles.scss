@@ -2798,6 +2798,26 @@ h4 + .standfirst,
     margin-bottom: ($baseline-grid-unit / 2);
 }
 
+// A panel title never sits alone at the foot of a column or a page.
+//
+// The panel can fragment now, which is what lets its paragraph stay whole and
+// inside the box; the cost is that the fragment boundary can fall directly
+// under the title. `break-after: avoid` on the title would be the obvious way
+// to say so and does nothing — Paged.js takes every break-after out of the
+// stylesheet. `break-before: avoid` on the element that follows is honoured,
+// and is the same instruction read from the other end.
+.keep-lead > .standfirst,
+.keep-lead > p {
+    break-before: avoid;
+}
+
+// The same, one level down: an entry name and the line under it. `.entry-lead`
+// already holds the pair in a box that cannot break, so this is belt and
+// braces for the case where that box is itself too tall to place.
+.entry-lead > p {
+    break-before: avoid;
+}
+
 .keep-lead {
     column-span: all;
     // Exactly one line above and one below. At 1.6 above the panel floated
