@@ -2647,7 +2647,11 @@ h4 + .standfirst,
 // each index page was being asked to even itself out against content that had
 // not arrived yet. The first page held sixteen entries where the pages after
 // it hold forty, and both its columns stopped half way down.
-.index.index > div > div {
+// Three classes, not two. `.chapter.chapter > div > div` carries the balance
+// and is two classes and two elements; written with two this rule tied with it
+// and lost on source order, sat in the compiled stylesheet looking correct,
+// and changed nothing.
+.index.index.index > div > div {
     column-fill: auto;
 }
 
