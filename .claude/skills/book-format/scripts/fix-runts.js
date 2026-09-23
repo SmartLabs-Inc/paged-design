@@ -43,9 +43,8 @@ if (args.help || !args.content) {
     '                   Default "-0.006,-0.01".',
     '  --tail <n>       Treat a last line under this fraction of the measure',
     '                   as a runt. Default 0.30.',
-    '  --loose <n>      Treat any other line whose natural width is under this',
-    '                   fraction of the measure as loose — justification has to',
-    '                   stretch it to fit. Default 0.86.',
+    '  --max-gap <n>    The widest word space a justified line may carry, in',
+    '                   multiples of the space in the font. Default 3.',
     '  --timeout <ms>   Pagination timeout. Default 1800000.',
     '',
     'Tracks individual paragraphs a fraction tighter to pull a one- or two-word',
@@ -60,7 +59,7 @@ const indexFile = path.join(dir, 'index.html')
 const steps = String(args.steps || '-0.006,-0.01').split(',')
   .map(function (s) { return Number(s.trim()) }).filter(function (n) { return n < 0 })
 const tail = Number(args.tail || 0.30)
-const loose = Number(args.loose || 0.86)
+const maxGap = Number(args['max-gap'] || 3)
 
 // Tag the candidates before pagination so the measured element can be found
 // again in the file afterwards. Body paragraphs only: an entry name, a running
@@ -102,29 +101,92 @@ console.log('  candidates tagged: ' + tagged)
       return Array.from(range.getClientRects())
         .filter(function (r) { return r.width > 0.5 && r.height > 0.5 })
     }
-    // How short the worst line in a paragraph really is, ignoring the last one.
+    // The widest space between two words on any line but the last, measured
+    // in multiples of the font's own space.
     //
-    // Measured unjustified. Justified text fills the measure by definition, so
-    // every line rect is the full width and a rect tells you nothing about how
-    // hard the browser had to stretch it. Line breaking is identical either
-    // way — only the distribution of space changes — so ranging the paragraph
-    // left for the length of the measurement gives the true content width of
-    // each line, and the shortest one is the line justification has to work
-    // hardest on.
-    function worstLine (el, rects) {
-      const width = el.getBoundingClientRect().width
-      if (!width || rects.length < 2) return 1
-      const align = el.style.textAlign
-      el.style.textAlign = 'left'
-      const natural = lineRects(el)
-      el.style.textAlign = align
-      let worst = 1
-      for (let i = 0; i < natural.length - 1; i += 1) {
-        const ratio = natural[i].width / width
-        if (ratio < worst) worst = ratio
+    // Justification has no ceiling in CSS: `text-align: justify` shares out
+    // whatever slack a line has across its gaps however wide that makes them.
+    // So the limit cannot be a stylesheet rule; it has to be measured per
+    // paragraph, which is what this is.
+    //
+    // Measured with Ranges over the text nodes rather than by wrapping the
+    // words in spans — the paragraph carries `sup`, `em` and `a`, and
+    // rewriting its innerHTML to wrap words corrupts them.
+    //
+    // Lines are grouped by top AND by column. A paragraph flowing across a
+    // two-column page is one element whose rects land in both columns, and
+    // grouping on vertical position alone merges the two — which reports the
+    // gutter as a five-space word gap and sends you looking for a fault that
+    // is not there.
+    function spaceWidth (el) {
+      const probe = document.createElement('span')
+      probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre'
+      probe.textContent = '\u00a0'
+      el.appendChild(probe)
+      const w = probe.getBoundingClientRect().width
+      probe.remove()
+      return w || 3
+    }
+
+    function wordBoxes (el) {
+      const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null)
+      const boxes = []
+      const range = document.createRange()
+      let node
+      while ((node = walk.nextNode())) {
+        const text = node.nodeValue
+        let i = 0
+        while (i < text.length) {
+          while (i < text.length && /\s/.test(text[i])) i += 1
+          if (i >= text.length) break
+          let j = i
+          while (j < text.length && !/\s/.test(text[j])) j += 1
+          range.setStart(node, i)
+          range.setEnd(node, j)
+          const r = range.getBoundingClientRect()
+          if (r.width > 0) boxes.push({ x: r.left, r: r.right, y: Math.round(r.top) })
+          i = j
+        }
+      }
+      return boxes
+    }
+
+    function worstGap (el, space) {
+      const boxes = wordBoxes(el)
+      if (boxes.length < 3) return 0
+      // Column boundaries from the words themselves: a new column starts where
+      // a word sits left of the one before it on the same visual row.
+      // Group by row, then split a row where the gutter interrupts it.
+      const byY = new Map()
+      boxes.forEach(function (b) {
+        if (!byY.has(b.y)) byY.set(b.y, [])
+        byY.get(b.y).push(b)
+      })
+      const lines = []
+      byY.forEach(function (list) {
+        list.sort(function (a, b) { return a.x - b.x })
+        let run = [list[0]]
+        for (let i = 1; i < list.length; i += 1) {
+          // A jump far wider than any word gap is the gutter, not a space.
+          if (list[i].x - list[i - 1].r > space * 8) { lines.push(run); run = [] }
+          run.push(list[i])
+        }
+        if (run.length) lines.push(run)
+      })
+      if (lines.length < 2) return 0
+      // The visually last line of each column is allowed to be short.
+      lines.sort(function (a, b) { return a[0].y - b[0].y })
+      let worst = 0
+      for (let i = 0; i < lines.length - 1; i += 1) {
+        const ws = lines[i]
+        for (let j = 0; j < ws.length - 1; j += 1) {
+          const gap = (ws[j + 1].x - ws[j].r) / space
+          if (gap > worst) worst = gap
+        }
       }
       return worst
     }
+
     // Paged.js clones classes and attributes onto every fragment of a split
     // element, and the fragments share a data-ref. A paragraph broken over a
     // column is two boxes; measuring it as two paragraphs invents runts that
@@ -146,8 +208,9 @@ console.log('  candidates tagged: ' + tagged)
       const width = el.getBoundingClientRect().width
       if (!width) return
       const isRunt = rects[rects.length - 1].width <= width * tail
-      const worstBefore = worstLine(el, rects)
-      const isLoose = worstBefore < input.loose
+      const space = spaceWidth(el)
+      const worstBefore = worstGap(el, space)
+      const isLoose = worstBefore > input.maxGap
       if (!isRunt && !isLoose) return
       if (isRunt) runts += 1
       if (isLoose) looseCount += 1
@@ -161,7 +224,7 @@ console.log('  candidates tagged: ' + tagged)
         // worse — tracking can move a word down as easily as up.
         if (now.length < before) { fixed[id] = steps[i]; break }
         if (isLoose && now.length === before &&
-            worstLine(el, now) > worstBefore + 0.02) { fixed[id] = steps[i]; break }
+            worstGap(el, space) < worstBefore - 0.15) { fixed[id] = steps[i]; break }
       }
       // Whatever happened, put the element back: this pass reports, the file
       // is edited afterwards. A style left behind here would be measured by
@@ -169,7 +232,7 @@ console.log('  candidates tagged: ' + tagged)
       el.style.letterSpacing = original
     })
     return { runts: runts, loose: looseCount, split: split, fixed: fixed }
-  }, { steps: steps, tail: tail, loose: loose })
+  }, { steps: steps, tail: tail, maxGap: maxGap })
 
   await browser.close()
   await server.close()
@@ -196,7 +259,7 @@ console.log('  candidates tagged: ' + tagged)
   console.log('Runts in ' + path.relative(process.cwd(), indexFile))
   console.log('  paragraphs measured: ' + (tagged - result.split))
   console.log('  ending in a runt: ' + result.runts)
-  console.log('  carrying a loose line: ' + result.loose)
+  console.log('  with a word gap over ' + maxGap + ' spaces: ' + result.loose)
   console.log('  pulled back: ' + written +
     (written ? ' (' + steps.map(function (s) {
       return s + 'em: ' + (byStep[s] || 0)
