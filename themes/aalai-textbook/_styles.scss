@@ -571,8 +571,15 @@ a.cite {
 // well in a 64mm column, and that is how a reference sets a glossary anyway.
 // A genuinely wide table is the case to watch: give it its own page with
 // `break-before: page` rather than letting it span, because a spanner that
-// always starts a page is never pushed and never trips the loop. That is why
-// `.section-head` and `.part-title` can span safely.
+// always starts a page is never pushed and never trips the loop.
+//
+// That last sentence is wrong, and it was believed twice. `break-before: page`
+// on a `column-span: all` element does not stop it being pushed — it stalls
+// pagination outright. The spanner moves to a fresh page, meets the rule
+// again, and moves again, without end; Paged.js writes a short book rather
+// than erroring. Marking three figures this way took 713 pages down to 82.
+// Nothing that spans the columns may carry `push-page`. To give a spanner
+// room, push the ordinary in-column block above it instead.
 
 .table-figure {
     column-span: all;

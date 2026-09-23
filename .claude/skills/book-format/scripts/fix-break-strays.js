@@ -20,10 +20,28 @@
 //                     is simply in the wrong place.
 //
 // The only thing Paged.js does honour is `break-before: page`, which it
-// re-implements rather than drops. So the repair is the same in both cases:
-// mark the offending element `push-page` and let it start the next page with
-// the material it belongs to. A tail moves whole and sets as a paragraph; a
-// panel arrives at the head of a page with its text under it.
+// re-implements rather than drops. So the repair is to mark an element
+// `push-page` and let it start the next page with the material it belongs to.
+//
+// --- What may not be pushed, which cost a whole build to learn.
+//
+// `break-before: page` on a `column-span: all` element does not push it: it
+// stalls pagination outright. The spanner is moved to a fresh page, meets the
+// same rule there, and is moved again, for ever. Paged.js does not error — it
+// writes a short book. Three marks on three figures took 713 pages down to 82,
+// and the theme's own note claims the opposite, that a spanner which always
+// starts a page "is never pushed and never trips the loop". It is not true.
+//
+// That rules out pushing the stranded openers directly, because `.keep-lead`
+// — every shaded panel and every section title — is `column-span: all`. So for
+// an opener the mark goes on the last ordinary in-column block above it
+// instead: that block moves to the next page, the spanner follows it there,
+// and the text it introduces is under it. Nothing spanning is ever marked, and
+// the script checks the computed value rather than the class list, because a
+// spanner is only knowable from the cascade.
+//
+// A tail is an ordinary paragraph, so it is marked directly. It moves whole
+// and sets as a paragraph instead of a line stretched across the page.
 //
 // Every fault found in a round is marked before the next pagination, rather
 // than one per round. Pushing one element moves everything after it, so a
@@ -152,15 +170,29 @@ function findStrays (tailLines) {
     // not this fault — it is a box too tall for the space, and pushing it
     // would only move the split.
     if (last !== first &&
-        /\b(entry-lead|keep-lead|section-group)\b/.test(last.className) &&
-        !last.hasAttribute('data-split-from') && !last.hasAttribute('data-split-to') &&
-        !last.classList.contains('push-page')) {
-      out.push({
-        kind: 'opener',
-        id: last.getAttribute('data-stray'),
-        page: index + 1,
-        text: (last.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 55)
-      })
+        /\b(entry-lead|keep-lead)\b/.test(last.className) &&
+        !last.hasAttribute('data-split-from') && !last.hasAttribute('data-split-to')) {
+      // The mark cannot go on the opener when the opener spans the columns —
+      // that stalls pagination rather than pushing it. Walk back to the last
+      // block on the page that sits in a column and mark that one; the opener
+      // travels with it.
+      let blame = null
+      for (let i = blocks.length - 1; i >= 0; i -= 1) {
+        const el = blocks[i]
+        if (window.getComputedStyle(el).columnSpan === 'all') continue
+        if (el.hasAttribute('data-split-to')) continue
+        blame = el
+        break
+      }
+      if (window.getComputedStyle(last).columnSpan !== 'all') blame = last
+      if (blame && !blame.classList.contains('push-page')) {
+        out.push({
+          kind: 'opener',
+          id: blame.getAttribute('data-stray'),
+          page: index + 1,
+          text: (last.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 55)
+        })
+      }
     }
   })
   return out

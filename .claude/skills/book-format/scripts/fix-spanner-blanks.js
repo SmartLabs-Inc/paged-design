@@ -21,16 +21,23 @@
 // Page 82's spanner is the cause every time: Table 3 there, Figure 2 at p335,
 // Figure 6 at p571.
 //
-// The fix is to stop the spanner being pushed at all. `break-before: page` is
-// one of the handful of values Paged.js re-implements rather than drops (see
-// the note on `.push-column` in the theme), so the `.push-page` class makes
-// the spanner start its own page, the text before it stays put, and there is
-// nothing to re-lay-out. It costs no pages: the blank sheet it replaces was
-// already being spent.
+// The fix is to give the spanner room, so it is never pushed. What it may NOT
+// be is marked `break-before: page` itself. That does not push a
+// `column-span: all` element — it stalls pagination outright: the spanner is
+// moved to a fresh page, meets the same rule there, and is moved again, for
+// ever. Paged.js does not error, it writes a short book. Marking these same
+// three figures and tables took 713 pages down to 82, twice, and the theme's
+// note saying a spanner which always starts a page "is never pushed and never
+// trips the loop" is simply wrong.
 //
-// Only the spanners that actually fault are marked. Putting `break-before:
-// page` on all thirty-nine of them would open a new page for every table and
-// figure in the book and waste most of a signature.
+// So the mark goes on the entry that owns the spanner — an ordinary in-column
+// box, where `break-before: page` behaves. The entry starts a fresh page, the
+// spanner below it finds the room it could not find before, and there is
+// nothing to re-lay-out. It costs no pages: the blank sheet it replaces was
+// already being spent. Measured after the change: 713 pages, the count the
+// untouched book gives.
+//
+// Only the entries that actually fault are marked.
 'use strict'
 
 const fs = require('fs')
@@ -65,7 +72,7 @@ const indexFile = path.join(path.resolve(args.content), 'index.html')
 // Number every element that could span the columns, so one found on a
 // paginated page can be traced back to the source. Paged.js copies the
 // attribute onto the fragment along with the classes.
-const SPANNERS = /<div\b([^>]*\bclass="[^"]*\b(?:table-figure|figure)\b[^"]*"[^>]*)>/g
+const SPANNERS = /<div\b([^>]*\bclass="[^"]*\b(?:table-figure|figure|entry-lead|keep-lead)\b[^"]*"[^>]*)>/g
 
 function markSpanners (html) {
   let counter = 0
@@ -95,8 +102,8 @@ function setPush (html, mark, on) {
 // guessing from the text.
 //
 // The spanner to blame is the first one on the page *after* the blank — that
-// is the box that would not fit, and everything above it on that page is the
-// duplicate.
+// is the box that would not fit. Everything above it on that page is the
+// duplicate, and the first block of that duplicate is what gets the mark.
 function findBlanks () {
   const pages = Array.prototype.slice.call(document.querySelectorAll('.pagedjs_page'))
   const out = []
@@ -117,10 +124,17 @@ function findBlanks () {
     if (next) {
       const area = next.querySelector('.pagedjs_page_content')
       const all = area ? area.querySelectorAll('[data-span]') : []
+      // The first spanner on the page is the cause; the first marked block
+      // above it is the start of the duplicated run and is what may be marked,
+      // because it sits in a column.
       for (let i = 0; i < all.length; i += 1) {
-        if (window.getComputedStyle(all[i]).columnSpan !== 'all') continue
-        mark = all[i].getAttribute('data-span')
-        what = (all[i].textContent || '').replace(/\s+/g, ' ').trim().slice(0, 50)
+        if (window.getComputedStyle(all[i]).columnSpan !== 'all') {
+          if (!mark) {
+            mark = all[i].getAttribute('data-span')
+            what = (all[i].textContent || '').replace(/\s+/g, ' ').trim().slice(0, 50)
+          }
+          continue
+        }
         break
       }
     }
