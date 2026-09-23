@@ -329,6 +329,52 @@ let tocLists = 0
   }
 }
 
+// A contents link whose target is not in the document prints `0` where its
+// page number should be. `target-counter` has nothing to count to and CSS has
+// no way to say so, and nothing else in the book looks wrong — the line is
+// set, the leader is drawn, and the number is a plausible-looking 0.
+//
+// The AET contents pointed "Index" at `#book-index` while the index component
+// carried `id="index"`, because that link came from the manuscript's own
+// contents rather than from this build. It printed a 0 in every proof and was
+// found by reading the rendered page, not by any check.
+//
+// Where the link text names a section that does exist, the link is repointed
+// at it. Where it does not, it is named in the log, because a silent 0 on the
+// contents page of a printed book is the kind of thing a reader notices first.
+let repointed = 0
+const dangling = []
+{
+  const contents = findComponent('Contents')
+  if (contents) {
+    const ids = {}
+    let found
+    const idPattern = /\sid="([^"]+)"/g
+    while ((found = idPattern.exec(html)) !== null) ids[found[1]] = true
+    const block = html.slice(contents.start, contents.end)
+    const fixed = block.replace(/<a href="#([^"]+)">([^<]*)<\/a>/g,
+      function (all, target, text) {
+        if (ids[target]) return all
+        const slug = text.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '')
+        if (slug && ids[slug]) {
+          repointed += 1
+          return '<a href="#' + slug + '">' + text + '</a>'
+        }
+        dangling.push(text)
+        return all
+      })
+    html = html.slice(0, contents.start) + fixed + html.slice(contents.end)
+  }
+}
+if (repointed) {
+  done.push(repointed + ' contents link' + (repointed === 1 ? '' : 's') +
+    ' repointed at the section named')
+}
+if (dangling.length) {
+  done.push('contents links with no target, these print 0: ' + dangling.join(', '))
+}
+
 // The copyright page is the publisher's, not the author's
 // ---------------------------------------------------------------------------
 // Imprint, edition, ISBN, the rights reservation and the text-and-data-mining
