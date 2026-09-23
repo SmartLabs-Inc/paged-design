@@ -65,7 +65,12 @@ if (html.indexOf(SOFT) !== -1) {
 
 // Elements whose text is never broken.
 const CLOSED = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'code', 'pre', 'title', 'script', 'style']
-const CLOSED_CLASSES = /\b(?:reference|run-head|topic-head|flag-code|label|chapter-eyebrow|part-title|part-name|index-letter|standfirst|figure-slot-file|part-figure-credit)\b/
+// `standfirst` used to be on this list. It was written for a short lead-in
+// line, where a hyphen at the end of a two-line opening looks like an
+// accident. The class is now carried by every shaded sub-section panel in the
+// book — twelve lines of it at the full measure — and those had no break
+// points at all, which is where the widest word gaps in the book are.
+const CLOSED_CLASSES = /\b(?:reference|run-head|topic-head|flag-code|label|chapter-eyebrow|part-title|part-name|index-letter|figure-slot-file|part-figure-credit)\b/
 
 let hyphenated = 0
 
