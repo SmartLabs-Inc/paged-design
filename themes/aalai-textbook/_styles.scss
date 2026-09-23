@@ -2392,16 +2392,8 @@ h4 + .standfirst,
 // of what it introduces. A heading never sits at the foot of a column or a
 // page; since `break-after: avoid` is taken out of the stylesheet by Paged.js,
 // the only way to say so is a box that cannot break.
-// A label is held to the paragraph it introduces from below, not by a box that
-// cannot break. The box was what forced the paragraph to be cut to fit, and
-// twelve hundred of those cuts then needed a pass of their own to be shuffled
-// onto line endings so the seam did not show.
 .keep-label {
-    break-inside: auto;
-}
-
-.keep-label > p {
-    break-before: avoid;
+    break-inside: avoid;
 }
 
 .entry > .keep-label > *,

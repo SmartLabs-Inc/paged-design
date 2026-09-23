@@ -6959,10 +6959,7 @@ h4 + .standfirst,
   break-inside: auto; }
 
 .keep-label {
-  break-inside: auto; }
-
-.keep-label > p {
-  break-before: avoid; }
+  break-inside: avoid; }
 
 .entry > .keep-label > *,
 .keep-label > * {
