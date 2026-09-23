@@ -5462,12 +5462,12 @@ h3::after {
   margin-top: 8.75px; }
 
 h4 {
-  font-size: 10.5px;
-  margin: 21px 0 5.83333px 0; }
+  font-size: 13px;
+  margin: 17.5px 0 5.83333px 0; }
 
 .entry {
   counter-increment: entry;
-  margin: 0 0 17.5px 0; }
+  margin: 0 0 8.75px 0; }
 
 .entry > * {
   margin-top: 0;
@@ -7037,9 +7037,14 @@ h4 + .standfirst,
 .index.index li > a[href]::after {
   content: "  " target-counter(attr(href), page);
   font-family: "Source Sans 3", Aptos, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  font-size: 8.5px;
-  color: #137C7A;
+  font-size: inherit;
+  font-weight: 700;
+  color: #0D2035;
   white-space: nowrap; }
+
+.index.index li {
+  line-height: 12.95px;
+  margin: 0 0 2.1px 0; }
 
 .index.index a:not([href])::before,
 .index.index a:not([href])::after {
@@ -7128,9 +7133,14 @@ h4 + .standfirst,
   text-align: center;
   text-indent: 0; }
 
+.keep-lead > h4,
+.keep-lead > .lead-head > h4 {
+  margin-top: 0;
+  margin-bottom: 8.75px; }
+
 .keep-lead {
   column-span: all;
-  margin: 17.5px 0 14px 0; }
+  margin: 17.5px 0 17.5px 0; }
 
 .keep-lead.section-opener {
   break-before: auto; }

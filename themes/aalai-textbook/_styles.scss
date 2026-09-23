@@ -305,8 +305,12 @@ h3::after {
 }
 
 h4 {
-    font-size: 10.5px;
-    margin: ($baseline-grid-unit * 1.2) 0 ($baseline-grid-unit / 3) 0;
+    // Up two points from 10.5px. It is the title of the shaded panel and the
+    // level a reader skimming for structure stops at, and at 10.5 it was
+    // barely above the body.
+    font-size: 13px;
+    // One line above, not one and a fifth.
+    margin: $baseline-grid-unit 0 ($baseline-grid-unit / 3) 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -332,8 +336,11 @@ h4 {
 // that is ending, not the one that is starting.
 .entry {
     counter-increment: entry;
-    // One line between one entry and the next.
-    margin: 0 0 $baseline-grid-unit 0;
+    // One line between one entry and the next — one as the reader counts it,
+    // which is not the same as one as the stylesheet counts it. A full
+    // baseline here plus the half-leading the entry name's own line box
+    // carries reads as two blank lines on the page, and was reported as two.
+    margin: 0 0 ($baseline-grid-unit * 0.5) 0;
 }
 
 // The rule is drawn on the blocks inside the entry, not on the entry itself.
@@ -2555,9 +2562,20 @@ h4 + .standfirst,
 .index.index li > a[href]::after {
     content: "  " target-counter(attr(href), page);
     font-family: $font-text-secondary;
-    font-size: 8.5px;
-    color: $color-teal;
+    // Set at the size of the term it belongs to and bold. The folio is the
+    // thing a reader is actually looking for, and this proof will be read in
+    // black and white, where teal at eight point is a grey smudge.
+    font-size: inherit;
+    font-weight: 700;
+    color: $color-navy;
     white-space: nowrap;
+}
+
+// Single spaced. An index is a column of look-up lines, and the air between
+// them was making eleven pages of what should be nine.
+.index.index li {
+    line-height: $baseline-grid-unit * 0.74;
+    margin: 0 0 ($baseline-grid-unit * 0.12) 0;
 }
 
 // A row anchor is a landing place for a cross-reference, not an entry. It has
@@ -2771,12 +2789,22 @@ h4 + .standfirst,
 // skimming for structure needs the sub-sections to be findable at arm's
 // length: three hundred pages of even grey text with a slightly larger line
 // in it does not stop a thumbing eye. The panel does both.
+// The panel's own padding is the space above its title. The h4's margin lands
+// on top of that and makes two, which is what "only one space above and below"
+// was reported against.
+.keep-lead > h4,
+.keep-lead > .lead-head > h4 {
+    margin-top: 0;
+    margin-bottom: ($baseline-grid-unit / 2);
+}
+
 .keep-lead {
     column-span: all;
-    // One line above it, not one and a half. At 1.6 the panel floated free of
-    // the text it belongs to and read as a gap in the page rather than the
-    // start of something.
-    margin: $baseline-grid-unit 0 ($baseline-grid-unit * 0.8) 0;
+    // Exactly one line above and one below. At 1.6 above the panel floated
+    // free of the text it belongs to and read as a gap in the page rather
+    // than the start of something; at 0.8 below it sat closer to what follows
+    // than to what it introduces.
+    margin: $baseline-grid-unit 0 $baseline-grid-unit 0;
 }
 
 // The panel is for a sub-section — the level a reader skimming for structure
