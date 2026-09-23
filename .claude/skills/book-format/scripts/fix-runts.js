@@ -43,6 +43,9 @@ if (args.help || !args.content) {
     '                   Default "-0.006,-0.01".',
     '  --tail <n>       Treat a last line under this fraction of the measure',
     '                   as a runt. Default 0.30.',
+    '  --loose <n>      Treat any other line whose natural width is under this',
+    '                   fraction of the measure as loose — justification has to',
+    '                   stretch it to fit. Default 0.86.',
     '  --timeout <ms>   Pagination timeout. Default 1800000.',
     '',
     'Tracks individual paragraphs a fraction tighter to pull a one- or two-word',
@@ -57,6 +60,7 @@ const indexFile = path.join(dir, 'index.html')
 const steps = String(args.steps || '-0.006,-0.01').split(',')
   .map(function (s) { return Number(s.trim()) }).filter(function (n) { return n < 0 })
 const tail = Number(args.tail || 0.30)
+const loose = Number(args.loose || 0.86)
 
 // Tag the candidates before pagination so the measured element can be found
 // again in the file afterwards. Body paragraphs only: an entry name, a running
@@ -98,6 +102,29 @@ console.log('  candidates tagged: ' + tagged)
       return Array.from(range.getClientRects())
         .filter(function (r) { return r.width > 0.5 && r.height > 0.5 })
     }
+    // How short the worst line in a paragraph really is, ignoring the last one.
+    //
+    // Measured unjustified. Justified text fills the measure by definition, so
+    // every line rect is the full width and a rect tells you nothing about how
+    // hard the browser had to stretch it. Line breaking is identical either
+    // way — only the distribution of space changes — so ranging the paragraph
+    // left for the length of the measurement gives the true content width of
+    // each line, and the shortest one is the line justification has to work
+    // hardest on.
+    function worstLine (el, rects) {
+      const width = el.getBoundingClientRect().width
+      if (!width || rects.length < 2) return 1
+      const align = el.style.textAlign
+      el.style.textAlign = 'left'
+      const natural = lineRects(el)
+      el.style.textAlign = align
+      let worst = 1
+      for (let i = 0; i < natural.length - 1; i += 1) {
+        const ratio = natural[i].width / width
+        if (ratio < worst) worst = ratio
+      }
+      return worst
+    }
     // Paged.js clones classes and attributes onto every fragment of a split
     // element, and the fragments share a data-ref. A paragraph broken over a
     // column is two boxes; measuring it as two paragraphs invents runts that
@@ -106,6 +133,7 @@ console.log('  candidates tagged: ' + tagged)
     const seen = new Set()
     const fixed = {}
     let runts = 0
+    let looseCount = 0
     let split = 0
     document.querySelectorAll('[data-runt]').forEach(function (el) {
       const id = el.getAttribute('data-runt')
@@ -117,21 +145,31 @@ console.log('  candidates tagged: ' + tagged)
       if (rects.length < 2) return
       const width = el.getBoundingClientRect().width
       if (!width) return
-      if (rects[rects.length - 1].width > width * tail) return
-      runts += 1
+      const isRunt = rects[rects.length - 1].width <= width * tail
+      const worstBefore = worstLine(el, rects)
+      const isLoose = worstBefore < input.loose
+      if (!isRunt && !isLoose) return
+      if (isRunt) runts += 1
+      if (isLoose) looseCount += 1
       const before = rects.length
       const original = el.style.letterSpacing
       for (let i = 0; i < steps.length; i += 1) {
         el.style.letterSpacing = steps[i] + 'em'
-        if (lineRects(el).length < before) { fixed[id] = steps[i]; break }
+        const now = lineRects(el)
+        // A step is kept if it costs the paragraph a line, or if it pulls the
+        // worst line up without costing one. Never if it makes the worst line
+        // worse — tracking can move a word down as easily as up.
+        if (now.length < before) { fixed[id] = steps[i]; break }
+        if (isLoose && now.length === before &&
+            worstLine(el, now) > worstBefore + 0.02) { fixed[id] = steps[i]; break }
       }
       // Whatever happened, put the element back: this pass reports, the file
       // is edited afterwards. A style left behind here would be measured by
       // the next paragraph as if it were the page's own.
       el.style.letterSpacing = original
     })
-    return { runts: runts, split: split, fixed: fixed }
-  }, { steps: steps, tail: tail })
+    return { runts: runts, loose: looseCount, split: split, fixed: fixed }
+  }, { steps: steps, tail: tail, loose: loose })
 
   await browser.close()
   await server.close()
@@ -158,6 +196,7 @@ console.log('  candidates tagged: ' + tagged)
   console.log('Runts in ' + path.relative(process.cwd(), indexFile))
   console.log('  paragraphs measured: ' + (tagged - result.split))
   console.log('  ending in a runt: ' + result.runts)
+  console.log('  carrying a loose line: ' + result.loose)
   console.log('  pulled back: ' + written +
     (written ? ' (' + steps.map(function (s) {
       return s + 'em: ' + (byStep[s] || 0)
