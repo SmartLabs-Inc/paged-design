@@ -2396,11 +2396,27 @@ h4 + .standfirst,
 // a sentence ending mid-clause with no full stop and the rest of it resuming
 // below the panel in italic.
 //
-// A heading left at the foot of a column is the risk this rule was carrying,
-// and it is the smaller of the two — it is also a keep the build can put back
-// around the heading alone, which is where it belongs.
+// And it does not break after all — the keep goes back on.
+//
+// It came off because a `break-inside: avoid` box taller than its column
+// stalls Paged.js, and the panel spans the full measure, so it looked like the
+// box that could grow too tall. It cannot. Measured across all 136 panels in
+// the book, the longest holds 1,354 characters — about eleven lines at this
+// measure, 230px against a column of 815. The tallest panel in the book is
+// twenty-eight per cent of a column.
+//
+// So the cut that produced six of the author's notes was never needed to make
+// the panel fit; it was needed to make it fit a rule that did not apply. With
+// the whole paragraph in the box and the box unbreakable, the title cannot be
+// separated from its text — which is what happened on page 23, where the
+// shaded box held a title and nothing else and the text began in a second box
+// overleaf.
+//
+// `break-before: avoid` on the paragraph was the first attempt at that and is
+// not honoured here: Paged.js fragments a `column-span: all` element on its
+// own terms. Only a box that cannot break holds.
 .keep-lead {
-    break-inside: auto;
+    break-inside: avoid;
 }
 
 // And for a label — APPLICATIONS, PRACTICAL CONSIDERATIONS — with the opening

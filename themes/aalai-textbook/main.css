@@ -6961,7 +6961,7 @@ h4 + .standfirst,
   text-align: left; }
 
 .keep-lead {
-  break-inside: auto; }
+  break-inside: avoid; }
 
 .keep-label {
   break-inside: avoid; }
