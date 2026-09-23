@@ -2373,6 +2373,21 @@ h4 + .standfirst,
 }
 
 // The same group for a topic heading and the paragraph it introduces.
+// The panel sets ragged right.
+//
+// It runs the full measure and it carries the book's longest technical
+// compounds, which is the combination that strands words and blows the word
+// spaces open. Ragged right has no slack to distribute, so a gap is a gap and
+// nothing stretches — the three-space rule becomes true by construction rather
+// than by correction. The panel is already set apart from the body by its
+// ground and its rule, so an uneven right edge reads as a deliberate
+// difference rather than as a mistake.
+.keep-lead.keep-lead > p,
+.keep-lead.keep-lead > .standfirst,
+.keep-lead.keep-lead > .lead-head {
+    text-align: left;
+}
+
 // The sub-section panel is allowed to break.
 //
 // It could not, and being a spanner it therefore had to fit inside one column,
