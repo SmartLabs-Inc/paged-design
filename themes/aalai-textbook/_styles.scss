@@ -3021,6 +3021,28 @@ h4 + .standfirst,
 }
 
 // ---------------------------------------------------------------------------
+// Hyphenation is manual here, because the dictionary does not exist
+// ---------------------------------------------------------------------------
+// The parent theme sets `hyphens: auto` on every paragraph. `auto` asks the
+// browser to hyphenate from a dictionary, and the Chromium that renders this
+// book ships none — which is why the build inserts 137,000 soft hyphens with
+// the Liang patterns instead. `manual` is the value that honours those without
+// depending on a dictionary, and it is the CSS default the parent overrode.
+//
+// The parent also sets `hyphenate-after`, `hyphenate-before` and
+// `hyphenate-lines`. Those are CSS3-draft spellings that no browser
+// implements — the real names are `hyphenate-limit-chars` and
+// `-webkit-hyphenate-limit-lines` — so all three are inert. Left alone rather
+// than corrected: the limits they were reaching for are already enforced by
+// the pass that places the soft hyphens, which refuses a break leaving fewer
+// than three characters on either side.
+
+p, li, dd, .standfirst {
+    hyphens: manual;
+    -webkit-hyphens: manual;
+}
+
+// ---------------------------------------------------------------------------
 // Never a single line
 // ---------------------------------------------------------------------------
 // Chromium honours `widows` and `orphans` inside a multi-column set, and the
