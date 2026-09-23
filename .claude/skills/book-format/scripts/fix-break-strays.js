@@ -176,9 +176,15 @@ function findStrays (tailLines) {
     const first = blocks[0]
     const last = blocks[blocks.length - 1]
 
-    // A page holding almost nothing, where the next page begins with a block
-    // this pass pushed. That push is the cause and comes back off.
-    if ((area.textContent || '').replace(/\s+/g, ' ').trim().length < 600) {
+    // A page holding almost nothing. A page carrying artwork is short by
+    // design — the five part titles and the full-page figures — and treating
+    // one as a fault is not harmless: it made the pass refuse to move the
+    // section title off a part-title page, which is the one place that title
+    // most obviously does not belong. Those pages are skipped by the picture
+    // on them rather than by a class, so a new kind of plate needs no change
+    // here.
+    if ((area.textContent || '').replace(/\s+/g, ' ').trim().length < 600 &&
+        !area.querySelector('img')) {
       const next = pages[index + 1]
       const nextArea = next && next.querySelector('.pagedjs_page_content')
       const nextBlocks = nextArea
@@ -188,12 +194,40 @@ function findStrays (tailLines) {
           })
         : []
       if (nextBlocks.length && nextBlocks[0].classList.contains('push-page')) {
+        // Our own mark made this page thin. It comes back off.
         out.push({
           kind: 'unpush',
           id: nextBlocks[0].getAttribute('data-stray'),
           page: index + 1,
           text: (area.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 55)
         })
+      } else if (blocks.length === 1 &&
+                 window.getComputedStyle(blocks[0]).columnSpan === 'all') {
+        // Nothing of ours did it: a spanner that would not fit on the page
+        // before was moved here on its own, and Paged.js left the rest of the
+        // page empty rather than flowing the next entry under it. Pulling the
+        // last ordinary block of the previous page down with it fills the page
+        // and gives the spanner somewhere to sit that is not the top of an
+        // empty sheet.
+        const prev = pages[index - 1]
+        const prevArea = prev && prev.querySelector('.pagedjs_page_content')
+        const prevBlocks = prevArea
+          ? Array.prototype.slice.call(prevArea.querySelectorAll('[data-stray]'))
+            .filter(function (el) {
+              return !el.parentElement.closest('[data-stray]') && drawn(el) &&
+                window.getComputedStyle(el).columnSpan !== 'all' &&
+                !el.hasAttribute('data-split-to') &&
+                !el.classList.contains('push-page')
+            })
+          : []
+        if (prevBlocks.length) {
+          out.push({
+            kind: 'opener',
+            id: prevBlocks[prevBlocks.length - 1].getAttribute('data-stray'),
+            page: index + 1,
+            text: (area.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 55)
+          })
+        }
       }
     }
 
