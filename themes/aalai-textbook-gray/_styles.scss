@@ -1,0 +1,13 @@
+// _styles.scss — grayscale-only additions
+//
+// The palette is handled in _variables.scss. What is left is the artwork: the
+// five part plates and the twelve diagrams are colour PNGs, and a mono press
+// would separate them itself, unpredictably. Desaturating them here means the
+// file that goes to the printer is the file that was proofed.
+//
+// A CSS filter, not a second set of files. Chromium applies it when it
+// rasterises the image into the PDF, so the result is a real greyscale image
+// and the colour originals stay untouched on disk.
+img {
+    filter: grayscale(1);
+}
