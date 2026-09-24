@@ -165,6 +165,7 @@ function findStrays (tailLines) {
   pages.forEach(function (page, index) {
     const area = page.querySelector('.pagedjs_page_content')
     if (!area) return
+    const areaBox = area.getBoundingClientRect()
     const blocks = Array.prototype.slice.call(area.querySelectorAll('[data-stray]'))
       .filter(function (el) {
         // Only the outermost marked element — a paragraph inside a marked
@@ -247,7 +248,16 @@ function findStrays (tailLines) {
     // after it, and nothing after it is on this page. A box that was split is
     // not this fault — it is a box too tall for the space, and pushing it
     // would only move the split.
-    if (last !== first &&
+    //
+    // The test is geometric, not structural. "Is it the last box" was letting
+    // through the worst examples in the book: a shaded panel with 620px of
+    // white under it on an 816px page, because the next thing is a whole entry
+    // that cannot fit in what is left, or a table that cannot. Paged.js will
+    // not part-fill the column row it opens after a spanner, so the page just
+    // stops. Measuring the white says so directly, and 200px is about five
+    // lines — below that the page reads as full.
+    const white = areaBox.bottom - last.getBoundingClientRect().bottom
+    if (last !== first && white > 200 &&
         /\b(entry-lead|keep-lead)\b/.test(last.className) &&
         !last.hasAttribute('data-split-from') && !last.hasAttribute('data-split-to')) {
       // The mark cannot go on the opener when the opener spans the columns —
