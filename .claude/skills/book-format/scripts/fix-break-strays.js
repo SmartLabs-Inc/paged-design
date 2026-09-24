@@ -177,15 +177,25 @@ function findStrays (tailLines) {
     const first = blocks[0]
     const last = blocks[blocks.length - 1]
 
-    // A page holding almost nothing. A page carrying artwork is short by
-    // design — the five part titles and the full-page figures — and treating
-    // one as a fault is not harmless: it made the pass refuse to move the
-    // section title off a part-title page, which is the one place that title
-    // most obviously does not belong. Those pages are skipped by the picture
-    // on them rather than by a class, so a new kind of plate needs no change
-    // here.
-    if ((area.textContent || '').replace(/\s+/g, ' ').trim().length < 600 &&
-        !area.querySelector('img')) {
+    // A page left underfull by one of our own marks.
+    //
+    // This was counting characters — under 600 — and that let through exactly
+    // the fault the book was reported for. A forced page break ends the page
+    // before it wherever the content happened to stop, and next to a
+    // full-width panel that is a quarter of the way down. Such a page still
+    // holds 800 to 1200 characters, passed the character test, and was called
+    // clean. Cut out of the book and paginated on its own, three marks in one
+    // 27-page stretch cost three whole pages and left three pages at 15 to 25
+    // per cent full; removing just those three marks put seven paragraphs back
+    // under the panel and the page back to 98 per cent.
+    //
+    // So the measure is the white on the page, the same one the opener test
+    // uses, and a mark that leaves more than 200px of it does not earn its
+    // keep. A page carrying artwork is short by design — the five part titles
+    // and the full-page figures — and is skipped by the picture on it rather
+    // than by a class.
+    const ownWhite = areaBox.bottom - last.getBoundingClientRect().bottom
+    if (ownWhite > 200 && !area.querySelector('img')) {
       const next = pages[index + 1]
       const nextArea = next && next.querySelector('.pagedjs_page_content')
       const nextBlocks = nextArea
