@@ -1,0 +1,40 @@
+// _variables.scss — the palette in grey
+//
+// Not a luminance conversion. Converting each colour to its own brightness
+// puts three of the evidence tones within fourteen levels of each other and
+// collapses the distinction they exist to carry. These are chosen for the job
+// each colour does once the hue is gone.
+//
+// The hard constraint is the fore-edge thumb tabs. Six parts take six colours,
+// and a reader finds a part by looking at the closed book. They are not six
+// values to tell apart, though: the tabs also sit at three heights, so each
+// colour only has to separate from the one other colour in its slot —
+// (teal, emerging) at the top, (established, gold) in the middle,
+// (supported, navy) at the bottom. Each pair is put at opposite ends of the
+// range.
+
+$color-navy:  #1A1A1A;   // headings, dark panels, part 6 tab (bottom)
+$color-teal:  #3A3A3A;   // accent: labels, rules, entry numbers, part 1 (top)
+$color-gold:  #A8A8A8;   // institute mark, chapter rule, part 5 tab (middle)
+
+$color-text-main: #1C1C1C;
+$color-mid:       #6B6B6B;   // captions
+$color-foot:      #555555;   // running feet, darker than captions
+
+$color-tint:  #EFEFEF;   // shaded callout wash
+$color-panel: #F4F4F4;   // table zebra
+$color-pale:  #F0F0F0;   // figure placeholders
+
+// Evidence classification. Four steps that stay apart on press.
+$color-established:  #4F4F4F;   // part 2 tab (middle)
+$color-supported:    #6E6E6E;   // part 3 tab (bottom)
+$color-emerging:     #9A9A9A;   // part 4 tab (top)
+$color-experimental: #808080;
+
+// The parent theme derives these at import time, so redefining the colours
+// above does not reach them. They have to be restated or the book prints with
+// teal links and captions in the colour grey.
+$color-text-secondary: $color-mid;
+$color-light: $color-panel;
+$color-accent: $color-teal;
+$color-links: $color-teal;
