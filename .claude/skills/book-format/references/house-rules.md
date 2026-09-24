@@ -1,0 +1,78 @@
+# House rules for the AALAI reference books
+
+Every rule here came from an edit note on a proof. They are written down
+because the same faults kept coming back, and because "read the notes again"
+is not a process. Check a proof against this list before sending it.
+
+`proof-check.js` tests the ones a machine can test. The rest need eyes, and
+the column on the right says which.
+
+## Never
+
+| Rule | Where it is enforced |
+| --- | --- |
+| Never a widow — one line of a paragraph at the top of a page or column | `widows: 2` in the theme, then `fix-widows.js` for what CSS cannot reach across a Paged.js page break; `proof-check.js` reports what is left |
+| Never a widow in a title, and never a heading alone at the foot of a page | keep boxes in `design-pass.js`; `proof-check.js` reports stranded headings |
+| **Never a heading at the foot of a column or a page — every heading keeps with what follows it** | a `break-inside: avoid` box built by the design pass. `break-after: avoid` cannot do this: Paged.js takes every `break-after` out of the stylesheet and re-implements breaking itself, so the declaration computes to `auto` and does nothing. Entry names, sub-section headings and labels each need their own box |
+| Never a table caption without its table | the caption goes *inside* `.table-figure`, and `break-before: avoid` goes on the table — Paged.js honours that and ignores `break-after: avoid` on the caption |
+| Never split a person's name across two lines | `protectNames()` in `design-pass.js`, display type only |
+| Never truncate the section name in the running head | full name into `<h6 class="run-head">`, and the top margin row is widened to the full measure |
+| Never leave an orphan just to balance columns — finishing the entry in column one comes first | `column-fill: auto` on the body; eyes |
+| Never let a keep-together box grow taller than its column | character budget in `design-pass.js`; a breach stops pagination silently |
+| Never put two spanning elements in a row | `design-pass.js` folds a section head into the box below it; found three more in the index |
+
+## Always
+
+| Rule | Where it is enforced |
+| --- | --- |
+| Running head: the full sub-section name, in caps, in the footer grey | `.pagedjs_margin-top-left .pagedjs_margin-content` |
+| Footer: the book title centred on the recto, the part name centred on the verso | `$recto-bottom` / `$verso-bottom`; needs `.title-page-title` on the title, which the style map supplies |
+| Legal wording goes on the page after the title page, never on it | `splitTitlePage()` in `design-pass.js` |
+| Air above a treatment or sub-section heading, so it separates from the columns above | `.keep-lead` margins |
+| An entry's air sits at the foot of the entry, not above its name, so a name at the top of a column aligns with the column beside it | `.entry { margin-bottom }`, `.entry > h5 { padding-top: 0 }` |
+| A parenthetical in an entry name moves to the next line whole, unless it would wrap twice anyway | `holdParenthetical()` and `.entry-paren` |
+| A full-width sub-section title with a paragraph under it gets the shaded panel | `.keep-lead.lead-section` |
+| A table sits under the entries it belongs to, not on a page of its own, when it fits | `table-place` behaviour — **not yet rebuilt**, see gaps |
+| The abbreviations glossary sets as a flowing two-column list, not a table | `abbreviationList()` in `design-pass.js` |
+| Citations set as superscripts, not as bracketed numbers in the text | `superscriptCitations()` |
+| Heading numerals the design does not use are stripped, and "N. Introduction" stubs are dropped | pre-pass in `designBody()` |
+
+## The front and back matter
+
+These came back wrong on the Markdown route after they had been settled on the
+Word route, and four of them had the same cause: the Word converter built
+markup that the Markdown converter does not, so the rules that styled it were
+matching nothing. The fifth was a change of mine that unhooked the lot.
+
+| Rule | Where it is enforced |
+| --- | --- |
+| A title never sets inside a column — every `h1`, and any component's own heading, spans the measure | `h1 { column-span: all }` and the front/back-matter rules, keyed on `h1` **and** `h2` |
+| The copyright notice is a verso, at the foot of the page, one column, 12pt, ranged left, single-spaced, off the grid | `.copyright-page.copyright-page`; the doubled class beats `.chapter`'s `break-before: recto` |
+| A copyright page carries no visible heading | the parent theme hides `h1[id="copyright"]` — this is deliberate, not a fault |
+| The contents is one column with a page number against the right margin | `class="toc-list"` added by `front-matter.js`; the numbers come from `target-counter`, so there is no second pass |
+| The abbreviations are a two-column flowing list on one page, never a table | `front-matter.js` rebuilds the table as `dl.abbrev-list` |
+| A table's caption goes inside the block it names | `design-md.js` folds it in; `break-before: avoid` on the **table**, never `break-after: avoid` on the caption — Paged.js honours the first and ignores the second |
+
+**The one to watch.** The build promotes each component's heading to an `h1`
+so the verso footer can print `string(h1-text, first)` and name its section.
+Every front- and back-matter rule used to be keyed on `> h2`. That one
+promotion silently removed the spanning title, the teal rule under it and the
+standfirst from every page of front and back matter, and nothing in any log
+said so. Any rule that keys on a heading level here must name both.
+
+## Still open
+
+These are known, and saying so is part of the proof.
+
+- **Index locators are the author's Word page numbers.** They need a pass that
+  reads the folios back from the paginated book. Until then the index numbers
+  point at nothing.
+- **Four tables run to several pages.** Paged.js reports `Unable to layout
+  item` on their cells. They need landscape pages or an appendix at a smaller
+  trim — a decision, not a bug to fix.
+- **Tables are not yet placed under the entries they belong to.**
+- **Part-opener figures are empty slots.**
+- **The licensed display face is not in the repository**, so a fresh container
+  renders part titles in the fallback. Convert it with `otf-to-ttf.py` before a
+  press proof: Chromium embeds a CFF web font as Type 3, which is drawing
+  procedures rather than a font program.

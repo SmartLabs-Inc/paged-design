@@ -1,0 +1,27 @@
+// main.scss — AALAI Textbook (screen)
+
+// The AALAI design as delivered on screen rather than to a press.
+//
+// Identical to `aalai` in every visual respect. The only difference is
+// pagination: a book bound on paper opens each chapter on a recto and takes
+// the blank verso that sometimes costs. A PDF has no verso — the reader
+// scrolls — so a blank page there reads as a rendering failure rather than as
+// bookbinding. Sections here simply open on the next page.
+//
+// This is a separate theme rather than a flag on `aalai` because Paged.js
+// resolves `break-before: recto` from the stylesheet itself, not from the
+// cascade: a more specific selector in the document cannot override it, so
+// the choice has to be made at compile time.
+
+@charset "utf-8";
+
+@import '../_defaults/variables';
+@import '../aalai/variables';
+@import 'variables';
+
+@import '../_defaults/selectors';
+@import '../aalai/selectors';
+
+@import '../_defaults/styles';
+@import '../aalai/styles';
+@import 'styles';

@@ -1,0 +1,223 @@
+// _styles.scss — AALAI 60/40
+//
+// The two-column theme is inherited whole and then undone: this grid is not
+// two equal columns of running text, it is one column of text with a margin
+// column of apparatus beside it. Everything below either turns the multicol
+// off or decides which of the two columns a thing belongs in.
+
+// ---------------------------------------------------------------------------
+// Off with the equal columns
+// ---------------------------------------------------------------------------
+// The parent flows body text through two balanced columns. Here the text runs
+// in one, and the space beside it is reserved by a padding on the flow rather
+// than by a second column — so a floated item can sit in it without the text
+// having to be told to avoid anything.
+
+.chapter > div > div,
+.frontmatter > div > div,
+.endmatter:not(.index) > div > div {
+    column-count: 1;
+    column-gap: 0;
+    column-fill: auto;
+}
+
+// The reserved margin column, on the outside edge of the page. Paged.js's own
+// page classes are the only way to know which side that is.
+.pagedjs_right_page .chapter > div > div,
+.pagedjs_right_page .frontmatter > div > div,
+.pagedjs_right_page .endmatter:not(.index) > div > div {
+    padding-right: $side-column + $column-gutter;
+}
+
+.pagedjs_left_page .chapter > div > div,
+.pagedjs_left_page .frontmatter > div > div,
+.pagedjs_left_page .endmatter:not(.index) > div > div {
+    padding-left: $side-column + $column-gutter;
+}
+
+// Nothing spans, because there are no columns to span.
+.chapter-eyebrow,
+.chapter-subtitle,
+.part-title,
+.part-count,
+.part-contents,
+.part-panel,
+.section-head,
+.apparatus-head,
+.table-figure,
+.figure-span,
+.pullquote,
+.pillar,
+.objectives,
+.takeaways,
+.keep-together.spans,
+.needs-copy,
+.reference-part,
+.frontmatter h2,
+.endmatter h2,
+.frontmatter > div > div > p:first-of-type,
+.endmatter > div > div > p:first-of-type {
+    column-span: none;
+}
+
+// ---------------------------------------------------------------------------
+// What lives in the margin column
+// ---------------------------------------------------------------------------
+// Callouts, single-column figures, evidence chips and side notes move out of
+// the text and into the column beside it. This is the whole point of the grid:
+// the reader can follow the argument down the text column without stepping
+// over a box every third paragraph, and can graze the apparatus separately.
+//
+// The float is mirrored on Paged.js's own page classes, because the margin
+// column swaps sides at every turn and an item pushed the same way on both
+// would fall off one of them.
+
+@mixin in-margin {
+    width: $side-column;
+    break-inside: avoid;
+    margin-top: 0;
+    margin-bottom: $baseline-grid-unit;
+}
+
+.pagedjs_right_page .callout,
+.pagedjs_right_page .figure-col,
+.pagedjs_right_page .sidenote {
+    @include in-margin();
+    float: right;
+    clear: right;
+    margin-right: -($side-column + $column-gutter);
+    margin-left: $column-gutter;
+}
+
+.pagedjs_left_page .callout,
+.pagedjs_left_page .figure-col,
+.pagedjs_left_page .sidenote {
+    @include in-margin();
+    float: left;
+    clear: left;
+    margin-left: -($side-column + $column-gutter);
+    margin-right: $column-gutter;
+}
+
+// A callout in the margin needs no badge hanging off it — there is nothing for
+// it to hang into, and the box is already set apart by being outside the text.
+.callout::before {
+    content: none;
+}
+
+.callout {
+    margin-left: 0;
+}
+
+// ---------------------------------------------------------------------------
+// What runs the full width
+// ---------------------------------------------------------------------------
+// A wide table, a spanning figure, a part title and a section head break out
+// across both columns. Negative margin on the outer side reclaims the margin
+// column for the width of that one item, and the text closes back over it.
+
+@mixin full-width {
+    width: $text-block;
+    clear: both;
+}
+
+.pagedjs_right_page .table-figure,
+.pagedjs_right_page .figure-span,
+.pagedjs_right_page .part-panel,
+.pagedjs_right_page .part-title,
+.pagedjs_right_page .section-head {
+    @include full-width();
+    margin-right: -($side-column + $column-gutter);
+}
+
+.pagedjs_left_page .table-figure,
+.pagedjs_left_page .figure-span,
+.pagedjs_left_page .part-panel,
+.pagedjs_left_page .part-title,
+.pagedjs_left_page .section-head {
+    @include full-width();
+    margin-left: -($side-column + $column-gutter);
+}
+
+// The index and the reference list keep two columns of their own: they are
+// look-up tables, not argument, and the margin column has nothing to add.
+.index > div > div,
+.references > div > div {
+    column-count: 2;
+    column-gap: $column-gutter;
+    padding: 0;
+}
+
+// ---------------------------------------------------------------------------
+// The entry name moves into the margin
+// ---------------------------------------------------------------------------
+// Without this the grid does not pay for itself on this book. The client's
+// mockups fill the margin column with charts and statistics on every spread;
+// this manuscript has a hundred figures across four hundred pages, so the
+// column would be empty on most of them — forty per cent of the paper holding
+// nothing, which is worse than a two-column page, not better.
+//
+// So the thing that appears on every page goes there: the name of the entry.
+// The text column carries the argument unbroken, and the margin becomes a
+// column of names a reader can run a finger down — which is how a reference
+// book is actually used. It is the oldest use of a scholar's margin and the
+// one that suits this content.
+
+.entry {
+    border-left: 0;
+    padding-left: 0;
+    margin: ($baseline-grid-unit * 1.4) 0 0 0;
+    clear: both;
+}
+
+.entry > * {
+    border-left: 0;
+    padding-left: 0;
+}
+
+.pagedjs_right_page .entry > h5,
+.pagedjs_left_page .entry > h5 {
+    width: $side-column;
+    font-size: 11px;
+    line-height: $baseline-grid-unit * 0.8;
+    color: $color-navy;
+    padding: 0;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    break-after: avoid;
+    break-inside: avoid;
+    text-align: left;
+    hyphens: none;
+}
+
+.pagedjs_right_page .entry > h5 {
+    float: right;
+    clear: right;
+    margin-right: -($side-column + $column-gutter);
+    margin-left: $column-gutter;
+}
+
+.pagedjs_left_page .entry > h5 {
+    float: left;
+    clear: left;
+    margin-left: -($side-column + $column-gutter);
+    margin-right: $column-gutter;
+}
+
+// The number badge sits above the name rather than beside it: at 52mm there is
+// not room for both on one line, and stacked they read as a label.
+.entry > h5::before {
+    display: block;
+    width: 15px;
+    margin: 0 0 ($baseline-grid-unit / 4) 0;
+}
+
+// A rule along the top of the entry, across the text column only, so the eye
+// can see where one entry stops and the next begins without the side rule the
+// two-column theme used.
+.entry > h5 + p::before {
+    content: "";
+    display: block;
+    width: $main-column;
+    border-top: $rule-thickness solid $color-tint;
+    margin-bottom: ($baseline-grid-unit / 2);
+}

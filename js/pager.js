@@ -66,7 +66,12 @@ function loadPagedJS () {
 
     // With Paged loaded, we can add scripts
     // that must run after Paged has loaded.
-    loadThemeScripts(detectThemeFromURL(), themes[detectThemeFromURL()], 'postlayout')
+    // Themes without a scripts entry in their theme.json have none.
+    const themeDirectory = detectThemeFromURL()
+    const themeData = themes[themeDirectory]
+    if (themeData && themeData.scripts && themeData.scripts.postlayout) {
+      loadThemeScripts(themeDirectory, themeData, 'postlayout')
+    }
     resolve()
   })
 }
@@ -106,7 +111,7 @@ async function loadThemeStylesheet (themeDirectory) {
 
   // Load theme scripts
   const themeData = themes[themeDirectory]
-  if (themeData.scripts) {
+  if (themeData && themeData.scripts && themeData.scripts.prelayout) {
     await loadThemeScripts(themeDirectory, themeData, 'prelayout')
   }
 

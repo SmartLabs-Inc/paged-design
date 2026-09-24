@@ -1,0 +1,999 @@
+// _styles.scss — AALAI Textbook
+//
+// Custom rules on top of the defaults. Grouped by what they style, in
+// roughly the order a reader meets them.
+//
+// Keep selectors shallow: Paged.js rewrites paged-media CSS and silently
+// drops rules that nest too deeply.
+
+// ---------------------------------------------------------------------------
+// Shared pieces
+// ---------------------------------------------------------------------------
+
+// The tracked-out sans label used throughout: LEARNING OBJECTIVES,
+// CLINICAL APPLICATION, CHAPTER 07.
+@mixin label {
+    font-family: $font-text-secondary;
+    font-size: $font-size-label;
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+    color: $color-teal;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    text-indent: 0;
+}
+
+@mixin sans-small {
+    font-family: $font-text-secondary;
+    font-size: $font-size-small;
+    line-height: $baseline-grid-unit * 0.8;
+    text-indent: 0;
+}
+
+.label {
+    @include label();
+}
+
+.small-caps {
+    font-variant: small-caps;
+}
+
+// Run colors the Word converter preserves.
+.accent { color: $color-teal; }
+.gold { color: $color-gold; }
+.muted { color: $color-mid; }
+
+// ---------------------------------------------------------------------------
+// Headings
+// ---------------------------------------------------------------------------
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: $font-display-main;
+    font-weight: 400;
+    color: $color-navy;
+    break-after: avoid;
+    text-indent: 0;
+}
+
+// Chapter title
+h2 {
+    font-size: 27px;
+    line-height: $baseline-grid-unit * 2;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+}
+
+// Section head (7.1)
+h3 {
+    font-size: 17px;
+    line-height: $baseline-grid-unit * 1.5;
+    margin: ($baseline-grid-unit * 1.5) 0 ($baseline-grid-unit / 2) 0;
+}
+
+// Subsection head (7.2) — sans and teal, a deliberate change of voice
+h4 {
+    font-family: $font-display-secondary;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: $color-teal;
+    line-height: $baseline-grid-unit;
+    margin: $baseline-grid-unit 0 ($baseline-grid-unit / 4) 0;
+}
+
+h5, h6 {
+    font-family: $font-display-secondary;
+    font-size: 10px;
+    font-weight: 700;
+    color: $color-navy;
+    line-height: $baseline-grid-unit;
+    margin: $baseline-grid-unit 0 0 0;
+}
+
+// Frontmatter and endmatter titles are h1 semantically, but should read as
+// chapter titles.
+.heading-2 {
+    font-size: 27px;
+    line-height: $baseline-grid-unit * 2;
+    margin: 0 0 $baseline-grid-unit 0;
+}
+
+// ---------------------------------------------------------------------------
+// Body text and page breaks
+
+// An appendix, a bibliography or an index begins on a fresh page.
+//
+// The defaults give `.endmatter` its own named page but no break to reach it,
+// so end matter runs on from whatever preceded it — an appendix opening
+// halfway down the last page of a chapter, with its eyebrow stranded at the
+// foot and its title overleaf. Chapters and part pages already break; this is
+// the one division that was left out.
+//
+// Driven by the same variable as chapters so the screen variant, which sets it
+// to `auto`, is free to ask for a plain page break instead of a recto and the
+// blank verso that comes with it.
+.endmatter {
+    break-before: $chapters-start-on;
+}
+
+// A paragraph states its own weight instead of inheriting one.
+//
+// This looks redundant and is not. Paged.js rebuilds formatting elements when
+// it carries content across a page break, and can leave the paragraphs that
+// follow nested inside a `<strong>` that belonged to the previous page. It was
+// found in a real manuscript: the source parses clean — an HTML parser finds no
+// `<p>` inside a `<strong>` anywhere — while the paginated DOM had eighteen
+// consecutive paragraphs inside one, and the whole page came out bold.
+//
+// Nothing in the markup is wrong, so nothing in the markup can fix it. Naming
+// the weight here stops the inheritance at the paragraph; `strong` still sets
+// its own, so run-in bold leads are unaffected. Component paragraphs that carry
+// a class (`.callout-label`, `.step-title`, `.pillar-title`) set weight in
+// their own rules and outrank this one.
+p {
+    font-weight: 400;
+}
+// ---------------------------------------------------------------------------
+
+// Never leave one line of a paragraph behind, or carry one over alone.
+p,
+li,
+td,
+th {
+    orphans: 2;
+    widows: 2;
+}
+
+// A label announces what follows it, so it must never be the last thing on a
+// page. The defaults already do this for h1–h6; these are the elements that
+// read as headings without being one.
+.label,
+.chapter-eyebrow,
+.callout-label,
+.chapter-subtitle,
+.standfirst {
+    break-after: avoid;
+}
+
+// A caption or attribution belongs to what precedes it.
+.figure-caption,
+.table-caption,
+.source {
+    break-before: avoid;
+}
+
+// Lists stay with the label that introduced them: never strand the first item
+// at the foot of a page on its own.
+.objectives li:first-child,
+.takeaways li:first-child,
+ol li:first-child,
+ul li:first-child {
+    break-after: avoid;
+}
+
+// ---------------------------------------------------------------------------
+// Cover
+// ---------------------------------------------------------------------------
+// The defaults give .cover a zero-margin page and stretch it over the whole
+// sheet, bleed included. The navy block the author drew in Word then fills it.
+//
+// The paragraphs inside are plain body text in the manuscript, so they are
+// styled by position. If the cover block is ever restructured in Word, revisit
+// these three rules.
+
+.cover .callout-dark {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    padding: ($baseline-grid-unit * 4) ($baseline-grid-unit * 2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+// text-align has to be set explicitly: the default p rule sets `start`, which
+// beats the centering inherited from the flex container.
+.cover p {
+    @include sans-small();
+    color: #FFFFFF;
+    text-align: center;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+    max-width: 40ch;
+    margin: 0 0 $baseline-grid-unit 0;
+}
+
+// The converter numbers a cover's lines, because a cover is a fixed
+// composition rather than flowing text. Line 3 is the book title.
+//
+// Each rule is scoped under .cover so it outranks the `.cover p` rule above;
+// a bare .cover-line-N would lose the cascade to it.
+.cover .cover-line-1 {
+    font-size: 13px;
+    color: $color-gold;
+    margin-bottom: $baseline-grid-unit * 2;
+}
+
+.cover .cover-line-2 {
+    margin-bottom: $baseline-grid-unit * 5;
+}
+
+.cover .cover-line-3 {
+    font-family: $font-display-main;
+    font-size: 30px;
+    line-height: $baseline-grid-unit * 2.2;
+    letter-spacing: 0;
+    text-transform: none;
+    max-width: 20ch;
+    margin-bottom: $baseline-grid-unit * 2;
+}
+
+.cover .cover-line-4 {
+    font-size: 8.5px;
+    max-width: 46ch;
+    margin-bottom: $baseline-grid-unit * 7;
+}
+
+.cover .cover-line-5 {
+    font-size: 8.5px;
+    max-width: 46ch;
+    margin-bottom: 0;
+}
+
+.cover .gold {
+    color: $color-gold;
+}
+
+// ---------------------------------------------------------------------------
+// Chapter opener
+// ---------------------------------------------------------------------------
+
+.chapter-eyebrow {
+    @include label();
+    margin-bottom: $baseline-grid-unit;
+}
+
+// The chapter subtitle, in italic serif.
+.chapter-subtitle,
+.chapter h2 + p {
+    font-style: italic;
+    font-size: 15px;
+    color: $color-navy;
+    line-height: $baseline-grid-unit * 1.2;
+    margin-bottom: $baseline-grid-unit;
+}
+
+// The gold rule under the chapter subtitle.
+//
+// Drawn as a background gradient rather than ::after content: Paged.js
+// discards generated content on ordinary elements, so a ::after rule here
+// renders as `content: none` after pagination.
+.chapter-subtitle {
+    padding-bottom: $baseline-grid-unit * 1.5;
+    background-image: linear-gradient($color-gold, $color-gold);
+    background-repeat: no-repeat;
+    background-size: $chapter-rule-width 1.5pt;
+    background-position: left bottom ($baseline-grid-unit / 2);
+}
+
+// The standfirst: an italic serif paragraph setting up the chapter.
+.standfirst {
+    font-style: italic;
+    color: $color-text-main;
+    margin-bottom: $baseline-grid-unit;
+}
+
+// Learning objectives and chapter summary takeaways.
+.objectives,
+.takeaways {
+    list-style: none;
+    counter-reset: objective;
+    padding: 0;
+    margin: 0 0 $baseline-grid-unit 0;
+}
+
+.objectives li,
+.takeaways li {
+    @include sans-small();
+    counter-increment: objective;
+    position: relative;
+    padding-left: $baseline-grid-unit * 1.6;
+    margin-bottom: ($baseline-grid-unit / 2);
+    break-inside: avoid;
+}
+
+.objectives li::before,
+.takeaways li::before {
+    content: counter(objective, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+    color: $color-teal;
+}
+
+// A number the author typed, preserved by the converter.
+.item-number {
+    font-weight: 700;
+    color: $color-teal;
+    margin-right: 0.6em;
+}
+
+// ---------------------------------------------------------------------------
+// Checklists
+// ---------------------------------------------------------------------------
+//
+// Two list forms that look deliberately unalike, because they ask different
+// things of the reader.
+//
+// `.checklist` carries a box, and is only ever used for what the reader
+// themselves has to do. `.ours` carries a dash, and is what someone else is
+// doing in the same period. Putting a box on both would be tidier and worse:
+// a reader scanning for their own obligations would have to read every line to
+// find out which ones are theirs. With boxes on one list only, the page answers
+// that question before it is read.
+//
+// The box is drawn with a border rather than set as ☐ (U+2610), because the
+// glyph is missing from most text faces and would silently fall back to
+// whatever the system substitutes — a different size, a different weight, and
+// different from page to page.
+
+.checklist,
+.ours {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 $baseline-grid-unit 0;
+}
+
+.checklist li,
+.ours li {
+    @include sans-small();
+    position: relative;
+    padding-left: $baseline-grid-unit;
+    margin-bottom: ($baseline-grid-unit / 2);
+    break-inside: avoid;
+}
+
+.checklist li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 2.5px;
+    width: 8px;
+    height: 8px;
+    border: $rule-thickness solid $color-teal;
+}
+
+.ours li {
+    color: $color-mid;
+}
+
+.ours li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6.5px;
+    width: 8px;
+    border-top: $rule-thickness solid $color-mid;
+}
+
+// A week of the schedule: its dates, what the reader owes, and what we are
+// doing alongside. Held on one page — a week split across a spread is read as
+// two half-weeks, and the reader misses the items below the fold.
+.week {
+    break-inside: avoid;
+    margin-bottom: $baseline-grid-unit;
+    padding-bottom: ($baseline-grid-unit / 2);
+    border-bottom: $rule-thickness solid $color-panel;
+}
+
+.week-number {
+    @include label();
+    color: $color-gold;
+    margin-bottom: 2px;
+    break-after: avoid;
+}
+
+.week-dates {
+    font-family: $font-display-main;
+    font-size: 15px;
+    color: $color-navy;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    text-indent: 0;
+    break-after: avoid;
+}
+
+// The heading above each of the two lists. Deliberately quieter than a
+// `.label` so a week reads as one block rather than three stacked sections.
+.list-label {
+    font-family: $font-text-secondary;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+    color: $color-mid;
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+    text-indent: 0;
+    break-after: avoid;
+}
+
+.list-label-you {
+    color: $color-teal;
+}
+
+// ---------------------------------------------------------------------------
+// Callouts and panels
+// ---------------------------------------------------------------------------
+
+.callout,
+.panel {
+    background-color: $color-tint;
+    padding: $box-padding;
+    margin: $baseline-grid-unit 0;
+    break-inside: avoid;
+}
+
+.panel {
+    background-color: $color-panel;
+}
+
+.callout p,
+.panel p {
+    @include sans-small();
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+}
+
+.callout p:last-child,
+.panel p:last-child {
+    margin-bottom: 0;
+}
+
+.callout-label {
+    @include label();
+    font-size: 8.5px;
+}
+
+// The navy box: white text, used for the single most important statement
+// in a chapter.
+.callout-dark,
+.callout-accent {
+    background-color: $color-navy;
+}
+
+.callout-accent {
+    background-color: $color-teal;
+}
+
+.callout-dark p,
+.callout-accent p,
+.callout-dark .callout-label,
+.callout-accent .callout-label {
+    color: #FFFFFF;
+}
+
+.callout-dark .pullquote,
+.callout-accent .pullquote {
+    font-family: $font-display-main;
+    font-size: 12.5px;
+    line-height: $baseline-grid-unit;
+    font-style: normal;
+    color: #FFFFFF;
+    margin: 0;
+    text-indent: 0;
+}
+
+// Where an image will go once the science illustration is commissioned.
+.figure-placeholder {
+    background-color: $color-pale;
+    padding: ($baseline-grid-unit * 2) $baseline-grid-unit;
+    margin: $baseline-grid-unit 0;
+    text-align: center;
+    break-inside: avoid;
+}
+
+.figure-placeholder p {
+    @include sans-small();
+    color: $color-mid;
+    margin: 0;
+}
+
+// Only the first line of a placeholder is a label.
+.figure-placeholder p:first-child {
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+}
+
+// ---------------------------------------------------------------------------
+// Columns
+// ---------------------------------------------------------------------------
+// A single-row Word table becomes side-by-side panels. Flexbox is safe here
+// because the row never breaks across a page.
+
+.columns {
+    display: flex;
+    gap: $baseline-grid-unit / 2;
+    margin: $baseline-grid-unit 0;
+    break-inside: avoid;
+    align-items: stretch;
+}
+
+.columns > * {
+    flex: 1 1 0;
+    margin: 0;
+}
+
+// An evidence-classification chip: a fixed-width colored label beside its
+// explanation.
+.level {
+    padding: ($baseline-grid-unit / 2) ($baseline-grid-unit / 2);
+    background-color: $color-experimental;
+    flex: 0 0 26%;
+    display: flex;
+    align-items: center;
+}
+
+.level p {
+    @include label();
+    color: #FFFFFF;
+    font-size: 8px;
+    margin: 0;
+}
+
+.level-established { background-color: $color-established; }
+.level-supported { background-color: $color-supported; }
+.level-emerging { background-color: $color-emerging; }
+.level-experimental { background-color: $color-experimental; }
+
+// ---------------------------------------------------------------------------
+// Tables
+// ---------------------------------------------------------------------------
+
+// A table long enough to need two pages breaks between rows rather than being
+// held together until it overflows the page.
+//
+// Caveat worth knowing before you rely on it: `display: table-header-group` is
+// the CSS that repeats a header on each page a table continues onto, and
+// Paged.js does not implement it. A split table's second page carries rows with
+// no header. Put `.keep-together` on any table short enough to fit one page and
+// you avoid the problem entirely; for one genuinely longer than a page, repeat
+// the header by hand in a second table.
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: $baseline-grid-unit 0;
+    break-inside: auto;
+}
+
+// Keep a block whole: move it to the next page rather than split it. On a
+// table it stops rows orphaning without their header, since Paged.js does not
+// repeat one. On a wrapper div it holds a heading, its lead-in sentence and
+// the table they introduce together.
+//
+// A wrapper is the only reliable way to express keep-with-next here. Chaining
+// `break-after: avoid` on the heading to `break-before: avoid` on the table
+// does not work: Paged.js honors the second and ignores the first, so the
+// paragraph moves to the next page and the heading is left behind — worse than
+// the split it was meant to prevent. Verified by rendering both ways.
+.keep-together {
+    break-inside: avoid;
+}
+
+thead {
+    display: table-header-group;
+    break-after: avoid;
+}
+
+tr {
+    break-inside: avoid;
+}
+
+// Do not strand the header and a single row at the foot of a page.
+tbody tr:first-child {
+    break-after: avoid;
+}
+
+th {
+    @include sans-small();
+    background-color: $color-navy;
+    color: #FFFFFF;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+    text-align: left;
+    padding: ($baseline-grid-unit / 2) ($baseline-grid-unit / 3);
+    vertical-align: middle;
+}
+
+td {
+    @include sans-small();
+    font-size: 9px;
+    padding: ($baseline-grid-unit / 2) ($baseline-grid-unit / 3);
+    vertical-align: top;
+    border: 0;
+}
+
+// Zebra striping, as in the prototype.
+tbody tr:nth-child(odd) td {
+    background-color: $color-panel;
+}
+
+.table-caption,
+.figure-caption {
+    @include sans-small();
+    color: $color-mid;
+    margin-top: ($baseline-grid-unit / 3);
+    break-before: avoid;
+}
+
+// ---------------------------------------------------------------------------
+// Figures and quotations
+// ---------------------------------------------------------------------------
+
+figure {
+    margin: $baseline-grid-unit 0;
+}
+
+figure img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.pullquote {
+    font-family: $font-display-main;
+    font-size: 14px;
+    line-height: $baseline-grid-unit * 1.3;
+    color: $color-navy;
+    margin: $baseline-grid-unit 0;
+    text-indent: 0;
+}
+
+blockquote {
+    margin: $baseline-grid-unit 0;
+    padding-left: $baseline-grid-unit;
+    border-left: 2pt solid $color-tint;
+}
+
+.source {
+    @include sans-small();
+    color: $color-mid;
+    break-before: avoid;
+}
+
+.reference {
+    @include sans-small();
+    color: $color-text-main;
+    padding-left: $baseline-grid-unit;
+    text-indent: -$baseline-grid-unit;
+    margin-bottom: ($baseline-grid-unit / 3);
+}
+
+// ---------------------------------------------------------------------------
+// Notes
+// ---------------------------------------------------------------------------
+
+.footnotes {
+    margin-top: $baseline-grid-unit * 2;
+    padding-top: ($baseline-grid-unit / 2);
+    border-top: $rule-thickness solid $color-mid;
+}
+
+.footnotes p {
+    @include sans-small();
+    color: $color-text-main;
+}
+
+.footnote {
+    color: $color-teal;
+    text-decoration: none;
+}
+
+// ---------------------------------------------------------------------------
+// Front matter
+// ---------------------------------------------------------------------------
+
+.title-page-title {
+    font-family: $font-display-main;
+    font-size: 26px;
+    line-height: $baseline-grid-unit * 2;
+    color: $color-navy;
+    margin-bottom: $baseline-grid-unit;
+    text-indent: 0;
+}
+
+.title-page-subtitle {
+    font-family: $font-text-secondary;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: $color-mid;
+    text-indent: 0;
+}
+
+.title-page-author,
+.title-page-publisher {
+    font-family: $font-text-secondary;
+    font-size: 10px;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+    color: $color-navy;
+    text-indent: 0;
+}
+
+// Contents
+.toc-list li {
+    @include sans-small();
+    margin-bottom: ($baseline-grid-unit / 3);
+}
+
+.toc-entry-part > a {
+    font-weight: 700;
+    color: $color-navy;
+}
+
+// ---------------------------------------------------------------------------
+// Running feet
+// ---------------------------------------------------------------------------
+
+// Set at 9.5px rather than the 7px a print designer reaches for by habit.
+// A folio nobody can read is decoration, and this book is read by clinicians
+// who are themselves the age the book is about.
+$foot-size: 9.5px;
+
+@page {
+    @bottom-left {
+        font-family: $font-text-secondary;
+        font-size: $foot-size;
+        letter-spacing: 0.06em;
+        color: $color-foot;
+    }
+    @bottom-right {
+        font-family: $font-text-secondary;
+        font-size: $foot-size;
+        letter-spacing: 0.06em;
+        color: $color-foot;
+    }
+    @bottom-center {
+        font-family: $font-text-secondary;
+        font-size: $foot-size;
+        letter-spacing: 0.06em;
+        color: $color-foot;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Side callouts
+// ---------------------------------------------------------------------------
+// A short remark set beside the running text rather than interrupting it.
+// Floated into the outer third so long passages stay readable while the
+// commentary sits alongside.
+
+.sidenote {
+    float: right;
+    clear: right;
+    width: 34%;
+    margin: 0 0 $baseline-grid-unit ($baseline-grid-unit * 1.2);
+    padding-left: ($baseline-grid-unit / 1.5);
+    border-left: 2pt solid $color-teal;
+    break-inside: avoid;
+}
+
+.sidenote p {
+    @include sans-small();
+    font-size: 8.5px;
+    color: $color-text-main;
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+}
+
+.sidenote p:last-child {
+    margin-bottom: 0;
+}
+
+.sidenote-label {
+    @include label();
+    font-size: 7.5px;
+    margin-bottom: ($baseline-grid-unit / 3);
+}
+
+// A figure of the same weight, sitting in the margin.
+.sidenote .figure-caption {
+    color: $color-mid;
+}
+
+// ---------------------------------------------------------------------------
+// Process steps
+// ---------------------------------------------------------------------------
+// The production stages, each with an icon. Laid out as a row on wide runs and
+// stacked when there is not room, so the sequence reads either way.
+
+.process {
+    display: flex;
+    gap: ($baseline-grid-unit / 1.5);
+    margin: ($baseline-grid-unit * 1.5) 0;
+    break-inside: avoid;
+    align-items: stretch;
+}
+
+.step {
+    flex: 1 1 0;
+    background-color: $color-tint;
+    padding: $baseline-grid-unit ($baseline-grid-unit / 1.5);
+    display: flex;
+    flex-direction: column;
+    break-inside: avoid;
+}
+
+.step-icon {
+    display: block;
+    width: 26px;
+    height: 26px;
+    margin-bottom: ($baseline-grid-unit / 1.5);
+    color: $color-teal;
+}
+
+.step-number {
+    @include label();
+    font-size: 7px;
+    color: $color-gold;
+    margin-bottom: ($baseline-grid-unit / 4);
+}
+
+.step-title {
+    @include label();
+    font-size: 8px;
+    color: $color-navy;
+    margin-bottom: ($baseline-grid-unit / 3);
+}
+
+.step p {
+    @include sans-small();
+    font-size: 8px;
+    margin: 0;
+}
+
+// A single wide step, used where one stage needs more explanation.
+.step-wide {
+    background-color: $color-panel;
+}
+
+// ---------------------------------------------------------------------------
+// Deliverable pillars
+// ---------------------------------------------------------------------------
+// Four things being bought, each announced by a number and a name.
+
+.pillar {
+    background-color: $color-panel;
+    padding: $baseline-grid-unit;
+    margin: 0 0 ($baseline-grid-unit / 1.5) 0;
+    border-left: 3pt solid $color-teal;
+    break-inside: avoid;
+}
+
+.pillar-number {
+    @include label();
+    font-size: 7.5px;
+    color: $color-gold;
+    margin-bottom: ($baseline-grid-unit / 4);
+}
+
+.pillar-title {
+    font-family: $font-display-main;
+    font-size: 15px;
+    color: $color-navy;
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+    text-indent: 0;
+}
+
+.pillar p {
+    @include sans-small();
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+}
+
+.pillar p:last-child {
+    margin-bottom: 0;
+}
+
+// The two rules above set font-size on every `p` inside a pillar, which is one
+// step more specific than the class on the title. Scope the title to win.
+.pillar .pillar-number {
+    @include label();
+    font-size: 7.5px;
+    color: $color-gold;
+    margin-bottom: ($baseline-grid-unit / 4);
+}
+
+.pillar .pillar-title {
+    font-family: $font-display-main;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.25;
+    color: $color-navy;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    text-indent: 0;
+}
+
+// Same collision inside steps and side callouts.
+.step .step-number {
+    @include label();
+    font-size: 7px;
+    color: $color-gold;
+}
+
+.step .step-title {
+    @include label();
+    font-size: 8px;
+    color: $color-navy;
+}
+
+.sidenote .sidenote-label {
+    @include label();
+    font-size: 7.5px;
+    color: $color-navy;
+    margin-bottom: ($baseline-grid-unit / 3);
+}
+
+// ---------------------------------------------------------------------------
+// Running feet on endmatter
+// ---------------------------------------------------------------------------
+// The defaults define margin boxes for `chapter` and `frontmatter` pages only.
+// `.endmatter` is assigned its own named page with no boxes at all, so an
+// appendix, a bibliography or an index prints with no folio. A reference book
+// cannot ship that way: the index is the one part readers navigate by number.
+//
+// Mirrors @page chapter, so back matter numbers continuously with the body.
+
+@page endmatter:left {
+    @bottom-left { content: $verso-bottom-left; }
+    @bottom-center { content: $verso-bottom; }
+    @bottom-right { content: $verso-bottom-right; }
+}
+
+@page endmatter:right {
+    @bottom-left { content: $recto-bottom-left; }
+    @bottom-center { content: $recto-bottom; }
+    @bottom-right { content: $recto-bottom-right; }
+}
+
+@page endmatter:blank {
+    @bottom-left { content: normal; }
+    @bottom-center { content: normal; }
+    @bottom-right { content: normal; }
+}
+
+// ---------------------------------------------------------------------------
+// Intentionally blank pages
+// ---------------------------------------------------------------------------
+// Chapters open on a recto, so the fragmenter inserts a blank verso wherever a
+// chapter would otherwise land on a left page. In a bound book that reads as
+// craft. In a PDF someone scrolls through it reads as a bug — a page that
+// failed to render — so it has to say what it is.
+//
+// Paged.js discards generated content on elements it fragments, but these
+// pseudo-elements hang off its own page container, which exists only after
+// pagination is finished. They survive.
+
+.pagedjs_blank_page .pagedjs_page_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagedjs_blank_page .pagedjs_page_content::before {
+    content: "◈";
+    display: block;
+    color: $color-gold;
+    font-size: 13px;
+    line-height: 1;
+    margin-bottom: ($baseline-grid-unit / 1.5);
+}
+
+.pagedjs_blank_page .pagedjs_page_content::after {
+    content: "This page is intentionally blank";
+    display: block;
+    @include label();
+    font-size: 8px;
+    color: $color-mid;
+}
