@@ -42,9 +42,25 @@ if (args.help || !args.content) {
 const indexFile = path.join(path.resolve(args.content), 'index.html')
 let html = fs.readFileSync(indexFile, 'utf8')
 
-// The label may hold escaped brackets or a balanced pair of its own; it may
-// not hold a tag, which is what stops this running away across the markup.
-const LINK = /\[((?:[^[\]<>]|\\\[|\\\])+)\]\((#[^)\s]+)\)/g
+// The label may hold escaped brackets OR a balanced literal pair of its own;
+// it may not hold a tag, which is what stops this running away across the
+// markup.
+//
+// The literal pair is not optional. A first version accepted only the escaped
+// form and then stripped the escapes from the whole file afterwards, which
+// turned every link it had failed to convert into one it could no longer
+// recognise — `Tbeta4\[1-4\]` became `Tbeta4[1-4]` and the quick-reference
+// table kept printing its link syntax. Order of operations, not pattern
+// strength, was the fault; the pattern now covers both and the escapes come
+// off last regardless.
+// A label may also carry inline emphasis — the quick-reference tables set
+// every term bold, so the third variant found was
+// `[<strong>Ac-SDKP (Goralatide / Tbeta4[1-4])</strong>](#…)`. Those tags are
+// named one by one rather than admitting `<` generally, because admitting it
+// is what lets a pattern like this swallow half the document.
+const INLINE = '</?(?:strong|em|b|i|sup|sub|span)[^<>]*>'
+const LINK = new RegExp(
+  '\\[((?:' + INLINE + '|[^[\\]<>]|\\\\\\[|\\\\\\]|\\[[^[\\]<>]*\\])+)\\]\\((#[^)\\s]+)\\)', 'g')
 
 let links = 0
 html = html.replace(LINK, function (all, label, target) {
