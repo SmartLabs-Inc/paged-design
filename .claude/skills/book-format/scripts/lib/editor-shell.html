@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AET — book editor</title>
+<style id="ed-theme" data-pagedjs-ignore>/*THEME_CSS*/</style>
+<style data-pagedjs-ignore>
+  :root{
+    --nav:#0D2035; --teal:#137C7A; --tint:#EAF3F3; --gold:#B79A5B;
+    --ui:#F4F6F7; --line:#D9DFE2; --quiet:#66717C;
+    --sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  }
+  /* The chrome is sized by its declared width, not width+padding+border:
+     without this the panel measured 343px against a 318px gutter and the
+     page slid under it by exactly the difference. */
+  #ed-bar,#ed-side,#ed-panel,#ed-busy{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#8C949A}
+  #ed-bar,#ed-side,#ed-panel,#ed-busy,#ed-hint{font-family:var(--sans);-webkit-font-smoothing:antialiased}
+
+  #ed-bar{position:fixed;top:0;left:0;right:0;height:46px;z-index:9000;background:var(--nav);
+    color:#fff;display:flex;align-items:center;gap:12px;padding:0 14px;font-size:13px}
+  #ed-bar b{font-weight:700}
+  #ed-bar select{font-family:var(--sans);font-size:13px;padding:4px 6px;border-radius:3px;
+    border:1px solid #2A4157;background:#132A42;color:#fff;max-width:340px}
+  #ed-bar .sp{flex:1}
+  #ed-bar button{font-family:var(--sans);font-size:12.5px;padding:5px 11px;border-radius:3px;
+    border:1px solid #2A4157;background:#17304A;color:#fff;cursor:pointer}
+  #ed-bar button:hover{background:#1F3E5C}
+  #ed-bar button.go{background:var(--teal);border-color:var(--teal)}
+  #ed-bar .count{color:#9FB3C4;font-size:12px}
+
+  #ed-side{position:fixed;top:46px;left:0;bottom:0;width:208px;z-index:8000;background:#fff;
+    border-right:1px solid var(--line);overflow:auto;font-size:12.5px}
+  #ed-side h4{margin:0;padding:10px 12px 6px;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--teal)}
+  #ed-side a{display:block;border-left:3px solid transparent;padding:7px 12px;cursor:pointer;
+    color:#17202A;text-decoration:none}
+  #ed-side a:hover{background:var(--ui)}
+  #ed-side a.on{border-left-color:var(--teal);background:var(--tint);font-weight:600}
+  #ed-side .pg{color:var(--quiet);font-size:11px;float:right;font-variant-numeric:tabular-nums}
+
+  /* Both rails are fixed, so the stage has to reserve room for BOTH or the
+     page centres itself underneath the correction panel. The right gutter is
+     reserved whether the panel is open or not: making it conditional moved
+     the page sideways every time you selected something. */
+  /* Paged.js lays its pages out as two-up spreads: .pagedjs_pages is a flex
+     row twice the page width, and the first page carries a left margin of a
+     whole page so it sits on the right of the spread. That is why the page
+     appeared under the correction panel however the stage was centred — the
+     stage was 914px and its contents 1632px. One centred column instead. */
+  #ed-stage{margin:46px 322px 0 212px;padding:22px 0 90px;zoom:var(--zoom,1)}
+  #ed-stage .pagedjs_pages{display:block!important;width:auto!important;max-width:none!important}
+  #ed-stage .pagedjs_page{margin:0 auto 6px!important;float:none!important}
+  body.railoff #ed-stage{margin-left:0}
+  body.railoff #ed-side{display:none}
+  #ed-stage .pagedjs_page{box-shadow:0 2px 14px rgba(0,0,0,.3);background:#fff}
+  .ed-lbl{display:block;width:max-content;margin:22px auto 6px;font-size:11px;color:#23313C;
+    background:#E7EBEE;padding:2px 9px;border-radius:2px}
+
+  .ed-hover{outline:2px dashed var(--teal)!important;outline-offset:2px;cursor:pointer}
+  .ed-sel{outline:2.5px solid var(--gold)!important;outline-offset:2px;background:rgba(183,154,91,.12)!important}
+  .ed-done{box-shadow:inset 3px 0 0 var(--teal)}
+
+  #ed-panel{position:fixed;right:0;top:46px;bottom:0;width:314px;z-index:8500;background:#fff;
+    border-left:1px solid var(--line);padding:14px;overflow:auto;display:none}
+  #ed-panel.on{display:block}
+  #ed-panel h5{margin:0 0 4px;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--teal)}
+  #ed-panel .what{font-family:Georgia,serif;font-size:13.5px;color:#17202A;background:var(--ui);
+    padding:9px 10px;border-radius:3px;max-height:150px;overflow:auto;margin-bottom:5px}
+  #ed-panel .meta{font-size:11.5px;color:var(--quiet);margin-bottom:12px}
+  #ed-panel button.act{display:block;width:100%;text-align:left;margin-bottom:6px;padding:8px 10px;
+    border:1px solid var(--line);border-radius:3px;background:#fff;cursor:pointer;
+    font-family:var(--sans);font-size:12.5px;color:#17202A}
+  #ed-panel button.act:hover{border-color:var(--teal);background:var(--tint)}
+  #ed-panel button.act small{display:block;color:var(--quiet);font-size:11px;margin-top:2px}
+  #ed-panel .undo{border-color:#C0545A;color:#9B2C32}
+  #ed-panel hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+
+  #ed-busy{position:fixed;inset:46px 322px 0 212px;z-index:9500;background:rgba(246,247,248,.92);
+    display:flex;align-items:center;justify-content:center;font-size:15px;color:#17202A}
+  #ed-busy.off{display:none}
+  #ed-hint{position:fixed;left:222px;bottom:14px;z-index:9000;background:var(--nav);color:#fff;
+    font-size:12px;padding:7px 12px;border-radius:3px;opacity:.93}
+</style>
+</head>
+<body>
+
+<div id="ed-bar">
+  <b>AET</b>
+  <select id="ed-sections" aria-label="Section"></select>
+  <button id="ed-prev" title="Previous section">&larr;</button>
+  <button id="ed-next" title="Next section">&rarr;</button>
+  <span class="count" id="ed-count"></span>
+  <span class="sp"></span>
+  <span class="count" id="ed-changes"></span>
+  <label class="count" for="ed-zoom">zoom</label>
+  <select id="ed-zoom" aria-label="Zoom">
+    <option value="0.6">60%</option>
+    <option value="0.75">75%</option>
+    <option value="0.9">90%</option>
+    <option value="1" selected>100%</option>
+    <option value="1.25">125%</option>
+  </select>
+  <button id="ed-rail" title="Hide the section list">&#9776;</button>
+  <button id="ed-save" class="go">Download edited book</button>
+  <button id="ed-undo">Undo last</button>
+  <button id="ed-list">List changes</button>
+  <button id="ed-reset">Clear all</button>
+</div>
+
+<div id="ed-side"><h4>Sections</h4><div id="ed-sectionlist"></div></div>
+<div id="ed-stage"></div>
+<div id="ed-busy">paginating this section…</div>
+<div id="ed-hint">Click anything on a page to change it</div>
+
+<div id="ed-panel">
+  <h5>Selected</h5>
+  <div class="what" id="ed-what"></div>
+  <div class="meta" id="ed-meta"></div>
+  <button class="act" data-do="page">Start a new page before this<small>pushes this and what follows to the next page</small></button>
+  <button class="act" data-do="column">Start a new column before this<small>pushes it to the top of the next column</small></button>
+  <button class="act" data-do="keepnext">Keep with what follows<small>stops a break between this and the next block</small></button>
+  <button class="act" data-do="keepprev">Keep with what precedes<small>stops a break between this and the block above</small></button>
+  <button class="act" data-do="image">Insert an image before this<small>choose a file from your computer</small></button>
+  <button class="act" data-do="text">Edit this text<small>type on the page, then click away</small></button>
+  <button class="act" data-do="joinprev">Join to the block above<small>for a paragraph the build split in two</small></button>
+  <hr>
+  <button class="act undo" data-do="delete">Delete this block<small>removes it from the book</small></button>
+  <button class="act undo" data-do="undo">Undo changes to this block</button>
+  <button class="act" data-do="close">Close</button>
+</div>
+
+<template id="ed-book"><!--BOOK_BODY--></template>
+<template data-ref="pagedjs-content" id="ed-slot"></template>
+
+<script>
+// ---------------------------------------------------------------------------
+// Prepared before Paged.js loads.
+//
+// Paged.js's auto mode looks for <template data-ref="pagedjs-content"> as a
+// direct child of body and paginates whatever is in it. Using its own path
+// rather than driving Previewer by hand is deliberate: four attempts at the
+// manual API each laid out a single page of whitespace, because flow() wants
+// the exact fragment wrapContent() produces and an element, a string and a
+// hand-built fragment are all near-misses that fail silently.
+//
+// So the section to work on is chosen here and dropped into that template,
+// and changing section reloads the page. Edits are kept as a short list of
+// marks in localStorage and replayed onto the pristine book on each load —
+// which is why a 3MB book never has to be stored anywhere.
+// ---------------------------------------------------------------------------
+window.ED = (function(){
+"use strict";
+var PAGEMAP = /*PAGE_MAP*/;
+var KEY = 'aet-editor-marks';
+var SECKEY = 'aet-editor-section';
+
+var SRC = document.createElement('div');
+SRC.innerHTML = document.getElementById('ed-book').innerHTML;
+
+var n = 1;
+SRC.querySelectorAll('*').forEach(function(el){ el.setAttribute('data-ed', n++); });
+
+function loadMarks(){
+  try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e){ return []; }
+}
+function saveMarks(m){
+  try { localStorage.setItem(KEY, JSON.stringify(m)); }
+  catch(e){ alert('Could not save that change: the browser refused local storage.'); }
+}
+var marks = loadMarks();
+
+marks.forEach(function(m){
+  var el = SRC.querySelector('[data-ed="' + m.id + '"]');
+  if (!el) return;
+  if (m.do === 'page'){ el.classList.add('push-page'); el.style.breakBefore = 'page'; }
+  else if (m.do === 'column'){ el.style.breakBefore = 'column'; }
+  else if (m.do === 'keepnext' || m.do === 'keepprev'){
+    var other = m.do === 'keepnext' ? el.nextElementSibling : el.previousElementSibling;
+    if (!other) return;
+    var w = document.createElement('div');
+    w.style.breakInside = 'avoid';
+    w.setAttribute('data-ed', 'w' + m.id);
+    el.parentNode.insertBefore(w, m.do === 'keepnext' ? el : other);
+    if (m.do === 'keepnext'){ w.appendChild(el); w.appendChild(other); }
+    else { w.appendChild(other); w.appendChild(el); }
+  }
+  else if (m.do === 'image'){
+    var fig = document.createElement('div');
+    fig.className = 'figure'; fig.setAttribute('data-ed', 'i' + m.id);
+    var im = document.createElement('img'); im.src = m.src; im.alt = m.name || '';
+    fig.appendChild(im);
+    el.parentNode.insertBefore(fig, el);
+  }
+  else if (m.do === 'text'){ el.innerHTML = m.html; }
+  else if (m.do === 'delete'){ el.remove(); }
+  else if (m.do === 'joinprev'){
+    // What you would otherwise do by hand to a paragraph the build split:
+    // put its words back on the end of the block above and drop the remains.
+    var up = el.previousElementSibling;
+    if (!up) return;
+    up.innerHTML = up.innerHTML.replace(/\s+$/, '') + ' ' + el.innerHTML;
+    el.remove();
+  }
+});
+
+function innerHolder(comp){
+  var a = comp.firstElementChild, b = a && a.firstElementChild;
+  return (b && b.children.length) ? b : (a || comp);
+}
+var chunks = [];
+Array.prototype.forEach.call(SRC.children, function(comp){
+  var hold = innerHolder(comp);
+  var units = Array.prototype.slice.call(hold.children);
+  if (!units.length) return;
+  var cur = null;
+  units.forEach(function(u){
+    var opener = u.classList && u.classList.contains('keep-lead') &&
+                 u.classList.contains('section-opener');
+    if (!cur || opener){ cur = { comp: comp, units: [], title: '' }; chunks.push(cur); }
+    cur.units.push(u);
+    if (!cur.title){
+      // The heading, not the unit's text: every section box carries a hidden
+      // run-head copy of its own title, so textContent reads it twice —
+      // "II. Tissue Repair, Skin, and Anti-AgingII. Tissue Re".
+      var h = u.querySelector && u.querySelector('h1,h2,h3,h4,h5');
+      var t = ((h || u).textContent || '').replace(/\s+/g,' ').trim();
+      if (t) cur.title = t.slice(0,52);
+    }
+  });
+});
+
+// The map is keyed on the first sixty characters, so a short heading like
+// "I. Foundations" collides with its own line in the table of contents and
+// labels the section page 13. Only text long enough to be unique is used.
+function pageOfNode(node){
+  var t = (node.textContent||'').replace(/\s+/g,' ').trim();
+  if (t.length >= 45){
+    var hit = PAGEMAP.blocks[t.slice(0,60)];
+    if (hit) return hit;
+  }
+  // The map indexes text blocks, not the wrappers around them, so a click on
+  // an entry or a panel finds nothing. Ask its first real block instead.
+  var kids = node.querySelectorAll ? node.querySelectorAll('p,li,h1,h2,h3,h4,h5,td,th') : [];
+  for (var i = 0; i < kids.length; i += 1){
+    var k = (kids[i].textContent||'').replace(/\s+/g,' ').trim();
+    if (k.length < 45) continue;
+    var h = PAGEMAP.blocks[k.slice(0,60)];
+    if (h) return h;
+  }
+  return undefined;
+}
+function chunkPage(c){
+  for (var i=0;i<c.units.length;i++){
+    var p = pageOfNode(c.units[i]);
+    if (p) return p;
+    var kids = c.units[i].querySelectorAll('p,h1,h2,h3,h4,h5,li');
+    for (var j=0;j<kids.length;j++){ var q = pageOfNode(kids[j]); if (q) return q; }
+  }
+  return null;
+}
+
+var current = Number(localStorage.getItem(SECKEY) || 0);
+if (!(current >= 0 && current < chunks.length)) current = 0;
+
+(function(){
+  var c = chunks[current];
+  var shell = c.comp.cloneNode(false);
+  var mid = document.createElement('div'), inner = document.createElement('div');
+  c.units.forEach(function(u){ inner.appendChild(u.cloneNode(true)); });
+  mid.appendChild(inner); shell.appendChild(mid);
+  document.getElementById('ed-slot').innerHTML = shell.outerHTML;
+})();
+
+window.PagedConfig = {
+  auto: true,
+  renderTo: document.getElementById('ed-stage'),
+  after: function(){ if (window.ED && window.ED.ready) window.ED.ready(); }
+};
+
+return {
+  SRC: SRC, chunks: chunks, current: current, marks: marks,
+  chunkPage: chunkPage, pageOfNode: pageOfNode,
+  setSection: function(i){ localStorage.setItem(SECKEY, String(i)); location.reload(); },
+  addMark: function(m){ marks.push(m); saveMarks(marks); location.reload(); },
+  dropMarks: function(id){
+    marks = marks.filter(function(m){ return String(m.id) !== String(id); });
+    saveMarks(marks); location.reload();
+  },
+  popMark: function(){ marks.pop(); saveMarks(marks); location.reload(); },
+  clearAll: function(){ localStorage.removeItem(KEY); location.reload(); }
+};
+})();
+</script>
+
+<script>/*PAGED_JS*/</script>
+
+<script>
+(function(){
+"use strict";
+var ED = window.ED;
+var stage = document.getElementById('ed-stage');
+var panel = document.getElementById('ed-panel');
+var busy  = document.getElementById('ed-busy');
+var sel = null, selId = null;
+
+function srcNode(id){ return ED.SRC.querySelector('[data-ed="' + id + '"]'); }
+
+(function buildSections(){
+  var selectEl = document.getElementById('ed-sections');
+  var listEl = document.getElementById('ed-sectionlist');
+  ED.chunks.forEach(function(c, i){
+    var p = ED.chunkPage(c);
+    var o = document.createElement('option');
+    o.value = i;
+    o.textContent = (p ? 'p' + p + ' — ' : '') + (c.title || 'section ' + (i+1));
+    if (i === ED.current) o.selected = true;
+    selectEl.appendChild(o);
+
+    var a = document.createElement('a');
+    a.href = 'javascript:void 0';
+    if (i === ED.current) a.className = 'on';
+    var sp = document.createElement('span'); sp.className = 'pg'; sp.textContent = p ? 'p'+p : '';
+    a.appendChild(sp);
+    a.appendChild(document.createTextNode(c.title || ('section ' + (i+1))));
+    a.addEventListener('click', function(){ ED.setSection(i); });
+    listEl.appendChild(a);
+  });
+  selectEl.addEventListener('change', function(){ ED.setSection(Number(selectEl.value)); });
+  document.getElementById('ed-prev').addEventListener('click', function(){
+    if (ED.current > 0) ED.setSection(ED.current - 1); });
+  document.getElementById('ed-next').addEventListener('click', function(){
+    if (ED.current < ED.chunks.length - 1) ED.setSection(ED.current + 1); });
+  var on = listEl.children[ED.current];
+  if (on) on.scrollIntoView({ block: 'center' });
+})();
+
+(function countChanges(){
+  var ids = {};
+  ED.marks.forEach(function(m){ ids[m.id] = 1; });
+  var k = Object.keys(ids).length;
+  document.getElementById('ed-changes').textContent =
+    k ? (k + ' block' + (k===1?'':'s') + ' changed') : 'no changes yet';
+})();
+
+function clearHover(){
+  var h = stage.querySelector('.ed-hover'); if (h) h.classList.remove('ed-hover');
+}
+
+function pick(id){
+  var prev = stage.querySelector('.ed-sel'); if (prev) prev.classList.remove('ed-sel');
+  var shown = stage.querySelector('[data-ed="' + id + '"]');
+  if (shown) shown.classList.add('ed-sel');
+  selId = id; sel = srcNode(id);
+  if (!sel) return;
+  var txt = (sel.textContent || '').replace(/\s+/g,' ').trim();
+  document.getElementById('ed-what').textContent =
+    txt ? txt.slice(0,420) : '(an image or an empty block)';
+  var bits = [];
+  var p = ED.pageOfNode(sel); if (p) bits.push('book page ' + p);
+  bits.push(sel.tagName.toLowerCase());
+  var mine = ED.marks.filter(function(m){ return String(m.id) === String(id); });
+  if (mine.length) bits.push(mine.map(function(m){ return m.do; }).join(', '));
+  document.getElementById('ed-meta').textContent = bits.join(' · ');
+  panel.classList.add('on');
+}
+
+panel.addEventListener('click', function(e){
+  var b = e.target.closest('button.act'); if (!b) return;
+  var what = b.getAttribute('data-do');
+  if (what === 'close'){ panel.classList.remove('on'); return; }
+  if (!sel) return;
+  if (what === 'undo'){ ED.dropMarks(selId); return; }
+  if (what === 'delete'){
+    var t = (sel.textContent||'').replace(/\s+/g,' ').trim();
+    if (!confirm('Delete this block?\n\n' + (t ? t.slice(0,160) : '(empty block)'))) return;
+    ED.addMark({ id: selId, do: 'delete' });
+    return;
+  }
+  if (what === 'joinprev'){
+    if (!sel.previousElementSibling){
+      alert('Nothing above this block inside its section to join it to.');
+      return;
+    }
+    ED.addMark({ id: selId, do: 'joinprev' });
+    return;
+  }
+  if (what === 'text'){
+    var shown = stage.querySelector('[data-ed="' + selId + '"]');
+    if (!shown){ alert('Scroll that block into view first.'); return; }
+    shown.setAttribute('contenteditable', 'true');
+    shown.focus();
+    shown.addEventListener('blur', function once(){
+      shown.removeAttribute('contenteditable');
+      shown.removeEventListener('blur', once);
+      ED.addMark({ id: selId, do: 'text', html: shown.innerHTML });
+    });
+    return;
+  }
+  if (what === 'image'){
+    var inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*';
+    inp.addEventListener('change', function(){
+      var f = inp.files && inp.files[0]; if (!f) return;
+      var fr = new FileReader();
+      fr.onload = function(){ ED.addMark({ id: selId, do: 'image', src: fr.result, name: f.name }); };
+      fr.readAsDataURL(f);
+    });
+    inp.click();
+    return;
+  }
+  ED.addMark({ id: selId, do: what });
+});
+
+function download(name, text, type){
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: type || 'text/html' }));
+  a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+document.getElementById('ed-save').addEventListener('click', function(){
+  var copy = ED.SRC.cloneNode(true);
+  copy.querySelectorAll('[data-ed]').forEach(function(el){ el.removeAttribute('data-ed'); });
+  copy.querySelectorAll('.ed-hover,.ed-sel,.ed-done').forEach(function(el){
+    el.classList.remove('ed-hover','ed-sel','ed-done');
+  });
+  download('index.html',
+    '<!DOCTYPE html>\n<html lang="en">\n<head>\n<title>aet-md</title>\n' +
+    '<meta http-equiv="content-type" content="text/html; charset=UTF-8" />\n' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
+    '<script src="../../js/pager.js"><\/script>\n</head>\n<body>\n' +
+    copy.innerHTML + '\n</body>\n</html>\n');
+});
+document.getElementById('ed-list').addEventListener('click', function(){
+  var rows = ED.marks.map(function(m){
+    var node = srcNode(m.id);
+    return {
+      page: node ? (ED.pageOfNode(node) || null) : null,
+      change: m.do,
+      file: m.name || undefined,
+      anchor: node ? (node.textContent||'').replace(/\s+/g,' ').trim().slice(0,70) : ''
+    };
+  });
+  rows.sort(function(a,b){ return (a.page||0) - (b.page||0); });
+  download('corrections.json', JSON.stringify(rows, null, 1), 'application/json');
+});
+(function viewControls(){
+  var z = document.getElementById('ed-zoom');
+  // Fit the page between the two rails. Clamped on every load, not just the
+  // first: a zoom chosen on a wide screen pushes the page under the panel on
+  // a narrow one, and the page sliding under the panel is the whole fault
+  // this is here to prevent.
+  var stage = document.getElementById('ed-stage');
+  var maxFit = Math.max(0.5, Math.min(1.25, (stage.clientWidth - 64) / 816));
+  var saved = parseFloat(localStorage.getItem('aet-editor-zoom') || '1');
+  if (!(saved > 0)) saved = 1;
+  var use = Math.round(Math.min(saved, maxFit) * 20) / 20;
+  localStorage.setItem('aet-editor-zoom', String(use));
+  z.value = String(use);
+  if (!z.value) { var o = document.createElement('option');
+    o.value = String(use); o.textContent = Math.round(use*100) + '%';
+    z.appendChild(o); z.value = String(use); }
+  document.documentElement.style.setProperty('--zoom', String(use));
+  z.addEventListener('change', function(){
+    document.documentElement.style.setProperty('--zoom', z.value);
+    localStorage.setItem('aet-editor-zoom', z.value);
+  });
+  var rail = document.getElementById('ed-rail');
+  if (localStorage.getItem('aet-editor-rail') === 'off') document.body.classList.add('railoff');
+  rail.addEventListener('click', function(){
+    document.body.classList.toggle('railoff');
+    localStorage.setItem('aet-editor-rail',
+      document.body.classList.contains('railoff') ? 'off' : 'on');
+  });
+})();
+
+// A deleted block cannot be clicked to undo it, so the last change can
+// always be taken back from the bar.
+document.getElementById('ed-undo').addEventListener('click', function(){
+  if (!ED.marks.length){ alert('Nothing to undo.'); return; }
+  ED.popMark();
+});
+
+document.getElementById('ed-reset').addEventListener('click', function(){
+  if (ED.marks.length && confirm('Remove all ' + ED.marks.length + ' changes?')) ED.clearAll();
+});
+
+window.ED.ready = function(){
+  busy.classList.add('off');
+  var first = ED.chunkPage(ED.chunks[ED.current]);
+  var pages = stage.querySelectorAll('.pagedjs_page');
+  Array.prototype.forEach.call(pages, function(pg, i){
+    var tag = document.createElement('div');
+    tag.className = 'ed-lbl';
+    tag.textContent = first ? ('book page ' + (first + i)) : ('page ' + (i+1) + ' of this section');
+    pg.parentNode.insertBefore(tag, pg);
+  });
+  document.getElementById('ed-count').textContent =
+    pages.length + (pages.length === 1 ? ' page' : ' pages');
+
+  stage.addEventListener('mouseover', function(e){
+    var t = e.target.closest && e.target.closest('[data-ed]');
+    if (!t || !stage.contains(t)) return;
+    clearHover(); t.classList.add('ed-hover');
+  });
+  stage.addEventListener('mouseout', clearHover);
+  stage.addEventListener('click', function(e){
+    var t = e.target.closest && e.target.closest('[data-ed]');
+    if (!t || !stage.contains(t)) return;
+    e.preventDefault();
+    pick(t.getAttribute('data-ed'));
+  });
+
+  var ids = {};
+  ED.marks.forEach(function(m){ ids[m.id] = 1; });
+  Object.keys(ids).forEach(function(id){
+    var el = stage.querySelector('[data-ed="' + id + '"]');
+    if (el) el.classList.add('ed-done');
+  });
+};
+
+if (stage.querySelector('.pagedjs_page')) window.ED.ready();
+})();
+</script>
+</body>
+</html>

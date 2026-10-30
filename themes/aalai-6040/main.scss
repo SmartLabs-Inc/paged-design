@@ -1,0 +1,21 @@
+// main.scss — AALAI 60/40
+//
+// The asymmetric grid: a 60% text column with a 40% margin column beside it,
+// carrying the callouts, charts, figures and side notes. Inherits the AALAI
+// palette, components and apparatus from `aalai-textbook`; what changes is the
+// grid and how the two columns relate.
+
+@charset "utf-8";
+
+@import '../_defaults/variables';
+@import '../aalai/variables';
+@import '../aalai-textbook/variables';
+@import 'variables';
+
+@import '../_defaults/selectors';
+@import '../aalai/selectors';
+
+@import '../_defaults/styles';
+@import '../aalai/styles';
+@import '../aalai-textbook/styles';
+@import 'styles';

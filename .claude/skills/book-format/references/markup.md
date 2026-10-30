@@ -1,0 +1,302 @@
+# Book HTML: the markup contract
+
+A book is one HTML file. Its `<body>` contains a flat sequence of **page
+components** — top-level `<div>`s, one per cover, title page, chapter, appendix.
+Each carries a class that the theme styles and assigns to a named `@page`.
+Inside a component, ordinary semantic HTML carries **feature classes** that
+themes style.
+
+Every class here is configurable. A theme's `_selectors.scss` maps the theme's
+internal names onto whatever classes a particular book actually uses, so an
+existing book's HTML never has to be rewritten to fit these names — see
+"Retargeting a theme" at the end.
+
+## Document skeleton
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Book title</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Demo-site loader: adds the theme switcher, waits for MathJax, runs Paged.js -->
+  <script src="../../js/pager.js"></script>
+</head>
+<body>
+  <div class="my-book cover">…</div>
+  <div class="my-book half-title-page page-1" id="half-title-page">…</div>
+  <!-- …one div per page component… -->
+</body>
+</html>
+```
+
+In production (not the demo site), drop `pager.js` and load the compiled CSS and
+Paged.js directly:
+
+```html
+<link rel="stylesheet" type="text/css" href="path/to/main.css">
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+```
+
+### Page-component shape
+
+Every component in the shipped sample content nests two plain wrapper divs
+around its content. Keep the nesting — themes and Paged.js both rely on it:
+
+```html
+<div class="my-book chapter" data-header="Chapter title">
+  <div>
+    <div>
+      <h2 id="chapter-one"><span class="chapter-number">1</span> Chapter one</h2>
+      <p>First paragraph…</p>
+    </div>
+  </div>
+</div>
+```
+
+`data-header` (and optional `data-header-left` / `data-header-right`) hold the
+running-head text for themes that read it. Give every component a `class` naming
+the book (`my-book` above) so book-specific overrides have something to hook.
+
+## Page-component classes
+
+Ordered as they normally appear in a book.
+
+| Class | Component | Notes |
+| --- | --- | --- |
+| `cover` | Cover image | Full-bleed, no margins; for screen PDFs only — printers want a separate cover file |
+| `half-title-page` | Half title | Usually carries `page-1` to start numbering |
+| `previous-publications-page` | "Also by the author" | |
+| `frontispiece-page` | Frontispiece image | |
+| `title-page` | Title page | |
+| `copyright-page` | Copyright / imprint | |
+| `contents-page` | Table of contents | |
+| `dedication-page` | Dedication | |
+| `epigraph-page` | Book epigraph | |
+| `frontmatter` | Any other frontmatter (preface, foreword) | Catch-all; roman page numbers by default |
+| `part-page` | Part divider | Starts on recto by default |
+| `chapter` | A chapter | Starts on recto by default |
+| `endmatter` | Appendix, notes, bibliography, index, colophon | |
+
+Two utility classes on page components:
+
+- `page-N` — reset the page counter, e.g. `class="half-title-page page-1"`.
+  Paged.js currently only resets to 1 whatever N you give, so in practice use
+  `page-1` and let numbering run.
+- `non-printing` on a heading keeps it in the DOM (so the TOC can link to it)
+  while hiding it visually — used for the copyright page's `<h1>`.
+
+Frontmatter components get lower-roman numbers by default
+(`$frontmatter-page-numbers`); body components get decimal.
+
+## Feature classes
+
+Applied to elements *inside* page components.
+
+### Titles
+
+```html
+<p class="title-page-title">Book title</p>
+<p class="title-page-subtitle">A subtitle</p>
+<p class="title-page-author">Author Name</p>
+<p class="title-page-contributors">Illustrated by …</p>
+<p class="title-page-publisher"><a href="https://example.com">Publisher</a></p>
+<p class="title-page-logo"><img src="images/publisher-logo.jpg" alt="Publisher"></p>
+```
+
+The half-title page reuses `title-page-title`.
+
+### Chapter openers
+
+```html
+<h2 id="chapter-one"><span class="chapter-number">1</span> Chapter one</h2>
+```
+
+`chapter-number` is also matched on `h1 strong:first-of-type` and
+`h2 strong:first-of-type`, so Markdown's `**1** Chapter one` works without
+hand-editing.
+
+Heading levels are *semantic*, not visual. Part titles are `h1`, chapter titles
+`h2`, and frontmatter titles ("Contents", "Preface") are semantically `h1` but
+should *look* like `h2` — give them `class="heading-2"` (or whatever the theme
+defines) and let `_styles.scss` `@include h2()`.
+
+### Table of contents
+
+```html
+<ol class="toc-list">
+  <li class="toc-entry-title frontmatter-entry">
+    <a href="#preface"><span class="toc-entry-text">Preface</span></a>
+  </li>
+  <li class="toc-entry-title">
+    <a href="#chapter-one"><span class="toc-entry-text">Chapter one</span></a>
+  </li>
+</ol>
+```
+
+Page numbers are generated by CSS `target-counter(attr(href), page)` — never
+type them. `frontmatter-entry` makes the entry use roman numerals. Every `href`
+must match an `id` in the book, or the entry prints no number.
+
+### Quotations
+
+```html
+<p class="epigraph">Not all those who wander are lost.</p>
+<p class="source">— J.R.R. Tolkien</p>
+
+<blockquote class="pullquote"><p>A phrase lifted from the text.</p></blockquote>
+
+<blockquote>
+  <p>An ordinary block quotation.</p>
+  <p class="source">Author, <em>Title</em></p>
+</blockquote>
+```
+
+`source` works after epigraphs, pull quotes, block quotes, figures, and tables.
+
+### Notes
+
+```html
+<!-- Sidenote: floats into the margin -->
+<p class="sidenote">A note in the margin.</p>
+
+<!-- Footnote reference and its endnote block -->
+<p>Text with a note.<sup><a href="#fn1" class="footnote" id="fnref1">1</a></sup></p>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn1"><p>The note text. <a href="#fnref1" class="reversefootnote">↩</a></p></li>
+  </ol>
+</div>
+```
+
+Paged.js does not yet support real page footnotes (`@footnotes`), so notes
+collect at the end of the component. The `reversefootnote` backlink is hidden
+and replaced by a generated "(page N)" reference.
+
+### Figures, images, tables
+
+The default selector is `figure, .figure`, so a `<figure>` element, a
+`<div class="figure">`, or a `<blockquote class="figure">` all work. Any `<p>`
+inside is styled as a caption — centered, unindented, one step smaller.
+
+```html
+<figure id="figure-1">
+  <p><img src="images/figure-1-1.jpg" alt="Description"></p>
+  <p><span class="figure-reference">Figure 1.1</span> A caption.</p>
+  <p class="source">Source: …</p>
+</figure>
+
+<table>…</table>
+<p class="table-caption">Table 1: A caption.</p>
+```
+
+Figures are `break-inside: avoid` — an oversized figure will push to the next
+page and leave a short page. `float: bottom` is not yet supported by Paged.js,
+so figures sit inline where they appear.
+
+### Boxes and asides
+
+```html
+<div class="box">
+  <h3>A boxed aside</h3>
+  <p>…</p>
+</div>
+```
+
+Also styled by default: `.margin-box` (any element pushed into the margin),
+`.dedication` (a paragraph), `.dialogue` (a `<dl>`), `.bibliography` (a list),
+`.glossary` (a list), `.index` / `.reference-index` (a list), `.code` (inline).
+
+### Checklists and schedules
+
+AALAI only. For a document the reader has to act on — a development checklist,
+an onboarding pack, an intake form — rather than one they only read.
+
+```html
+<div class="week">
+  <p class="week-number">Week 03</p>
+  <p class="week-dates">August 24&#8202;–&#8202;30</p>
+
+  <p class="list-label list-label-you">Yours</p>
+  <ul class="checklist">
+    <li>Something only the reader can do.</li>
+  </ul>
+
+  <p class="list-label">Ours</p>
+  <ul class="ours">
+    <li>Something someone else is doing in the same period.</li>
+  </ul>
+</div>
+```
+
+`.checklist` draws a box; `.ours` draws a dash and sets the text in the muted
+gray. **Put a box only on what the reader themselves must do.** Boxing both
+lists is tidier and worse: a reader scanning for their own obligations then has
+to read every line to find out which ones are theirs.
+
+The box is drawn with a border rather than set as ☐ (U+2610). The glyph is
+missing from most text faces, so it would fall back to whatever the system
+substitutes — a different size and weight, varying page to page.
+
+`.week` keeps a block whole and rules it off from the next. A week split across
+a page break reads as two half-weeks and the items below the fold get missed.
+Expect a short page wherever a block will not fit; that is the rule working.
+
+### Cross-references
+
+```html
+<a href="#letter" class="show-page-number">the letter</a>   <!-- appends "(page 12)" -->
+<a href="https://example.com" class="show-url">Example</a>  <!-- appends the URL -->
+<a href="#fig-1" class="cross-reference">Figure 1</a>
+```
+
+Section and figure numbers typed into prose (“see Section 04”) are **not**
+checked by `check-layout.js` — it validates `href` anchors, not English. If you
+renumber sections, grep every `Section [0-9]` in the document and confirm each
+one by hand against the heading it names.
+
+### Copyright page
+
+```html
+<h1 class="non-printing" id="copyright">Copyright</h1>
+<p><em>Book title</em><br>© 2026 Author Name</p>
+<p class="identifiers">
+  <span class="identifier">
+    <span class="identifier-scheme">ISBN</span>:
+    <span class="identifier-id">978-1-928313-13-7</span>
+  </span>
+</p>
+```
+
+## Rules for hand-tagging
+
+When converting a manuscript, the mechanical conversion gets structure right and
+semantics wrong. Read the text and tag:
+
+- A short quotation set before a chapter's first paragraph → `.epigraph` + a
+  following `.source`, not a `<blockquote>`.
+- An attribution line beginning with an em dash → `.source`.
+- A repeated phrase already in the body text, set large → `.pullquote`.
+- A "Note:", "Tip:", or "Case study" block → `.box`.
+- Standalone images with a caption → `<figure>` + `.figure-caption`.
+- Anything already in the frontmatter (preface, acknowledgments) → a
+  `frontmatter` component, not a `chapter`.
+
+Getting this wrong is invisible in the browser and obvious in the PDF.
+
+## Retargeting a theme onto existing HTML
+
+If a book's HTML already uses other class names, do not rewrite the book —
+override the selectors in `themes/<theme>/_selectors.scss`:
+
+```scss
+$page-chapter: 'section.component-body.chapter, section.component-body.unnumbered';
+$page-frontmatter: 'section.component-front';
+$epigraph: '.epigraph-page .epigraph, .opener .ep';
+```
+
+The full list of overridable selectors is in `themes/_defaults/_selectors.scss`.
+The Gaia theme is a worked example of retargeting onto a different platform's
+output.

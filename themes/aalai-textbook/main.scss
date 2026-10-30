@@ -1,0 +1,20 @@
+// main.scss — AALAI Textbook, designed 7 × 10in
+//
+// Inherits the AALAI palette, page furniture and components, then changes the
+// grid and adds the apparatus a reference textbook needs: a wide outer margin,
+// numbered sections, entry cards, a part tab on the page edge.
+//
+// See _variables.scss and _styles.scss for the reasoning on each.
+
+@charset "utf-8";
+
+@import '../_defaults/variables';
+@import '../aalai/variables';
+@import 'variables';
+
+@import '../_defaults/selectors';
+@import '../aalai/selectors';
+
+@import '../_defaults/styles';
+@import '../aalai/styles';
+@import 'styles';

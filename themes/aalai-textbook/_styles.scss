@@ -1,0 +1,3163 @@
+// ---------------------------------------------------------------------------
+// Embedded faces
+// ---------------------------------------------------------------------------
+// Paths are relative to the compiled main.css, which sits in the theme folder.
+
+@font-face {
+    font-family: "Charis SIL";
+    src: url("../../fonts/CharisSIL-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Charis SIL";
+    src: url("../../fonts/CharisSIL-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Charis SIL";
+    src: url("../../fonts/CharisSIL-Italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Charis SIL";
+    src: url("../../fonts/CharisSIL-BoldItalic.ttf") format("truetype");
+    font-weight: 700;
+    font-style: italic;
+    font-display: block;
+}
+
+// The client's licensed display face. One weight, no italic — which is why it
+// sets only the titles that need neither.
+@font-face {
+    font-family: "Source Sans 3";
+    src: url("../../fonts/SourceSans3-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Source Sans 3";
+    src: url("../../fonts/SourceSans3-Semibold.ttf") format("truetype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Source Sans 3";
+    src: url("../../fonts/SourceSans3-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Source Sans 3";
+    src: url("../../fonts/SourceSans3-It.ttf") format("truetype");
+    font-weight: 400;
+    font-style: italic;
+    font-display: block;
+}
+
+// The bold italic has to be here even though the design barely uses it. Where
+// a weight and style pair has no drawn face, Chromium synthesises one — and a
+// synthesised face is emitted into the PDF as a Type 3 font, glyphs drawn as
+// procedures rather than a font program. One missing bold italic put a Type 3
+// face into a book where every other face embedded correctly.
+@font-face {
+    font-family: "Source Sans 3";
+    src: url("../../fonts/SourceSans3-BoldIt.ttf") format("truetype");
+    font-weight: 700;
+    font-style: italic;
+    font-display: block;
+}
+
+@font-face {
+    font-family: "Windorse";
+    // TrueType, not the WOFF the licence arrived in. Chromium will not embed
+    // a CFF web font in the PDF it prints: it emits the glyphs as a Type 3
+    // font — drawing procedures rather than a font program — which prints
+    // unpredictably and is refused by some RIPs. The same outlines converted
+    // to quadratics embed as a real subset. The conversion is a build step,
+    // not a change to the licensed file.
+    src: url("../../fonts/Windorse-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+}
+
+// _styles.scss — AALAI Textbook, designed 7 × 10in
+//
+// The parent theme gives a correct book. This adds the apparatus that makes a
+// reference book usable: a visible hierarchy, a page furniture that says where
+// you are, and a repeating card for the unit of knowledge the reader actually
+// looks things up by.
+//
+// Nothing here is decoration for its own sake. Each piece answers a question a
+// reader asks with the book open: what am I looking at, where does it start,
+// where does it end, and how sure is anyone about it.
+
+// ---------------------------------------------------------------------------
+// The column set
+// ---------------------------------------------------------------------------
+// Two columns for running text; anything that is not running text spans them.
+//
+// The columns go on the chapter's inner wrapper rather than on the page,
+// because Paged.js paginates by flowing the content through its own column
+// mechanism and a second one declared on the page area fights it. Declared on
+// an element inside the flow it composes correctly — verified by rendering, and
+// the same route the default theme's own `.index` component takes.
+//
+// The index is excluded because it is already a two-column component; nesting
+// the two gave four columns of about 100px, which is a list of fragments.
+
+.chapter > div > div,
+.frontmatter > div > div,
+.endmatter:not(.index) > div > div {
+    column-count: $column-count;
+    column-gap: $column-gap;
+    column-fill: auto;
+}
+
+// What breaks the columns. The rule of the design: running prose is in the
+// column, and everything a reader is meant to stop at is across the page.
+// Shaded boxes, tables, figures, pull quotes, panel grids and every heading
+// above the entry — those are the visual breaks, and they only read as breaks
+// if they are wider than what surrounds them.
+.chapter-eyebrow,
+.chapter-subtitle,
+.part-title,
+.part-count,
+.part-figure,
+.part-contents,
+.section-head,
+.apparatus-head,
+.figure-span,
+.callout,
+.callout-dark,
+.callout-accent,
+.pullquote,
+.pillar,
+.objectives,
+.takeaways {
+    column-span: all;
+}
+
+// ---------------------------------------------------------------------------
+// Counters
+// ---------------------------------------------------------------------------
+// Entries are numbered inside their topic, and tables inside their part.
+//
+// Headings are deliberately NOT auto-numbered. The manuscript already carries
+// the author's own numbering — "Part I", "II. Tissue Repair", "3. Cardiac
+// Protection Protocol" — and a second scheme generated by the stylesheet would
+// contradict it on the page. The entry badge is safe because entries have no
+// numbering of their own.
+
+.chapter {
+    counter-reset: figure;
+}
+
+.chapter h3 {
+    counter-reset: entry;
+}
+
+// ---------------------------------------------------------------------------
+// Part opener
+// ---------------------------------------------------------------------------
+// A part title is the largest thing in the book and gets the page to itself
+// down to the first section. The eyebrow carries "Part I"; the title carries
+// the subject, so the two are not competing at the same size.
+
+.chapter-eyebrow {
+    @include label();
+    font-size: 11px;
+    color: $color-gold;
+    letter-spacing: 0.22em;
+    margin-bottom: ($baseline-grid-unit / 2);
+}
+
+.part-title {
+    font-size: 34px;
+    line-height: $baseline-grid-unit * 2;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    padding-bottom: ($baseline-grid-unit / 2);
+    // Brand blue, not gold. The gold is the institute mark; the rule under a
+    // title is structural, and the navy is what the brand leads with — it is
+    // the ground of the prototype's cover.
+    border-bottom: 3pt solid $color-navy;
+}
+
+// The banner under the part title. It is the one picture on the opener, it
+// carries the subject of the part in one image, and it is the width of the
+// page because nothing else on this page is in columns yet.
+//
+// The height is capped rather than left to the artwork. A part opener is a
+// run of spanning elements — title, banner, contents — and Paged.js cannot
+// place a `break-inside: avoid` box taller than the column it is going into:
+// it pushes, measures, pushes again, gives up, and silently stops paginating
+// the rest of the book. The banners supplied are all 1884 x 835, which sets
+// at about 59mm across this measure, so the cap is not doing anything today.
+// It is there for the one that arrives square.
+.part-figure {
+    break-inside: avoid;
+    margin: $baseline-grid-unit 0 ($baseline-grid-unit * 1.2) 0;
+}
+
+.part-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 62mm;
+    margin: 0 auto;
+}
+
+// The credit, ranged right under the picture it belongs to. Set like a figure
+// caption rather than like a label: a label is uppercase, and OpenAI is not a
+// word to flatten.
+//
+// Scoped as a child of the banner rather than left bare, for the reason the
+// figure note above it records — a bare class loses to any rule carrying a
+// class and an element, and the way it loses is that the credit sets centred
+// and justified with the body text and nobody sees it until the proof.
+.part-figure > .part-figure-credit {
+    @include sans-small();
+    font-size: $font-size-small * 0.85;
+    font-weight: 400;
+    color: $color-mid;
+    line-height: $baseline-grid-unit * 0.7;
+    margin: ($baseline-grid-unit / 3) 0 0 0;
+    text-align: right;
+    text-indent: 0;
+    hyphens: none;
+}
+
+// ---------------------------------------------------------------------------
+// Section head
+// ---------------------------------------------------------------------------
+// The manuscript uses h2 twice: once for the part, then again for each major
+// section inside it. Left alone they set at the same size, and the book loses
+// its top two levels at a stroke — every section looks like the start of a
+// part. This is the class that separates them.
+//
+// A section starts on a fresh page. With roughly ten to a part it costs a few
+// leaves, and it buys the single most useful thing in a reference book: a
+// reader turning pages can see a section begin without reading a word.
+
+// No forced page. A section used to open one, and with the sub-section panel
+// spanning straight after it — two spanning elements in a row, of which
+// Paged.js will only let the first open a page — the opener came out with a
+// title, a panel and eight inches of white. The section still reads as a break
+// because it spans the measure with a rule over it; it no longer costs a leaf
+// to say so.
+.section-head {
+    font-size: 21px;
+    line-height: $baseline-grid-unit * 1.5;
+    color: $color-navy;
+    margin: 0 0 $baseline-grid-unit 0;
+    padding-top: ($baseline-grid-unit / 2);
+    border-top: 2pt solid $color-teal;
+}
+
+// References at the end of a part are apparatus, not a section, and must not
+// take a page break or set at section size.
+.apparatus-head {
+    break-before: auto;
+    font-size: 12px;
+    font-family: $font-display-secondary;
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+    color: $color-mid;
+    border-top: $rule-thickness solid $color-mid;
+    padding-top: ($baseline-grid-unit / 2);
+    margin: ($baseline-grid-unit * 1.5) 0 ($baseline-grid-unit / 2) 0;
+}
+
+// ---------------------------------------------------------------------------
+// Topic and subtopic
+// ---------------------------------------------------------------------------
+// h3 is the topic a reader looks up — "Tissue Repair and Wound Healing" — and
+// it is also what the running head reports, so it is given a rule of its own.
+
+h3 {
+    font-size: 15.5px;
+    line-height: $baseline-grid-unit * 1.3;
+    margin: ($baseline-grid-unit * 1.5) 0 ($baseline-grid-unit / 2) 0;
+}
+
+h3::after {
+    content: "";
+    display: block;
+    width: $chapter-rule-width;
+    border-top: 2pt solid $color-teal;
+    margin-top: ($baseline-grid-unit / 2);
+}
+
+h4 {
+    // Up two points from 10.5px. It is the title of the shaded panel and the
+    // level a reader skimming for structure stops at, and at 10.5 it was
+    // barely above the body.
+    font-size: 13px;
+    // One line above, not one and a fifth.
+    margin: $baseline-grid-unit 0 ($baseline-grid-unit / 3) 0;
+}
+
+// ---------------------------------------------------------------------------
+// The entry card
+// ---------------------------------------------------------------------------
+// Three hundred and thirty-three entries are the reason this book exists, and
+// in the source they are a heading followed by two paragraphs — indistinguish-
+// able from any other heading followed by two paragraphs. The card gives each
+// one a beginning, an end and a number.
+//
+// A rule down the side rather than a tinted box, and this is the whole design
+// argument for the chapter: three hundred tinted boxes is a grey book. The
+// tints are kept for the callouts, where they still mean something because
+// they are rare. The rule costs no ink and does the same job — it draws the
+// extent of the entry, and it survives a page break, which a box does not.
+
+// All of the card's air is at its foot, none above its name.
+//
+// With space above the name, an entry that begins a column started a third of
+// a line lower than the text beside it and the two columns no longer lined up
+// — visible on every spread where a column opens on a new entry. The space
+// between two entries is the same either way; it just belongs to the entry
+// that is ending, not the one that is starting.
+.entry {
+    counter-increment: entry;
+    // One line between one entry and the next — one as the reader counts it,
+    // which is not the same as one as the stylesheet counts it. A full
+    // baseline here plus the half-leading the entry name's own line box
+    // carries reads as two blank lines on the page, and was reported as two.
+    margin: 0 0 ($baseline-grid-unit * 0.5) 0;
+}
+
+// The rule is drawn on the blocks inside the entry, not on the entry itself.
+//
+// The obvious way round — a border and padding on the wrapper — looks the same
+// and mis-fragments. Paged.js splits a paragraph inside a bordered, padded
+// container into its internal column set and then reports the paragraph as
+// running 1,672px past the page edge; a word-level diff of the paginated text
+// against the source shows nothing is actually lost, but every one of those
+// false reports buries a real overflow in check-layout's output. Thirty-three
+// entries in this book tripped it.
+//
+// Bordering the children instead leaves no fragmenting box at all. Vertical
+// space inside the entry comes from padding rather than margins so the rule
+// runs continuously from the heading to the last line.
+// No rule down the side. Three hundred and forty-one teal rules down a
+// two-column page read as scaffolding rather than as structure, and the entry
+// is already findable by its name. The name carries the weight instead:
+// larger, bold, underlined.
+.entry > * {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+// `break-after: avoid` is honoured here, unlike at a page break. The columns
+// are native CSS multicol laid out by the browser, so a column break obeys the
+// ordinary break properties; it is Paged.js's own page fragmentation that
+// ignores break-after. Without it an entry heading strands at the foot of a
+// column with its text in the next one.
+.entry > h5,
+.entry-lead > h5 {
+    break-after: avoid;
+    font-family: $font-display-secondary;
+    font-size: 12.5px;
+    font-style: normal;
+    font-weight: 700;
+    color: $color-navy;
+    line-height: $baseline-grid-unit;
+    // No padding above: see the note on `.entry` — the name has to sit on the
+    // same line as the first line of the column next to it.
+    padding-top: 0;
+    padding-bottom: ($baseline-grid-unit / 5);
+    // Underlined, but not with `text-decoration` — that draws through the
+    // descenders of a peptide name like "Semaglutide" and sits too tight. A
+    // border is a rule under the whole line, at a distance the design chooses.
+    border-bottom: 1pt solid $color-navy;
+    margin-bottom: ($baseline-grid-unit / 4);
+}
+
+// The number badge. Scoped inside the topic, so it reads 1 to 22 rather than
+// 1 to 333 — a number a reader can hold while scanning a spread.
+//
+// Drawn on a span the build writes, not on a `::before`. Two reasons, and the
+// first one is why the badge was printing as bare digits jammed against the
+// name — "11Topical Neuromodulator Peptides" — on all three hundred and
+// forty-one entries: the pseudo-element hangs off `.entry > h5`, and once the
+// heading is wrapped with its opening paragraph the h5 is no longer a child
+// of the entry, so the rule matches nothing. The second is that Paged.js
+// discards generated content on ordinary elements anyway.
+.entry-number {
+    display: inline-block;
+    min-width: 13px;
+    padding: 1px 3px 2px 3px;
+    margin-right: 6px;
+    background-color: $color-teal;
+    color: #FFFFFF;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-align: center;
+    vertical-align: 2px;
+}
+
+.entry > p {
+    padding-bottom: ($baseline-grid-unit * 0.55);
+}
+
+// The two halves of a lead the build cut after its third line. They have to
+// read as one paragraph: no space between them, no indent on the second, and
+// the first one's last line justified — it is a mid-paragraph line and would
+// otherwise set ragged and give the cut away.
+.lead-head {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    text-align-last: justify;
+}
+
+.lead-rest {
+    margin-top: 0;
+    text-indent: 0;
+    padding-bottom: ($baseline-grid-unit * 0.55);
+}
+
+.entry > .lead-rest:last-child {
+    padding-bottom: 0;
+}
+
+// The last paragraph of an entry takes no trailing padding. With it, the space
+// between one entry's last line and the next entry's name ran to two blank
+// lines — the paragraph's own padding, then the card's margin — and read as a
+// stray empty line at the foot of every one of the three hundred and forty-one
+// entries. The card's margin is the separation; the paragraph padding is only
+// for the gaps between paragraphs inside a card.
+.entry > p:last-child {
+    padding-bottom: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Section lead
+// ---------------------------------------------------------------------------
+// The paragraph that opens a section, set a size up. It is the same words the
+// author wrote; setting it apart gives the reader somewhere to land after a
+// page break and before the entries start.
+
+// Held to what follows it. This is a column break as often as a page break —
+// the columns are native multicol, so break-after is honoured at a column
+// boundary even though Paged.js ignores it at a page boundary.
+.standfirst {
+    break-after: avoid;
+    font-size: $font-size-default * 1.1;
+    line-height: $baseline-grid-unit * 1.2;
+    color: $color-navy;
+    margin-bottom: $baseline-grid-unit;
+}
+
+// ---------------------------------------------------------------------------
+// Citations
+// ---------------------------------------------------------------------------
+// The manuscript carries reference marks inline at body size — "…organ
+// effects.[60]" and "…futile,[5]". At full size in the middle of a sentence
+// they read as part of the prose and break the line up. Raised and reduced,
+// they do what a reference mark is meant to do: be findable and be ignorable.
+
+.cite,
+sup.cite {
+    font-family: $font-text-secondary;
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 0;
+    vertical-align: super;
+    color: $color-teal;
+    letter-spacing: 0.02em;
+    // A run of sources is one mark and breaks nowhere: 12–14 split over a
+    // line ending reads as two different citations.
+    white-space: nowrap;
+}
+
+// Except when the run is wider than the column, at which point `nowrap` stops
+// protecting the citation and starts walking it across the gutter into the
+// next one. The prep pass marks a run of five or more and puts a zero-width
+// space after each comma, so the break can only ever land between citations.
+sup.cite-long {
+    white-space: normal;
+}
+
+.cite a,
+a.cite {
+    color: $color-teal;
+    text-decoration: none;
+}
+
+// ---------------------------------------------------------------------------
+// Callout badge
+// ---------------------------------------------------------------------------
+// A circled mark on the callouts, the way a school textbook flags a warning or
+// a definition. It hangs on the left edge so a reader scanning the outside of
+// the column sees it before the words.
+//
+// Absolute positioning is safe here only because callouts never fragment —
+// `.callout` is break-inside: avoid in the parent theme. Do not copy this onto
+// anything that can split across a page.
+
+.callout,
+.panel {
+    position: relative;
+}
+
+.callout::before {
+    content: "!";
+    position: absolute;
+    top: ($baseline-grid-unit * 0.6);
+    left: -($icon-size / 2);
+    width: $icon-size;
+    height: $icon-size;
+    border-radius: 50%;
+    background-color: $color-teal;
+    color: #FFFFFF;
+    font-family: $font-display-secondary;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: $icon-size;
+    text-align: center;
+}
+
+.callout-dark::before {
+    background-color: $color-gold;
+}
+
+.callout-accent::before {
+    content: "\2192";               // an arrow: this is what to do next
+    background-color: $color-navy;
+}
+
+// Give the badge room so it does not sit on the first word.
+.callout {
+    margin-left: ($icon-size / 2);
+}
+
+// ---------------------------------------------------------------------------
+// Tables as numbered figures
+// ---------------------------------------------------------------------------
+// A table a reader cannot refer to by name is a table nobody refers to.
+//
+// A table does NOT span the columns, and this is the one rule in the theme
+// that is load-bearing rather than aesthetic: **Paged.js cannot fragment a
+// `column-span: all` element across a page break.** A spanning table that has
+// to be pushed past a page boundary makes the layout engine repeat without
+// progress until it gives up — and when it gives up it stops paginating the
+// document. A 305-page reference rendered 294 pages and silently dropped the
+// last part, the author note and the whole index; nothing errored, the page
+// count simply looked plausible. Bisected to this single declaration by
+// editing the theme and rebuilding, which is the only bisect that means
+// anything here: a `<style>` block injected into the page after load does not
+// reach Paged.js at all, so every result from that method was noise.
+//
+// It costs nothing to give up. A two-column table — which is what almost every
+// table in a clinical reference is, term against definition — sets perfectly
+// well in a 64mm column, and that is how a reference sets a glossary anyway.
+// A genuinely wide table is the case to watch: give it its own page with
+// `break-before: page` rather than letting it span, because a spanner that
+// always starts a page is never pushed and never trips the loop.
+//
+// That last sentence is wrong, and it was believed twice. `break-before: page`
+// on a `column-span: all` element does not stop it being pushed — it stalls
+// pagination outright. The spanner moves to a fresh page, meets the rule
+// again, and moves again, without end; Paged.js writes a short book rather
+// than erroring. Marking three figures this way took 713 pages down to 82.
+// Nothing that spans the columns may carry `push-page`. To give a spanner
+// room, push the ordinary in-column block above it instead.
+
+.table-figure {
+    column-span: all;
+    break-inside: avoid;
+    margin: ($baseline-grid-unit * 1.2) 0;
+}
+
+// The caption is the table's own <caption> element rather than a paragraph
+// above it. A paragraph can be left at the foot of a column while its table
+// starts the next one — break-after: avoid holds it at a column break and not
+// at a page break — but a <caption> is part of the table's box and cannot be
+// separated from it at all.
+//
+// Only a captioned table takes a number, so an uncaptioned one cannot silently
+// advance the count.
+.table-figure caption.table-caption {
+    caption-side: top;
+    break-after: avoid;
+    counter-increment: figure;
+    @include label();
+    font-size: 9px;
+    color: $color-mid;
+    text-align: left;
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+}
+
+.table-figure caption.table-caption::before {
+    content: "Table " counter(figure) " · ";
+    color: $color-teal;
+}
+
+.table-figure > table {
+    margin: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Running heads
+// ---------------------------------------------------------------------------
+// Set small and in the accent, so the furniture is legible without competing
+// with the text block below it.
+
+// Tracked-out capitals in the same grey as the foot, so the two ends of the
+// page read as one piece of furniture rather than two competing marks. This
+// was set in mixed case and in the accent while the head had only a third of
+// the measure; now that it has all of it (see the margin-box grid below),
+// capitals fit and are what a reference wants — furniture the eye can skip
+// until it is looking for it.
+// Styled on Paged.js's own boxes rather than inside `@page`.
+//
+// Declarations in an `@top-left` block reach the page: the parent theme sets
+// the running foot that way and it works. They did not reach this one, and
+// the head printed as 12.8px body serif in black — measured in the paginated
+// document, not guessed at. The `.pagedjs_margin-content` selector is the
+// route that does work here; it is already how this theme keeps the head on
+// one line.
+.pagedjs_margin-top-left .pagedjs_margin-content,
+.pagedjs_margin-top-right .pagedjs_margin-content,
+.pagedjs_margin-bottom-center .pagedjs_margin-content {
+    font-family: $font-text-secondary;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: $color-foot;
+}
+
+.pagedjs_margin-top-left .pagedjs_margin-content,
+.pagedjs_margin-top-right .pagedjs_margin-content {
+    font-size: 7.5px;
+}
+
+// The foot keeps the size the parent theme set for it — a folio and a title
+// nobody can read are decoration — and takes the capitals from above.
+.pagedjs_margin-bottom-center .pagedjs_margin-content {
+    font-size: 8px;
+}
+
+// ---------------------------------------------------------------------------
+// Side notes
+// ---------------------------------------------------------------------------
+// The parent floats these into a third of the text column. Here the column is
+// narrower and the outer margin is wide, so a note hangs into the margin
+// instead of eating the measure.
+//
+// The hang is scoped to Paged.js's own left/right page classes, because the
+// outer margin swaps sides on every turn and a note pushed the same way on
+// both would fall off one of them.
+
+.sidenote {
+    width: 30mm;
+    margin: 0 0 $baseline-grid-unit ($baseline-grid-unit * 0.8);
+}
+
+.pagedjs_right_page .sidenote {
+    float: right;
+    clear: right;
+    margin-right: -34mm;
+}
+
+.pagedjs_left_page .sidenote {
+    float: left;
+    clear: left;
+    margin-left: -34mm;
+    margin-right: ($baseline-grid-unit * 0.8);
+    padding-left: 0;
+    padding-right: ($baseline-grid-unit / 1.5);
+    border-left: 0;
+    border-right: 2pt solid $color-teal;
+    text-align: right;
+}
+
+// ---------------------------------------------------------------------------
+// Part opener
+// ---------------------------------------------------------------------------
+// What the part contains, on the page that announces it. The counts are read
+// off the manuscript at build time rather than typed, so they cannot drift.
+
+.part-count {
+    @include label();
+    font-size: 9px;
+    color: $color-mid;
+    margin: 0 0 ($baseline-grid-unit * 1.5) 0;
+}
+
+.part-contents {
+    list-style: none;
+    counter-reset: partsection;
+    margin: 0;
+    padding: 0;
+}
+
+.part-contents li {
+    counter-increment: partsection;
+    font-family: $font-display-secondary;
+    font-size: 12px;
+    line-height: $baseline-grid-unit;
+    color: $color-navy;
+    padding: ($baseline-grid-unit / 3) 0 ($baseline-grid-unit / 3) 0;
+    border-bottom: $rule-thickness solid $color-tint;
+    text-indent: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Long URLs in the reference lists
+// ---------------------------------------------------------------------------
+// At this measure a bare FDA or SEC link is wider than the column, and a link
+// that cannot break simply runs off the trim. Reference lists are the one
+// place where breaking a "word" anywhere is correct.
+
+a.uri,
+.reference a,
+.references a {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+// The count line sits directly after the part title, where the parent theme's
+// chapter-subtitle rule (`.chapter h2 + p`) would otherwise set it in italic.
+.part-count {
+    font-style: normal;
+}
+
+// Section title and entry count on one line, the count set against the right
+// edge so the column of figures reads down the page.
+.part-contents li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: $baseline-grid-unit;
+    padding: ($baseline-grid-unit / 2) 0;
+}
+
+.part-contents-count {
+    @include label();
+    font-size: 8px;
+    color: $color-teal;
+    margin: 0;
+    white-space: nowrap;
+}
+
+// The part name, present only so the running foot has a string to read. It sits
+// in the flow at zero size rather than being display:none, because an element
+// that is not laid out never sets its string.
+.part-name {
+    font-size: 0;
+    line-height: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+
+// ---------------------------------------------------------------------------
+// Thumb index
+// ---------------------------------------------------------------------------
+// A coloured tab at the trim edge, in a different colour and a different
+// position for each part, so the closed book carries a staircase down its
+// fore-edge and a reader can open straight into the right part.
+//
+// This is the one piece of furniture that does something no amount of running
+// heads can: it works with the book shut. In a 450-page reference that is
+// worth more than any ornament on the page.
+//
+// It needs a named page per part, because a page margin box cannot know which
+// chapter it belongs to. Naming a page means restating its margin-box content —
+// @page part1 does not inherit from @page chapter — so the mixin below writes
+// out the same feet the parent theme gives every body page, and the build adds
+// a part-N class to each chapter div.
+
+$part-tab: 7mm;
+$part-tab-height: 34mm;
+
+@mixin part-page($name, $color, $slot) {
+    @page #{$name}:left {
+        @top-left { content: $verso-top-left; }
+        @top-center { content: $verso-top; }
+        @top-right { content: $verso-top-right; }
+        @bottom-left { content: $verso-bottom-left; }
+        @bottom-center { content: $verso-bottom; }
+        @bottom-right { content: $verso-bottom-right; }
+        // Sass will not interpolate an at-rule name, so each slot is written
+        // out. Three of them is cheaper than the alternative.
+        @if $slot == top {
+            @left-top { content: ""; height: $part-tab-height; border-left: $part-tab solid $color; }
+        } @else if $slot == middle {
+            @left-middle { content: ""; height: $part-tab-height; border-left: $part-tab solid $color; }
+        } @else {
+            @left-bottom { content: ""; height: $part-tab-height; border-left: $part-tab solid $color; }
+        }
+    }
+
+    @page #{$name}:right {
+        @top-left { content: $recto-top-left; }
+        @top-center { content: $recto-top; }
+        @top-right { content: $recto-top-right; }
+        @bottom-left { content: $recto-bottom-left; }
+        @bottom-center { content: $recto-bottom; }
+        @bottom-right { content: $recto-bottom-right; }
+        @if $slot == top {
+            @right-top { content: ""; height: $part-tab-height; border-right: $part-tab solid $color; }
+        } @else if $slot == middle {
+            @right-middle { content: ""; height: $part-tab-height; border-right: $part-tab solid $color; }
+        } @else {
+            @right-bottom { content: ""; height: $part-tab-height; border-right: $part-tab solid $color; }
+        }
+    }
+
+    // A blank verso carries nothing, tab included — it is not a page of the
+    // part, it is the gap before one.
+    @page #{$name}:blank {
+        @top-left { content: normal; }
+        @top-center { content: normal; }
+        @top-right { content: normal; }
+        @bottom-left { content: normal; }
+        @bottom-center { content: normal; }
+        @bottom-right { content: normal; }
+        @if $slot == top {
+            @left-top { content: normal; border-left: 0; }
+            @right-top { content: normal; border-right: 0; }
+        } @else if $slot == middle {
+            @left-middle { content: normal; border-left: 0; }
+            @right-middle { content: normal; border-right: 0; }
+        } @else {
+            @left-bottom { content: normal; border-left: 0; }
+            @right-bottom { content: normal; border-right: 0; }
+        }
+    }
+}
+
+$part-tabs:
+    (1, $color-teal,        top),
+    (2, $color-established, middle),
+    (3, $color-supported,   bottom),
+    (4, $color-emerging,    top),
+    (5, $color-gold,        middle),
+    (6, $color-navy,        bottom);
+
+@each $n, $color, $slot in $part-tabs {
+    .chapter.part-#{$n} {
+        page: part#{$n};
+    }
+    @include part-page("part" + $n, $color, $slot);
+}
+
+// ---------------------------------------------------------------------------
+// Reference lists
+// ---------------------------------------------------------------------------
+// Each reference is a title and a URL on the line under it. Set at the same
+// size and colour, the URL competes with the title it belongs to and the list
+// reads as twice as many items as it has. Dropped a size and into the muted
+// grey, the titles form the column the eye runs down and the links stay
+// available underneath.
+
+.chapter ol li a.uri,
+.chapter ul li a.uri {
+    font-family: $font-text-secondary;
+    font-size: $font-size-small;
+    color: $color-mid;
+    text-decoration: none;
+}
+
+// ---------------------------------------------------------------------------
+// The index
+// ---------------------------------------------------------------------------
+// The default theme already has an `.index` component — two columns, no
+// bullets, no indent — and the build now puts that class on the index chapter,
+// which is most of the work. Set as plain running list items it came to
+// fifteen pages of single entries with a paragraph's worth of air under each.
+//
+// What is added here is the leading, which the default leaves at body value,
+// and the letter dividers.
+
+.index li {
+    line-height: $baseline-grid-unit * 0.72;
+    margin: 0 0 ($baseline-grid-unit * 0.18) 0;
+    break-inside: avoid;
+}
+
+.index li p {
+    margin: 0;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+// The letter dividers are h2 in the source and would otherwise set at chapter
+// size — one 27px letter for every twenty entries.
+.index h2 {
+    font-family: $font-display-secondary;
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+    background-color: $color-teal;
+    line-height: $baseline-grid-unit;
+    padding: 0 ($baseline-grid-unit / 3);
+    margin: ($baseline-grid-unit * 0.8) 0 ($baseline-grid-unit / 3) 0;
+    display: inline-block;
+    min-width: $baseline-grid-unit;
+    text-align: center;
+    break-after: avoid;
+}
+
+// …except the index's own title, which is a real heading.
+.index > div > div > h2:first-of-type {
+    font-family: $font-display-main;
+    font-size: 27px;
+    font-weight: 400;
+    color: $color-navy;
+    background-color: transparent;
+    display: block;
+    padding: 0;
+    margin: 0 0 $baseline-grid-unit 0;
+    text-align: left;
+}
+
+// ---------------------------------------------------------------------------
+// Reference lists
+// ---------------------------------------------------------------------------
+// Each reference is a title and a URL on the line under it. Set at the same
+// size and colour, the URL competes with the title it belongs to and the list
+// reads as twice as many items as it has. Dropped a size and into the muted
+// grey, the titles form the column the eye runs down and the links stay
+// available underneath.
+
+.chapter ol li a.uri,
+.chapter ul li a.uri {
+    font-family: $font-text-secondary;
+    font-size: $font-size-small;
+    color: $color-mid;
+    text-decoration: none;
+}
+
+// ---------------------------------------------------------------------------
+// The index
+// ---------------------------------------------------------------------------
+// Set as running list items the index came to fifteen pages of single entries
+// with a paragraph's worth of air under each — a column of short phrases down
+// the middle of a 4.5in measure with nothing beside them. An index is a
+// look-up table and should be set like one: two columns, tight, small.
+
+.index ul {
+    /*BISECT*/
+    list-style: none;
+    margin: 0 0 $baseline-grid-unit 0;
+    padding: 0;
+}
+
+.index li {
+    font-size: $font-size-small;
+    line-height: $baseline-grid-unit * 0.72;
+    margin: 0 0 ($baseline-grid-unit * 0.18) 0;
+    padding: 0;
+    text-indent: 0;
+    break-inside: avoid;
+}
+
+.index li p {
+    margin: 0;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+// The letter dividers, which are h2 in the source and would otherwise set at
+// chapter size — one 27px letter for every twenty entries.
+.index h2 {
+    font-family: $font-display-secondary;
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+    background-color: $color-teal;
+    line-height: $baseline-grid-unit;
+    padding: 0 ($baseline-grid-unit / 3);
+    margin: ($baseline-grid-unit * 0.8) 0 ($baseline-grid-unit / 3) 0;
+    display: inline-block;
+    min-width: $baseline-grid-unit;
+    text-align: center;
+    break-after: avoid;
+}
+
+// …except the index's own title, which is a real heading.
+.index > div > div > h2:first-of-type {
+    font-family: $font-display-main;
+    font-size: 27px;
+    font-weight: 400;
+    color: $color-navy;
+    background-color: transparent;
+    display: block;
+    padding: 0;
+    margin: 0 0 $baseline-grid-unit 0;
+    text-align: left;
+}
+
+
+// ---------------------------------------------------------------------------
+// Figures
+// ---------------------------------------------------------------------------
+// The book ships with no pictures and eighty-seven places that want one. Each
+// is a box at the exact size the finished image has to be, with its number and
+// kind inside it and the commissioning brief printed underneath.
+//
+// The box is drawn as apparatus, not as art: a rule and a wash, so nobody
+// mistakes a proof for a design that is finished. When a picture arrives the
+// slot and the brief are deleted and an <img> takes their place, carrying the
+// brief as its alt text — the figure element already holds it in data-alt.
+
+.figure {
+    margin: ($baseline-grid-unit * 0.9) 0 ($baseline-grid-unit * 1.1) 0;
+    break-inside: avoid;
+}
+
+.figure-slot {
+    background-color: $color-pale;
+    border: 0.75pt dashed $color-supported;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: ($baseline-grid-unit / 2);
+}
+
+.figure-slot-id {
+    @include label();
+    font-size: 10px;
+    color: $color-supported;
+    margin: 0 0 ($baseline-grid-unit / 4) 0;
+}
+
+.figure-slot-size {
+    @include sans-small();
+    font-size: 8px;
+    color: $color-mid;
+    margin: 0;
+}
+
+// A caption is read, so it is set to be read: the caption size the rest of the
+// book uses, in the ordinary weight. It was six point and bold — a label size
+// carrying four sentences of explanation, which is neither legible nor what a
+// caption is.
+//
+// The figure's own label keeps the emphasis. That is the distinction the
+// author's notes asked for: the caption in regular weight, apart from the
+// figure label.
+.figure > .figure-caption,
+.figure-side > .figure-caption {
+    @include sans-small();
+    font-size: $font-size-small;
+    font-weight: 400;
+    color: $color-mid;
+    line-height: $baseline-grid-unit * 0.82;
+    margin: ($baseline-grid-unit / 2) 0 0 0;
+    text-align: left;
+    hyphens: none;
+}
+
+.figure > .figure-caption > em:first-child,
+.figure-side > .figure-caption > em:first-child {
+    font-style: normal;
+    font-weight: 700;
+    color: $color-navy;
+}
+
+// The commissioning note. Marked as production apparatus by an em rule and the
+// muted grey, so a reader flipping the proof can see at a glance that it is not
+// part of the book.
+//
+// Scoped as a child of the figure, not left bare. The default theme centres
+// every paragraph inside a figure (`figure p, .figure p`), which at one class
+// and one element outranks a bare `.figure-brief` — so the note set centred
+// while the rule said left, and it lost silently until the page was rendered.
+// The same collision as `.columns > *` against `.level` in the 6 × 9in theme.
+.figure > .figure-brief,
+.figure-side > .figure-brief {
+    @include sans-small();
+    font-size: 7.5px;
+    line-height: $baseline-grid-unit * 0.6;
+    color: $color-mid;
+    border-left: 1.5pt solid $color-emerging;
+    padding-left: ($baseline-grid-unit / 3);
+    margin: ($baseline-grid-unit / 3) 0 0 0;
+    text-align: left;
+    hyphens: none;
+}
+
+.figure > .figure-brief::before,
+.figure-side > .figure-brief::before {
+    content: "To make or acquire  ";
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+    color: $color-emerging;
+}
+
+// A `<code>` run in the reference lists carries strings with no break
+// opportunity — regulatory category names, file identifiers — and at 67mm a
+// column has none to spare.
+code,
+kbd,
+samp {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
+    hyphens: none;
+}
+
+// ---------------------------------------------------------------------------
+// Panel grids in a two-column page
+// ---------------------------------------------------------------------------
+// The cross-reference chapter sets each pathway as a 2 × 2 grid of panels and
+// each dependency chain as a row of process steps. Both were laid out for a
+// single wide column. Left spanning both columns here they fit one to a page:
+// thirty-nine consecutive pages with four small boxes at the top and four
+// fifths of the sheet empty.
+//
+// So they stack instead. Each panel takes the full width of one text column —
+// 67mm, wider than it had as one of two side-by-side panels on a single-column
+// page — and the set flows down the column with everything else.
+
+.columns,
+.process {
+    display: flex;
+    flex-wrap: wrap;
+    gap: ($baseline-grid-unit / 2);
+    break-inside: avoid;
+}
+
+.columns > *,
+.process > .step {
+    flex: 1 1 100%;
+    margin: 0;
+}
+
+// The evidence chip keeps its own size rather than stretching to the column.
+.columns > .level {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    padding: ($baseline-grid-unit / 4) ($baseline-grid-unit / 2);
+}
+
+// ---------------------------------------------------------------------------
+// Running head, one line only
+// ---------------------------------------------------------------------------
+// The string is shortened at build time; this stops anything that still runs
+// long from taking a second line and pushing into the text block.
+
+@page {
+    @top-left { white-space: nowrap; overflow: hidden; }
+    @top-right { white-space: nowrap; overflow: hidden; }
+}
+
+// The two running-head strings.
+//
+// `start` rather than `first`: the value in force as the page opens, so a
+// reader flipping through sees the section they are in on the left and the
+// topic they are reading on the right — not whichever heading happens to
+// begin partway down.
+//
+// One selector each, because Paged.js keeps a single selector per string
+// identifier and the last rule in the stylesheet wins globally. These must
+// not be h6: the manuscript has 928 of those inside entries, and every one
+// would set the string to "Applications".
+.run-head {
+    string-set: section-name content();
+}
+
+.topic-head {
+    string-set: topic-name content();
+}
+
+// The zero-size markers that carry them. Present in the flow because an
+// element that is not laid out never sets its string.
+.run-head,
+.topic-head {
+    font-size: 0;
+    line-height: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+// ---------------------------------------------------------------------------
+// Front and back matter as full-width sections
+// ---------------------------------------------------------------------------
+// A disclaimer, a methodology note or a list of abbreviations is a section in
+// its own right, not a topic inside one. Its title and its standfirst run the
+// full width of the text block, the body sits in two columns beneath, and the
+// columns are balanced so the two sides end level — a ragged pair of columns
+// at the end of a short section reads as an accident.
+
+.frontmatter > div > div,
+.endmatter:not(.index) > div > div {
+    column-fill: auto;
+}
+
+// The index is end matter but it is not a section: its letter dividers are h2
+// and there are twenty-seven of them. Spanning each one starts a new column
+// set, and three spanners in a row — title, standfirst, first letter — opened
+// the index on a page that stayed completely empty. Only a heading that is
+// the section's own title spans.
+// `h1` as well as `h2`, and this is why: the build promotes each component's
+// heading to an `h1` so that the verso footer, which prints
+// `string(h1-text, first)`, names the section it is under. That promotion
+// silently unhooked every rule below — the spanning title, the rule under it,
+// the standfirst — and the front and back matter lost its whole treatment in
+// one change. Matching both means the treatment no longer depends on which
+// level the heading happens to be.
+//
+// A heading that is a section's own title always spans. A two-column measure
+// is for reading down; a title set into one column of two reads as a
+// subheading of the column rather than the name of the section.
+.frontmatter:not(.title-page) > div > div > h1,
+.frontmatter > div > div > h2,
+.endmatter:not(.index) h1,
+.endmatter:not(.index) h2,
+.index > div > div > h1:first-of-type,
+.index > div > div > h2:first-of-type,
+.frontmatter > div > div > p:first-of-type,
+.endmatter > div > div > p:first-of-type {
+    column-span: all;
+}
+
+// And every h1 anywhere, which is the general form of the rule above.
+h1 {
+    column-span: all;
+}
+
+.index h2.index-letter {
+    column-span: none;
+}
+
+// Two spanners in a row cannot both open a page — the same fault that left
+// section openers four per cent full. The index's title spans; its standfirst
+// sits in the first column under it.
+.index > div > div > p:first-of-type {
+    column-span: none;
+}
+
+// A section title, with the rule that marks it as one. Not on the title page
+// or the dedication: those are display pages, not sections, and the rule cut
+// straight across the book's own title — which is what happens when a
+// treatment written for `> h2` is widened to `> h1` without checking which
+// pages have one.
+.frontmatter:not(.title-page):not(.dedication-page) > div > div > h1,
+.frontmatter:not(.title-page):not(.dedication-page) > div > div > h2,
+.endmatter > div > div > h1,
+.endmatter > div > div > h2 {
+    font-size: 26px;
+    line-height: $baseline-grid-unit * 1.5;
+    color: $color-navy;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    padding-bottom: ($baseline-grid-unit / 2);
+    border-bottom: 2pt solid $color-teal;
+}
+
+.frontmatter > div > div > p:first-of-type,
+.endmatter > div > div > p:first-of-type {
+    font-size: $font-size-default * 1.12;
+    line-height: $baseline-grid-unit * 1.2;
+    font-style: italic;
+    color: $color-navy;
+    margin-bottom: $baseline-grid-unit;
+}
+
+// ---------------------------------------------------------------------------
+// Apparatus is not justified
+// ---------------------------------------------------------------------------
+// Reference entries and index entries are lists of unlike things, most of them
+// shorter than a line. Justified, the short ones stretch to the measure and the
+// column fills with white gaps between words that are not sentences.
+
+.references,
+.references p,
+.references li,
+.index,
+.index li,
+.index p,
+.chapter ol li,
+.chapter ul li {
+    text-align: left;
+}
+
+// ---------------------------------------------------------------------------
+// Tightening a section that just overspills
+// ---------------------------------------------------------------------------
+// A list that runs four lines onto a second page wastes a leaf and reads as a
+// mistake. Where a section is within a few lines of fitting, the leading comes
+// in rather than the page count going up. Applied by the build, which measures
+// the overspill rather than guessing at it.
+
+.tight table td,
+.tight table th {
+    padding-top: ($baseline-grid-unit / 5);
+    padding-bottom: ($baseline-grid-unit / 5);
+    line-height: $baseline-grid-unit * 0.78;
+}
+
+.tight p,
+.tight li {
+    line-height: $baseline-grid-unit * 0.85;
+}
+
+// ---------------------------------------------------------------------------
+// A heading group that introduces a full-width block
+// ---------------------------------------------------------------------------
+// A topic head and its standfirst set in a 64mm column above a table that runs
+// the full 133mm reads as though the two belong to different pages. Where the
+// build sees a heading group immediately followed by a spanning table or
+// figure, it marks the group and the group spans too.
+
+// Held to whatever follows as well as to itself, so a topic heading and its
+// lead do not end a page with the entries overleaf.
+.keep-together {
+    break-after: avoid;
+}
+
+// A spanning heading resets the column flow, so whatever was still running when
+// it arrived is left in the first column with the second one empty beside it.
+// Two lines carried over from the previous page, sitting alone above a
+// full-width heading, read as a footnote that fell off the page before.
+//
+// Two fixes were tried and rejected before the one below. Forcing the group to
+// start a page moved the table but left the two lines alone on a page of their
+// own, which is worse. Balancing the columns spread every short page across two
+// half-height columns and put a fifth of the book's pages more than a fifth
+// empty — measured, 42 such pages became 66.
+//
+// What works is upstream: the block before the group is held whole, so it
+// cannot split and leave a remnant on the spanning group's page. See
+// `.hold-whole`.
+.keep-together.spans {
+    column-span: all;
+}
+
+// The block immediately before a spanning heading group, held so it cannot
+// break across the page boundary and strand a line or two above the heading.
+// A block taller than a column is beyond helping and the browser will break it
+// anyway, which is the right fallback.
+.hold-whole {
+    break-inside: avoid;
+}
+
+.keep-together.spans .standfirst {
+    margin-bottom: ($baseline-grid-unit / 2);
+}
+
+// ---------------------------------------------------------------------------
+// References at the back
+// ---------------------------------------------------------------------------
+// Set small, ragged and in two columns. A reference is looked up, not read, so
+// the type comes down a size and the entries are left ranged — justified, a
+// two-line citation stretches its first line to the measure and the column
+// fills with gaps between words that are not a sentence.
+
+.references > div > div {
+    column-fill: auto;
+}
+
+.references ol,
+ol.references {
+    font-size: $font-size-small;
+    line-height: $baseline-grid-unit * 0.78;
+    margin: 0 0 $baseline-grid-unit 0;
+    padding-left: ($baseline-grid-unit * 1.1);
+}
+
+.references li,
+ol.references li {
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+    text-indent: 0;
+    break-inside: avoid;
+}
+
+// The part a group of sources belongs to, across the page.
+.reference-part {
+    column-span: all;
+    font-size: 17px;
+    color: $color-navy;
+    margin: ($baseline-grid-unit * 1.2) 0 ($baseline-grid-unit / 3) 0;
+    padding-top: ($baseline-grid-unit / 3);
+    border-top: 2pt solid $color-teal;
+}
+
+.reference-part::after {
+    content: none;
+}
+
+// The section inside it, in the column with its list.
+.reference-section {
+    font-family: $font-display-secondary;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+    color: $color-mid;
+    margin: ($baseline-grid-unit * 0.7) 0 ($baseline-grid-unit / 4) 0;
+    break-after: avoid;
+}
+
+.references a.uri {
+    font-size: $font-size-small * 0.92;
+    color: $color-mid;
+    text-decoration: none;
+}
+
+// ---------------------------------------------------------------------------
+// Audit marks, for a proof read with the author
+// ---------------------------------------------------------------------------
+// A highlighter on a page, not an annotation system. The yellow carries the
+// eye; the code says which question is being asked. Both are set so they add
+// no height to a line — a proof whose marks reflow the text is not a proof of
+// the book.
+
+mark.flag {
+    background: #FFF07A;
+    color: inherit;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    padding: 0 0.1em;
+}
+
+.flag-code {
+    font-family: $font-display-secondary;
+    font-size: 0.62em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #A8323C;
+    vertical-align: 0.35em;
+    line-height: 0;
+    margin-left: 0.15em;
+    white-space: nowrap;
+}
+
+// A flagged reference is marked at its number rather than across the whole
+// citation: the entry stays readable and the codes sit where the eye lands.
+mark.flag-ref {
+    background: #FFF07A;
+    padding: 0 0.15em;
+}
+
+.legend-page .legend-row {
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    padding-left: 3.4em;
+    text-indent: -3.4em;
+    font-size: $font-size-small;
+    line-height: $baseline-grid-unit * 0.8;
+}
+
+.legend-page .legend-row .flag-code {
+    background: #FFF07A;
+    padding: 0.1em 0.3em;
+    vertical-align: 0;
+    line-height: inherit;
+    font-size: 0.8em;
+}
+
+// ---------------------------------------------------------------------------
+// The reference list
+// ---------------------------------------------------------------------------
+// Four thousand references. At body size they run to 187 pages; at 8pt in two
+// columns they are a reference apparatus rather than a second book. Ragged
+// right, because a citation is looked up rather than read and justifying a
+// two-line citation to a narrow measure opens rivers in every entry.
+
+.references > div > div {
+    column-count: 2;
+    column-gap: $baseline-grid-unit;
+    column-fill: auto;
+}
+
+.references p {
+    font-size: 8pt;
+    line-height: $baseline-grid-unit * 0.72;
+    margin: 0 0 ($baseline-grid-unit / 4) 0;
+    padding-left: 1.4em;
+    text-indent: -1.4em;
+    text-align: left;
+    hyphens: none;
+    break-inside: avoid;
+}
+
+// Each block is one page of entries, measured at the column width before the
+// book is paginated, so it balances into two full columns on its own and
+// Paged.js is never asked to find an overflow inside a balanced pair. Left to
+// itself it cuts at the foot of column one, pushes the whole of column two to
+// the next page, and commits the page at just over half full — 144 pages of
+// 280. `chunk-references.js` has the measurements.
+.references.chunked > div > div {
+    column-count: 1;
+}
+
+.ref-page {
+    column-count: 2;
+    column-gap: $baseline-grid-unit;
+    break-after: page;
+}
+
+.ref-page:last-child {
+    break-after: auto;
+}
+
+// The number is the thing the reader is looking for, so it stays with its
+// entry and does not hyphenate or wrap away from the first word.
+.references .ref-number {
+    font-family: $font-display-secondary;
+    font-weight: 700;
+    color: $color-teal;
+    white-space: nowrap;
+}
+
+// A URL is set to break anywhere rather than push a column open.
+.references a {
+    word-break: break-all;
+    color: $color-mid;
+    text-decoration: none;
+}
+
+// ---------------------------------------------------------------------------
+// The copyright page
+// ---------------------------------------------------------------------------
+// A verso, set at the foot of the page, one column, ranged left and not on
+// the book's grid. It is a legal notice rather than a page anyone reads
+// through, and every convention it follows is a different one from the text.
+//
+// The height it sits at the foot of comes from Paged.js's page box, passed
+// down the same way the title page does it, and for the same reason: nothing
+// else in the chain has a height. Safe here because this is one page by
+// definition.
+
+// On the left. The doubled class is load-bearing: the component also carries
+// `.chapter`, which sets `break-before: recto` at the same specificity, and
+// the copyright notice went to a right-hand page.
+.copyright-page.copyright-page {
+    break-before: verso;
+}
+
+// The foot of the page comes from the parent theme, which already sets this
+// component `position: absolute; bottom: 0`. Only the column count and the
+// type are ours. An earlier attempt at flexing it to the bottom collapsed the
+// heading to nothing: a `column-span: all` element inside a flex container is
+// not a spanner, it is a zero-height box pushed off the top of the page.
+.copyright-page.copyright-page > div > div {
+    column-count: 1;
+}
+
+// Nothing on this page spans, because nothing on it is in columns.
+.copyright-page.copyright-page > div > div > h1,
+.copyright-page.copyright-page > div > div > h2,
+.copyright-page.copyright-page > div > div > p,
+.title-page.title-page > div > div > h1,
+.title-page.title-page > div > div > p,
+.dedication-page.dedication-page > div > div > h1,
+.dedication-page.dedication-page > div > div > p {
+    column-span: none;
+}
+
+.copyright-page.copyright-page p,
+.copyright-page.copyright-page li {
+    font-size: 10pt;
+    line-height: 1.2;
+    text-align: left;
+    text-indent: 0;
+    hyphens: none;
+    margin: 0 0 0.55em 0;
+}
+
+// The heading is part of the notice, not a section title: no rule under it,
+// no display size, no air above it.
+.copyright-page.copyright-page > div > div > h1,
+.copyright-page.copyright-page > div > div > h2 {
+    font-size: 10pt;
+    line-height: 1.15;
+    font-weight: 700;
+    color: $color-navy;
+    border-bottom: none;
+    padding-bottom: 0;
+    margin: 0 0 0.6em 0;
+}
+
+// The standfirst treatment does not apply to a copyright notice either.
+.copyright-page.copyright-page > div > div > p:first-of-type {
+    font-size: 10pt;
+    font-style: normal;
+    line-height: 1.2;
+    color: inherit;
+    margin-bottom: 0.55em;
+}
+
+// The notice opens by naming the work it covers: the book's title and
+// subtitle, which the publisher's copy supplies as its first two lines.
+//
+// They are set at the size of the notice and no heavier — the same face, the
+// same weight, the same colour as the paragraph under them. A copyright page
+// is not a place to say the title again loudly; the title page did that, and
+// this page only has to record which book the notice belongs to. All these
+// two rules do is hold the pair together: no gap between the title and its
+// subtitle, the ordinary paragraph gap under the pair.
+//
+// These selectors tie with the one above at three classes and three elements,
+// so the order they sit in decides which wins. They go after it deliberately:
+// the rule above exists to cancel the front-matter standfirst on whatever the
+// first paragraph happens to be, and the first paragraph is now the title.
+.copyright-page.copyright-page > div > div > p.copyright-title {
+    font-weight: 400;
+    font-style: normal;
+    color: inherit;
+    margin: 0;
+}
+
+.copyright-page.copyright-page > div > div > p.copyright-subtitle {
+    font-weight: 400;
+    font-style: normal;
+    color: inherit;
+}
+
+// ---------------------------------------------------------------------------
+// The author's portrait
+// ---------------------------------------------------------------------------
+// At the head of the first column on the About page, at the width of that
+// column. Not spanning: a portrait stretched across both columns is a band of
+// white either side of a narrow picture, and this page has no other image to
+// balance it against.
+
+.author-portrait {
+    break-inside: avoid;
+    margin: 0 0 ($baseline-grid-unit * 0.8) 0;
+}
+
+// The one back-matter page whose opening paragraph does not span. Everywhere
+// else that standfirst crossing the measure is the design; here it would sit
+// between the heading and the picture and open a column region with only the
+// picture in it, half of which is then blank for the height of the picture.
+// Doubled class so this is decided by specificity rather than by where the
+// two rules happen to fall in the file.
+.about-page.about-page > div > div > p:first-of-type {
+    column-span: none;
+}
+
+.author-portrait img {
+    display: block;
+    width: 100%;
+    height: auto;
+    // A portrait taller than this is one Paged.js cannot place in the column,
+    // and an unplaceable keep box is how pagination stops without saying so.
+    max-height: 95mm;
+}
+
+// ---------------------------------------------------------------------------
+// Where the reference list went
+// ---------------------------------------------------------------------------
+// One page standing in for the section, set one column at reading size. The
+// `references` class it would otherwise carry sets this component two-column
+// at eight point, which is right for 3,750 entries and wrong for three
+// sentences.
+
+.references-notice.references-notice > div > div {
+    column-count: 1;
+}
+
+.references-notice.references-notice > div > div > p {
+    font-size: $font-size-default;
+    line-height: $baseline-grid-unit;
+    text-align: left;
+    text-indent: 0;
+    max-width: 92mm;
+    margin: 0 0 $baseline-grid-unit 0;
+}
+
+// The address is the one thing on this page a reader has to carry away, so it
+// is the one thing set larger than the prose around it. Same shape of selector
+// as the paragraph rule above: written plainly it ties on nothing and loses,
+// and the address came out at reading size.
+.references-notice.references-notice > div > div > p.references-url {
+    font-family: $font-text-secondary;
+    font-size: $font-size-default * 1.35;
+    line-height: $baseline-grid-unit * 1.4;
+    color: $color-navy;
+    margin: ($baseline-grid-unit * 0.5) 0 ($baseline-grid-unit * 1.2) 0;
+}
+
+.references-notice.references-notice > div > div > p.references-url a {
+    color: $color-navy;
+    text-decoration: none;
+    border-bottom: 1.5pt solid $color-teal;
+}
+
+// ---------------------------------------------------------------------------
+// The contents
+// ---------------------------------------------------------------------------
+// One column, with a page number against the right margin. A contents set in
+// two columns is a list a reader has to search twice.
+
+.contents-list.contents-list > div > div,
+.contents-page.contents-page > div > div {
+    column-count: 1;
+}
+
+.toc-list,
+.toc-list ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.toc-list li {
+    margin: 0 0 ($baseline-grid-unit / 4) 0;
+    text-indent: 0;
+}
+
+// A part's entry in the contents holds every section under it, so holding the
+// whole `li` together moves a page of entries at a time: Part III ended a
+// page at forty-three per cent because its block would not fit in what was
+// left. The list breaks wherever it needs to now, and the only thing held is
+// the part title to the first line under it — `break-before: avoid` on the
+// nested list, which is the direction Paged.js honours.
+.toc-list > li > ul {
+    break-before: avoid;
+}
+
+.toc-list a {
+    display: block;
+    color: $color-navy;
+    text-decoration: none;
+    // Room at the right for the page number, which floats into it.
+    padding-right: 3em;
+}
+
+.toc-list li a::after {
+    content: target-counter(attr(href), page);
+    float: right;
+    margin-right: -3em;
+    font-family: $font-text-secondary;
+    font-size: $font-size-small;
+    color: $color-mid;
+}
+
+// A part is the level a reader navigates by, so it is set up and given air.
+.toc-list > li > a {
+    font-family: $font-display-secondary;
+    font-weight: 700;
+    color: $color-navy;
+}
+
+.toc-list > li {
+    margin-top: ($baseline-grid-unit / 2);
+}
+
+// Everything under it is indented a level and set a size down.
+.toc-list ul a {
+    padding-left: $baseline-grid-unit;
+    font-size: $font-size-small;
+    color: $color-mid;
+}
+
+.toc-list ul ul a {
+    padding-left: ($baseline-grid-unit * 2);
+}
+
+// ---------------------------------------------------------------------------
+// A table keeps its caption
+// ---------------------------------------------------------------------------
+// `break-before: avoid` on the table, not `break-after: avoid` on the caption.
+// Paged.js honours the first and ignores the second, so a caption asked to
+// keep with what follows it is a caption that will sooner or later be left
+// alone at the foot of a column.
+
+.table-figure table {
+    break-before: avoid;
+}
+
+.table-caption {
+    break-after: avoid;
+    margin-bottom: ($baseline-grid-unit / 4);
+}
+
+// ---------------------------------------------------------------------------
+// The labels inside an entry
+// ---------------------------------------------------------------------------
+// APPLICATIONS, PRACTICAL CONSIDERATIONS, KEY RISKS. Two points up from the
+// parent theme's label size: at six and a half points, tracked out and set in
+// caps in a 63mm column, they were being read as part of the paragraph above
+// rather than as the divisions of the entry they are.
+
+.label {
+    font-size: 11.17px;
+}
+
+// ---------------------------------------------------------------------------
+// Three columns, two of them equal
+// ---------------------------------------------------------------------------
+// The first column of a comparison table is a name and sets narrow; the two
+// that carry the comparison should be the same width, or the eye reads the
+// wider one as the more important. `:nth-last-child` is what makes this apply
+// to three-column tables only.
+
+.table-figure table th:first-child:nth-last-child(3) {
+    width: 26%;
+}
+
+.table-figure table th:first-child:nth-last-child(3) ~ th {
+    width: 37%;
+}
+
+// ---------------------------------------------------------------------------
+// A diagram runs across the measure, not down a column
+// ---------------------------------------------------------------------------
+// These are dense schematics carrying small type. In a 64mm column they are
+// decoration; across the 133mm measure they can be read, which is what the
+// author's notes asked for.
+//
+// The height is capped, and that cap is not cosmetic. An element with
+// `break-inside: avoid` that is taller than its column is what makes Paged.js
+// push, measure, push again and then give up — it stops paginating and writes
+// a short book without reporting anything. The artwork is 3600px wide at
+// 600dpi, so the cap only ever scales a drawing down; none of them lose
+// resolution the page could show.
+
+.figure {
+    column-span: all;
+    break-inside: avoid;
+    text-align: center;
+    margin: ($baseline-grid-unit * 1.2) 0 ($baseline-grid-unit * 1.2) 0;
+}
+
+.figure img {
+    display: block;
+    margin: 0 auto;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 140mm;
+}
+
+// The caption reads as text, so it goes back to the left and to the measure a
+// caption is read at rather than the full width of the drawing above it.
+.figure .figure-caption {
+    text-align: left;
+    margin: ($baseline-grid-unit / 2) auto 0 auto;
+    max-width: 118mm;
+}
+
+// ---------------------------------------------------------------------------
+// The ornament on a blank page
+// ---------------------------------------------------------------------------
+// The parent theme sets ◈ (U+25C8) there. Neither of this book's text faces
+// has that character, so Chromium reached past them, found DejaVu Sans on the
+// machine and embedded a fourth font into the PDF to draw one ornament on
+// thirteen otherwise blank pages. It prints — but it is a face nobody chose,
+// arriving silently, which is the fault the fonts README was written about.
+//
+// ◆ (U+25C6) is in Source Sans 3, which the book already embeds.
+
+.pagedjs_blank_page .pagedjs_page_content::before {
+    content: "\25C6";
+    font-family: $font-display-secondary;
+}
+
+// ---------------------------------------------------------------------------
+// A figure that has not arrived
+// ---------------------------------------------------------------------------
+// An `<img>` with no file prints as nothing, and nothing is invisible in a
+// nine-hundred-page proof. A ruled slot at the size the figure will occupy is
+// visible from across the room, carries the filename the book is asking for,
+// and prints the description already written for it — so the author can find
+// what is missing while turning pages, and whoever draws it has the brief in
+// place.
+
+.figure-slot {
+    display: block;
+    border: 1pt dashed $color-teal;
+    border-radius: 2pt;
+    background: rgba($color-teal, 0.04);
+    padding: $baseline-grid-unit ($baseline-grid-unit * 0.8);
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    text-align: center;
+    break-inside: avoid;
+}
+
+.figure-slot-label {
+    @include sans-small();
+    display: block;
+    font-size: $font-size-label;
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+    color: $color-teal;
+    margin-bottom: ($baseline-grid-unit / 3);
+}
+
+.figure-slot-file {
+    display: block;
+    font-family: $font-text-secondary;
+    font-size: $font-size-small;
+    font-weight: 700;
+    color: $color-navy;
+    word-break: break-all;
+    margin-bottom: ($baseline-grid-unit / 3);
+}
+
+.figure-slot-alt {
+    display: block;
+    font-size: $font-size-small;
+    font-style: italic;
+    line-height: $baseline-grid-unit * 0.78;
+    color: $color-mid;
+    text-align: left;
+    hyphens: none;
+}
+
+// ---------------------------------------------------------------------------
+// Pages held for something that arrives later
+// ---------------------------------------------------------------------------
+// A recto reserved for the printing sponsor's notice. It is blank here and
+// filled in the PDF afterwards, but it is a real, counted page: leave it out
+// and every folio after it is wrong in the printed book.
+
+.sponsor-page,
+.dedication-page,
+.acknowledgements-page {
+    break-before: recto;
+}
+
+.sponsor-page > div > div {
+    column-count: 1;
+}
+
+// Nothing in the margins of a page whose content is not ours.
+//
+// Not with `:has()`. Chromium re-evaluates a `:has()` against every page box
+// as the page set grows, so on a nine-hundred-page book it turns pagination
+// from seven minutes into something far worse — it was still going at
+// eighteen. A named page costs nothing: Paged.js resolves it once.
+.sponsor-page {
+    page: sponsor;
+}
+
+@page sponsor {
+    @top-left { content: none; }
+    @top-center { content: none; }
+    @top-right { content: none; }
+    @bottom-left { content: none; }
+    @bottom-center { content: none; }
+    @bottom-right { content: none; }
+}
+
+// ---------------------------------------------------------------------------
+// Index locators
+// ---------------------------------------------------------------------------
+// The page numbers are found after the book is paginated and written back into
+// the index, so they are real folios and not a promise to search the e-book.
+
+.index-locators {
+    font-family: $font-text-secondary;
+    font-size: 8.5px;
+    color: $color-teal;
+    white-space: nowrap;
+}
+
+.index-locators::before {
+    content: "  ";
+}
+
+// ---------------------------------------------------------------------------
+// Nothing tracked-out is ever justified
+// ---------------------------------------------------------------------------
+// A label is a few words in capitals with letter-spacing already added. Asked
+// to justify, it puts the rest of the measure into the word gaps: "ADVANCED
+// THERAPEUTICS KNOWLEDGE BASE" came out with two inches between the words.
+
+.label,
+.callout-label,
+.chapter-eyebrow,
+.part-count,
+.figure-slot-id,
+.figure-slot-size,
+.step-number,
+.step-title,
+.reference-section,
+.table-caption,
+.level p,
+.index-locators {
+    text-align: left;
+    hyphens: none;
+}
+
+// ---------------------------------------------------------------------------
+// The running head really is one line
+// ---------------------------------------------------------------------------
+// Setting white-space on the @top-left box is not enough: Paged.js paints the
+// generated content into a `.pagedjs_margin-content` element inside it, and
+// that is what wraps.
+
+.pagedjs_margin-top-left .pagedjs_margin-content,
+.pagedjs_margin-top-right .pagedjs_margin-content,
+.pagedjs_margin-top-center .pagedjs_margin-content {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+// ---------------------------------------------------------------------------
+// The running head takes the whole measure
+// ---------------------------------------------------------------------------
+// Paged.js lays the top margin row out as a three-column grid of equal
+// thirds, so the head had about 165px whatever was in it — which is why half
+// the topic titles in this book were being cut to fit and printed as "Tissue
+// Repair and Wound…". A topic a reader cannot look up is not a running head.
+//
+// The grid is the thing to change, not the string. The outer box takes all
+// three columns and the other two collapse, so the head has the full 502px of
+// the text block and every title in the book fits on one line.
+
+// `!important` because Paged.js writes the three equal columns as an inline
+// style on the row, and an inline style beats any selector without it.
+.pagedjs_left_page .pagedjs_margin-top {
+    grid-template-columns: 1fr 0 0 !important;
+}
+
+.pagedjs_right_page .pagedjs_margin-top {
+    grid-template-columns: 0 0 1fr !important;
+}
+
+// The head sits against the outside edge of the text block, which is where a
+// thumbing reader's eye lands.
+.pagedjs_left_page .pagedjs_margin-top-left .pagedjs_margin-content {
+    text-align: left;
+}
+
+.pagedjs_right_page .pagedjs_margin-top-right .pagedjs_margin-content {
+    text-align: right;
+}
+
+// ---------------------------------------------------------------------------
+// The part opener panel
+// ---------------------------------------------------------------------------
+// What is in the part, set as a panel with a mark and a rule under every line —
+// the shape a textbook uses for its objectives box, which is what this is: the
+// reader's contract for the next eighty pages.
+
+.part-panel {
+    column-span: all;
+    background-color: $color-panel;
+    border: $rule-thickness solid $color-tint;
+    padding: $baseline-grid-unit ($baseline-grid-unit * 1.1);
+    margin: ($baseline-grid-unit * 1.2) 0 0 0;
+    break-inside: avoid;
+}
+
+.part-panel-label {
+    @include label();
+    font-size: 10px;
+    color: $color-teal;
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+    padding-left: ($baseline-grid-unit * 1.4);
+    position: relative;
+    line-height: $baseline-grid-unit;
+}
+
+// The mark beside the label, drawn rather than set: a ring in the accent, the
+// same weight as the rules under the rows.
+.part-panel-label::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2pt solid $color-teal;
+    background-color: #FFFFFF;
+}
+
+.part-panel .part-count {
+    font-size: 8.5px;
+    color: $color-mid;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+}
+
+.part-panel .part-contents li:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.part-panel .part-contents li {
+    border-bottom: $rule-thickness solid $color-tint;
+}
+
+// ---------------------------------------------------------------------------
+// Copy the author still owes
+// ---------------------------------------------------------------------------
+// The same idea as a figure slot: the design needs a subtitle and a standfirst
+// on every part opener, the manuscript has neither, and an empty page is worse
+// than a marked one. Set in the gold used for production notes so nobody
+// mistakes it for text.
+
+.needs-copy {
+    column-span: all;
+    font-family: $font-text-secondary;
+    font-size: 9px;
+    line-height: $baseline-grid-unit * 0.75;
+    color: $color-emerging;
+    border-left: 1.5pt solid $color-emerging;
+    padding-left: ($baseline-grid-unit / 2);
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    text-align: left;
+    hyphens: none;
+}
+
+.needs-copy::before {
+    content: "To write  ";
+    font-weight: 700;
+    letter-spacing: $label-tracking;
+    text-transform: uppercase;
+}
+
+// ---------------------------------------------------------------------------
+// Block layout patterns
+// ---------------------------------------------------------------------------
+// A page grid is one decision; how a given block sits on it is another, and
+// they are not the same decision. The two-column flow above is the page grid.
+// These are the shapes a block can take inside it, and which one a block gets
+// depends on what the block is — a chart with a legend wants a different split
+// from a paragraph with a side note, and neither wants the whole page changed
+// around it.
+//
+// Every pattern is measured off the same text block, so a 60/40 in one place
+// lines up with a 60/40 anywhere else and with the column edges besides.
+
+$split-gutter: $baseline-grid-unit * 0.7;
+$text-block: $page-width - $margin-inside - $margin-outside;
+
+// --- Two parts, sixty and forty --------------------------------------------
+// The pattern the client picked out of the mockups: a chart beside its legend,
+// a figure beside its caption, a statement beside the evidence for it. It
+// spans the page grid because at 64mm a column has no room to split.
+
+.split {
+    column-span: all;
+    display: flex;
+    gap: $split-gutter;
+    align-items: flex-start;
+    break-inside: avoid;
+    margin: $baseline-grid-unit 0;
+}
+
+.split > * {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.split-60-40 > *:first-child { flex: 0 0 calc(60% - #{$split-gutter / 2}); }
+.split-60-40 > *:last-child  { flex: 1 1 auto; }
+
+.split-40-60 > *:first-child { flex: 0 0 calc(40% - #{$split-gutter / 2}); }
+.split-40-60 > *:last-child  { flex: 1 1 auto; }
+
+.split-50-50 > * { flex: 1 1 0; }
+
+// The lighter half of a split reads as apparatus rather than as a second
+// argument: smaller, ranged left, and never justified.
+.split-aside {
+    @include sans-small();
+    color: $color-mid;
+    text-align: left;
+    hyphens: none;
+}
+
+.split-aside .figure-slot-id,
+.split-aside p:first-child {
+    margin-top: 0;
+}
+
+// --- A band across the page -------------------------------------------------
+// One statement, full width, tinted. Used where the page needs a stop rather
+// than another paragraph.
+
+.band {
+    column-span: all;
+    background-color: $color-tint;
+    padding: $baseline-grid-unit ($baseline-grid-unit * 1.2);
+    margin: ($baseline-grid-unit * 1.2) 0;
+    break-inside: avoid;
+}
+
+.band-dark {
+    background-color: $color-navy;
+}
+
+.band p {
+    font-family: $font-display-main;
+    font-size: $font-size-default * 1.25;
+    line-height: $baseline-grid-unit * 1.3;
+    color: $color-navy;
+    text-align: left;
+    margin: 0;
+}
+
+// A band that names itself. The label is apparatus — what kind of statement
+// this is — so it is set small and tracked out above the statement, not at
+// the statement's size.
+.band > .callout-label {
+    @include label();
+    font-size: 8px;
+    color: $color-teal;
+    margin: 0 0 ($baseline-grid-unit / 3) 0;
+}
+
+.band-dark > .callout-label {
+    color: $color-gold;
+}
+
+// The band carries no counter badge. `.callout::before` hangs a circled mark
+// off the left edge; a band has no border for it to hang from and no margin
+// reserved for it, so it would sit on the page edge.
+
+.band-dark p {
+    color: #FFFFFF;
+}
+
+.band .callout-label {
+    color: $color-teal;
+}
+
+.band-dark .callout-label {
+    color: $color-gold;
+}
+
+// --- A figure beside its caption --------------------------------------------
+// The 60/40 applied to the thing it was drawn for. The slot holds its stated
+// size; the caption and the commissioning note stack in the narrow half rather
+// than under the box, which is both how the reference mockups set a chart and
+// how the block gets shorter — the note is four or five lines of small sans
+// that were costing full-measure depth under every spanning figure.
+//
+// Only spanning figures take it. A one-column figure has no width to divide,
+// and the two that want the whole measure — the part opener and the structure
+// plates, which are read across — keep it.
+
+.figure-side {
+    display: flex;
+    flex-direction: column;
+}
+
+.figure-side > .figure-caption {
+    margin-top: 0;
+}
+
+// --- A parallel set, seen at once -------------------------------------------
+// Where the content is four facets of one thing rather than four items in a
+// list, the set spans the measure and lays out as a grid, so the reader
+// compares across it instead of down it. The block carries its heading and its
+// closing band, which is what makes it one thing on the page.
+//
+// This is deliberately narrow in scope. Panels in running text still stack one
+// to a text column — spanning every panel in the book was tried and put four
+// small boxes at the top of thirty-nine near-empty pages.
+
+.facets {
+    column-span: all;
+    break-inside: avoid;
+    margin: ($baseline-grid-unit * 1.2) 0;
+}
+
+.facets > h4 {
+    margin-top: 0;
+}
+
+.facet-grid {
+    display: grid;
+    gap: ($baseline-grid-unit / 2);
+    align-items: stretch;
+}
+
+// How many cells across. Set by the pass that builds the block, from what the
+// content is: facets are compared two by two, phases run in the order they
+// happen, and six of those go three and three rather than six across, where
+// each cell is 22mm and every second word breaks.
+.facet-across-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.facet-across-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.facet-across-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.facet-grid > .panel {
+    margin: 0;
+}
+
+// The band closes the block, so it sits tight under the grid rather than
+// keeping the margin it has when it stands alone in the flow.
+.facets > .band {
+    margin-bottom: 0;
+}
+
+// --- The five-line rule ------------------------------------------------------
+// A heading that gets fewer than five lines of its own content before the
+// column ends is not introducing anything; it is a label stranded at a foot,
+// and the reader has to turn the page to find out what it labels. The build
+// measures the paginated book and marks those headings, because CSS cannot see
+// how many lines fall after an element and `break-after: avoid` on the block
+// before it is not read by Paged.js at a page break.
+//
+// A column break, not a page break: at the foot of the first column the
+// heading only needs to move across, and forcing a page there would leave half
+// a sheet white. At the foot of the last column a column break is a page
+// break, which is what the rule asks for.
+
+// Paged.js re-implements `break-before` only for the page-level values —
+// always, page, left, right, recto, verso — and silently drops the rest, so
+// this does nothing and never has. Kept named so the next person looking for
+// it finds this note instead of the property.
+.push-column {
+    break-before: column; // no-op under Paged.js; use .push-page
+}
+
+.push-page {
+    break-before: page;
+}
+
+// --- Five lines under a heading, at a column break ---------------------------
+//
+// `break-after: avoid` on a heading guarantees exactly one line under it, which
+// is how headings were ending up at a column foot with one or two lines of
+// their topic and the rest overleaf.
+//
+// The lever that says "five" is `orphans`, set on the paragraph the heading
+// introduces: a paragraph that cannot leave five lines at the foot of the
+// column moves whole, and the heading moves with it because it is already
+// held. This is the only way to express it here — Paged.js strips every
+// `break-before` declaration out of the stylesheet and re-implements it as its
+// own page break, so `break-before: column` computes to `auto` and does
+// nothing. Measured: twenty-six entries marked with it did not move.
+//
+// Only the paragraph directly under a heading. Set on every paragraph it would
+// push five lines to the next column at every awkward break in the book.
+
+h3 + p,
+h4 + p,
+h3 + .standfirst,
+h4 + .standfirst,
+.entry > h5 + p {
+    orphans: 5;
+}
+
+// --- Holding a heading to its opening ----------------------------------------
+// The one keep-together Paged.js does not take away. It intercepts every
+// `break-before` and `break-after` declaration, removes it from the stylesheet
+// and re-implements it as its own page break — so `break-after: avoid` on an
+// entry name computes to `auto`, and the name stayed at the foot of a column
+// while the paragraph it introduces moved to the next one. `break-inside` it
+// leaves alone.
+//
+// The wrapper is invisible: the entry's rule is drawn on the children, so the
+// children inside the group have to keep drawing it.
+
+.entry-lead {
+    break-inside: avoid;
+}
+
+.entry > .entry-lead > * {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+// The same group for a topic heading and the paragraph it introduces.
+// The panel sets ragged right.
+//
+// It runs the full measure and it carries the book's longest technical
+// compounds, which is the combination that strands words and blows the word
+// spaces open. Ragged right has no slack to distribute, so a gap is a gap and
+// nothing stretches — the three-space rule becomes true by construction rather
+// than by correction. The panel is already set apart from the body by its
+// ground and its rule, so an uneven right edge reads as a deliberate
+// difference rather than as a mistake.
+.keep-lead.keep-lead > p,
+.keep-lead.keep-lead > .standfirst,
+.keep-lead.keep-lead > .lead-head {
+    text-align: left;
+}
+
+// The sub-section panel is allowed to break.
+//
+// It could not, and being a spanner it therefore had to fit inside one column,
+// which is why the build cut its opening paragraph to five lines and set the
+// remainder loose outside the box. That cut is what the author kept finding:
+// a sentence ending mid-clause with no full stop and the rest of it resuming
+// below the panel in italic.
+//
+// And it does not break after all — the keep goes back on.
+//
+// It came off because a `break-inside: avoid` box taller than its column
+// stalls Paged.js, and the panel spans the full measure, so it looked like the
+// box that could grow too tall. It cannot. Measured across all 136 panels in
+// the book, the longest holds 1,354 characters — about eleven lines at this
+// measure, 230px against a column of 815. The tallest panel in the book is
+// twenty-eight per cent of a column.
+//
+// So the cut that produced six of the author's notes was never needed to make
+// the panel fit; it was needed to make it fit a rule that did not apply. With
+// the whole paragraph in the box and the box unbreakable, the title cannot be
+// separated from its text — which is what happened on page 23, where the
+// shaded box held a title and nothing else and the text began in a second box
+// overleaf.
+//
+// `break-before: avoid` on the paragraph was the first attempt at that and is
+// not honoured here: Paged.js fragments a `column-span: all` element on its
+// own terms. Only a box that cannot break holds.
+.keep-lead {
+    break-inside: avoid;
+}
+
+// And for a label — APPLICATIONS, PRACTICAL CONSIDERATIONS — with the opening
+// of what it introduces. A heading never sits at the foot of a column or a
+// page; since `break-after: avoid` is taken out of the stylesheet by Paged.js,
+// the only way to say so is a box that cannot break.
+.keep-label {
+    break-inside: avoid;
+}
+
+.entry > .keep-label > *,
+.keep-label > * {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+// A citation mark carrying many numbers is one unbreakable "word" to the line
+// breaker. The build sets consecutive runs as ranges, which fixes the common
+// case; this is the backstop for a mark that is still long because its numbers
+// are scattered.
+.cite {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+// --- The table that really is too wide for a column --------------------------
+// Almost every table in a clinical reference is two columns and sets happily in
+// the 64mm text column. A few are not: a five-column product comparison at
+// 64mm overruns the measure no matter what is done to the type.
+//
+// Those span — and take a page break with them, which is the whole point. A
+// spanning element that always starts a page is never pushed past a page
+// boundary, and being pushed is what makes Paged.js loop until it abandons the
+// document (see the note on `.table-figure` above). `.section-head` and
+// `.part-title` span safely for exactly this reason.
+//
+// The build marks these by counting columns, and cuts any that is taller than
+// a page so the spanner never has to fragment either.
+
+.table-wide {
+    column-span: all;
+    break-before: page;
+    margin: 0 0 ($baseline-grid-unit * 1.2) 0;
+}
+
+// The comma that separates two locators must not be printed after the only
+// one. The parent suppresses it with `a:last-of-type`, which does not match in
+// the paginated DOM — every index entry printed a trailing comma. `:last-child`
+// does match, and an entry whose anchor is its last child has exactly one
+// locator by construction.
+.index-entry > a:last-child::after {
+    content: normal;
+}
+
+// --- The index sets its own columns ------------------------------------------
+// The index arrived with two sets of columns: the chapter's, from
+// `.chapter > div > div`, and its own — so its title, its note and its entries
+// were divided twice and the opener came out four columns wide with the lower
+// half of the page empty.
+//
+// The flow is single-column here, which gives the title and the explanatory
+// note the full measure, and the entry list supplies the two columns an index
+// wants. Ordered after the chapter rule deliberately: the two selectors have
+// the same weight, so this one wins by coming last.
+
+// The index uses the chapter's own two columns and adds none of its own.
+//
+// Both alternatives were tried against the rendered page and both fail for the
+// same reason: Paged.js paginates by flowing content through a box far wider
+// than the sheet — 1918px against a 502px page — and clipping it. So
+// `column-span: all` spans that box rather than the page (a "spanning" title
+// measured 246px), and a nested `column-count` lays its columns out across the
+// full 1918px, putting the second column nine hundred pixels off the sheet.
+//
+// Only the columns on the chapter flow are managed per page by Paged.js. So
+// the index sets in those, the entry list adds no columns, and nothing spans.
+// The title and the note are one column wide, which is how a great many
+// printed indexes set them, and the entries run on continuously and fill the
+// page — which the alternatives did not.
+
+.index-list {
+    column-count: 1;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+// A letter divider is an item of the list, not a heading above a list of its
+// own. One list means one column set, and the entries run on past a letter
+// instead of every letter ending its block and leaving the page white.
+.index-letter {
+    @include sans-small();
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+    background-color: $color-teal;
+    line-height: $baseline-grid-unit;
+    padding: 0 ($baseline-grid-unit / 3);
+    margin: ($baseline-grid-unit * 0.8) 0 ($baseline-grid-unit / 3) 0;
+    display: block;
+    width: $baseline-grid-unit * 1.4;
+    text-align: center;
+    break-after: avoid;
+}
+
+// The letter dividers are chips; the chapter title is not. The parent
+// distinguishes them with `h2:first-of-type`, which is fragile — anything the
+// build adds above the title changes what matches, and the index opened with
+// its own title set as a small teal chip. The build marks the dividers, so
+// match the mark.
+.index h2 {
+    font-family: $font-display-main;
+    font-size: 27px;
+    font-weight: 400;
+    color: $color-navy;
+    background-color: transparent;
+    display: block;
+    padding: 0;
+    margin: 0 0 $baseline-grid-unit 0;
+    text-align: left;
+}
+
+.index h2.index-letter {
+    font-family: $font-display-secondary;
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+    background-color: $color-teal;
+    line-height: $baseline-grid-unit;
+    padding: 0 ($baseline-grid-unit / 3);
+    margin: ($baseline-grid-unit * 0.8) 0 ($baseline-grid-unit / 3) 0;
+    display: inline-block;
+    min-width: $baseline-grid-unit;
+    text-align: center;
+    break-after: avoid;
+}
+
+// Nothing in the index spans. `column-span: all` here resolved against the
+// wide box Paged.js flows through, so it did not make the note full width —
+// it just introduced a spanning region the engine could not fragment, and the
+// index stopped a third of the way down its opening page.
+
+// --- The index entries are not the parent theme's shape ----------------------
+// The parent theme's index convention is: the term as plain text, followed by
+// one or more empty `<a>` links whose visible text is replaced by the page
+// number. It does that with `.index a { font-size: 0 }` and a `::before`
+// carrying `target-counter`.
+//
+// This book's index arrives the other way round — the term IS the link text:
+//
+//     <a id="index-row-0003"></a>
+//     <ul><li><a href="#f19-aav-follistatin">AAV-Follistatin Gene Therapy</a></li></ul>
+//
+// So `font-size: 0` erased all 481 terms and printed only their folios, and
+// the 558 row anchors, which carry an id and no href, resolved
+// `target-counter(attr(href), page)` to 0 and printed a column of zeroes. Nine
+// pages of numbers with no words against them, in every proof so far.
+//
+// Doubled class to clear the parent's `.index a` rather than rely on the order
+// the partials happen to be imported in.
+
+.index.index a {
+    font-size: inherit;
+    color: $color-navy;
+    text-decoration: none;
+}
+
+.index.index a::before {
+    content: normal;
+}
+
+// The folio goes after the term it belongs to, which is the way round a reader
+// scans an index.
+.index.index li > a[href]::after {
+    content: "  " target-counter(attr(href), page);
+    font-family: $font-text-secondary;
+    // Set at the size of the term it belongs to and bold. The folio is the
+    // thing a reader is actually looking for, and this proof will be read in
+    // black and white, where teal at eight point is a grey smudge.
+    font-size: inherit;
+    font-weight: 700;
+    color: $color-navy;
+    white-space: nowrap;
+}
+
+// Single spaced. An index is a column of look-up lines, and the air between
+// them was making eleven pages of what should be nine.
+.index.index li {
+    line-height: $baseline-grid-unit * 0.74;
+    margin: 0 0 ($baseline-grid-unit * 0.12) 0;
+}
+
+// A row anchor is a landing place for a cross-reference, not an entry. It has
+// an id and no href, and everything the parent hangs off `.index a` has to
+// come off it or it prints as a locator to page zero.
+.index.index a:not([href])::before,
+.index.index a:not([href])::after {
+    content: normal;
+}
+
+// "Adiponectin. See Adiponectin-Receptor Signaling" — a cross-reference names
+// another entry, and naming it is the whole instruction. The page it happens
+// to sit on in the index is not a locator for the subject and reads as one.
+.index.index li > a[href^="#index-row"]::after {
+    content: normal;
+}
+
+// --- The index title -------------------------------------------------------
+// Its own class, not `.part-title` scoped under `.index`. Two reasons, both
+// measured rather than assumed.
+//
+// `.part-title` is in the theme's spanning list, which is right for a part
+// opener — that page carries the title and little else — and wrong here, where
+// the same title heads a flow that runs for twenty pages: the spanning region
+// cannot be fragmented and the index stopped a third of the way down its first
+// page.
+//
+// And scoping the override as `.index .part-title` does not work. In the
+// paginated DOM an element's ancestor chain is not its source chain, so a
+// selector that depends on an ancestor class silently stops matching — the
+// override never applied, while the bare `.part-title` in the spanning list
+// still did. The element had no inline style and `column-span: all` computed.
+// Put the class on the element itself.
+
+.index-title {
+    font-family: $font-display-main;
+    font-size: 27px;
+    font-weight: 400;
+    color: $color-navy;
+    line-height: $baseline-grid-unit * 1.7;
+    margin: 0 0 ($baseline-grid-unit / 2) 0;
+    padding-bottom: ($baseline-grid-unit / 3);
+    border-bottom: 2pt solid $color-navy;
+    column-span: auto;
+}
+
+// --- The index chapter must not carry columns of its own ---------------------
+// Measured by walking the ancestor chain of a rendered index page against the
+// same chain on a body page that works:
+//
+//   index:  div.index.chapter  cols=2   →  div > div  cols=2   →  four columns
+//   body:   div.chapter        cols=auto →  div > div  cols=2   →  two columns
+//
+// The chapter div itself was picking up two columns, nested inside the two the
+// flow already has, so the index set in four narrow columns and stopped a third
+// of the way down every page. The class is on the element, not an ancestor —
+// an ancestor-scoped override does not match in the paginated DOM.
+
+.index {
+    column-count: auto;
+}
+
+// The short first index page is not a column-fill problem.
+//
+// It holds sixteen entries where the pages after it hold forty, and both its
+// columns stop half way down. `column-fill: auto` was the obvious answer and
+// is not the answer: tried at two classes it tied with the chapter's balance
+// rule and lost on source order, tried at three it out-ranked it and the
+// rendered index was identical to the byte — 16, 40, 40, 33, 40 either way.
+//
+// So Paged.js is deciding how full these page boxes get, not the column
+// property, and the cause is somewhere else. Left as a note rather than a
+// rule that appears to do something.
+
+
+// Index entries are look-up lines, not paragraphs. They set tight, and they
+// carry their locators on the same line. The leading rules further up target
+// `li`, which the entries no longer are — set as body paragraphs the index ran
+// with a paragraph's worth of air under every entry.
+.index-entry {
+    @include sans-small();
+    font-size: 9.66px;
+    line-height: $baseline-grid-unit * 0.78;
+    margin: 0 0 ($baseline-grid-unit * 0.22) 0;
+    text-align: left;
+    hyphens: none;
+    break-inside: avoid;
+}
+
+// The letter divider marks a new run of entries, so it gets air above it and
+// none below.
+.index-letter {
+    margin-top: ($baseline-grid-unit * 0.9);
+}
+
+// --- The display face, where it is safe -------------------------------------
+// The book title, the part titles and the index title. All checked for arabic
+// digits and none carry any: Windorse cannot distinguish 1 from I from l, so
+// anything that might print a dose or an identifier stays in the text face.
+
+// `.title-page h1` rather than `.title-page-title`: the converter gives the
+// book title a plain `h1` and only the subtitle and the author line carry
+// classes, so the rule that named a class matched nothing and the title on
+// page one set in the text face while every part title set in the display one.
+// `.title-page .title-page-title` as well as `.title-page h1`: the class is
+// there because the parent theme hangs `string-set: book-title` off it, and
+// the parent theme also sets the text face on it, at a specificity the plain
+// `h1` rule loses to. The title page came out in the reading face while every
+// part title was in the display one.
+.title-page h1,
+.title-page h1.title-page-title,
+.part-title,
+.part-name,
+.index-title {
+    font-family: $font-display-hero;
+    // Never ask this face for a weight it does not have. Windorse ships one
+    // weight and no italic. The parent theme sets the title page's own title
+    // bold, so Chromium synthesised a bold by smearing the regular — and
+    // synthesised bold is not a font program, so it prints as a **Type 3**
+    // font: drawing procedures, no embedded face, refused by some RIPs.
+    //
+    // The part titles never asked for bold and always embedded correctly.
+    // The book title asked, and was the one page in the proof that came out
+    // unembedded.
+    font-weight: 400;
+    font-style: normal;
+}
+
+// A title page is one column. Set in column one of two, a centred title sits
+// a quarter of the way across the page and looks like a mistake — which it
+// is. The doubled class clears the parent theme's two-class rule.
+.title-page.title-page > div > div,
+.dedication-page.dedication-page > div > div,
+.acknowledgements-page.acknowledgements-page > div > div {
+    column-count: 1;
+}
+
+// A title page is centred on the page, not hung from the top of the text
+// block. The height to centre within comes from Paged.js's page box, which is
+// the only element in the chain that has one, so it is passed down.
+//
+// This is the same `height: inherit` that paginates a whole book to a single
+// page when it is applied to every component: a container with a definite
+// height never overflows, so Paged.js never finds a break and everything
+// after the first page is laid out invisibly. It is safe here and nowhere
+// else — these two hold a title and a dedication and are one page by
+// definition.
+.title-page,
+.title-page > div,
+.dedication-page,
+.dedication-page > div {
+    height: inherit;
+}
+
+.title-page.title-page > div > div,
+.dedication-page.dedication-page > div > div {
+    height: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+// The parent theme hangs the title block off the top of the text area. With
+// the page centred that margin is a lean to one side.
+.title-page.title-page,
+.dedication-page.dedication-page {
+    margin-top: 0;
+}
+
+// Once the dedication itself is on the page, the word "Dedication" above it is
+// not a heading anyone wants — the same call the copyright page makes, and for
+// the same reason: the h1 stays in the document for the PDF bookmarks and the
+// footer, and simply does not print. On a page still reserved for wording that
+// has not arrived, it does print, because a proof reader should be able to see
+// what the blank leaf is for.
+.dedication-page.has-dedication > div > div > h1 {
+    display: none;
+}
+
+// The dedication itself: a little above the reading size, a line and a half of
+// leading, and italic, because it is read as a stanza rather than as prose.
+//
+// Every paragraph, not just the first. The theme sets the opening paragraph of
+// any front-matter page as a standfirst — italic, navy, larger — which on a
+// dedication of two stanzas set the first one in one face and colour and the
+// second in another. Doubled class so this wins on specificity rather than on
+// where the two rules fall in the file.
+.dedication-page.has-dedication.has-dedication > div > div > p,
+.dedication-page.has-dedication.has-dedication > div > div > p:first-of-type {
+    font-size: $font-size-default * 1.15;
+    line-height: $baseline-grid-unit * 1.35;
+    font-style: italic;
+    color: $color-text-main;
+    margin: 0 0 ($baseline-grid-unit * 1.5) 0;
+}
+
+.dedication-page.has-dedication > div > div > p:last-child {
+    margin-bottom: 0;
+}
+
+// A dedication is centred across the measure as well as down the page. It is
+// a placeholder until the text arrives, and a placeholder that is set wrong
+// gets read as the design.
+.dedication-page.dedication-page,
+.dedication-page.dedication-page h1,
+.dedication-page.dedication-page p {
+    text-align: center;
+    text-indent: 0;
+}
+
+// --- Variety in the grid -----------------------------------------------------
+// Two even columns for three hundred pages is a texture, not a design. These
+// are the places the page opens out to the full measure, so the eye gets a
+// horizon line and the structure of the book is visible in its shape.
+
+// A sub-section opens across the measure: the heading and the paragraph that
+// introduces it, then the entries return to two columns underneath. `.keep-lead`
+// is already exactly that pair, wrapped by the build.
+//
+// Set as a shaded panel, for two reasons that turned out to be the same one.
+// Without a ground behind it the opener sat flush against the foot of the two
+// columns above with nothing between them — the heading read as the last line
+// of the left column rather than the start of something new. And a reader
+// skimming for structure needs the sub-sections to be findable at arm's
+// length: three hundred pages of even grey text with a slightly larger line
+// in it does not stop a thumbing eye. The panel does both.
+// The panel's own padding is the space above its title. The h4's margin lands
+// on top of that and makes two, which is what "only one space above and below"
+// was reported against.
+.keep-lead > h4,
+.keep-lead > .lead-head > h4 {
+    margin-top: 0;
+    margin-bottom: ($baseline-grid-unit / 2);
+}
+
+// A panel title never sits alone at the foot of a column or a page.
+//
+// The panel can fragment now, which is what lets its paragraph stay whole and
+// inside the box; the cost is that the fragment boundary can fall directly
+// under the title. `break-after: avoid` on the title would be the obvious way
+// to say so and does nothing — Paged.js takes every break-after out of the
+// stylesheet. `break-before: avoid` on the element that follows is honoured,
+// and is the same instruction read from the other end.
+.keep-lead > .standfirst,
+.keep-lead > p {
+    break-before: avoid;
+}
+
+// The same, one level down: an entry name and the line under it. `.entry-lead`
+// already holds the pair in a box that cannot break, so this is belt and
+// braces for the case where that box is itself too tall to place.
+.entry-lead > p {
+    break-before: avoid;
+}
+
+// A section title and the panel under it are two spanning divs with the
+// manuscript's anchors between them, so their margins never collapse: the
+// title's own bottom margin, the opener's, the panel's top margin and the
+// panel's padding all land end to end. Four gaps where the design asks for
+// one, and reported as doubled spacing under every title.
+//
+// The space belongs to the panel's top margin. Everything above it gives up
+// its own.
+.keep-lead.section-opener {
+    margin-bottom: 0;
+}
+
+.keep-lead.section-opener > .section-head {
+    margin-bottom: 0;
+}
+
+.keep-lead {
+    column-span: all;
+    // Exactly one line above and one below. At 1.6 above the panel floated
+    // free of the text it belongs to and read as a gap in the page rather
+    // than the start of something; at 0.8 below it sat closer to what follows
+    // than to what it introduces.
+    margin: $baseline-grid-unit 0 $baseline-grid-unit 0;
+}
+
+// The panel is for a sub-section — the level a reader skimming for structure
+// is looking for. A topic opener inside one takes the full measure and the
+// space above it, but no ground: two tinted boxes back to back read as one box
+// that has been broken, not as two levels of heading.
+// A section head is a spanner and so is the box below it. Two spanners in a
+// row cannot both be placed at the top of a fresh page: Paged.js sets the
+// first, then pushes the second to the page after, leaving the section opener
+// four per cent full. Twelve pages in this book were nearly empty that way.
+//
+// The design pass therefore merges the two into one box when they meet, and
+// the head stops spanning on its own account inside it.
+// And it no longer opens a page of its own. A section that begins a page and
+// then leaves the rest of it white costs a leaf to say something the spanning
+// rule already says. The content flows on under it.
+//
+// What the merge above is still for: two spanners in a row cannot both be
+// placed at the top of a fresh page, and a merged box is one spanner rather
+// than two. That reasoning holds wherever the box lands, not only at a page
+// top.
+.keep-lead.section-opener {
+    break-before: auto;
+}
+
+.keep-lead .section-head {
+    column-span: none;
+    break-before: auto;
+}
+
+.keep-lead.lead-section {
+    background-color: $color-tint;
+    border-left: 3pt solid $color-teal;
+    padding: ($baseline-grid-unit * 0.9) ($baseline-grid-unit * 1.1);
+}
+
+// Inside the panel the heading carries no rule of its own — the panel is the
+// separation now, and a rule under a heading inside a tinted box reads as two
+// devices doing one job.
+.keep-lead > h3 {
+    margin-top: 0;
+
+    &::after {
+        content: none;
+    }
+}
+
+.keep-lead > p:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+// An entry the build measured as short enough to move whole. A column then
+// ends with the entry that was in it and the next one begins with the next
+// entry, rather than carrying two orphaned lines across.
+//
+// Applied by measurement and only up to half a column: an entry taller than
+// that, moved whole, leaves more white behind it than the split it avoids.
+.entry-whole {
+    break-inside: avoid;
+}
+
+
+// A reference list is apparatus and reads as a block, not as two columns of
+// unlike things broken mid-citation.
+.references,
+.apparatus-head {
+    column-span: all;
+}
+
+// Balance the columns rather than filling the first to the foot and leaving
+// the second short.
+//
+// `column-fill: auto` fills the first column to the height of its container,
+// and this container has no height of its own — it is as tall as its content.
+// So the first column takes everything and the second is never opened: half
+// of every page white, in a book set in two columns throughout. It was
+// measured on the reference section, which came out at 410 pages against an
+// estimate of 205 — exactly twice, because exactly half the page was being
+// used.
+//
+// The doubled class is not a typo. The `auto` comes from
+// `.endmatter:not(.index) > div > div` in the parent theme, whose `:not()`
+// gives it two classes' worth of specificity; a plain `.chapter > div > div`
+// has one and loses, silently, on the components that carry both classes.
+.chapter.chapter > div > div,
+.frontmatter.frontmatter > div > div,
+.endmatter.endmatter > div > div {
+    column-fill: balance;
+}
+
+// A contents that lists only chapters cannot be used to find a section. The
+// sub-entries are indented under their chapter and set a size down.
+.toc-entry-sub {
+    @include sans-small();
+    font-size: 9.66px;
+    padding-left: $baseline-grid-unit;
+    color: $color-mid;
+}
+
+.toc-entry-sub > a {
+    color: inherit;
+    text-decoration: none;
+}
+
+// An abbreviation is a unit — it does not break across two lines.
+.table-figure td:first-child,
+.table-figure th:first-child {
+    white-space: nowrap;
+    hyphens: none;
+}
+
+// Nor do the headings inside a table hyphenate.
+.table-figure th,
+.table-figure caption {
+    hyphens: none;
+}
+
+// A table that misses fitting a page by a little is set a size down rather
+// than cut in two. The build measures it at both settings and only marks it
+// when the smaller one actually fits — a rule applied to every table would
+// shrink the ones that were already comfortable, and a rule applied by eye
+// would shrink the ones that were never going to fit either way.
+//
+// The reduction is in the leading and the cell padding before it is in the
+// type: a reference table read a row at a time loses less by sitting tighter
+// than by setting smaller.
+.table-figure.table-tight {
+    font-size: 9.5px;
+
+    td,
+    th {
+        padding-top: 1.4px;
+        padding-bottom: 1.4px;
+        line-height: 12px;
+    }
+
+    p {
+        line-height: 12px;
+    }
+}
+
+// A table that fits a page but was being split takes a page of its own. This
+// is applied by measurement, to the tables that actually split — not to every
+// table, which would leave fifteen part-pages of white.
+.table-own-page {
+    break-before: page;
+}
+
+// A table the build measured as fitting the room left on the page it belongs
+// to. It spans the measure like any other, and takes no page break — it is
+// never pushed across a boundary, because there was already room for it where
+// it stands. The build renders it both ways and puts the break back if the
+// table splits without it.
+.table-here {
+    break-before: auto;
+}
+
+// The first section of a part does not take a page break. The opener has
+// already announced it, and breaking again left the opener page between a
+// quarter and nearly all white — measured across the eleven of them.
+//
+// `break-before: auto` rather than removing the rule, because the build marks
+// this one with an extra class and the cascade has to undo the page break the
+// base class sets. Paged.js reads the winning value and ignores `auto`, which
+// is exactly the behaviour wanted here.
+.section-head-first {
+    break-before: auto;
+}
+
+// ---------------------------------------------------------------------------
+// A parenthetical in an entry name is a unit: it moves to the next line whole
+// rather than wrapping mid-phrase. Only short ones — a long parenthetical held
+// together strands half a line of white above it, which is worse than the
+// wrap it prevents.
+.entry-paren {
+    white-space: nowrap;
+}
+
+// ---------------------------------------------------------------------------
+// Hyphenation is manual here, because the dictionary does not exist
+// ---------------------------------------------------------------------------
+// The parent theme sets `hyphens: auto` on every paragraph. `auto` asks the
+// browser to hyphenate from a dictionary, and the Chromium that renders this
+// book ships none — which is why the build inserts 137,000 soft hyphens with
+// the Liang patterns instead. `manual` is the value that honours those without
+// depending on a dictionary, and it is the CSS default the parent overrode.
+//
+// The parent also sets `hyphenate-after`, `hyphenate-before` and
+// `hyphenate-lines`. Those are CSS3-draft spellings that no browser
+// implements — the real names are `hyphenate-limit-chars` and
+// `-webkit-hyphenate-limit-lines` — so all three are inert. Left alone rather
+// than corrected: the limits they were reaching for are already enforced by
+// the pass that places the soft hyphens, which refuses a break leaving fewer
+// than three characters on either side.
+
+p, li, dd, .standfirst {
+    hyphens: manual;
+    -webkit-hyphens: manual;
+}
+
+// ---------------------------------------------------------------------------
+// Never a single line
+// ---------------------------------------------------------------------------
+// Chromium honours `widows` and `orphans` inside a multi-column set, and the
+// theme had never set either: the only reason widows were rare is that most
+// paragraphs here are long. Two lines minimum on both sides of every break,
+// in the body and in the apparatus alike.
+
+p, li, dd, .lead-rest, .standfirst {
+    orphans: 2;
+    widows: 2;
+}
+
+// The abbreviations glossary
+// ---------------------------------------------------------------------------
+// Six hundred-odd terms set as a flowing two-column list rather than a table.
+// The term is set in the display face and hangs; the expansion follows it on
+// the same line and wraps under a hanging indent, so a column of them reads
+// down the initials.
+//
+// Each pair is a block that may not break, which is what the wrapping `div`
+// inside the `dl` is for: `break-inside` on a `dt`/`dd` pair cannot hold the
+// two together, and Paged.js's column fragmentation will otherwise leave a
+// term at the foot of one column and its expansion at the head of the next.
+
+.abbrev-list {
+    margin: 0 0 ($baseline-grid-unit) 0;
+    padding: 0;
+}
+
+.abbrev {
+    break-inside: avoid;
+    padding-left: 1.1em;
+    text-indent: -1.1em;
+    // A tenth of the baseline, not a fifth and certainly not a third. At a
+    // third the list ran three terms past the page; at a fifth it ran six
+    // lines past and left a second page nine-tenths white for them. Sixty-five
+    // terms either fit on one page or waste a leaf, and the space between
+    // them is the only adjustment that does not change the type.
+    margin-bottom: ($baseline-grid-unit / 10);
+    // And a hair off the leading, which was the last two lines. The list is
+    // looked up, not read down, so it carries a tighter line than the text.
+    line-height: $baseline-grid-unit * 0.94;
+}
+
+.abbrev > dt,
+.abbrev > dd {
+    display: inline;
+    margin: 0;
+}
+
+// The float has to be turned off explicitly. The base stylesheet sets
+// `dl dt { float: left }`, which a `display: inline` does not undo — a
+// floated box computes to block whatever the declaration says — and the
+// term printed on top of its expansion: "TNFTumor Necrosis Factor".
+.abbrev > dt {
+    float: none;
+}
+
+.abbrev > dt {
+    font-family: $font-display-secondary;
+    font-weight: 700;
+    color: $color-navy;
+    // The gap between the term and its expansion is a margin, not generated
+    // content: Paged.js discards `::after` on ordinary elements, so a
+    // generated space would survive the preview and vanish from the PDF.
+    margin-right: 0.5em;
+}
