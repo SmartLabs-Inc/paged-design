@@ -11,6 +11,10 @@
     --ui:#F4F6F7; --line:#D9DFE2; --quiet:#66717C;
     --sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
   }
+  /* The chrome is sized by its declared width, not width+padding+border:
+     without this the panel measured 343px against a 318px gutter and the
+     page slid under it by exactly the difference. */
+  #ed-bar,#ed-side,#ed-panel,#ed-busy{box-sizing:border-box}
   html,body{margin:0;padding:0;background:#8C949A}
   #ed-bar,#ed-side,#ed-panel,#ed-busy,#ed-hint{font-family:var(--sans);-webkit-font-smoothing:antialiased}
 
@@ -35,10 +39,23 @@
   #ed-side a.on{border-left-color:var(--teal);background:var(--tint);font-weight:600}
   #ed-side .pg{color:var(--quiet);font-size:11px;float:right;font-variant-numeric:tabular-nums}
 
-  #ed-stage{margin:46px 0 0 208px;padding:22px 0 90px;display:flex;flex-direction:column;
-    align-items:center;gap:26px}
+  /* Both rails are fixed, so the stage has to reserve room for BOTH or the
+     page centres itself underneath the correction panel. The right gutter is
+     reserved whether the panel is open or not: making it conditional moved
+     the page sideways every time you selected something. */
+  /* Paged.js lays its pages out as two-up spreads: .pagedjs_pages is a flex
+     row twice the page width, and the first page carries a left margin of a
+     whole page so it sits on the right of the spread. That is why the page
+     appeared under the correction panel however the stage was centred — the
+     stage was 914px and its contents 1632px. One centred column instead. */
+  #ed-stage{margin:46px 322px 0 212px;padding:22px 0 90px;zoom:var(--zoom,1)}
+  #ed-stage .pagedjs_pages{display:block!important;width:auto!important;max-width:none!important}
+  #ed-stage .pagedjs_page{margin:0 auto 6px!important;float:none!important}
+  body.railoff #ed-stage{margin-left:0}
+  body.railoff #ed-side{display:none}
   #ed-stage .pagedjs_page{box-shadow:0 2px 14px rgba(0,0,0,.3);background:#fff}
-  .ed-lbl{font-size:11px;color:#23313C;background:#E7EBEE;padding:2px 9px;border-radius:2px}
+  .ed-lbl{display:block;width:max-content;margin:22px auto 6px;font-size:11px;color:#23313C;
+    background:#E7EBEE;padding:2px 9px;border-radius:2px}
 
   .ed-hover{outline:2px dashed var(--teal)!important;outline-offset:2px;cursor:pointer}
   .ed-sel{outline:2.5px solid var(--gold)!important;outline-offset:2px;background:rgba(183,154,91,.12)!important}
@@ -59,7 +76,7 @@
   #ed-panel .undo{border-color:#C0545A;color:#9B2C32}
   #ed-panel hr{border:0;border-top:1px solid var(--line);margin:14px 0}
 
-  #ed-busy{position:fixed;inset:46px 0 0 208px;z-index:9500;background:rgba(246,247,248,.92);
+  #ed-busy{position:fixed;inset:46px 322px 0 212px;z-index:9500;background:rgba(246,247,248,.92);
     display:flex;align-items:center;justify-content:center;font-size:15px;color:#17202A}
   #ed-busy.off{display:none}
   #ed-hint{position:fixed;left:222px;bottom:14px;z-index:9000;background:var(--nav);color:#fff;
@@ -76,6 +93,15 @@
   <span class="count" id="ed-count"></span>
   <span class="sp"></span>
   <span class="count" id="ed-changes"></span>
+  <label class="count" for="ed-zoom">zoom</label>
+  <select id="ed-zoom" aria-label="Zoom">
+    <option value="0.6">60%</option>
+    <option value="0.75">75%</option>
+    <option value="0.9">90%</option>
+    <option value="1" selected>100%</option>
+    <option value="1.25">125%</option>
+  </select>
+  <button id="ed-rail" title="Hide the section list">&#9776;</button>
   <button id="ed-save" class="go">Download edited book</button>
   <button id="ed-list">List changes</button>
   <button id="ed-reset">Clear all</button>
@@ -182,7 +208,11 @@ Array.prototype.forEach.call(SRC.children, function(comp){
     if (!cur || opener){ cur = { comp: comp, units: [], title: '' }; chunks.push(cur); }
     cur.units.push(u);
     if (!cur.title){
-      var t = (u.textContent||'').replace(/\s+/g,' ').trim();
+      // The heading, not the unit's text: every section box carries a hidden
+      // run-head copy of its own title, so textContent reads it twice —
+      // "II. Tissue Repair, Skin, and Anti-AgingII. Tissue Re".
+      var h = u.querySelector && u.querySelector('h1,h2,h3,h4,h5');
+      var t = ((h || u).textContent || '').replace(/\s+/g,' ').trim();
       if (t) cur.title = t.slice(0,52);
     }
   });
@@ -387,6 +417,36 @@ document.getElementById('ed-list').addEventListener('click', function(){
   rows.sort(function(a,b){ return (a.page||0) - (b.page||0); });
   download('corrections.json', JSON.stringify(rows, null, 1), 'application/json');
 });
+(function viewControls(){
+  var z = document.getElementById('ed-zoom');
+  // Fit the page between the two rails. Clamped on every load, not just the
+  // first: a zoom chosen on a wide screen pushes the page under the panel on
+  // a narrow one, and the page sliding under the panel is the whole fault
+  // this is here to prevent.
+  var stage = document.getElementById('ed-stage');
+  var maxFit = Math.max(0.5, Math.min(1.25, (stage.clientWidth - 64) / 816));
+  var saved = parseFloat(localStorage.getItem('aet-editor-zoom') || '1');
+  if (!(saved > 0)) saved = 1;
+  var use = Math.round(Math.min(saved, maxFit) * 20) / 20;
+  localStorage.setItem('aet-editor-zoom', String(use));
+  z.value = String(use);
+  if (!z.value) { var o = document.createElement('option');
+    o.value = String(use); o.textContent = Math.round(use*100) + '%';
+    z.appendChild(o); z.value = String(use); }
+  document.documentElement.style.setProperty('--zoom', String(use));
+  z.addEventListener('change', function(){
+    document.documentElement.style.setProperty('--zoom', z.value);
+    localStorage.setItem('aet-editor-zoom', z.value);
+  });
+  var rail = document.getElementById('ed-rail');
+  if (localStorage.getItem('aet-editor-rail') === 'off') document.body.classList.add('railoff');
+  rail.addEventListener('click', function(){
+    document.body.classList.toggle('railoff');
+    localStorage.setItem('aet-editor-rail',
+      document.body.classList.contains('railoff') ? 'off' : 'on');
+  });
+})();
+
 document.getElementById('ed-reset').addEventListener('click', function(){
   if (ED.marks.length && confirm('Remove all ' + ED.marks.length + ' changes?')) ED.clearAll();
 });
