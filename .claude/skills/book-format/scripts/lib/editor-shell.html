@@ -103,6 +103,7 @@
   </select>
   <button id="ed-rail" title="Hide the section list">&#9776;</button>
   <button id="ed-save" class="go">Download edited book</button>
+  <button id="ed-undo">Undo last</button>
   <button id="ed-list">List changes</button>
   <button id="ed-reset">Clear all</button>
 </div>
@@ -122,7 +123,9 @@
   <button class="act" data-do="keepprev">Keep with what precedes<small>stops a break between this and the block above</small></button>
   <button class="act" data-do="image">Insert an image before this<small>choose a file from your computer</small></button>
   <button class="act" data-do="text">Edit this text<small>type on the page, then click away</small></button>
+  <button class="act" data-do="joinprev">Join to the block above<small>for a paragraph the build split in two</small></button>
   <hr>
+  <button class="act undo" data-do="delete">Delete this block<small>removes it from the book</small></button>
   <button class="act undo" data-do="undo">Undo changes to this block</button>
   <button class="act" data-do="close">Close</button>
 </div>
@@ -190,6 +193,15 @@ marks.forEach(function(m){
     el.parentNode.insertBefore(fig, el);
   }
   else if (m.do === 'text'){ el.innerHTML = m.html; }
+  else if (m.do === 'delete'){ el.remove(); }
+  else if (m.do === 'joinprev'){
+    // What you would otherwise do by hand to a paragraph the build split:
+    // put its words back on the end of the block above and drop the remains.
+    var up = el.previousElementSibling;
+    if (!up) return;
+    up.innerHTML = up.innerHTML.replace(/\s+$/, '') + ' ' + el.innerHTML;
+    el.remove();
+  }
 });
 
 function innerHolder(comp){
@@ -275,6 +287,7 @@ return {
     marks = marks.filter(function(m){ return String(m.id) !== String(id); });
     saveMarks(marks); location.reload();
   },
+  popMark: function(){ marks.pop(); saveMarks(marks); location.reload(); },
   clearAll: function(){ localStorage.removeItem(KEY); location.reload(); }
 };
 })();
@@ -358,6 +371,20 @@ panel.addEventListener('click', function(e){
   if (what === 'close'){ panel.classList.remove('on'); return; }
   if (!sel) return;
   if (what === 'undo'){ ED.dropMarks(selId); return; }
+  if (what === 'delete'){
+    var t = (sel.textContent||'').replace(/\s+/g,' ').trim();
+    if (!confirm('Delete this block?\n\n' + (t ? t.slice(0,160) : '(empty block)'))) return;
+    ED.addMark({ id: selId, do: 'delete' });
+    return;
+  }
+  if (what === 'joinprev'){
+    if (!sel.previousElementSibling){
+      alert('Nothing above this block inside its section to join it to.');
+      return;
+    }
+    ED.addMark({ id: selId, do: 'joinprev' });
+    return;
+  }
   if (what === 'text'){
     var shown = stage.querySelector('[data-ed="' + selId + '"]');
     if (!shown){ alert('Scroll that block into view first.'); return; }
@@ -446,6 +473,13 @@ document.getElementById('ed-list').addEventListener('click', function(){
       document.body.classList.contains('railoff') ? 'off' : 'on');
   });
 })();
+
+// A deleted block cannot be clicked to undo it, so the last change can
+// always be taken back from the bar.
+document.getElementById('ed-undo').addEventListener('click', function(){
+  if (!ED.marks.length){ alert('Nothing to undo.'); return; }
+  ED.popMark();
+});
 
 document.getElementById('ed-reset').addEventListener('click', function(){
   if (ED.marks.length && confirm('Remove all ' + ED.marks.length + ' changes?')) ED.clearAll();
