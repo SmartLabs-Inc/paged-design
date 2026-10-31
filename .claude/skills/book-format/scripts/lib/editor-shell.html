@@ -75,6 +75,18 @@
   #ed-panel button.act small{display:block;color:var(--quiet);font-size:11px;margin-top:2px}
   #ed-panel .undo{border-color:#C0545A;color:#9B2C32}
   #ed-panel hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+  #ed-panel .step{border:1px solid var(--line);border-radius:5px;padding:9px 10px;margin-bottom:6px}
+  #ed-panel .step .lab{font-size:12.5px;color:#17202A;margin-bottom:7px}
+  #ed-panel .step .lab i{font-style:normal;font-weight:700;color:var(--teal);
+    font-variant-numeric:tabular-nums}
+  #ed-panel .step button{font-family:var(--sans);font-size:14px;line-height:1;width:38px;
+    padding:6px 0;margin-right:5px;border-radius:3px;border:1px solid var(--line);
+    background:#fff;color:#17202A;cursor:pointer}
+  #ed-panel .step button:hover{border-color:var(--teal);background:var(--tint)}
+  #ed-panel .step button.z{width:auto;padding:6px 9px;font-size:11.5px}
+  #ed-panel .step button.go{width:auto;padding:6px 10px;font-size:11.5px;
+    background:var(--teal);border-color:var(--teal);color:#fff;margin-right:0;float:right}
+  #ed-panel .step small{display:block;clear:both;color:var(--quiet);font-size:11px;padding-top:8px}
 
   #ed-busy{position:fixed;inset:46px 322px 0 212px;z-index:9500;background:rgba(246,247,248,.92);
     display:flex;align-items:center;justify-content:center;font-size:15px;color:#17202A}
@@ -104,7 +116,8 @@
   <button id="ed-rail" title="Hide the section list">&#9776;</button>
   <button id="ed-save" class="go">Download edited book</button>
   <button id="ed-undo">Undo last</button>
-  <button id="ed-list">List changes</button>
+  <button id="ed-list">Save changes file</button>
+  <button id="ed-load">Load changes file</button>
   <button id="ed-reset">Clear all</button>
 </div>
 
@@ -124,6 +137,15 @@
   <button class="act" data-do="image">Insert an image before this<small>choose a file from your computer</small></button>
   <button class="act" data-do="text">Edit this text<small>type on the page, then click away</small></button>
   <button class="act" data-do="joinprev">Join to the block above<small>for a paragraph the build split in two</small></button>
+  <div class="step" id="ed-track">
+    <div class="lab">Tracking <i id="ed-trackval">0</i></div>
+    <button data-tk="-5" title="Tighten">&minus;</button>
+    <button data-tk="5" title="Open up">+</button>
+    <button data-tk="0" class="z">normal</button>
+    <button class="go" id="ed-trackgo">Apply</button>
+    <small>Squeezes or opens the letter-spacing of this block, to pull a word
+      up a line or push one down. Past about &minus;20 it starts to show.</small>
+  </div>
   <hr>
   <button class="act undo" data-do="delete">Delete this block<small>removes it from the book</small></button>
   <button class="act undo" data-do="undo">Undo changes to this block</button>
@@ -154,6 +176,7 @@ window.ED = (function(){
 var PAGEMAP = /*PAGE_MAP*/;
 var KEY = 'aet-editor-marks';
 var SECKEY = 'aet-editor-section';
+var STAMPKEY = 'aet-editor-saved';
 
 var SRC = document.createElement('div');
 SRC.innerHTML = document.getElementById('ed-book').innerHTML;
@@ -165,7 +188,10 @@ function loadMarks(){
   try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e){ return []; }
 }
 function saveMarks(m){
-  try { localStorage.setItem(KEY, JSON.stringify(m)); }
+  try {
+    localStorage.setItem(KEY, JSON.stringify(m));
+    localStorage.setItem(STAMPKEY, new Date().toISOString());
+  }
   catch(e){ alert('Could not save that change: the browser refused local storage.'); }
 }
 var marks = loadMarks();
@@ -193,6 +219,13 @@ marks.forEach(function(m){
     el.parentNode.insertBefore(fig, el);
   }
   else if (m.do === 'text'){ el.innerHTML = m.html; }
+  else if (m.do === 'track'){
+    // Copyfitting, in the unit type has always used for it: thousandths of an
+    // em, so the nudge stays proportional to the type size rather than fixed
+    // in points. A whole point per step would be about twenty times too
+    // coarse — one click would space the words visibly apart.
+    el.style.letterSpacing = (Number(m.em) / 1000) + 'em';
+  }
   else if (m.do === 'delete'){ el.remove(); }
   else if (m.do === 'joinprev'){
     // What you would otherwise do by hand to a paragraph the build split:
@@ -283,6 +316,20 @@ return {
   chunkPage: chunkPage, pageOfNode: pageOfNode,
   setSection: function(i){ localStorage.setItem(SECKEY, String(i)); location.reload(); },
   addMark: function(m){ marks.push(m); saveMarks(marks); location.reload(); },
+  // One of a kind per block: a second tracking value for the same paragraph
+  // would not add to the first, it would silently lose to it on replay.
+  setMark: function(m){
+    for (var i = marks.length - 1; i >= 0; i -= 1){
+      if (String(marks[i].id) === String(m.id) && marks[i].do === m.do) marks.splice(i, 1);
+    }
+    if (!m.drop) marks.push(m);
+    saveMarks(marks); location.reload();
+  },
+  loadFile: function(list){ marks.length = 0;
+    list.forEach(function(m){ marks.push(m); });
+    saveMarks(marks); location.reload();
+  },
+  savedAt: function(){ try { return localStorage.getItem(STAMPKEY); } catch(e){ return null; } },
   dropMarks: function(id){
     marks = marks.filter(function(m){ return String(m.id) !== String(id); });
     saveMarks(marks); location.reload();
@@ -339,8 +386,26 @@ function srcNode(id){ return ED.SRC.querySelector('[data-ed="' + id + '"]'); }
   var ids = {};
   ED.marks.forEach(function(m){ ids[m.id] = 1; });
   var k = Object.keys(ids).length;
-  document.getElementById('ed-changes').textContent =
-    k ? (k + ' block' + (k===1?'':'s') + ' changed') : 'no changes yet';
+  var el = document.getElementById('ed-changes');
+  // Where the changes live is not obvious from looking at the page, and the
+  // answer matters: they are in this browser, not in the file. Say so, with
+  // the time of the last one, so a session that did not save is visible.
+  var when = ED.savedAt();
+  if (when){
+    var d = new Date(when);
+    when = isNaN(d) ? null : d.toLocaleString(undefined,
+      { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+  }
+  el.textContent = k
+    ? (k + ' block' + (k===1?'':'s') + ' changed · saved in this browser' +
+       (when ? ' ' + when : ''))
+    : 'no changes yet';
+  el.title = k
+    ? 'Your corrections are stored by this browser on this computer, not inside ' +
+      'the HTML file. They survive closing the tab and reopening the file. They do ' +
+      'not travel to another computer or browser, and clearing browsing data erases ' +
+      'them. Use "Save changes file" to keep a copy you own.'
+    : '';
 })();
 
 function clearHover(){
@@ -362,8 +427,52 @@ function pick(id){
   var mine = ED.marks.filter(function(m){ return String(m.id) === String(id); });
   if (mine.length) bits.push(mine.map(function(m){ return m.do; }).join(', '));
   document.getElementById('ed-meta').textContent = bits.join(' · ');
+  trackPending = trackMark(id);
+  trackShow();
   panel.classList.add('on');
 }
+
+// ---------------------------------------------------------------------------
+// Tracking, the copyfitter's nudge: a step at a time until the word comes up.
+//
+// Each step is five thousandths of an em. Points were asked for and are the
+// wrong unit here — one point at this type size is about a tenth of an em,
+// twenty steps at once, and a single click would visibly open the words.
+//
+// The steps are collected and applied once, because applying means
+// repaginating the section. While stepping, the value is written straight
+// onto the block on the page: the line breaks inside its own box are then
+// right, which is what you are watching, though nothing moves across a page
+// boundary until Apply.
+var TRACK_STEP = 5, TRACK_MAX = 40;
+var trackPending = 0;
+
+function trackMark(id){
+  var m = ED.marks.filter(function(x){
+    return String(x.id) === String(id) && x.do === 'track'; });
+  return m.length ? Number(m[m.length-1].em) || 0 : 0;
+}
+function trackShow(){
+  document.getElementById('ed-trackval').textContent =
+    trackPending ? (trackPending > 0 ? '+' + trackPending : String(trackPending)) : 'normal';
+  var live = stage.querySelectorAll('[data-ed="' + selId + '"]');
+  for (var i = 0; i < live.length; i += 1){
+    live[i].style.letterSpacing = (trackPending / 1000) + 'em';
+  }
+}
+document.getElementById('ed-track').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if (!b || !sel) return;
+  if (b.id === 'ed-trackgo'){
+    ED.setMark({ id: selId, do: 'track', em: trackPending, drop: trackPending === 0 });
+    return;
+  }
+  var tk = b.getAttribute('data-tk');
+  if (tk === null) return;
+  var step = Number(tk);
+  trackPending = step === 0 ? 0
+    : Math.max(-TRACK_MAX, Math.min(TRACK_MAX, trackPending + step));
+  trackShow();
+});
 
 panel.addEventListener('click', function(e){
   var b = e.target.closest('button.act'); if (!b) return;
@@ -431,18 +540,55 @@ document.getElementById('ed-save').addEventListener('click', function(){
     '<script src="../../js/pager.js"><\/script>\n</head>\n<body>\n' +
     copy.innerHTML + '\n</body>\n</html>\n');
 });
+// The corrections are the irreplaceable half of this. The book rebuilds from
+// the manuscript in minutes; the list of hand corrections exists in one
+// browser's storage and nowhere else. So the file it writes is not only a
+// report to read — it carries the marks themselves, and Load puts them back,
+// on this machine or another.
 document.getElementById('ed-list').addEventListener('click', function(){
   var rows = ED.marks.map(function(m){
     var node = srcNode(m.id);
     return {
       page: node ? (ED.pageOfNode(node) || null) : null,
-      change: m.do,
+      change: m.do + (m.do === 'track' ? ' ' + (m.em > 0 ? '+' : '') + m.em : ''),
       file: m.name || undefined,
       anchor: node ? (node.textContent||'').replace(/\s+/g,' ').trim().slice(0,70) : ''
     };
   });
   rows.sort(function(a,b){ return (a.page||0) - (b.page||0); });
-  download('corrections.json', JSON.stringify(rows, null, 1), 'application/json');
+  var stamp = new Date().toISOString().replace(/[:.]/g,'-').slice(0,16);
+  download('AET-corrections-' + stamp + '.json', JSON.stringify({
+    book: 'Advanced and Emerging Therapies',
+    saved: new Date().toISOString(),
+    blocks: Object.keys(ED.marks.reduce(function(a,m){ a[m.id]=1; return a; }, {})).length,
+    changes: rows,
+    marks: ED.marks
+  }, null, 1), 'application/json');
+});
+document.getElementById('ed-load').addEventListener('click', function(){
+  var inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.json,application/json';
+  inp.addEventListener('change', function(){
+    var f = inp.files && inp.files[0]; if (!f) return;
+    var fr = new FileReader();
+    fr.onload = function(){
+      var data;
+      try { data = JSON.parse(fr.result); }
+      catch(e){ alert('That file is not a corrections file — it would not parse.'); return; }
+      var list = Array.isArray(data) ? data : data && data.marks;
+      if (!Array.isArray(list) || !list.length){
+        alert('No corrections in that file. A corrections file has a "marks" list in it.');
+        return;
+      }
+      var bad = list.filter(function(m){ return !m || m.id === undefined || !m.do; });
+      if (bad.length){ alert('That file has ' + bad.length + ' entries this editor cannot read.'); return; }
+      if (!confirm('Replace the ' + ED.marks.length + ' change' + (ED.marks.length===1?'':'s') +
+                   ' in this browser with the ' + list.length + ' in that file?')) return;
+      ED.loadFile(list);
+    };
+    fr.readAsText(f);
+  });
+  inp.click();
 });
 (function viewControls(){
   var z = document.getElementById('ed-zoom');
