@@ -144,7 +144,8 @@
     <button data-tk="0" class="z">normal</button>
     <button class="go" id="ed-trackgo">Apply</button>
     <small>Squeezes or opens the letter-spacing of this block, to pull a word
-      up a line or push one down. Past about &minus;20 it starts to show.</small>
+      up a line or push one down. Step until the line count drops. Tightening
+      is unnoticeable to about &minus;25; past that it begins to show.</small>
   </div>
   <hr>
   <button class="act undo" data-do="delete">Delete this block<small>removes it from the book</small></button>
@@ -444,7 +445,12 @@ function pick(id){
 // onto the block on the page: the line breaks inside its own box are then
 // right, which is what you are watching, though nothing moves across a page
 // boundary until Apply.
-var TRACK_STEP = 5, TRACK_MAX = 40;
+// Measured on this theme rather than guessed: a ten-line paragraph in the
+// 64mm column gives up a line at about -40, and not at -25. So the ceiling
+// is 60 — far enough to be useful on a long paragraph, not so far that the
+// tightening stops being typography — and the readout counts the lines, so
+// the step that wins the line is visible instead of guessed at.
+var TRACK_STEP = 5, TRACK_MAX = 60;
 var trackPending = 0;
 
 function trackMark(id){
@@ -453,12 +459,22 @@ function trackMark(id){
   return m.length ? Number(m[m.length-1].em) || 0 : 0;
 }
 function trackShow(){
-  document.getElementById('ed-trackval').textContent =
-    trackPending ? (trackPending > 0 ? '+' + trackPending : String(trackPending)) : 'normal';
+  var label = trackPending
+    ? (trackPending > 0 ? '+' + trackPending : String(trackPending)) : 'normal';
   var live = stage.querySelectorAll('[data-ed="' + selId + '"]');
   for (var i = 0; i < live.length; i += 1){
     live[i].style.letterSpacing = (trackPending / 1000) + 'em';
   }
+  // A block broken over a column or page boundary is two rectangles and its
+  // height is the column's, not its own, so counting lines there would lie.
+  if (live.length === 1 && live[0].getClientRects().length === 1){
+    var lh = parseFloat(getComputedStyle(live[0]).lineHeight);
+    var h = live[0].getBoundingClientRect().height;
+    if (lh > 0 && h > 0) label += ' · ' + Math.round(h / lh) + ' lines';
+  } else if (live.length){
+    label += ' · spans a break';
+  }
+  document.getElementById('ed-trackval').textContent = label;
 }
 document.getElementById('ed-track').addEventListener('click', function(e){
   var b = e.target.closest('button'); if (!b || !sel) return;
