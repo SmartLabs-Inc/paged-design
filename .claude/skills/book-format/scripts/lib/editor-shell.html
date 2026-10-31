@@ -676,15 +676,29 @@ window.ED.ready = function(){
   // of the book prints "1". The label above each page already says the real
   // number; this makes the printed one agree with it, because a correction
   // comes back as a page number and the two must not disagree.
+  // The content sits on the box's ::after, not on the box, so there is no
+  // inline style to set — the override has to be a rule.
   if (first){
+    var folio = [];
     Array.prototype.forEach.call(pages, function(pg, i){
-      var boxes = pg.querySelectorAll('.pagedjs_margin-content');
-      Array.prototype.forEach.call(boxes, function(box){
-        if (/counter\(\s*page\s*\)/.test(getComputedStyle(box).content)){
-          box.style.content = '"' + (first + i) + '"';
-        }
-      });
+      var n = pg.getAttribute('data-page-number');
+      Array.prototype.forEach.call(pg.querySelectorAll('.pagedjs_margin-content'),
+        function(box){
+          if (!/counter\(\s*page\s*\)/.test(getComputedStyle(box, '::after').content)) return;
+          var cls = (box.parentNode.className
+                      .match(/pagedjs_margin-(?:top|bottom)-[a-z-]+/) || [])[0];
+          if (!cls) return;
+          folio.push('.pagedjs_page[data-page-number="' + n + '"] .' + cls +
+                     ' .pagedjs_margin-content::after{content:"' + (first + i) + '"!important}');
+        });
     });
+    if (folio.length){
+      var st = document.getElementById('ed-folio') || document.createElement('style');
+      st.id = 'ed-folio';
+      st.setAttribute('data-pagedjs-ignore', '');
+      st.textContent = folio.join('\n');
+      document.head.appendChild(st);
+    }
   }
 
   // A 7in page in a stage sized for an 8.5in one is needlessly small, so the
