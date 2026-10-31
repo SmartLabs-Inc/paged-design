@@ -4,7 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AET — book editor</title>
-<style id="ed-theme" data-pagedjs-ignore>/*THEME_CSS*/</style>
+<!-- No data-pagedjs-ignore here, and it matters more than it looks. Marking
+     the theme ignored keeps Paged.js from stripping it, but it also keeps
+     Paged.js from ever reading it — and @page lives there. Ignored, the book
+     laid out on Paged.js's default page box of 8.5in rather than the 7in
+     trim: right type, right styling, wrong measure, so every line break,
+     column fill and page break on screen was one the book will not make.
+     It also meant no running heads, no folio and no proof notice, because a
+     margin box is generated from the @page rule Paged.js never saw.
+     The editor chrome below stays ignored. That one must not be processed. -->
+<style id="ed-theme">/*THEME_CSS*/</style>
 <style data-pagedjs-ignore>
   :root{
     --nav:#0D2035; --teal:#137C7A; --tint:#EAF3F3; --gold:#B79A5B;
@@ -613,7 +622,10 @@ document.getElementById('ed-load').addEventListener('click', function(){
   // a narrow one, and the page sliding under the panel is the whole fault
   // this is here to prevent.
   var stage = document.getElementById('ed-stage');
-  var maxFit = Math.max(0.5, Math.min(1.25, (stage.clientWidth - 64) / 816));
+  // 816 was the old default page box and is only the first-load fallback now;
+  // every render since records what the page actually measures.
+  var pageW = parseFloat(localStorage.getItem('aet-editor-pagew') || '0') || 816;
+  var maxFit = Math.max(0.5, Math.min(1.25, (stage.clientWidth - 64) / pageW));
   var saved = parseFloat(localStorage.getItem('aet-editor-zoom') || '1');
   if (!(saved > 0)) saved = 1;
   var use = Math.round(Math.min(saved, maxFit) * 20) / 20;
@@ -659,6 +671,41 @@ window.ED.ready = function(){
   });
   document.getElementById('ed-count').textContent =
     pages.length + (pages.length === 1 ? ' page' : ' pages');
+
+  // The folio counts from 1 inside the section Paged.js was given, so page 24
+  // of the book prints "1". The label above each page already says the real
+  // number; this makes the printed one agree with it, because a correction
+  // comes back as a page number and the two must not disagree.
+  if (first){
+    Array.prototype.forEach.call(pages, function(pg, i){
+      var boxes = pg.querySelectorAll('.pagedjs_margin-content');
+      Array.prototype.forEach.call(boxes, function(box){
+        if (/counter\(\s*page\s*\)/.test(getComputedStyle(box).content)){
+          box.style.content = '"' + (first + i) + '"';
+        }
+      });
+    });
+  }
+
+  // A 7in page in a stage sized for an 8.5in one is needlessly small, so the
+  // first render after the page box changes refits rather than waiting for
+  // the next load to read the stored width.
+  (function refit(){
+    var sheet = stage.querySelector('.pagedjs_sheet');
+    if (!sheet) return;
+    var z = parseFloat(getComputedStyle(document.documentElement)
+              .getPropertyValue('--zoom')) || 1;
+    var cssW = sheet.getBoundingClientRect().width / z;
+    if (!(cssW > 100)) return;
+    localStorage.setItem('aet-editor-pagew', String(Math.round(cssW)));
+    var want = parseFloat(localStorage.getItem('aet-editor-zoom') || '1') || 1;
+    var fit = Math.round(Math.max(0.5, Math.min(want, (stage.clientWidth - 64) / cssW)) * 20) / 20;
+    if (Math.abs(fit - z) > 0.001){
+      document.documentElement.style.setProperty('--zoom', String(fit));
+      var sel = document.getElementById('ed-zoom');
+      if (sel && sel.querySelector('option[value="' + fit + '"]')) sel.value = String(fit);
+    }
+  })();
 
   stage.addEventListener('mouseover', function(e){
     var t = e.target.closest && e.target.closest('[data-ed]');
