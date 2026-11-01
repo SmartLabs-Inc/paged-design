@@ -113,10 +113,12 @@ async function buildRows (rows, x, width, y0) {
       const inner = await buildRows(row.rows, x + PANEL_PAD, width - PANEL_PAD * 2,
                                     y + PANEL_PAD + (row.panel ? 4.6 : 0))
       const h = inner.y - y + PANEL_PAD
-      svg = K.box(x, y, width, h, 'ghost') + '\n' +
+      svg = K.box(x, y, width, h, row.dashed ? 'open' : 'ghost') + '\n' +
             (row.panel
               ? K.textBlock([row.panel], x + PANEL_PAD, y + PANEL_PAD + K.TYPE.label.size,
-                            K.TYPE.label, 'start') + '\n'
+                            row.quiet
+                              ? Object.assign({}, K.TYPE.label, { fill: K.TOKENS.mid })
+                              : K.TYPE.label, 'start') + '\n'
               : '') + svg + inner.svg
       Object.assign(boxes, inner.boxes)
       if (row.id) boxes[row.id] = { x, y, w: width, h }
@@ -150,7 +152,63 @@ async function buildRows (rows, x, width, y0) {
   return { svg, boxes, y: bottom }
 }
 
+// A few figures are about where things are, not what follows what. A box
+// diagram of two membranes with a gap between them loses the only thing the
+// figure asserts — that the membranes stay separate — so those are drawn
+// rather than laid out. Positions are fractions of the frame, so the drawing
+// is still resolution-free and still re-flows if the measure changes.
+async function buildScene (spec) {
+  const W = spec.width === 'column' ? K.COL_MM : K.SPAN_MM
+  const H = spec.height
+  const px = v => v * W, py = v => v * H
+  let svg = ''
+  for (const sh of spec.shapes) {
+    if (sh.type === 'membrane') {
+      // Two leaflets, bowed, so it reads as a membrane and not as a rule.
+      const x1 = px(sh.from), x2 = px(sh.to), y = py(sh.y), bow = py(sh.curve || 0)
+      for (const off of [-sh.gap / 2, sh.gap / 2]) {
+        svg += '\n<path d="M ' + K.n(x1) + ' ' + K.n(y + off) +
+          ' Q ' + K.n((x1 + x2) / 2) + ' ' + K.n(y + off + bow * 2) +
+          ' ' + K.n(x2) + ' ' + K.n(y + off) + '" fill="none" stroke="' +
+          K.TOKENS.mid + '" stroke-width="0.7"/>'
+      }
+    } else if (sh.type === 'embedded') {
+      const x = px(sh.x) - sh.w / 2, y = py(sh.y) - sh.h / 2
+      svg += '\n' + K.box(x, y, sh.w, sh.h, sh.kind || 'strong')
+    } else if (sh.type === 'curve') {
+      svg += '\n<path d="M ' + K.n(px(sh.from[0])) + ' ' + K.n(py(sh.from[1])) +
+        ' C ' + K.n(px(sh.c1[0])) + ' ' + K.n(py(sh.c1[1])) + ' ' +
+        K.n(px(sh.c2[0])) + ' ' + K.n(py(sh.c2[1])) + ' ' +
+        K.n(px(sh.to[0])) + ' ' + K.n(py(sh.to[1])) +
+        '" fill="none" stroke="' + (sh.accent ? K.TOKENS.teal : K.TOKENS.foot) +
+        '" stroke-width="0.45" stroke-dasharray="1.6 1.1"/>'
+    } else if (sh.type === 'leader') {
+      svg += '\n<path d="M ' + K.n(px(sh.from[0])) + ' ' + K.n(py(sh.from[1])) +
+        ' L ' + K.n(px(sh.to[0])) + ' ' + K.n(py(sh.to[1])) +
+        '" fill="none" stroke="' + K.TOKENS.line + '" stroke-width="0.3"/>'
+    } else if (sh.type === 'text') {
+      const style = Object.assign({}, K.TYPE[sh.style || 'node'])
+      const lines = await K.wrap(sh.text, style, sh.wrap ? px(sh.wrap) : W)
+      svg += '\n' + K.textBlock(lines, px(sh.x), py(sh.y), style, sh.anchor || 'middle')
+    } else if (sh.type === 'frame') {
+      svg = K.box(px(sh.x), py(sh.y), px(sh.w), py(sh.h), sh.kind || 'ghost') + svg
+    }
+  }
+  let bottom = H
+  if (spec.note) {
+    const lines = await K.wrap(spec.note, K.TYPE.note, W)
+    bottom += 3.2
+    svg += '\n<path d="M 0 ' + K.n(bottom) + ' L ' + K.n(W) + ' ' + K.n(bottom) +
+           '" stroke="' + K.TOKENS.hair + '" stroke-width="0.25"/>'
+    bottom += 2.6 + K.TYPE.note.size * 0.3
+    svg += '\n' + K.textBlock(lines, 0, bottom, K.TYPE.note, 'start')
+    bottom += (lines.length - 1) * K.TYPE.note.size * 1.26 + 1
+  }
+  return K.open(W, bottom + 0.6) + svg + K.close()
+}
+
 async function build (spec) {
+  if (spec.kind === 'scene') return buildScene(spec)
   const W = spec.width === 'column' ? K.COL_MM : K.SPAN_MM
   const body = await buildRows(spec.rows, INSET, W - INSET * 2, INSET)
   let svg = body.svg
