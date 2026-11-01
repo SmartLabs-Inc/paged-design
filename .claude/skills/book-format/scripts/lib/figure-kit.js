@@ -148,7 +148,7 @@ function box (x, y, w, h, kind) {
   const k = {
     key:     { fill: TOKENS.tint,  stroke: '#9EC2C0',     rule: TOKENS.teal },
     plain:   { fill: TOKENS.panel, stroke: TOKENS.line,   rule: null },
-    strong:  { fill: TOKENS.navy,  stroke: 'none',        rule: null },
+    strong:  { fill: '#DEE5EA',    stroke: TOKENS.navy,   rule: null },
     ghost:   { fill: '#FFFFFF',    stroke: TOKENS.line,   rule: null },
     // An outcome the evidence does not assert: drawn, but drawn provisionally.
     open:    { fill: '#FFFFFF',    stroke: TOKENS.mid,    rule: null, dash: '1.6 1.1' },

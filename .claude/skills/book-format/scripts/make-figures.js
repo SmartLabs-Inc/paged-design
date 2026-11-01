@@ -56,8 +56,8 @@ async function sizeNode (node, w) {
   if (node.kind === 'void') return { title: [], sub: [], tStyle: K.TYPE.node, sStyle: K.TYPE.sub, h: 0 }
   const inner = w - PAD * 2 - 1.2
   const strong = node.kind === 'strong'
-  const tStyle = strong ? Object.assign({}, K.TYPE.node, { fill: '#FFFFFF' }) : K.TYPE.node
-  const sStyle = strong ? Object.assign({}, K.TYPE.sub, { fill: '#C6D2DA' }) : K.TYPE.sub
+  const tStyle = strong ? Object.assign({}, K.TYPE.node, { fill: K.TOKENS.navy }) : K.TYPE.node
+  const sStyle = K.TYPE.sub
   const title = await K.wrap(node.title, tStyle, inner)
   const sub = node.sub ? await K.wrap(node.sub, sStyle, inner) : []
   const h = PAD * 2 + title.length * tStyle.size * 1.26 +
@@ -98,7 +98,7 @@ function route (a, b, hint) {
 }
 
 async function buildRows (rows, x, width, y0) {
-  let y = y0, svg = '', boxes = {}
+  let y = y0, svg = '', boxes = {}, bottom = y0
   for (const raw of rows) {
     const row = Array.isArray(raw) ? { cells: raw } : raw
     if (row.gapBefore) y += row.gapBefore
@@ -106,6 +106,7 @@ async function buildRows (rows, x, width, y0) {
       const lines = await K.wrap(row.heading, K.TYPE.title, width)
       svg += '\n' + K.textBlock(lines, x, y + K.TYPE.title.size, K.TYPE.title, 'start')
       y += lines.length * K.TYPE.title.size * 1.26 + 2.4
+      bottom = Math.max(bottom, y)
       continue
     }
     if (row.panel !== undefined) {
@@ -119,6 +120,7 @@ async function buildRows (rows, x, width, y0) {
               : '') + svg + inner.svg
       Object.assign(boxes, inner.boxes)
       if (row.id) boxes[row.id] = { x, y, w: width, h }
+      bottom = Math.max(bottom, y + h)
       y += h + GAP_Y * 0.8
       continue
     }
@@ -142,9 +144,10 @@ async function buildRows (rows, x, width, y0) {
       boxes[it.node.id] = it.box
       svg += '\n' + drawNode(it.node, it.box, it.laid)
     }
+    bottom = Math.max(bottom, y + tallest)
     y += tallest + GAP_Y
   }
-  return { svg, boxes, y: y - GAP_Y }
+  return { svg, boxes, y: bottom }
 }
 
 async function build (spec) {
@@ -153,19 +156,69 @@ async function build (spec) {
   let svg = body.svg
   let bottom = body.y
 
+  // Two arrows arriving at the same edge of the same box land on the same
+  // point and draw over each other. Spread them across that edge instead.
+  const arrivals = {}
+  for (const l of spec.links || []) {
+    const a = body.boxes[l.from], b = body.boxes[l.to]
+    if (!a || !b) continue
+    const key = l.to + (a.y < b.y ? ':top' : a.y > b.y ? ':bottom' : ':side')
+    ;(arrivals[key] = arrivals[key] || []).push(l)
+  }
+  const departures = {}
+  for (const l of spec.links || []) {
+    const a = body.boxes[l.from], b = body.boxes[l.to]
+    if (!a || !b) continue
+    const key = l.from + (a.y < b.y ? ':bottom' : a.y > b.y ? ':top' : ':side')
+    ;(departures[key] = departures[key] || []).push(l)
+  }
+  const nth = (group, l) => {
+    const g = group || []
+    return { i: g.indexOf(l), of: g.length }
+  }
+  const spread = (box, slot) => slot.of < 2 ? box.x + box.w / 2
+    : box.x + box.w * (slot.i + 1) / (slot.of + 1)
+
+  const labelBoxes = []
   for (const l of spec.links || []) {
     const a = body.boxes[l.from], b = body.boxes[l.to]
     if (!a || !b) { console.warn('  ! link skipped, unknown node: ' + l.from + '->' + l.to); continue }
+    const vertical = Math.abs(a.y - b.y) >= Math.min(a.h, b.h) && l.route !== 'side'
     const pts = route(a, b, l.kind === 'inhibit' ? 'inhibit' : l.route)
+    if (vertical && pts.length >= 2) {
+      const aKey = l.from + (a.y < b.y ? ':bottom' : ':top')
+      const bKey = l.to + (a.y < b.y ? ':top' : ':bottom')
+      const ax = spread(a, nth(departures[aKey], l))
+      const bx = spread(b, nth(arrivals[bKey], l))
+      pts[0][0] = ax
+      pts[pts.length - 1][0] = bx
+      if (pts.length === 4) { pts[1][0] = ax; pts[2][0] = bx }
+      else if (Math.abs(ax - bx) > 0.6) {
+        const mid = (pts[0][1] + pts[1][1]) / 2
+        pts.splice(1, 0, [ax, mid], [bx, mid])
+      }
+    }
     svg += '\n' + K.link(pts, l.kind || 'arrow', l.accent)
+
     if (l.label) {
-      const mid = pts[Math.floor(pts.length / 2)]
-      const horiz = pts.length === 2 && Math.abs(pts[0][1] - pts[1][1]) < 0.6
-      const lines = await K.wrap(l.label, K.TYPE.edge, 30)
-      svg += '\n' + K.textBlock(lines,
-        horiz ? (pts[0][0] + pts[1][0]) / 2 : mid[0] + 2.2,
-        horiz ? pts[0][1] - 1.6 : mid[1] + K.TYPE.edge.size * 0.35,
-        K.TYPE.edge, horiz ? 'middle' : 'start')
+      const lines = await K.wrap(l.label, K.TYPE.edge, 34)
+      const lw = Math.max(...(await K.widths(lines, K.TYPE.edge)))
+      const lh = lines.length * K.TYPE.edge.size * 1.26
+      // Hang the label off the longest straight leg, clear of the line, and
+      // give it a ground of its own so a connector never runs through a word.
+      let best = null
+      for (let i = 1; i < pts.length; i += 1) {
+        const len = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])
+        if (!best || len > best.len) best = { len, a: pts[i - 1], b: pts[i] }
+      }
+      const horiz = Math.abs(best.a[1] - best.b[1]) < 0.6
+      const cx = horiz ? (best.a[0] + best.b[0]) / 2 : Math.max(best.a[0], best.b[0]) + 1.6 + lw / 2
+      const cy = horiz ? best.a[1] - 1.5 - lh / 2 : (best.a[1] + best.b[1]) / 2
+      labelBoxes.push({ x: cx - lw / 2 - 0.8, y: cy - lh / 2 - 0.5, w: lw + 1.6, h: lh + 1 })
+      svg += '\n<rect x="' + K.n(cx - lw / 2 - 0.8) + '" y="' + K.n(cy - lh / 2 - 0.5) +
+             '" width="' + K.n(lw + 1.6) + '" height="' + K.n(lh + 1) + '" fill="#FFFFFF"/>'
+      svg += '\n' + K.textBlock(lines, cx,
+        cy - lh / 2 + K.TYPE.edge.size * 0.92, K.TYPE.edge, 'middle')
     }
   }
 
