@@ -68,7 +68,9 @@
 
   .ed-hover{outline:2px dashed var(--teal)!important;outline-offset:2px;cursor:pointer}
   .ed-sel{outline:2.5px solid var(--gold)!important;outline-offset:2px;background:rgba(183,154,91,.12)!important}
-  .ed-done{box-shadow:inset 3px 0 0 var(--teal)}
+  .ed-done{position:relative}
+  .ed-done::before{content:"";position:absolute;left:-9px;top:0;bottom:0;width:3px;
+    background:var(--teal);pointer-events:none}
 
   #ed-panel{position:fixed;right:0;top:46px;bottom:0;width:314px;z-index:8500;background:#fff;
     border-left:1px solid var(--line);padding:14px;overflow:auto;display:none}
@@ -240,9 +242,29 @@ marks.forEach(function(m){
   else if (m.do === 'joinprev'){
     // What you would otherwise do by hand to a paragraph the build split:
     // put its words back on the end of the block above and drop the remains.
+    //
+    // The block above is often not a paragraph. The build binds a label to the
+    // opening of its entry by wrapping both in one unbreakable box, so the
+    // visible first half of a split paragraph is the last paragraph *inside*
+    // that box, not the box. Joining to the box put the text after the
+    // paragraph instead of onto the end of it, which is why it looked as
+    // though nothing combined.
     var up = el.previousElementSibling;
     if (!up) return;
-    up.innerHTML = up.innerHTML.replace(/\s+$/, '') + ' ' + el.innerHTML;
+    var TEXT = 'p,li,h1,h2,h3,h4,h5,dd';
+    if (!up.matches(TEXT)){
+      var inner = up.querySelectorAll(TEXT);
+      if (!inner.length) return;
+      var host = inner[inner.length - 1];
+      host.innerHTML = host.innerHTML.replace(/\s+$/, '') + ' ' + el.innerHTML;
+      // That box was told not to break because it held a label and one line.
+      // It now holds a whole paragraph, and a box that cannot break and no
+      // longer fits a column stops pagination dead rather than overflowing.
+      var box = host.closest('.keep-label,.keep-lead,.entry-lead') || up;
+      if (box) box.style.breakInside = 'auto';
+    } else {
+      up.innerHTML = up.innerHTML.replace(/\s+$/, '') + ' ' + el.innerHTML;
+    }
     el.remove();
   }
 });
@@ -512,8 +534,14 @@ panel.addEventListener('click', function(e){
     return;
   }
   if (what === 'joinprev'){
-    if (!sel.previousElementSibling){
+    var above = sel.previousElementSibling;
+    if (!above){
       alert('Nothing above this block inside its section to join it to.');
+      return;
+    }
+    if (!above.matches('p,li,h1,h2,h3,h4,h5,dd') &&
+        !above.querySelector('p,li,h1,h2,h3,h4,h5,dd')){
+      alert('The block above has no text to join this onto.');
       return;
     }
     ED.addMark({ id: selId, do: 'joinprev' });
