@@ -148,6 +148,7 @@
   <button class="act" data-do="image">Insert an image before this<small>choose a file from your computer</small></button>
   <button class="act" data-do="text">Edit this text<small>type on the page, then click away</small></button>
   <button class="act" data-do="joinprev">Join to the block above<small>for a paragraph the build split in two</small></button>
+  <button class="act" data-do="allowbreak">Let this block break<small>fills the column instead of moving whole to the next one</small></button>
   <div class="step" id="ed-track">
     <div class="lab">Tracking <i id="ed-trackval">0</i></div>
     <button data-tk="-5" title="Tighten">&minus;</button>
@@ -255,6 +256,7 @@ marks.forEach(function(m){
     // coarse — one click would space the words visibly apart.
     el.style.letterSpacing = (Number(m.em) / 1000) + 'em';
   }
+  else if (m.do === 'allowbreak'){ el.style.breakInside = 'auto'; }
   else if (m.do === 'delete'){ el.remove(); }
   else if (m.do === 'joinprev'){
     // What you would otherwise do by hand to a paragraph the build split:
@@ -489,6 +491,14 @@ function pick(id){
   bits.push(sel.tagName.toLowerCase());
   var mine = ED.marks.filter(function(m){ return String(m.id) === String(id); });
   if (mine.length) bits.push(mine.map(function(m){ return m.do; }).join(', '));
+  var rendered = stage.querySelector('[data-ed="' + id + '"]');
+  for (var up = rendered; up && stage.contains(up); up = up.parentElement){
+    if (up.hasAttribute && up.hasAttribute('data-ed') &&
+        getComputedStyle(up).breakInside === 'avoid'){
+      bits.push(up === rendered ? 'will not break' : 'inside a box that will not break');
+      break;
+    }
+  }
   document.getElementById('ed-meta').textContent = bits.join(' · ');
   trackPending = trackMark(id);
   trackShow();
@@ -562,6 +572,27 @@ panel.addEventListener('click', function(e){
     var t = (sel.textContent||'').replace(/\s+/g,' ').trim();
     if (!confirm('Delete this block?\n\n' + (t ? t.slice(0,160) : '(empty block)'))) return;
     ED.addMark({ id: selId, do: 'delete' });
+    return;
+  }
+  if (what === 'allowbreak'){
+    // The label the eye lands on is a paragraph inside the box that will not
+    // break; it is the box that has to be told, not the paragraph. Only the
+    // rendered tree knows which ancestor carries the rule, because the source
+    // is detached and has no computed style, so resolve it here and store the
+    // id that matters.
+    var node = stage.querySelector('[data-ed="' + selId + '"]');
+    var holder = null;
+    while (node && stage.contains(node)){
+      if (node.hasAttribute('data-ed') &&
+          getComputedStyle(node).breakInside === 'avoid') holder = node;
+      node = node.parentElement;
+    }
+    if (!holder){
+      alert('Nothing here is holding the column open — this block is already ' +
+            'free to break across a column or page.');
+      return;
+    }
+    ED.addMark({ id: holder.getAttribute('data-ed'), do: 'allowbreak' });
     return;
   }
   if (what === 'joinprev'){
