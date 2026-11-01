@@ -189,6 +189,7 @@ var PAGEMAP = /*PAGE_MAP*/;
 var KEY = 'aet-editor-marks';
 var SECKEY = 'aet-editor-section';
 var STAMPKEY = 'aet-editor-saved';
+var PLACEKEY = 'aet-editor-place';
 
 var SRC = document.createElement('div');
 SRC.innerHTML = document.getElementById('ed-book').innerHTML;
@@ -207,6 +208,22 @@ function saveMarks(m){
   catch(e){ alert('Could not save that change: the browser refused local storage.'); }
 }
 var marks = loadMarks();
+
+// Every edit repaginates, and repaginating means reloading, which lands you
+// at the top of a section that may be fifty pages long. So before the reload
+// note where the work was: the block itself, and the page it sat on in case
+// the edit was the kind that removes the block.
+function savePlace(id){
+  try {
+    var el = id == null ? null : document.querySelector('.pagedjs_page [data-ed="' + id + '"]');
+    var pg = el && el.closest ? el.closest('.pagedjs_page') : null;
+    localStorage.setItem(PLACEKEY, JSON.stringify({
+      id: id == null ? null : String(id),
+      page: pg ? pg.getAttribute('data-page-number') : null,
+      y: window.scrollY || 0
+    }));
+  } catch (e) {}
+}
 
 marks.forEach(function(m){
   var el = SRC.querySelector('[data-ed="' + m.id + '"]');
@@ -346,8 +363,11 @@ window.PagedConfig = {
 return {
   SRC: SRC, chunks: chunks, current: current, marks: marks,
   chunkPage: chunkPage, pageOfNode: pageOfNode,
-  setSection: function(i){ localStorage.setItem(SECKEY, String(i)); location.reload(); },
-  addMark: function(m){ marks.push(m); saveMarks(marks); location.reload(); },
+  setSection: function(i){
+    try { localStorage.removeItem(PLACEKEY); } catch (e) {}
+    localStorage.setItem(SECKEY, String(i)); location.reload();
+  },
+  addMark: function(m){ savePlace(m.id); marks.push(m); saveMarks(marks); location.reload(); },
   // One of a kind per block: a second tracking value for the same paragraph
   // would not add to the first, it would silently lose to it on replay.
   setMark: function(m){
@@ -355,7 +375,14 @@ return {
       if (String(marks[i].id) === String(m.id) && marks[i].do === m.do) marks.splice(i, 1);
     }
     if (!m.drop) marks.push(m);
-    saveMarks(marks); location.reload();
+    savePlace(m.id); saveMarks(marks); location.reload();
+  },
+  takePlace: function(){
+    try {
+      var raw = localStorage.getItem(PLACEKEY);
+      localStorage.removeItem(PLACEKEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
   },
   loadFile: function(list){ marks.length = 0;
     list.forEach(function(m){ marks.push(m); });
@@ -363,10 +390,14 @@ return {
   },
   savedAt: function(){ try { return localStorage.getItem(STAMPKEY); } catch(e){ return null; } },
   dropMarks: function(id){
+    savePlace(id);
     marks = marks.filter(function(m){ return String(m.id) !== String(id); });
     saveMarks(marks); location.reload();
   },
-  popMark: function(){ marks.pop(); saveMarks(marks); location.reload(); },
+  popMark: function(){
+    savePlace(marks.length ? marks[marks.length - 1].id : null);
+    marks.pop(); saveMarks(marks); location.reload();
+  },
   clearAll: function(){ localStorage.removeItem(KEY); location.reload(); }
 };
 })();
@@ -768,6 +799,27 @@ window.ED.ready = function(){
     var el = stage.querySelector('[data-ed="' + id + '"]');
     if (el) el.classList.add('ed-done');
   });
+
+  // Back to where the work was. The block first, because the page it sat on
+  // may have moved; the page next, for an edit that removed the block; the
+  // old scroll offset last, which is only ever approximately right.
+  var place = ED.takePlace();
+  if (place){
+    var target = place.id
+      ? stage.querySelector('[data-ed="' + place.id + '"]') : null;
+    if (!target && place.page){
+      target = stage.querySelector('.pagedjs_page[data-page-number="' + place.page + '"]');
+    }
+    if (target){
+      target.scrollIntoView({ block: 'center' });
+      if (place.id){
+        var back = stage.querySelector('[data-ed="' + place.id + '"]');
+        if (back) back.classList.add('ed-sel');
+      }
+    } else if (place.y){
+      window.scrollTo(0, place.y);
+    }
+  }
 };
 
 if (stage.querySelector('.pagedjs_page')) window.ED.ready();
