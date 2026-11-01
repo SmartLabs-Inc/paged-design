@@ -13,7 +13,11 @@
 //   link   { from, to, kind?, label?, accent?, route? }
 //              kind:  arrow (default) | inhibit | dashed
 //              route: auto (default) | up | side
-//   panel  a row may instead be { panel: <label>, rows: [...] }
+//   panel  a row may instead be { panel: <label>, id?, rows: [...] } — an id
+//          makes the panel itself a link target, which is what a figure that
+//          draws an arrow from one stage to the next actually means
+//   head   a row may be { heading: "..." } to title a half of the figure
+//   kinds  key | plain | strong | ghost | open (provisional) | void (spacer)
 //   a row may also be { cells: [...], width: 0.45, align: "center" } to take
 //   part of the measure — a lone node under a three-node chain should not be
 //   three nodes wide just because nothing sits beside it
@@ -49,6 +53,7 @@ const GAP_Y = 7          // between rows — room for a connector and its label
 const PANEL_PAD = 3.2
 
 async function sizeNode (node, w) {
+  if (node.kind === 'void') return { title: [], sub: [], tStyle: K.TYPE.node, sStyle: K.TYPE.sub, h: 0 }
   const inner = w - PAD * 2 - 1.2
   const strong = node.kind === 'strong'
   const tStyle = strong ? Object.assign({}, K.TYPE.node, { fill: '#FFFFFF' }) : K.TYPE.node
@@ -61,6 +66,7 @@ async function sizeNode (node, w) {
 }
 
 function drawNode (node, box, laid) {
+  if (node.kind === 'void') return ''
   let s = K.box(box.x, box.y, box.w, box.h, node.kind || 'plain')
   const cx = box.x + box.w / 2 + (node.kind === 'key' ? 0.45 : 0)
   let y = box.y + PAD + laid.tStyle.size * 0.92
@@ -96,6 +102,12 @@ async function buildRows (rows, x, width, y0) {
   for (const raw of rows) {
     const row = Array.isArray(raw) ? { cells: raw } : raw
     if (row.gapBefore) y += row.gapBefore
+    if (row.heading !== undefined) {
+      const lines = await K.wrap(row.heading, K.TYPE.title, width)
+      svg += '\n' + K.textBlock(lines, x, y + K.TYPE.title.size, K.TYPE.title, 'start')
+      y += lines.length * K.TYPE.title.size * 1.26 + 2.4
+      continue
+    }
     if (row.panel !== undefined) {
       const inner = await buildRows(row.rows, x + PANEL_PAD, width - PANEL_PAD * 2,
                                     y + PANEL_PAD + (row.panel ? 4.6 : 0))
@@ -106,6 +118,7 @@ async function buildRows (rows, x, width, y0) {
                             K.TYPE.label, 'start') + '\n'
               : '') + svg + inner.svg
       Object.assign(boxes, inner.boxes)
+      if (row.id) boxes[row.id] = { x, y, w: width, h }
       y += h + GAP_Y * 0.8
       continue
     }
@@ -156,6 +169,18 @@ async function build (spec) {
     }
   }
 
+  if (spec.legend) {
+    bottom += 3.4
+    let lx = 0
+    for (const item of spec.legend) {
+      svg += '\n' + K.link([[lx, bottom], [lx + 8, bottom]], item.kind || 'arrow')
+      const [w] = await K.widths([item.text], K.TYPE.edge)
+      svg += '\n' + K.textBlock([item.text], lx + 9.6,
+                                 bottom + K.TYPE.edge.size * 0.36, K.TYPE.edge, 'start')
+      lx += 9.6 + w + 11
+    }
+    bottom += 2.6
+  }
   if (spec.note) {
     const lines = await K.wrap(spec.note, K.TYPE.note, W)
     bottom += 3.2

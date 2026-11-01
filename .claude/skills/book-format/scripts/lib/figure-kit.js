@@ -149,11 +149,20 @@ function box (x, y, w, h, kind) {
     key:     { fill: TOKENS.tint,  stroke: '#9EC2C0',     rule: TOKENS.teal },
     plain:   { fill: TOKENS.panel, stroke: TOKENS.line,   rule: null },
     strong:  { fill: TOKENS.navy,  stroke: 'none',        rule: null },
-    ghost:   { fill: '#FFFFFF',    stroke: TOKENS.line,   rule: null }
-  }[kind] || { fill: TOKENS.panel, stroke: TOKENS.line, rule: null }
+    ghost:   { fill: '#FFFFFF',    stroke: TOKENS.line,   rule: null },
+    // An outcome the evidence does not assert: drawn, but drawn provisionally.
+    open:    { fill: '#FFFFFF',    stroke: TOKENS.mid,    rule: null, dash: '1.6 1.1' },
+    // Occupies a cell and draws nothing, so a lone node can sit under the
+    // middle of a three-node row instead of being stretched across it.
+    void:    null
+  }[kind]
+  if (k === null) return ''
+  if (!k) k = { fill: TOKENS.panel, stroke: TOKENS.line, rule: null }
   let s = '<rect x="' + n(x) + '" y="' + n(y) + '" width="' + n(w) + '" height="' + n(h) +
     '" fill="' + k.fill + '"' +
-    (k.stroke === 'none' ? '' : ' stroke="' + k.stroke + '" stroke-width="0.3"') + '/>'
+    (k.stroke === 'none' ? ''
+      : ' stroke="' + k.stroke + '" stroke-width="0.3"' +
+        (k.dash ? ' stroke-dasharray="' + k.dash + '"' : '')) + '/>'
   if (k.rule) s += '\n<rect x="' + n(x) + '" y="' + n(y) + '" width="1.1" height="' +
     n(h) + '" fill="' + k.rule + '"/>'
   return s
