@@ -29,7 +29,9 @@ const TOKENS = {
   tint:    '#EAF3F3',   // callout wash, as the page uses it
   panel:   '#F4F6F7',   // neutral panel
   pale:    '#EEF3F7',
-  line:    '#C9D2D8',   // hairline border
+  line:    '#8E9FAA',   // box border — a step up from the page's hairline, so
+                        // a figure reads as an object when thumbing the book
+  hair:    '#C9D2D8',   // the page's own hairline, for a rule under a note
   sans:    "'Source Sans 3', Aptos, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
   serif:   "'Charis SIL', Georgia, 'Times New Roman', serif"
 }
@@ -76,7 +78,17 @@ async function openMeasurer (fontDir) {
               face('SourceSans3-Semibold.ttf', 600, 'normal') +
               face('SourceSans3-Bold.ttf', 700, 'normal') +
               face('SourceSans3-It.ttf', 400, 'italic')
-  _browser = await chromium.launch({ args: ['--no-sandbox'] })
+  // The repo pins its own Playwright, whose matching headless shell is not
+  // what this machine has installed; the full browser is. Ask for the default
+  // first so this still works where the pin is satisfied, then fall back.
+  try {
+    _browser = await chromium.launch({ args: ['--no-sandbox'] })
+  } catch (e) {
+    _browser = await chromium.launch({
+      executablePath: '/opt/pw-browsers/chromium',
+      args: ['--no-sandbox', '--headless']
+    })
+  }
   _page = await _browser.newPage()
   await _page.setContent('<!doctype html><meta charset="utf-8"><style>' + css +
     '</style><canvas id="c"></canvas>')
@@ -134,15 +146,15 @@ function textBlock (lines, x, y, style, anchor) {
 // corners, because every panel in this book has square corners.
 function box (x, y, w, h, kind) {
   const k = {
-    key:     { fill: TOKENS.tint,  stroke: 'none',        rule: TOKENS.teal },
+    key:     { fill: TOKENS.tint,  stroke: '#9EC2C0',     rule: TOKENS.teal },
     plain:   { fill: TOKENS.panel, stroke: TOKENS.line,   rule: null },
     strong:  { fill: TOKENS.navy,  stroke: 'none',        rule: null },
     ghost:   { fill: '#FFFFFF',    stroke: TOKENS.line,   rule: null }
   }[kind] || { fill: TOKENS.panel, stroke: TOKENS.line, rule: null }
   let s = '<rect x="' + n(x) + '" y="' + n(y) + '" width="' + n(w) + '" height="' + n(h) +
     '" fill="' + k.fill + '"' +
-    (k.stroke === 'none' ? '' : ' stroke="' + k.stroke + '" stroke-width="0.25"') + '/>'
-  if (k.rule) s += '\n<rect x="' + n(x) + '" y="' + n(y) + '" width="0.9" height="' +
+    (k.stroke === 'none' ? '' : ' stroke="' + k.stroke + '" stroke-width="0.3"') + '/>'
+  if (k.rule) s += '\n<rect x="' + n(x) + '" y="' + n(y) + '" width="1.1" height="' +
     n(h) + '" fill="' + k.rule + '"/>'
   return s
 }
@@ -151,8 +163,8 @@ const ARROW_ID = 'aet-arrow', ARROW_TEAL = 'aet-arrow-teal'
 
 function defs () {
   const head = (id, fill) =>
-    '<marker id="' + id + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" ' +
-    'markerHeight="5" orient="auto-start-reverse">' +
+    '<marker id="' + id + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.8" ' +
+    'markerHeight="5.8" orient="auto-start-reverse">' +
     '<path d="M 0 1 L 10 5 L 0 9 z" fill="' + fill + '"/></marker>'
   return '<defs>' + head(ARROW_ID, TOKENS.foot) + head(ARROW_TEAL, TOKENS.teal) + '</defs>'
 }
@@ -164,7 +176,7 @@ function link (pts, kind, accent) {
   const col = accent ? TOKENS.teal : TOKENS.foot
   const d = pts.map((p, i) => (i ? 'L ' : 'M ') + n(p[0]) + ' ' + n(p[1])).join(' ')
   const dash = kind === 'dashed' ? ' stroke-dasharray="1.6 1.1"' : ''
-  let s = '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="0.35"' + dash
+  let s = '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="0.45"' + dash
   if (kind !== 'inhibit') s += ' marker-end="url(#' + (accent ? ARROW_TEAL : ARROW_ID) + ')"'
   s += '/>'
   if (kind === 'inhibit') {
@@ -173,7 +185,7 @@ function link (pts, kind, accent) {
     const ux = dx / len, uy = dy / len, bar = 1.7
     s += '\n<path d="M ' + n(b[0] - uy * bar) + ' ' + n(b[1] + ux * bar) +
          ' L ' + n(b[0] + uy * bar) + ' ' + n(b[1] - ux * bar) +
-         '" stroke="' + col + '" stroke-width="0.45" fill="none"/>'
+         '" stroke="' + col + '" stroke-width="0.6" fill="none"/>'
   }
   return s
 }
