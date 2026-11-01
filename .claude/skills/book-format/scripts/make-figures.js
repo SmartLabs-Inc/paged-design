@@ -14,6 +14,9 @@
 //              kind:  arrow (default) | inhibit | dashed
 //              route: auto (default) | up | side
 //   panel  a row may instead be { panel: <label>, rows: [...] }
+//   a row may also be { cells: [...], width: 0.45, align: "center" } to take
+//   part of the measure — a lone node under a three-node chain should not be
+//   three nodes wide just because nothing sits beside it
 //
 // Usage: node make-figures.js --spec <file.json> --out <dir> [--only <id>]
 
@@ -39,6 +42,7 @@ if (args.help || !args.spec) {
   process.exit(args.help ? 0 : 1)
 }
 
+const INSET = 0.2        // so a hairline border is not clipped by the viewBox
 const PAD = 2.2          // inside a node
 const GAP_X = 5          // between nodes in a row
 const GAP_Y = 7          // between rows — room for a connector and its label
@@ -79,7 +83,9 @@ function route (a, b, hint) {
   const down = a.y < b.y
   const ax = a.x + a.w / 2, bx = b.x + b.w / 2
   const ay = down ? a.y + a.h + EPS : a.y - EPS
-  const by = down ? b.y - EPS : b.y + b.h + EPS
+  // An inhibition bar sits off the edge it blocks, not on it.
+  const stand = hint === 'inhibit' ? 1.5 : 0
+  const by = down ? b.y - EPS - stand : b.y + b.h + EPS + stand
   if (Math.abs(ax - bx) < 0.6) return [[ax, ay], [bx, by]]
   const mid = (ay + by) / 2
   return [[ax, ay], [ax, mid], [bx, mid], [bx, by]]
@@ -87,7 +93,9 @@ function route (a, b, hint) {
 
 async function buildRows (rows, x, width, y0) {
   let y = y0, svg = '', boxes = {}
-  for (const row of rows) {
+  for (const raw of rows) {
+    const row = Array.isArray(raw) ? { cells: raw } : raw
+    if (row.gapBefore) y += row.gapBefore
     if (row.panel !== undefined) {
       const inner = await buildRows(row.rows, x + PANEL_PAD, width - PANEL_PAD * 2,
                                     y + PANEL_PAD + (row.panel ? 4.6 : 0))
@@ -101,10 +109,13 @@ async function buildRows (rows, x, width, y0) {
       y += h + GAP_Y * 0.8
       continue
     }
-    const cells = row
+    const cells = row.cells
+    const rowW = width * (row.width || 1)
+    const offset = row.align === 'center' ? (width - rowW) / 2
+                 : row.align === 'right' ? width - rowW : 0
     const units = cells.reduce((t, c) => t + (c.span || 1), 0)
-    const unitW = (width - GAP_X * (cells.length - 1)) / units
-    let cx = x, tallest = 0
+    const unitW = (rowW - GAP_X * (cells.length - 1)) / units
+    let cx = x + offset, tallest = 0
     const laidOut = []
     for (const node of cells) {
       const w = unitW * (node.span || 1)
@@ -125,22 +136,22 @@ async function buildRows (rows, x, width, y0) {
 
 async function build (spec) {
   const W = spec.width === 'column' ? K.COL_MM : K.SPAN_MM
-  const body = await buildRows(spec.rows, 0, W, 0)
+  const body = await buildRows(spec.rows, INSET, W - INSET * 2, INSET)
   let svg = body.svg
   let bottom = body.y
 
   for (const l of spec.links || []) {
     const a = body.boxes[l.from], b = body.boxes[l.to]
     if (!a || !b) { console.warn('  ! link skipped, unknown node: ' + l.from + '->' + l.to); continue }
-    const pts = route(a, b, l.route)
+    const pts = route(a, b, l.kind === 'inhibit' ? 'inhibit' : l.route)
     svg += '\n' + K.link(pts, l.kind || 'arrow', l.accent)
     if (l.label) {
       const mid = pts[Math.floor(pts.length / 2)]
       const horiz = pts.length === 2 && Math.abs(pts[0][1] - pts[1][1]) < 0.6
       const lines = await K.wrap(l.label, K.TYPE.edge, 30)
       svg += '\n' + K.textBlock(lines,
-        horiz ? (pts[0][0] + pts[1][0]) / 2 : mid[0] + 1.4,
-        horiz ? pts[0][1] - 1.4 : mid[1] + K.TYPE.edge.size * 0.35,
+        horiz ? (pts[0][0] + pts[1][0]) / 2 : mid[0] + 2.2,
+        horiz ? pts[0][1] - 1.6 : mid[1] + K.TYPE.edge.size * 0.35,
         K.TYPE.edge, horiz ? 'middle' : 'start')
     }
   }
@@ -149,7 +160,7 @@ async function build (spec) {
     const lines = await K.wrap(spec.note, K.TYPE.note, W)
     bottom += 3.2
     svg += '\n<path d="M 0 ' + K.n(bottom) + ' L ' + K.n(W) + ' ' + K.n(bottom) +
-           '" stroke="' + K.TOKENS.line + '" stroke-width="0.25"/>'
+           '" stroke="' + K.TOKENS.hair + '" stroke-width="0.25"/>'
     bottom += 2.6 + K.TYPE.note.size * 0.3
     svg += '\n' + K.textBlock(lines, 0, bottom, K.TYPE.note, 'start')
     bottom += (lines.length - 1) * K.TYPE.note.size * 1.26 + 1
