@@ -1,0 +1,25 @@
+// main.scss — AALAI Textbook, grayscale interior
+//
+// The colour theme, with the palette mapped to grey and the artwork
+// desaturated. Everything else — grid, components, page furniture — is
+// inherited, so the two themes cannot drift apart: a change to the textbook
+// theme reaches this one on the next build.
+//
+// The grey variables are imported after the textbook's own, and before any
+// styles, because Sass resolves a variable where it is used. Import them the
+// other way round and the stylesheet compiles clean and prints in colour.
+
+@charset "utf-8";
+
+@import '../_defaults/variables';
+@import '../aalai/variables';
+@import '../aalai-textbook/variables';
+@import 'variables';
+
+@import '../_defaults/selectors';
+@import '../aalai/selectors';
+
+@import '../_defaults/styles';
+@import '../aalai/styles';
+@import '../aalai-textbook/styles';
+@import 'styles';
