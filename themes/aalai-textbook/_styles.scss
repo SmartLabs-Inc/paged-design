@@ -890,6 +890,23 @@ $part-tabs:
 // and a running foot reading COPYRIGHT. A copyright page carries neither.
 //
 // Two classes beats one, which is all this needs.
+//
+// The same collision hid the front matter. A disclaimer or a preface is
+// `chapter frontmatter`, so it took the body page and printed a running head,
+// the book's title across the foot and an arabic folio — the treatment for
+// pages a reader moves through, not for the matter before the book starts.
+// @page frontmatter gives it what it should have: the folio alone.
+//
+// The contents goes with them. It is numbered with the front matter and read
+// the same way.
+.chapter.frontmatter,
+.chapter.contents-page {
+    page: frontmatter;
+}
+
+// Declared after the two above on purpose: the copyright page is `chapter
+// frontmatter copyright-page`, matches both at the same specificity, and the
+// later rule has to be the one that wins.
 .chapter.copyright-page {
     page: copyright;
 }
