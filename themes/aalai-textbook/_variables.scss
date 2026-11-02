@@ -137,9 +137,11 @@ $recto-bottom: string(book-title);
 //
 // Outer corner on both sides, opposite the folio: it reads as a stamp rather
 // than as part of the running foot.
+// Removed for the corrected file. The variable stays so the notice can be put
+// back for a later proof round by restoring the two assignments below it.
 $proof-notice: "UNCORRECTED PROOF";
-$recto-bottom-left: $proof-notice;
-$verso-bottom-right: $proof-notice;
+$recto-bottom-left: normal;
+$verso-bottom-right: normal;
 
 // ---------------------------------------------------------------------------
 // Faces

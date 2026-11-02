@@ -827,6 +827,21 @@ $part-tab-height: 34mm;
         }
     }
 
+    // The part opener is a display page: the part number, its name and its
+    // contents, and nothing else. A running head naming the section and a
+    // foot naming the book are for pages a reader is moving through, not for
+    // the page that announces where they have arrived — so it carries a blind
+    // folio, as a part title conventionally does. The tab stays: on the
+    // opener it is the one page where it means most.
+    @page #{$name}:first {
+        @top-left { content: normal; }
+        @top-center { content: normal; }
+        @top-right { content: normal; }
+        @bottom-left { content: normal; }
+        @bottom-center { content: normal; }
+        @bottom-right { content: normal; }
+    }
+
     // A blank verso carries nothing, tab included — it is not a page of the
     // part, it is the gap before one.
     @page #{$name}:blank {
@@ -862,6 +877,21 @@ $part-tabs:
         page: part#{$n};
     }
     @include part-page("part" + $n, $color, $slot);
+}
+
+// ---------------------------------------------------------------------------
+// Components that are a chapter and something else
+// ---------------------------------------------------------------------------
+// The parent theme names a page per component class — .copyright-page gets
+// @page copyright, and so on — and every one of those selectors is a single
+// class. This manuscript's copyright page carries `chapter` as well, and
+// `.chapter { page: chapter }` is declared after `.copyright-page`, so at
+// equal specificity the body page won and the copyright page printed a folio
+// and a running foot reading COPYRIGHT. A copyright page carries neither.
+//
+// Two classes beats one, which is all this needs.
+.chapter.copyright-page {
+    page: copyright;
 }
 
 // ---------------------------------------------------------------------------
