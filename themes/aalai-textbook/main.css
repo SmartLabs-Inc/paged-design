@@ -6145,6 +6145,10 @@ a.uri,
     content: normal;
     border-right: 0; } }
 
+.chapter.frontmatter,
+.chapter.contents-page {
+  page: frontmatter; }
+
 .chapter.copyright-page {
   page: copyright; }
 

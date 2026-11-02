@@ -23,6 +23,7 @@ if (args.help || !args.content) {
     '  --theme <name>    Theme to render with. Default: beatrix.',
     '  --out <file>      Output PDF. Default: <content>/<dir-name>.pdf.',
     '  --timeout <ms>    How long to wait for pagination. Default: 300000.',
+    '  --renumber        Front matter in roman, body restarting at 1.',
     '  --no-build        Skip rebuilding the theme CSS first.',
     '  --allow-remote    Let the page fetch remote resources (web fonts).',
     '                    Off by default: an unreachable font host hangs',
@@ -117,6 +118,27 @@ async function main () {
     return document.fonts.ready.then(function () { return document.fonts.status })
   })
   if (pending !== 'loaded') console.log('  fonts reported "' + pending + '" rather than "loaded"')
+
+  // Front matter in roman, the body restarting at 1 — set here because the
+  // page counter cannot be restarted in CSS in this renderer, and because the
+  // answer is only knowable once the book has finished paginating. See
+  // lib/renumber.js for the three CSS routes that were measured and failed.
+  if (args.renumber) {
+    const renumber = require('./lib/renumber')
+    const report = await page.evaluate(renumber.source, renumber.options(args['ref-selector']))
+    if (!report.ok) {
+      await browser.close()
+      await server.close()
+      console.error('Renumbering failed: ' + report.reason)
+      process.exit(1)
+    }
+    console.log('  renumbered: ' + report.frontMatterPages + ' pages of front matter in roman, ' +
+      report.bodyPages + ' body pages from 1 (body opens at sheet ' + report.bodyStartsAtPage + ')')
+    console.log('  ' + report.foliosStamped + ' folios set, ' +
+      report.refsResolved + ' page references rewritten' +
+      (report.refsUnresolved ? ', ' + report.refsUnresolved + ' unresolved' : ''))
+    if (report.refsUnresolved) console.log('  unresolved: ' + report.unresolvedSample.join(', '))
+  }
 
   await page.pdf({
     path: outFile,
