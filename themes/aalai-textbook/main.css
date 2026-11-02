@@ -330,7 +330,7 @@ h6 {
   @bottom-left {
     content: counter(page); }
   @bottom-right {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @bottom-left-corner {
     content: normal; }
   @bottom-right-corner {
@@ -350,7 +350,7 @@ h6 {
   @bottom-center {
     content: string(book-title); }
   @bottom-left {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @bottom-right {
     content: counter(page); }
   @bottom-left-corner {
@@ -5236,11 +5236,11 @@ blockquote {
   @bottom-center {
     content: string(h1-text, first); }
   @bottom-right {
-    content: "UNCORRECTED PROOF"; } }
+    content: normal; } }
 
 @page endmatter:right {
   @bottom-left {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @bottom-center {
     content: string(book-title); }
   @bottom-right {
@@ -5722,7 +5722,7 @@ a.uri,
   @bottom-center {
     content: string(h1-text, first); }
   @bottom-right {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @left-top {
     content: "";
     height: 34mm;
@@ -5736,7 +5736,7 @@ a.uri,
   @top-right {
     content: string(topic-name, start); }
   @bottom-left {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @bottom-center {
     content: string(book-title); }
   @bottom-right {
@@ -5745,6 +5745,20 @@ a.uri,
     content: "";
     height: 34mm;
     border-right: 7mm solid #137C7A; } }
+
+@page part1:first {
+  @top-left {
+    content: normal; }
+  @top-center {
+    content: normal; }
+  @top-right {
+    content: normal; }
+  @bottom-left {
+    content: normal; }
+  @bottom-center {
+    content: normal; }
+  @bottom-right {
+    content: normal; } }
 
 @page part1:blank {
   @top-left {
@@ -5781,7 +5795,7 @@ a.uri,
   @bottom-center {
     content: string(h1-text, first); }
   @bottom-right {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @left-middle {
     content: "";
     height: 34mm;
@@ -5795,7 +5809,7 @@ a.uri,
   @top-right {
     content: string(topic-name, start); }
   @bottom-left {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @bottom-center {
     content: string(book-title); }
   @bottom-right {
@@ -5804,6 +5818,20 @@ a.uri,
     content: "";
     height: 34mm;
     border-right: 7mm solid #23806C; } }
+
+@page part2:first {
+  @top-left {
+    content: normal; }
+  @top-center {
+    content: normal; }
+  @top-right {
+    content: normal; }
+  @bottom-left {
+    content: normal; }
+  @bottom-center {
+    content: normal; }
+  @bottom-right {
+    content: normal; } }
 
 @page part2:blank {
   @top-left {
@@ -5840,7 +5868,7 @@ a.uri,
   @bottom-center {
     content: string(h1-text, first); }
   @bottom-right {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @left-bottom {
     content: "";
     height: 34mm;
@@ -5854,7 +5882,7 @@ a.uri,
   @top-right {
     content: string(topic-name, start); }
   @bottom-left {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @bottom-center {
     content: string(book-title); }
   @bottom-right {
@@ -5863,6 +5891,20 @@ a.uri,
     content: "";
     height: 34mm;
     border-right: 7mm solid #315E91; } }
+
+@page part3:first {
+  @top-left {
+    content: normal; }
+  @top-center {
+    content: normal; }
+  @top-right {
+    content: normal; }
+  @bottom-left {
+    content: normal; }
+  @bottom-center {
+    content: normal; }
+  @bottom-right {
+    content: normal; } }
 
 @page part3:blank {
   @top-left {
@@ -5899,7 +5941,7 @@ a.uri,
   @bottom-center {
     content: string(h1-text, first); }
   @bottom-right {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @left-top {
     content: "";
     height: 34mm;
@@ -5913,7 +5955,7 @@ a.uri,
   @top-right {
     content: string(topic-name, start); }
   @bottom-left {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @bottom-center {
     content: string(book-title); }
   @bottom-right {
@@ -5922,6 +5964,20 @@ a.uri,
     content: "";
     height: 34mm;
     border-right: 7mm solid #D49B38; } }
+
+@page part4:first {
+  @top-left {
+    content: normal; }
+  @top-center {
+    content: normal; }
+  @top-right {
+    content: normal; }
+  @bottom-left {
+    content: normal; }
+  @bottom-center {
+    content: normal; }
+  @bottom-right {
+    content: normal; } }
 
 @page part4:blank {
   @top-left {
@@ -5958,7 +6014,7 @@ a.uri,
   @bottom-center {
     content: string(h1-text, first); }
   @bottom-right {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @left-middle {
     content: "";
     height: 34mm;
@@ -5972,7 +6028,7 @@ a.uri,
   @top-right {
     content: string(topic-name, start); }
   @bottom-left {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @bottom-center {
     content: string(book-title); }
   @bottom-right {
@@ -5981,6 +6037,20 @@ a.uri,
     content: "";
     height: 34mm;
     border-right: 7mm solid #B79A5B; } }
+
+@page part5:first {
+  @top-left {
+    content: normal; }
+  @top-center {
+    content: normal; }
+  @top-right {
+    content: normal; }
+  @bottom-left {
+    content: normal; }
+  @bottom-center {
+    content: normal; }
+  @bottom-right {
+    content: normal; } }
 
 @page part5:blank {
   @top-left {
@@ -6017,7 +6087,7 @@ a.uri,
   @bottom-center {
     content: string(h1-text, first); }
   @bottom-right {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @left-bottom {
     content: "";
     height: 34mm;
@@ -6031,7 +6101,7 @@ a.uri,
   @top-right {
     content: string(topic-name, start); }
   @bottom-left {
-    content: "UNCORRECTED PROOF"; }
+    content: normal; }
   @bottom-center {
     content: string(book-title); }
   @bottom-right {
@@ -6040,6 +6110,20 @@ a.uri,
     content: "";
     height: 34mm;
     border-right: 7mm solid #0D2035; } }
+
+@page part6:first {
+  @top-left {
+    content: normal; }
+  @top-center {
+    content: normal; }
+  @top-right {
+    content: normal; }
+  @bottom-left {
+    content: normal; }
+  @bottom-center {
+    content: normal; }
+  @bottom-right {
+    content: normal; } }
 
 @page part6:blank {
   @top-left {
@@ -6060,6 +6144,9 @@ a.uri,
   @right-bottom {
     content: normal;
     border-right: 0; } }
+
+.chapter.copyright-page {
+  page: copyright; }
 
 .chapter ol li a.uri,
 .chapter ul li a.uri {
