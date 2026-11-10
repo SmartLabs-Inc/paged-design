@@ -428,6 +428,15 @@ h4 {
     text-align-last: justify;
 }
 
+// A first half that has been given its second half back is a whole paragraph
+// again, and has to stop behaving like half of one: its last line is the end
+// of the paragraph, so it is set ragged rather than stretched, and it takes
+// the space a paragraph leaves beneath it.
+.lead-head.lead-whole {
+    text-align-last: auto;
+    padding-bottom: ($baseline-grid-unit * 0.55);
+}
+
 .lead-rest {
     margin-top: 0;
     text-indent: 0;

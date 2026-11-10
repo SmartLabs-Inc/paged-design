@@ -148,6 +148,7 @@
   <button class="act" data-do="image">Insert an image before this<small>choose a file from your computer</small></button>
   <button class="act" data-do="text">Edit this text<small>type on the page, then click away</small></button>
   <button class="act" data-do="joinprev">Join to the block above<small>for a paragraph the build split in two</small></button>
+  <button class="act" data-do="joinnext">Join with the block below<small>the same repair, from the upper half</small></button>
   <button class="act" data-do="allowbreak">Let this block break<small>fills the column instead of moving whole to the next one</small></button>
   <button class="act" data-do="span">Run across both columns<small>one wide column for this block; click again to put it back in two</small></button>
   <div class="step" id="ed-track">
@@ -300,6 +301,10 @@ marks.forEach(function(m){
       if (!inner.length) return;
       var host = inner[inner.length - 1];
       host.innerHTML = host.innerHTML.replace(/\s+$/, '') + ' ' + el.innerHTML;
+      // It was half a paragraph, with its last line justified to hide the
+      // cut. It is the whole paragraph now, and that same rule would stretch
+      // the paragraph's real last line across the measure.
+      if (host.classList.contains('lead-head')) host.classList.add('lead-whole');
       // That box was told not to break because it held a label and one line.
       // It now holds a whole paragraph, and a box that cannot break and no
       // longer fits a column stops pagination dead rather than overflowing.
@@ -638,6 +643,34 @@ panel.addEventListener('click', function(e){
       return;
     }
     ED.addMark({ id: holder.getAttribute('data-ed'), do: 'allowbreak' });
+    return;
+  }
+  if (what === 'joinnext'){
+    // The half a person clicks is the one that looks wrong, and that is the
+    // upper one — its last line is the stretched one. The repair is the same
+    // join, made from the lower half, so find the lower half and ask for
+    // that: the block that follows this one, stepping out of a label box if
+    // this is the last thing in it.
+    var TEXTB = 'p,li,h1,h2,h3,h4,h5,dd';
+    var from = sel, below = null;
+    while (from && from !== ED.SRC && !below){
+      below = from.nextElementSibling;
+      while (below && below.tagName === 'A' && !below.textContent.trim()) below = below.nextElementSibling;
+      if (!below) from = from.parentElement;
+    }
+    if (below && !below.matches(TEXTB)) below = below.querySelector(TEXTB);
+    // Only if joining that block upward really does land on this one.
+    var lands = null;
+    if (below){
+      var up2 = below.previousElementSibling;
+      if (up2 && up2.matches(TEXTB)) lands = up2;
+      else if (up2){ var inn = up2.querySelectorAll(TEXTB); lands = inn.length ? inn[inn.length - 1] : null; }
+    }
+    if (!below || lands !== sel){
+      alert('There is no block directly below this one to join it with.');
+      return;
+    }
+    ED.addMark({ id: below.getAttribute('data-ed'), do: 'joinprev' });
     return;
   }
   if (what === 'joinprev'){
