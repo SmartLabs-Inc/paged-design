@@ -149,6 +149,7 @@
   <button class="act" data-do="text">Edit this text<small>type on the page, then click away</small></button>
   <button class="act" data-do="joinprev">Join to the block above<small>for a paragraph the build split in two</small></button>
   <button class="act" data-do="allowbreak">Let this block break<small>fills the column instead of moving whole to the next one</small></button>
+  <button class="act" data-do="span">Run across both columns<small>one wide column for this block; click again to put it back in two</small></button>
   <div class="step" id="ed-track">
     <div class="lab">Tracking <i id="ed-trackval">0</i></div>
     <button data-tk="-5" title="Tighten">&minus;</button>
@@ -273,6 +274,13 @@ marks.forEach(function(m){
     el.style.letterSpacing = (Number(m.em) / 1000) + 'em';
   }
   else if (m.do === 'allowbreak'){ el.style.breakInside = 'auto'; }
+  else if (m.do === 'span'){
+    // Out of the two-column flow and across the full measure. The paragraph
+    // rule keeps the last line ragged; at this width a justified last line
+    // would be spaced out across the whole page.
+    el.style.columnSpan = 'all';
+    el.style.textAlignLast = 'auto';
+  }
   else if (m.do === 'delete'){ el.remove(); }
   else if (m.do === 'joinprev'){
     // What you would otherwise do by hand to a paragraph the build split:
@@ -602,6 +610,13 @@ panel.addEventListener('click', function(e){
     var t = (sel.textContent||'').replace(/\s+/g,' ').trim();
     if (!confirm('Delete this block?\n\n' + (t ? t.slice(0,160) : '(empty block)'))) return;
     ED.addMark({ id: selId, do: 'delete' });
+    return;
+  }
+  if (what === 'span'){
+    // A switch, not a pile: a second click takes the block back to columns.
+    var has = ED.marks.some(function(m){
+      return String(m.id) === String(selId) && m.do === 'span'; });
+    ED.setMark({ id: selId, do: 'span', drop: has });
     return;
   }
   if (what === 'allowbreak'){
