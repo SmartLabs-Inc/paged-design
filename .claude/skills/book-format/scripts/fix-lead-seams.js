@@ -22,11 +22,9 @@
 // book itself, which is never served modified.
 //
 // Where the stray line begins mid-word, the front of that word has to go down
-// with it and the line above is left that much short. So there is a second
-// repair — pull words up from the second half until the stray line is full —
-// and the pass takes whichever leaves the fuller line, and neither unless it
-// is a real gain. `--dry` is the report: it measures and lists and changes
-// nothing.
+// with it and the line above is left that much short, so a seam is re-cut
+// only when that leaves the line clearly fuller than it is now. `--dry` is
+// the report: it measures and lists and changes nothing.
 //
 // A seam is left alone, and listed, when moving the words would also move an
 // element — a reference mark, a run of bold. Elements are numbered in order
@@ -116,33 +114,17 @@ function cutPoint (inner, words) {
   fs.rmSync(scratch, { recursive: true, force: true })
 
   const want = new Map(seams.map(function (s) { return [s.seam, s] }))
-  let index = 0, movedDown = 0, pulledUp = 0
+  let index = 0, movedDown = 0
   const skipped = [], after = []
   const result = source.replace(PAIR, function (whole, head, between, rest) {
     index += 1
     const s = want.get(index)
     if (!s) return whole
-    // Whichever leaves the fuller line; pulling up on a tie, because it
-    // leaves the first half the height it was and so moves less of the book.
-    // And only when it is a real gain. Where the stray line begins mid-word
+    // Only when it is a real gain. Where the stray line begins mid-word
     // the line above loses the front of that word, and a seam at 80% can
     // come out at 70%: a repair that leaves the line emptier is not one.
     const gain = function (o) { return o && (o.fill >= limit * 100 || o.fill >= s.fill + 5) ? o : null }
-    const down = gain(s.down), up = gain(s.up)
-    const useUp = up && (!down || up.fill >= down.fill - 2)
-    if (useUp) {
-      const lead = /^([^<]*)/.exec(rest)[1]
-      let at = 0, count = 0, inToken = false
-      for (let i = 0; i < lead.length; i += 1) {
-        if (WS.test(lead[i])) { if (inToken) { count += 1; inToken = false; if (count === up.words) { at = i; break } } }
-        else inToken = true
-      }
-      if (at > 0) {
-        pulledUp += 1; after.push(up.fill)
-        return '<p class="lead-head">' + head.replace(/\s+$/, '') + ' ' + lead.slice(0, at).replace(/^\s+/, '') + '</p>' +
-               between + lead.slice(at).replace(/^\s+/, '') + rest.slice(lead.length) + '</p>'
-      }
-    }
+    const down = gain(s.down)
     if (down) {
       const at = cutPoint(head, down.words)
       const tail = at > 0 ? head.slice(at) : ''
@@ -155,11 +137,10 @@ function cutPoint (inner, words) {
     skipped.push(s)
     return whole
   })
-  const moved = movedDown + pulledUp
+  const moved = movedDown
 
   console.log(seams.length + ' seams show (last line under ' + Math.round(limit * 100) + '% full)')
-  console.log(moved + ' re-cut (' + pulledUp + ' by pulling words up, ' + movedDown + ' by moving the stray line down); ' +
-    skipped.length + ' left alone')
+  console.log(moved + ' re-cut; ' + skipped.length + ' left alone')
   const loose = after.filter(function (f) { return f < limit * 100 }).length
   console.log('of those, ' + (after.length - loose) + ' end on a full line; ' + loose +
     ' end on a line fuller than before but still loose')
