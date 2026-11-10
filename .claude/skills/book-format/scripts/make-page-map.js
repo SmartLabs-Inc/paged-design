@@ -56,6 +56,14 @@ const outFile = path.resolve(args.out || path.join(contentDir, 'page-map.json'))
     const out = { total: 0, blocks: {} }
     const pages = Array.prototype.slice.call(document.querySelectorAll('.pagedjs_page'))
     out.total = pages.length
+    // Where the body begins, as a sheet number. The map stays in sheets —
+    // position in the finished book, which nothing can renumber — and whoever
+    // reads it turns a sheet into the folio the page prints: roman before
+    // this point, counted from 1 after it.
+    out.bodyStart = 0
+    for (let k = 0; k < pages.length; k += 1) {
+      if (/pagedjs_part\d+_page/.test(pages[k].className)) { out.bodyStart = k + 1; break }
+    }
     pages.forEach(function (pg, index) {
       const area = pg.querySelector('.pagedjs_page_content')
       if (!area) return
