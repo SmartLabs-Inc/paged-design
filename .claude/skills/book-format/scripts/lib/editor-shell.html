@@ -215,12 +215,15 @@ SRC.innerHTML = document.getElementById('ed-book').innerHTML;
 // blocks after it and can still be selected and corrected itself.
 var n = 1, added = 1;
 SRC.querySelectorAll('*').forEach(function(el){
-  var art = el.closest ? el.closest('svg.figure-art') : null;
+  var art = el.closest ? el.closest('svg.figure-art, svg.part-emblem') : null;
   if (art && art !== el) return;
+  // A wrapper put round blocks that were already there: the wrapper is new,
+  // what it holds is not, and what it holds keeps its numbers.
+  if (el.hasAttribute('data-wrap')){ el.setAttribute('data-ed', 'n' + (added++)); return; }
   var fresh = el.closest ? el.closest('[data-new]') : null;
   if (fresh){ el.setAttribute('data-ed', 'n' + (added++)); return; }
   el.setAttribute('data-ed', n++);
-  if (art === el) n += 3;
+  if (art === el && el.classList.contains('figure-art')) n += 3;
 });
 
 function loadMarks(){

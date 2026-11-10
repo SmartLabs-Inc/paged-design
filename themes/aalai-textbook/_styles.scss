@@ -889,6 +889,106 @@ $part-tabs:
 }
 
 // ---------------------------------------------------------------------------
+// The part opener as a page of its own
+// ---------------------------------------------------------------------------
+// The whole page in the part's colour, type reversed out of it, the part's
+// numeral very large and very faint behind, the emblem above and the title
+// and its sections at the foot.
+//
+// The block is as tall as the text area, less a little. That is what gives
+// the part its own page: nothing else fits after it, so the text starts
+// overleaf without a forced break — and a forced break before the first
+// section head is the one thing that cannot be used here, because that head
+// spans the columns and a spanning element told to start a page stalls
+// pagination outright.
+//
+// The page is found by what is on it, not by its name. `partN:first` would
+// name it in the book, but the correction editor paginates one section at a
+// time and there every section's first page answers to that name.
+//
+// Parts IV and V are grounded a step darker than their tabs. White type on
+// the tab amber and the tab gold falls well short of readable.
+$part-opener-grounds: (
+    1: ($color-teal,        "I"),
+    2: ($color-established, "II"),
+    3: ($color-supported,   "III"),
+    4: (#B0741C,            "IV"),
+    5: (#8E7434,            "V")
+);
+
+.part-opener {
+    column-span: all;
+    box-sizing: border-box;
+    height: calc(#{$page-height} - #{$margin-top} - #{$margin-bottom} - 3mm);
+    display: flex;
+    flex-direction: column;
+    break-inside: avoid;
+    color: #FFFFFF;
+}
+
+.part-opener .part-emblem {
+    display: block;
+    width: 78mm;
+    height: auto;
+    margin: 4mm 0 0 0;
+    color: #FFFFFF;
+}
+
+// An auto margin in a column of flex items takes all the room there is, which
+// is what sends the eyebrow, the title and the list to the foot together.
+.part-opener .chapter-eyebrow {
+    margin-top: auto;
+    color: rgba(#FFFFFF, 0.82);
+}
+
+.part-opener .part-title {
+    font-size: 62px;
+    line-height: 1.05;
+    color: #FFFFFF;
+    border-bottom: 3pt solid #FFFFFF;
+    padding-bottom: 14px;
+    margin-bottom: 6px;
+    hyphens: none;
+}
+
+.part-opener .part-contents li {
+    color: #FFFFFF;
+    font-size: 13px;
+    border-bottom-color: rgba(#FFFFFF, 0.3);
+}
+
+.pagedjs_page:has(.part-opener) .pagedjs_sheet {
+    position: relative;
+    z-index: 0;
+    overflow: hidden;
+}
+
+// The coloured tab belongs to the pages of the part. On its opener the whole
+// page is the colour.
+.pagedjs_page:has(.part-opener) [class*="pagedjs_margin-left"],
+.pagedjs_page:has(.part-opener) [class*="pagedjs_margin-right"] {
+    border-color: transparent !important;
+}
+
+@each $n, $pair in $part-opener-grounds {
+    .pagedjs_page:has(.part-opener-#{$n}) .pagedjs_sheet {
+        background: nth($pair, 1);
+    }
+
+    .pagedjs_page:has(.part-opener-#{$n}) .pagedjs_sheet::before {
+        content: nth($pair, 2);
+        position: absolute;
+        z-index: -1;
+        top: -22mm;
+        right: -8mm;
+        font-family: $font-display-hero;
+        font-size: 190mm;
+        line-height: 1;
+        color: rgba(#FFFFFF, 0.09);
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Components that are a chapter and something else
 // ---------------------------------------------------------------------------
 // The parent theme names a page per component class — .copyright-page gets

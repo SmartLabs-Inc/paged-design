@@ -6149,6 +6149,119 @@ a.uri,
     content: normal;
     border-right: 0; } }
 
+.part-opener {
+  column-span: all;
+  box-sizing: border-box;
+  height: calc(254mm - 68px - 76.5px - 3mm);
+  display: flex;
+  flex-direction: column;
+  break-inside: avoid;
+  color: #FFFFFF; }
+
+.part-opener .part-emblem {
+  display: block;
+  width: 78mm;
+  height: auto;
+  margin: 4mm 0 0 0;
+  color: #FFFFFF; }
+
+.part-opener .chapter-eyebrow {
+  margin-top: auto;
+  color: rgba(255, 255, 255, 0.82); }
+
+.part-opener .part-title {
+  font-size: 62px;
+  line-height: 1.05;
+  color: #FFFFFF;
+  border-bottom: 3pt solid #FFFFFF;
+  padding-bottom: 14px;
+  margin-bottom: 6px;
+  hyphens: none; }
+
+.part-opener .part-contents li {
+  color: #FFFFFF;
+  font-size: 13px;
+  border-bottom-color: rgba(255, 255, 255, 0.3); }
+
+.pagedjs_page:has(.part-opener) .pagedjs_sheet {
+  position: relative;
+  z-index: 0;
+  overflow: hidden; }
+
+.pagedjs_page:has(.part-opener) [class*="pagedjs_margin-left"],
+.pagedjs_page:has(.part-opener) [class*="pagedjs_margin-right"] {
+  border-color: transparent !important; }
+
+.pagedjs_page:has(.part-opener-1) .pagedjs_sheet {
+  background: #137C7A; }
+
+.pagedjs_page:has(.part-opener-1) .pagedjs_sheet::before {
+  content: "I";
+  position: absolute;
+  z-index: -1;
+  top: -22mm;
+  right: -8mm;
+  font-family: "Windorse", "Charis SIL", Georgia, serif;
+  font-size: 190mm;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.09); }
+
+.pagedjs_page:has(.part-opener-2) .pagedjs_sheet {
+  background: #23806C; }
+
+.pagedjs_page:has(.part-opener-2) .pagedjs_sheet::before {
+  content: "II";
+  position: absolute;
+  z-index: -1;
+  top: -22mm;
+  right: -8mm;
+  font-family: "Windorse", "Charis SIL", Georgia, serif;
+  font-size: 190mm;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.09); }
+
+.pagedjs_page:has(.part-opener-3) .pagedjs_sheet {
+  background: #315E91; }
+
+.pagedjs_page:has(.part-opener-3) .pagedjs_sheet::before {
+  content: "III";
+  position: absolute;
+  z-index: -1;
+  top: -22mm;
+  right: -8mm;
+  font-family: "Windorse", "Charis SIL", Georgia, serif;
+  font-size: 190mm;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.09); }
+
+.pagedjs_page:has(.part-opener-4) .pagedjs_sheet {
+  background: #B0741C; }
+
+.pagedjs_page:has(.part-opener-4) .pagedjs_sheet::before {
+  content: "IV";
+  position: absolute;
+  z-index: -1;
+  top: -22mm;
+  right: -8mm;
+  font-family: "Windorse", "Charis SIL", Georgia, serif;
+  font-size: 190mm;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.09); }
+
+.pagedjs_page:has(.part-opener-5) .pagedjs_sheet {
+  background: #8E7434; }
+
+.pagedjs_page:has(.part-opener-5) .pagedjs_sheet::before {
+  content: "V";
+  position: absolute;
+  z-index: -1;
+  top: -22mm;
+  right: -8mm;
+  font-family: "Windorse", "Charis SIL", Georgia, serif;
+  font-size: 190mm;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.09); }
+
 .chapter.frontmatter,
 .chapter.contents-page {
   page: frontmatter; }
