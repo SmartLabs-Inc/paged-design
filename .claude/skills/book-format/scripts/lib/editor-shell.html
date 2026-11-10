@@ -195,8 +195,24 @@ var PLACEKEY = 'aet-editor-place';
 var SRC = document.createElement('div');
 SRC.innerHTML = document.getElementById('ed-book').innerHTML;
 
+// A correction is stored against a block's number, and the number is the
+// block's position in the book. So anything that adds or removes elements
+// moves every number after it, and a saved correction lands on a different
+// paragraph without a word of warning.
+//
+// Placing the figures did exactly that: each "Artwork to come" slot was four
+// elements — the slot and its label, filename and description — and the
+// drawing that replaced it is one <svg> with dozens inside. So a drawing
+// takes the slot's number, its insides take none, and three numbers are
+// skipped after it. Every block then keeps the number it had before the
+// figures existed, and a click anywhere on a drawing selects the drawing.
 var n = 1;
-SRC.querySelectorAll('*').forEach(function(el){ el.setAttribute('data-ed', n++); });
+SRC.querySelectorAll('*').forEach(function(el){
+  var art = el.closest ? el.closest('svg.figure-art') : null;
+  if (art && art !== el) return;
+  el.setAttribute('data-ed', n++);
+  if (art === el) n += 3;
+});
 
 function loadMarks(){
   try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e){ return []; }
@@ -334,6 +350,20 @@ function pageOfNode(node){
   }
   return undefined;
 }
+// The map holds sheets. The book prints roman through the front matter and
+// counts from 1 after it, so every number shown to a person goes through here
+// — the one place that knows the difference — or the editor and the proof
+// would name the same page two ways.
+var BODY = PAGEMAP.bodyStart || 0;
+function folioOf(sheet){
+  if (!sheet) return '';
+  if (!BODY) return String(sheet);
+  if (sheet >= BODY) return String(sheet - BODY + 1);
+  var R = [[10,'x'],[9,'ix'],[5,'v'],[4,'iv'],[1,'i']], v = sheet, out = '';
+  R.unshift([100,'c'],[90,'xc'],[50,'l'],[40,'xl']);
+  for (var i = 0; i < R.length; i += 1){ while (v >= R[i][0]){ out += R[i][1]; v -= R[i][0]; } }
+  return out;
+}
 function chunkPage(c){
   for (var i=0;i<c.units.length;i++){
     var p = pageOfNode(c.units[i]);
@@ -364,7 +394,7 @@ window.PagedConfig = {
 
 return {
   SRC: SRC, chunks: chunks, current: current, marks: marks,
-  chunkPage: chunkPage, pageOfNode: pageOfNode,
+  chunkPage: chunkPage, pageOfNode: pageOfNode, folioOf: folioOf,
   setSection: function(i){
     try { localStorage.removeItem(PLACEKEY); } catch (e) {}
     localStorage.setItem(SECKEY, String(i)); location.reload();
@@ -425,14 +455,14 @@ function srcNode(id){ return ED.SRC.querySelector('[data-ed="' + id + '"]'); }
     var p = ED.chunkPage(c);
     var o = document.createElement('option');
     o.value = i;
-    o.textContent = (p ? 'p' + p + ' — ' : '') + (c.title || 'section ' + (i+1));
+    o.textContent = (p ? 'p' + ED.folioOf(p) + ' — ' : '') + (c.title || 'section ' + (i+1));
     if (i === ED.current) o.selected = true;
     selectEl.appendChild(o);
 
     var a = document.createElement('a');
     a.href = 'javascript:void 0';
     if (i === ED.current) a.className = 'on';
-    var sp = document.createElement('span'); sp.className = 'pg'; sp.textContent = p ? 'p'+p : '';
+    var sp = document.createElement('span'); sp.className = 'pg'; sp.textContent = p ? 'p' + ED.folioOf(p) : '';
     a.appendChild(sp);
     a.appendChild(document.createTextNode(c.title || ('section ' + (i+1))));
     a.addEventListener('click', function(){ ED.setSection(i); });
@@ -487,7 +517,7 @@ function pick(id){
   document.getElementById('ed-what').textContent =
     txt ? txt.slice(0,420) : '(an image or an empty block)';
   var bits = [];
-  var p = ED.pageOfNode(sel); if (p) bits.push('book page ' + p);
+  var p = ED.pageOfNode(sel); if (p) bits.push('book page ' + ED.folioOf(p));
   bits.push(sel.tagName.toLowerCase());
   var mine = ED.marks.filter(function(m){ return String(m.id) === String(id); });
   if (mine.length) bits.push(mine.map(function(m){ return m.do; }).join(', '));
@@ -664,13 +694,14 @@ document.getElementById('ed-list').addEventListener('click', function(){
   var rows = ED.marks.map(function(m){
     var node = srcNode(m.id);
     return {
-      page: node ? (ED.pageOfNode(node) || null) : null,
+      page: node ? (ED.folioOf(ED.pageOfNode(node)) || null) : null,
+      sheet: node ? (ED.pageOfNode(node) || null) : null,
       change: m.do + (m.do === 'track' ? ' ' + (m.em > 0 ? '+' : '') + m.em : ''),
       file: m.name || undefined,
       anchor: node ? (node.textContent||'').replace(/\s+/g,' ').trim().slice(0,70) : ''
     };
   });
-  rows.sort(function(a,b){ return (a.page||0) - (b.page||0); });
+  rows.sort(function(a,b){ return (a.sheet||0) - (b.sheet||0); });
   var stamp = new Date().toISOString().replace(/[:.]/g,'-').slice(0,16);
   download('AET-corrections-' + stamp + '.json', JSON.stringify({
     book: 'Advanced and Emerging Therapies',
@@ -756,7 +787,7 @@ window.ED.ready = function(){
   Array.prototype.forEach.call(pages, function(pg, i){
     var tag = document.createElement('div');
     tag.className = 'ed-lbl';
-    tag.textContent = first ? ('book page ' + (first + i)) : ('page ' + (i+1) + ' of this section');
+    tag.textContent = first ? ('book page ' + ED.folioOf(first + i)) : ('page ' + (i+1) + ' of this section');
     pg.parentNode.insertBefore(tag, pg);
   });
   document.getElementById('ed-count').textContent =
@@ -768,18 +799,31 @@ window.ED.ready = function(){
   // comes back as a page number and the two must not disagree.
   // The content sits on the box's ::after, not on the box, so there is no
   // inline style to set — the override has to be a rule.
-  if (first){
+  // One section is paginated at a time, so Paged.js takes the first page of
+  // every section for the first page of its part and would strip its head
+  // and foot. Only the part's own opening page is that page, so the build
+  // leaves the rule out and it is applied here, to the one section that
+  // really does begin a part.
+  var here = ED.chunks[ED.current];
+  var opensPart = /\bpart-\d+\b/.test(here.comp.className) &&
+    ED.chunks.filter(function(x){ return x.comp === here.comp; })[0] === here;
+  if (first || opensPart){
     var folio = [];
+    if (opensPart){
+      folio.push('.pagedjs_page[data-page-number="1"] .pagedjs_margin-content::after' +
+                 '{content:none!important}');
+    }
     Array.prototype.forEach.call(pages, function(pg, i){
+      if (!first || (opensPart && i === 0)) return;
       var n = pg.getAttribute('data-page-number');
       Array.prototype.forEach.call(pg.querySelectorAll('.pagedjs_margin-content'),
         function(box){
-          if (!/counter\(\s*page\s*\)/.test(getComputedStyle(box, '::after').content)) return;
+          if (!/counter\(\s*page/.test(getComputedStyle(box, '::after').content)) return;
           var cls = (box.parentNode.className
                       .match(/pagedjs_margin-(?:top|bottom)-[a-z-]+/) || [])[0];
           if (!cls) return;
           folio.push('.pagedjs_page[data-page-number="' + n + '"] .' + cls +
-                     ' .pagedjs_margin-content::after{content:"' + (first + i) + '"!important}');
+                     ' .pagedjs_margin-content::after{content:"' + ED.folioOf(first + i) + '"!important}');
         });
     });
     if (folio.length){

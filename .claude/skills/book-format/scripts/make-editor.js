@@ -77,6 +77,13 @@ const bodyWithImages = bookBody.replace(/src="([^"]+\.(?:png|jpe?g|gif|webp|svg)
     return 'src="data:' + mime + ';base64,' + fs.readFileSync(file).toString('base64') + '"'
   })
 
+// A part's opening page carries no running head or foot, and the theme says
+// so with @page partN:first. Here a section is paginated on its own, so every
+// section's first page would match that rule and lose its head and foot,
+// which the book does not do. The rule comes out, and the editor puts the
+// same treatment on the one section that really opens a part.
+css = css.replace(/@page part\d+:first\s*\{(?:[^{}]|\{[^{}]*\})*\}/g, '')
+
 const paged = fs.readFileSync(path.join(root, 'js/vendor/paged.polyfill.js'), 'utf8')
 const pageMap = args.map && fs.existsSync(path.resolve(args.map))
   ? fs.readFileSync(path.resolve(args.map), 'utf8')
