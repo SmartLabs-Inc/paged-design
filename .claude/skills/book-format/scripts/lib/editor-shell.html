@@ -208,10 +208,17 @@ SRC.innerHTML = document.getElementById('ed-book').innerHTML;
 // takes the slot's number, its insides take none, and three numbers are
 // skipped after it. Every block then keeps the number it had before the
 // figures existed, and a click anywhere on a drawing selects the drawing.
-var n = 1;
+//
+// The same goes for anything added to the book once correcting has begun — a
+// line on the copyright page, say. An added element is marked data-new in the
+// book and numbered in a series of its own, so it takes no number from the
+// blocks after it and can still be selected and corrected itself.
+var n = 1, added = 1;
 SRC.querySelectorAll('*').forEach(function(el){
   var art = el.closest ? el.closest('svg.figure-art') : null;
   if (art && art !== el) return;
+  var fresh = el.closest ? el.closest('[data-new]') : null;
+  if (fresh){ el.setAttribute('data-ed', 'n' + (added++)); return; }
   el.setAttribute('data-ed', n++);
   if (art === el) n += 3;
 });
