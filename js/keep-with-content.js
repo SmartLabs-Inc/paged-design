@@ -27,18 +27,22 @@
 // line. The run of headings is now taken as a whole, and a run that reaches
 // the top of the page is left alone — there is nowhere better for it.
 //
-// The second is why a title and box at the top of a page had their text
-// overleaf at all, with most of a page free beneath them. Chromium keeps the
-// layout of a block that spans the columns and reuses it; when the block has
-// been moved to a fresh page, the reused layout sends the whole column row
-// after it to the next page instead of starting it underneath. Measured on
-// the page: nothing about breaks, orphans, margins or the amount of text
-// changed the result; changing the height of the block did, and the page then
-// stayed right when the height was put back. A tenth of a pixel is not
-// enough — measured, it left the page as it was — and one pixel is. So before
-// a heading is judged stranded its height is changed by a pixel and restored,
-// and the overflow is found again. Usually the text comes back under it and
-// there is nothing to move.
+// The second is why a heading block could have its text overleaf at all, with
+// most of a page free beneath it. After a block that spans the columns,
+// Chromium sometimes sends the whole column row that follows to the next page
+// instead of starting it underneath and breaking it. Measured on two pages
+// where it happened: nothing about breaks, orphans, margins or the amount of
+// text changed the result — the row stayed away with four more paragraphs
+// added to it — and changing the height of the spanning block did. How much
+// it takes varies: a tenth of a pixel was never enough, one pixel cleared one
+// page and not the other, five cleared both, in either direction. Putting the
+// height back brought the fault back.
+//
+// So before a heading is judged stranded, the block nearest the break is
+// tried a few pixels taller and shorter, smallest change first, until the
+// text starts under it; that height is kept. Usually something works and
+// there is nothing to move. A shaded box three pixels deeper than its
+// neighbours cannot be seen, and a page that stops after six lines can.
 //
 // A third: headings above a table too tall to share a page with them. No
 // page can hold both whole. Leaving the headings where they fell left the
@@ -108,20 +112,26 @@ window.keepHeadingsWithContent = function () {
     return run
   }
 
-  // Change a block's height by a pixel so its layout is redone, and put it
-  // back unless told to leave it.
-  function relayout (block, leave) {
+  // Try the block a little taller and a little shorter until the overflow
+  // begins later than it did. Returns the new overflow, `null` when nothing
+  // overflows any more, or nothing when no height helped — in which case the
+  // block is left exactly as it was.
+  var STEPS = [1, -1, 2, -2, 3, -3, 5, -5, 7, -7]
+
+  function settle (block, range, rendered, bounds, layout) {
     var was = block.style.paddingBottom
-    var now = parseFloat(window.getComputedStyle(block).paddingBottom) || 0
-    block.style.paddingBottom = (now + 1) + 'px'
-    void block.offsetHeight
-    if (leave) return
+    var base = parseFloat(window.getComputedStyle(block).paddingBottom) || 0
+    for (var i = 0; i < STEPS.length; i += 1) {
+      if (base + STEPS[i] < 0) continue
+      block.style.paddingBottom = (base + STEPS[i]) + 'px'
+      void block.offsetHeight
+      var again = layout.findOverflow(rendered, bounds)
+      if (!again) return null
+      again = pastPulled(again, rendered)
+      if (again.compareBoundaryPoints(Range.START_TO_START, range) > 0) return again
+    }
     block.style.paddingBottom = was
     void block.offsetHeight
-  }
-
-  function sameStart (a, b) {
-    return a.compareBoundaryPoints(Range.START_TO_START, b) === 0
   }
 
   // What follows the headings is one piece that cannot be divided, and it is
@@ -192,24 +202,11 @@ window.keepHeadingsWithContent = function () {
       if (!run.length) return
 
       if (layout && typeof layout.findOverflow === 'function') {
-        run.forEach(function (block) { relayout(block) })
-        var again = layout.findOverflow(rendered, bounds)
-        if (again) again = pastPulled(again, rendered)
-        if (again && sameStart(again, range)) {
-          // Restoring the height can restore the fault with it. Then the
-          // pixel stays: it cannot be seen, and a blank page can.
-          run.forEach(function (block) { relayout(block, true) })
-          again = layout.findOverflow(rendered, bounds)
-          if (again) again = pastPulled(again, rendered)
-        }
+        var settled = settle(run[0], range, rendered, bounds, layout)
         // Everything fits after all: no break here, carry on filling the page.
-        if (!again) return null
-        // Only a later start is an improvement. An earlier one means the
-        // fresh layout has pulled a heading block over to sit with a table
-        // too tall to follow it, which is the fault this exists to prevent;
-        // the break stays where it was first found.
-        if (again.compareBoundaryPoints(Range.START_TO_START, range) > 0) {
-          range = again
+        if (settled === null) return null
+        if (settled) {
+          range = settled
           run = runAbove(range, rendered)
           if (!run.length) return range
         }
