@@ -83,6 +83,33 @@ function inBrowser (opts) {
     return pg && pageOf.has(pg) ? pageOf.get(pg) : -1
   }
 
+  // An empty anchor marks whatever comes after it, and that is not always on
+  // the anchor's own page. The build puts the anchors in front of a heading,
+  // often as the last thing in the block before it; when the heading opens a
+  // page — by falling there, or because it was taken over with its content —
+  // the anchors stay at the foot of the page before. Read literally, twenty
+  // contents entries in this book gave the page before the one their section
+  // starts on. So an empty anchor is followed forward to the first thing a
+  // reader would see, and that is the page given.
+  var flow = document.querySelector('.pagedjs_pages') || document.body
+  function landing (el) {
+    if (el.tagName !== 'A' || el.children.length || el.textContent.trim()) return el
+    var walker = document.createTreeWalker(flow, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT)
+    walker.currentNode = el
+    for (var steps = 0; steps < 600; steps += 1) {
+      var node = walker.nextNode()
+      if (!node) break
+      var holder = node.nodeType === 3 ? node.parentElement : node
+      if (!holder || !holder.closest('.pagedjs_page_content')) continue
+      if (node.nodeType === 3) {
+        if (node.textContent.trim() && holder.getBoundingClientRect().height > 0) return holder
+      } else if (node.matches('img, svg, table, hr')) {
+        return node
+      }
+    }
+    return el
+  }
+
   var links = document.querySelectorAll(opts.refSelector)
   var resolved = 0, unresolved = []
   Array.prototype.forEach.call(links, function (a) {
@@ -92,7 +119,8 @@ function inBrowser (opts) {
     var target = document.getElementById(id) ||
                  document.querySelector('[data-id="' + CSS.escape(id) + '"]')
     if (!target) { unresolved.push(id); return }
-    var idx = pageIndexOf(target)
+    var idx = pageIndexOf(landing(target))
+    if (idx < 0) idx = pageIndexOf(target)
     if (idx < 0) { unresolved.push(id); return }
     a.setAttribute('data-folio', folioFor(idx))
     resolved += 1
