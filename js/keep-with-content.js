@@ -63,6 +63,9 @@ window.keepHeadingsWithContent = function () {
   window.keepHeadingsWithContent.registered = true
 
   var HEADING = '.keep-lead'
+  // Artwork and tables that span the columns. They are not headings and are
+  // never moved, but the text after them goes missing the same way.
+  var ARTWORK = '.figure, .table-figure'
   var SOLID = 'img, svg, table, hr'
 
   function emptyBetween (startAfter, range) {
@@ -83,8 +86,8 @@ window.keepHeadingsWithContent = function () {
 
   // The last heading block that ends at or before the point where the
   // overflow begins.
-  function headingBefore (range, rendered) {
-    var heads = rendered.querySelectorAll(HEADING)
+  function headingBefore (range, rendered, which) {
+    var heads = rendered.querySelectorAll(which || HEADING)
     var point = document.createRange()
     for (var i = heads.length - 1; i >= 0; i -= 1) {
       point.setStartAfter(heads[i])
@@ -179,17 +182,34 @@ window.keepHeadingsWithContent = function () {
   // box to its table and left the section title behind, which is one of the
   // faults this file is here for. Heading blocks that are on the page are on
   // the page; what happens to them is decided below, for the whole run.
+  //
+  // The same keep can take a figure. An entry continued onto a new page
+  // opens with its figure; the text after the figure is sent overleaf whole
+  // (see the note on Chromium at the top); the first paragraph is marked to
+  // stay with the figure before it; and the overflow Paged.js reports is the
+  // entire page. It then starts the next page from the entry's first line
+  // rather than from where the page before stopped. Two entries in this book
+  // came out with an empty page and their opening printed twice. So a block
+  // that only wraps other blocks is looked into, and artwork that is on the
+  // page counts as on the page too.
   function pastPulled (range, rendered) {
     var out = range
-    for (var guard = 0; guard < 6; guard += 1) {
+    for (var guard = 0; guard < 12; guard += 1) {
       if (out.startContainer.nodeType !== 1) break
       var node = out.startContainer.childNodes[out.startOffset]
       while (node && ((node.nodeType === 3 && !node.textContent.trim()) ||
         node.nodeType === 8 ||
         (node.nodeType === 1 && node.tagName === 'A' && !node.textContent.trim()))) node = node.nextSibling
-      if (!node || node.nodeType !== 1 || !node.matches(HEADING) || !onPage(node, rendered)) break
-      out = out.cloneRange()
-      out.setStartAfter(node)
+      if (!node || node.nodeType !== 1 || !onPage(node, rendered)) break
+      if (node.matches(HEADING) || node.matches(ARTWORK)) {
+        out = out.cloneRange()
+        out.setStartAfter(node)
+      } else if (node.tagName === 'DIV' && (!node.className || node.matches('.entry, .chapter')) && node.firstChild) {
+        out = out.cloneRange()
+        out.setStart(node, 0)
+      } else {
+        break
+      }
     }
     return out
   }
@@ -199,7 +219,20 @@ window.keepHeadingsWithContent = function () {
       if (!overflow || !rendered) return
       var range = pastPulled(overflow, rendered)
       var run = runAbove(range, rendered)
-      if (!run.length) return
+      if (!run.length) {
+        // Not a heading. Artwork with nothing after it on the page is the
+        // other case: it stays where it is, and the text is brought back
+        // under it if a change of height will do that.
+        var art = headingBefore(range, rendered, ARTWORK)
+        if (!art || !emptyBetween(art, range)) return
+        if (layout && typeof layout.findOverflow === 'function') {
+          var under = settle(art, range, rendered, bounds, layout)
+          if (under === null) return null
+          if (under) return under
+        }
+        if (range !== overflow) return range
+        return
+      }
 
       if (layout && typeof layout.findOverflow === 'function') {
         var settled = settle(run[0], range, rendered, bounds, layout)
