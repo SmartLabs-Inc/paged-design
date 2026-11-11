@@ -889,6 +889,35 @@ $part-tabs:
 }
 
 // ---------------------------------------------------------------------------
+// A heading keeps its content
+// ---------------------------------------------------------------------------
+// "Keep with next" does not exist in this renderer: break-after is stripped
+// and a spanning heading told to start a page stalls pagination. What does
+// work is making a heading need room. A transparent border under the block
+// makes its box that much taller, so it only fits on a page with that much
+// space beneath it, and a negative margin of the same size lets what follows
+// sit in the space as if the border were not there.
+//
+// How much room is the heading's own business, so it is not set here. One
+// figure for every heading was tried — eight lines — and failed in a chain:
+// the heading kept its eight lines, the shaded box after it needed more and
+// went overleaf, and the heading was left alone above the white it had
+// reserved. keep-headings.js measures, for each heading, what actually
+// follows it — the box after it, the entry after that, three lines of a
+// paragraph — and writes the total on the block as --keep. It depends on the
+// heights of things, not on where the page breaks fall, so it stays right
+// when the pagination moves.
+.keep-lead.keep-lead {
+    border-bottom: var(--keep, 0px) solid transparent;
+    background-clip: padding-box;
+    margin-bottom: calc(#{$baseline-grid-unit} - var(--keep, 0px));
+}
+
+.keep-lead.keep-lead.section-opener {
+    margin-bottom: calc(0px - var(--keep, 0px));
+}
+
+// ---------------------------------------------------------------------------
 // The part opener as a page of its own
 // ---------------------------------------------------------------------------
 // The whole page in the part's colour, type reversed out of it, the part's
@@ -3258,8 +3287,11 @@ p, li, dd, .standfirst {
 // in the body and in the apparatus alike.
 
 p, li, dd, .lead-rest, .standfirst {
-    orphans: 2;
-    widows: 2;
+    // Three, not two. Measured on the whole book: at two, 136 paragraph
+    // pieces of one or two lines were left at the foot of a column or carried
+    // to the top of the next; at three, 17. It costs two sheets.
+    orphans: 3;
+    widows: 3;
 }
 
 // The abbreviations glossary

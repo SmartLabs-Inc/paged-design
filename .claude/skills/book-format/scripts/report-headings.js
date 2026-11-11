@@ -68,29 +68,37 @@ const minWhite = Number(args.white || 120)
         if (r.height > 1 && r.width > 1) leaves.push({ el: el, bottom: r.bottom, top: r.top })
       })
       if (!leaves.length) return
-      let lowest = leaves[0]
-      leaves.forEach(function (l) { if (l.bottom > lowest.bottom) lowest = l })
-
-      const white = box.bottom - lowest.bottom
-      if (white < minWhite) return
-
-      // Is the last thing on the page a heading, or inside one of the boxes
-      // whose whole job is to introduce what follows?
-      const el = lowest.el
-      const heading = el.closest('.keep-lead, .entry-lead') ||
-        (/^H[1-5]$/.test(el.tagName) ? el : null)
-      if (!heading) return
-      // A heading that was split across the break is a different fault.
-      if (heading.hasAttribute('data-split-from') ||
-          heading.hasAttribute('data-split-to')) return
-
-      out.push({
-        page: index + 1,
-        white: Math.round(white),
-        kind: heading.className
-          ? String(heading.className).replace(/\s+/g, ' ').trim()
-          : heading.tagName.toLowerCase(),
-        text: (heading.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 58)
+      // A heading block is stranded when it is the last thing on its page, or
+      // when what follows it on the page is too little to count as its
+      // content — under three lines. Measuring the white beneath a heading
+      // finds only the first kind, and only when the page ends early: a
+      // heading sitting at the very foot of a full page has no white under
+      // it at all, and that is the commonest way for one to be stranded.
+      //
+      // Only blocks that are nothing but a heading are checked. An entry's
+      // opening box carries its first lines with it and is its own content.
+      area.querySelectorAll('.keep-group, .keep-lead').forEach(function (heading) {
+        if (heading.hasAttribute('data-split-from') || heading.hasAttribute('data-split-to')) return
+        if (heading.parentElement && heading.parentElement.closest('.keep-group')) return
+        const h = heading.getBoundingClientRect()
+        if (h.height < 2) return
+        let below = 0
+        leaves.forEach(function (l) {
+          if (heading.contains(l.el)) return
+          if (l.top >= h.top + 4 && l.bottom > h.top + 4 && !heading.contains(l.el)) {
+            const r = l.el.getBoundingClientRect()
+            if (r.top >= h.top + (h.height > 0 ? 4 : 0) && r.top >= heading.lastElementChild.getBoundingClientRect().top)
+              below = Math.max(below, l.bottom - Math.min(h.bottom, r.top))
+          }
+        })
+        if (below >= 48) return
+        out.push({
+          page: index + 1,
+          white: Math.round(box.bottom - h.bottom),
+          below: Math.round(below),
+          kind: String(heading.className).replace(/\s+/g, ' ').trim(),
+          text: (heading.querySelector('h1,h2,h3,h4,h5') || heading).textContent.replace(/\s+/g, ' ').trim().slice(0, 58)
+        })
       })
     })
     return out
@@ -105,9 +113,10 @@ const minWhite = Number(args.white || 120)
   console.log('Paginated ' + total + ' pages in ' +
     Math.round((Date.now() - started) / 1000) + 's\n')
   console.log(found.length + ' heading(s) left without their content ' +
-    '(more than ' + minWhite + 'px of white beneath):\n')
+    '(last on the page, or with under three lines after them):\n')
   found.forEach(function (f) {
-    console.log('  p' + String(f.page).padStart(4) + '  ' +
-      String(f.white).padStart(3) + 'px  ' + f.kind.padEnd(26) + '  ' + f.text)
+    console.log('  sheet' + String(f.page).padStart(4) + '  ' + String(f.below).padStart(3) + 'px after, ' +
+      String(f.white).padStart(3) + 'px to the foot  ' + f.kind.padEnd(26) + '  ' + f.text)
   })
+  if (args.out) require('fs').writeFileSync(path.resolve(args.out), JSON.stringify({ sheets: total, stranded: found }, null, 1))
 })()
