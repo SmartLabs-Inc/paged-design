@@ -6149,6 +6149,14 @@ a.uri,
     content: normal;
     border-right: 0; } }
 
+.keep-lead.keep-lead {
+  border-bottom: var(--keep, 0px) solid transparent;
+  background-clip: padding-box;
+  margin-bottom: calc(17px - var(--keep, 0px)); }
+
+.keep-lead.keep-lead.section-opener {
+  margin-bottom: calc(0px - var(--keep, 0px)); }
+
 .part-opener {
   column-span: all;
   box-sizing: border-box;
@@ -7450,8 +7458,8 @@ p, li, dd, .standfirst {
   -webkit-hyphens: manual; }
 
 p, li, dd, .lead-rest, .standfirst {
-  orphans: 2;
-  widows: 2; }
+  orphans: 3;
+  widows: 3; }
 
 .abbrev-list {
   margin: 0 0 17px 0;
