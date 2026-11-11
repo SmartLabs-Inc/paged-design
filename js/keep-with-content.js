@@ -40,9 +40,14 @@
 // and the overflow is found again. Usually the text comes back under it and
 // there is nothing to move.
 //
-// A third: headings above something that cannot be divided and is too tall to
-// share a page with them — a full-page table. No page can hold both, so the
-// headings stay where they fell and the table opens the next page.
+// A third: headings above a table too tall to share a page with them. No
+// page can hold both whole. Leaving the headings where they fell left the
+// fault; moving them only moved it to the top of the next page, a box alone
+// with its table overleaf. The table is allowed to divide instead, and begins
+// directly under its headings.
+//
+// A fourth: Paged.js has a keep-with-previous of its own, and it does not
+// chain. See `pastPulled`.
 //
 // It reads nothing from the book but the class the build already puts on
 // heading blocks, so the markup is untouched and a book with none of them is
@@ -120,10 +125,12 @@ window.keepHeadingsWithContent = function () {
   }
 
   // What follows the headings is one piece that cannot be divided, and it is
-  // too tall to share a page with them. Moving the headings then gains
-  // nothing: they would open a page that the piece still cannot join, and
-  // leave white on two pages instead of one. A section title and its box
-  // above a full-page table is the case in this book.
+  // too tall to share a page with them: a table that fills a page or runs to
+  // several. Returns that piece, or nothing.
+  //
+  // No page can hold both whole. Moving the headings gains nothing — they
+  // open a page the piece still cannot join. Leaving them leaves the fault.
+  // So the piece is allowed to divide, and begins under its headings.
   //
   // The piece is measured while it is still arriving: Paged.js looks for an
   // overflow every so many characters, and a long table is a third rendered
@@ -131,22 +138,22 @@ window.keepHeadingsWithContent = function () {
   // so the height it will reach is estimated from how much of its text has
   // been set so far against how much the book holds.
   function tooTallToFollow (range, run, bounds, source) {
-    if (!bounds || !bounds.height) return false
+    if (!bounds || !bounds.height) return null
     var next = range.startContainer.nodeType === 1
       ? range.startContainer.childNodes[range.startOffset]
       : null
     while (next && (next.nodeType !== 1 || !next.getBoundingClientRect().height)) next = next.nextSibling
-    if (!next) return false
-    var solid = next.matches('table, figure, img, svg, .table-figure') ||
+    if (!next) return null
+    var solid = next.matches('table, .table-figure') ||
       window.getComputedStyle(next).breakInside === 'avoid'
-    if (!solid) return false
+    if (!solid || next.matches(HEADING) || next.querySelector('svg, img')) return null
     var heads = run[0].getBoundingClientRect().bottom - run[run.length - 1].getBoundingClientRect().top
     var height = next.getBoundingClientRect().height
     var ref = next.getAttribute('data-ref')
     var whole = ref && source && source.querySelector ? source.querySelector('[data-ref="' + ref + '"]') : null
     var set = next.textContent.length
     if (whole && set > 40 && whole.textContent.length > set) height = height * whole.textContent.length / set
-    return heads + height > bounds.height - 8
+    return heads + height > bounds.height - 8 ? next : null
   }
 
   function onPage (block, rendered) {
@@ -208,13 +215,38 @@ window.keepHeadingsWithContent = function () {
         }
       }
 
+      var top = run[run.length - 1]
+      var canFind = layout && typeof layout.findOverflow === 'function'
+
+      // A table too tall to share any page with these headings: let it
+      // divide, so that it starts beneath them.
+      var tall = tooTallToFollow(range, run, bounds, this.chunker && this.chunker.source)
+      if (tall && canFind) {
+        tall.style.breakInside = 'auto'
+        void tall.offsetHeight
+        var divided = layout.findOverflow(rendered, bounds)
+        if (!divided) return null
+        divided = pastPulled(divided, rendered)
+        if (divided.compareBoundaryPoints(Range.START_TO_START, range) > 0) return divided
+        tall.style.breakInside = ''
+      }
+
       // Still the last thing on the page. Take the whole run over — unless
       // it starts the page, where moving it would change nothing.
-      var top = run[run.length - 1]
-      if (!firstOnPage(top, rendered) && !tooTallToFollow(range, run, bounds, this.chunker && this.chunker.source)) {
-        var moved = range.cloneRange()
-        moved.setStartBefore(top)
-        range = moved
+      if (!firstOnPage(top, rendered)) {
+        if (!tall) {
+          var moved = range.cloneRange()
+          moved.setStartBefore(top)
+          range = moved
+        }
+      } else if (run.length === 1 && range !== overflow) {
+        // One heading block, first on its page, that Paged.js means to take
+        // along with what follows it: that is the whole page, and Paged.js
+        // has its own way out of that. Leave it to it.
+        var before = document.createRange()
+        before.setStartBefore(top)
+        before.collapse(true)
+        if (overflow.compareBoundaryPoints(Range.START_TO_START, before) <= 0) return
       }
       if (range !== overflow) return range
     }
