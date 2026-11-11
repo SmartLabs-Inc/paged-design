@@ -1,0 +1,109 @@
+// _styles.scss — AALAI Textbook (6 × 9in)
+//
+// Only what the narrower measure forces. Everything not named here is
+// inherited from `aalai` and looks the same at both trims.
+
+// ---------------------------------------------------------------------------
+// The side callout, tucked in
+// ---------------------------------------------------------------------------
+//
+// At 7 × 10in `.sidenote` floats right at 34% of the measure and the text runs
+// past it. That works because two-thirds of a 143mm measure is still 95mm —
+// about fifty-five characters a line, enough to set ragged-right without
+// trouble.
+//
+// At 6 × 9in the same float leaves 77mm beside it, near forty characters. A
+// measure that short cannot absorb a long word: the rag goes to pieces, the
+// hyphenation rate climbs on every line, and the reader gets a column of text
+// fighting a box. Shrinking the float only makes the note unreadable instead.
+//
+// So the note stops floating and tucks into the text — stepped in from both
+// sides, interrupting the paragraph flow rather than standing beside it. The
+// teal rule carries over from the print theme so it still reads as the same
+// element in the same family, just re-laid for a page that has no room
+// alongside.
+//
+// Stepped in on both edges rather than only the left: indenting one side would
+// leave a full-measure line of 9.5px type, which runs to eighty-odd characters
+// and reads worse than the float it replaced. The two indents bring it back to
+// a length the small size can carry.
+
+.sidenote {
+    float: none;
+    clear: both;
+    width: auto;
+    margin: $baseline-grid-unit ($baseline-grid-unit * 1.5)
+            $baseline-grid-unit ($baseline-grid-unit * 1.5);
+    padding-left: ($baseline-grid-unit / 1.5);
+    border-left: 2pt solid $color-teal;
+    break-inside: avoid;
+}
+
+// Set a step larger than the 8.5px it carries in the margin. A floated note is
+// read at a glance beside the text; a tucked one sits in the reader's path and
+// is read properly, so it is set to be read properly.
+.sidenote p {
+    font-size: $font-size-small;
+}
+
+// Deliberately no tint behind it. `.callout` is the tinted panel in this
+// design, and giving the side note a wash too would collapse two distinct
+// things into one. The indent and the rule carry it.
+
+// ---------------------------------------------------------------------------
+// Process steps, two by two
+// ---------------------------------------------------------------------------
+//
+// Four steps shoulder to shoulder across a 117mm measure gives each one 27mm —
+// narrower than the words inside them. They wrap to a two-by-two grid instead,
+// which keeps the sequence readable left-to-right then down, the order a
+// reader already expects.
+
+.process {
+    flex-wrap: wrap;
+}
+
+.step {
+    flex: 1 1 40%;
+}
+
+// A step marked `.step-wide` still takes a row to itself.
+.step-wide {
+    flex: 1 1 100%;
+}
+
+// ---------------------------------------------------------------------------
+// Side-by-side panels
+// ---------------------------------------------------------------------------
+//
+// Two panels fit at this trim and are kept. Three would give each one 36mm, so
+// a `.columns` block carrying more than two children wraps rather than
+// compressing past readability.
+
+.columns {
+    flex-wrap: wrap;
+}
+
+.columns > * {
+    flex: 1 1 40%;
+}
+
+// ---------------------------------------------------------------------------
+// Evidence-classification chips
+// ---------------------------------------------------------------------------
+//
+// A chip holds one tracked-out word — EXPERIMENTAL is the longest — and needs
+// only enough width to carry it. The explanation beside it wants the rest,
+// because a chip stretches to whatever height its neighbour reaches: give the
+// prose too little room and it wraps to three lines, and the chip becomes a
+// tall slab of flat colour that shouts down the sentence it is labelling.
+//
+// Scoped as `.columns > .level` rather than `.level` on purpose. The rule above
+// sets `flex` on every child of `.columns` at the same specificity, so a bare
+// `.level` would be decided by which rule came last in the file — and it lost,
+// silently, until the chips were rendered and looked at. Two class selectors
+// win outright and cannot be reordered into failure.
+
+.columns > .level {
+    flex: 0 0 28%;
+}

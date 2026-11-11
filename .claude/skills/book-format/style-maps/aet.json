@@ -1,0 +1,85 @@
+{
+  "name": "AET reference",
+  "description": "A specialist reference manual on a closed style vocabulary: one style, one meaning. Word's built-in Heading 1–4 carry the hierarchy so any EPUB converter nests the book correctly, and every other role has its own named style. Three distinctions are still carried by the text rather than by a style, because giving them their own names would demote them to body text in a converter that only recognises the built-in headings: a Heading 1 beginning 'Part ' opens a part, 'Alphabetical Index' opens the index, and anything before the first part is front matter. The document's own table of contents is dropped: its page numbers are Word's and the book generates its own.",
+  "defaults": {
+    "component": "chapter",
+    "leading": "cover"
+  },
+  "styles": {
+    "Title": {
+      "component": "title-page",
+      "element": "p",
+      "class": "title-page-title",
+      "role": "title"
+    },
+    "Subtitle": {
+      "element": "p",
+      "class": "title-page-subtitle"
+    },
+    "Author": {
+      "element": "p",
+      "class": "title-page-author"
+    },
+
+    "Heading 1": {
+      "component": "chapter",
+      "role": "title"
+    },
+    "Heading 2": {
+      "element": "h2"
+    },
+    "Heading 3": {
+      "element": "h3"
+    },
+    "Heading 4": {
+      "element": "h4"
+    },
+
+    "Entry Name": {
+      "element": "h5",
+      "class": "entry-name"
+    },
+    "Standfirst": {
+      "element": "p",
+      "class": "standfirst"
+    },
+    "Body Text": {
+      "element": "p"
+    },
+    "Bullet": {
+      "group": "bullets",
+      "groupElement": "ul"
+    },
+    "Table Text": {
+      "element": "p"
+    },
+
+    "References Heading": {
+      "element": "p",
+      "class": "reference-section"
+    },
+    "Reference": {
+      "group": "references",
+      "groupElement": "ol"
+    },
+
+    "Index Letter": {
+      "element": "h2",
+      "class": "index-letter"
+    },
+    "Index Entry": {
+      "group": "index-list",
+      "groupElement": "ul"
+    },
+
+    "TOC Heading": { "drop": true },
+    "toc 1": { "drop": true },
+    "toc 2": { "drop": true },
+    "toc 3": { "drop": true },
+    "Header": { "drop": true },
+    "Footer": { "drop": true }
+  },
+  "meta": {
+    "lang": "en"
+  }
+}

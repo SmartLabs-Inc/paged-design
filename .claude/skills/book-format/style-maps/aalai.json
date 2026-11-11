@@ -1,0 +1,131 @@
+{
+  "name": "AALAI",
+  "description": "Anti-Aging & Longevity Academic Institute textbook. Authors write in the AALAI Word template and apply the AALAI paragraph styles; shaded one-cell tables become callouts, and the fill color chooses which kind.",
+  "defaults": {
+    "component": "chapter",
+    "leading": "cover"
+  },
+  "styles": {
+    "AALAI Label": {
+      "element": "p",
+      "class": "label"
+    },
+    "AALAI Chapter Title": {
+      "component": "chapter",
+      "role": "title"
+    },
+    "AALAI Subtitle": {
+      "element": "p",
+      "class": "chapter-subtitle"
+    },
+    "AALAI Standfirst": {
+      "element": "p",
+      "class": "standfirst"
+    },
+    "AALAI H1": {
+      "element": "h3"
+    },
+    "AALAI H2": {
+      "element": "h4"
+    },
+    "AALAI H3": {
+      "element": "h5"
+    },
+    "AALAI Objective": {
+      "group": "objectives",
+      "groupElement": "ol",
+      "number": true
+    },
+    "AALAI Takeaway": {
+      "group": "takeaways",
+      "groupElement": "ol",
+      "number": true
+    },
+    "AALAI Callout Label": {
+      "element": "p",
+      "class": "callout-label"
+    },
+    "AALAI Callout": {
+      "element": "p"
+    },
+    "AALAI Pull": {
+      "element": "p",
+      "class": "pullquote"
+    },
+    "AALAI Caption": {
+      "element": "p",
+      "class": "figure-caption"
+    },
+    "AALAI Source": {
+      "element": "p",
+      "class": "source"
+    },
+    "AALAI Reference": {
+      "element": "p",
+      "class": "reference"
+    },
+    "AALAI Template Notes": {
+      "drop": true
+    },
+    "Title": {
+      "component": "title-page",
+      "element": "p",
+      "class": "title-page-title",
+      "role": "title"
+    },
+    "Subtitle": {
+      "element": "p",
+      "class": "title-page-subtitle"
+    },
+    "Heading 1": {
+      "component": "chapter",
+      "role": "title"
+    },
+    "Heading 2": {
+      "element": "h3"
+    },
+    "Heading 3": {
+      "element": "h4"
+    },
+    "Quote": {
+      "element": "blockquote"
+    },
+    "Intense Quote": {
+      "element": "p",
+      "class": "pullquote"
+    },
+    "Caption": {
+      "element": "p",
+      "class": "figure-caption"
+    },
+    "List Paragraph": {
+      "element": "p"
+    },
+    "Header": {
+      "drop": true
+    },
+    "Footer": {
+      "drop": true
+    }
+  },
+  "runColors": {
+    "137C7A": "accent",
+    "B79A5B": "gold",
+    "66717C": "muted"
+  },
+  "fills": {
+    "EAF3F3": "callout",
+    "0D2035": "callout callout-dark",
+    "137C7A": "callout callout-accent",
+    "F4F6F7": "panel",
+    "EEF3F7": "figure-placeholder",
+    "23806C": "level level-established",
+    "315E91": "level level-supported",
+    "D49B38": "level level-emerging",
+    "66717C": "level level-experimental",
+    "default": "callout"
+  },
+  "meta": {
+    "lang": "en"
+  }
+}
