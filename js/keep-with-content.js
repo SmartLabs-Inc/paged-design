@@ -131,6 +131,7 @@ window.keepHeadingsWithContent = function () {
       var again = layout.findOverflow(rendered, bounds)
       if (!again) return null
       again = pastPulled(again, rendered)
+      if (again === null) return null
       if (again.compareBoundaryPoints(Range.START_TO_START, range) > 0) return again
     }
     block.style.paddingBottom = was
@@ -192,25 +193,57 @@ window.keepHeadingsWithContent = function () {
   // came out with an empty page and their opening printed twice. So a block
   // that only wraps other blocks is looked into, and artwork that is on the
   // page counts as on the page too.
+  //
+  // And a block that only wraps other blocks can mislead on its own. An entry
+  // continued onto a page that so far holds a figure and a table — both of
+  // which span the columns — has no height: everything in it has been lifted
+  // out to span. Chromium places that empty box in the next column, Paged.js
+  // sees a block over the edge, and again the whole page is overflow. So a
+  // wrapper is always looked into, wherever its own box is; what counts is
+  // where its contents are.
+  //
+  // Returns the range to break at; the range it was given when nothing here
+  // applies; or `null` when everything rendered so far is on the page and
+  // there is no overflow at all.
+  function wrapper (node) {
+    return node.tagName === 'DIV' && (!node.className || node.matches('.entry, .chapter'))
+  }
+
+  function idle (node) {
+    return (node.nodeType === 3 && !node.textContent.trim()) || node.nodeType === 8 ||
+      (node.nodeType === 1 && node.tagName === 'A' && !node.textContent.trim())
+  }
+
   function pastPulled (range, rendered) {
-    var out = range
-    for (var guard = 0; guard < 12; guard += 1) {
-      if (out.startContainer.nodeType !== 1) break
-      var node = out.startContainer.childNodes[out.startOffset]
-      while (node && ((node.nodeType === 3 && !node.textContent.trim()) ||
-        node.nodeType === 8 ||
-        (node.nodeType === 1 && node.tagName === 'A' && !node.textContent.trim()))) node = node.nextSibling
-      if (!node || node.nodeType !== 1 || !onPage(node, rendered)) break
-      if (node.matches(HEADING) || node.matches(ARTWORK)) {
-        out = out.cloneRange()
-        out.setStartAfter(node)
-      } else if (node.tagName === 'DIV' && (!node.className || node.matches('.entry, .chapter')) && node.firstChild) {
-        out = out.cloneRange()
-        out.setStart(node, 0)
-      } else {
-        break
+    if (range.startContainer.nodeType !== 1) return range
+    var holder = range.startContainer
+    var index = range.startOffset
+    var passed = false
+    for (var guard = 0; guard < 60; guard += 1) {
+      var node = holder.childNodes[index]
+      while (node && idle(node)) { index += 1; node = holder.childNodes[index] }
+      if (!node) {
+        // Ran off the end of a wrapper: carry on after it.
+        if (!passed) return range
+        if (holder === rendered || !rendered.contains(holder) || !holder.parentNode) return null
+        index = Array.prototype.indexOf.call(holder.parentNode.childNodes, holder) + 1
+        holder = holder.parentNode
+        continue
       }
+      if (node.nodeType !== 1) break
+      if (wrapper(node) && node.firstChild) { holder = node; index = 0; continue }
+      if ((node.matches(HEADING) || node.matches(ARTWORK)) && onPage(node, rendered)) {
+        passed = true
+        index += 1
+        continue
+      }
+      break
     }
+    // Looking inside wrappers and finding nothing to pass is not a reason to
+    // break anywhere but where Paged.js said.
+    if (!passed) return range
+    var out = range.cloneRange()
+    out.setStart(holder, index)
     return out
   }
 
@@ -236,6 +269,8 @@ window.keepHeadingsWithContent = function () {
     onOverflow (overflow, rendered, bounds, layout) {
       if (!overflow || !rendered) return
       var range = pastPulled(overflow, rendered)
+      // Everything is on the page: Paged.js was looking at an empty wrapper.
+      if (range === null) return null
       var run = runAbove(range, rendered)
       if (!run.length) {
         // Not a heading. Artwork with nothing after it on the page is the
@@ -284,6 +319,7 @@ window.keepHeadingsWithContent = function () {
         var divided = layout.findOverflow(rendered, bounds)
         if (!divided) return null
         divided = pastPulled(divided, rendered)
+        if (divided === null) return null
         if (divided.compareBoundaryPoints(Range.START_TO_START, range) > 0) return divided
         tall.style.breakInside = ''
       }
