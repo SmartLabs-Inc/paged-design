@@ -93,6 +93,7 @@ const shell = fs.readFileSync(path.join(__dirname, 'lib/editor-shell.html'), 'ut
 
 const out = shell
   .replace('/*THEME_CSS*/', function () { return css })
+  .replace('/*KEEP_JS*/', function () { return fs.readFileSync(path.join(root, 'js/keep-with-content.js'), 'utf8') })
   .replace('/*PAGED_JS*/', function () { return paged })
   .replace('/*PAGE_MAP*/', function () { return pageMap })
   .replace('<!--BOOK_BODY-->', function () { return bodyWithImages })

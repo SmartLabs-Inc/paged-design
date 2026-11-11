@@ -59,6 +59,23 @@ function loadPagedJS () {
   'use strict'
 
   return new Promise((resolve) => {
+    // Headings keep their content. The handler has to be registered before
+    // pagination starts and after Paged.js exists, and the only moment that
+    // is both is the `before` callback Paged.js runs first thing. The script
+    // is inserted ahead of Paged.js and neither is async, so it has loaded
+    // by then. See js/keep-with-content.js.
+    const keep = document.createElement('script')
+    keep.src = pagerOptions.pagedjs.replace(/vendor\/[^/]+$/, 'keep-with-content.js')
+    keep.async = false
+    document.body.insertAdjacentElement('beforeend', keep)
+    const earlier = window.PagedConfig || {}
+    window.PagedConfig = Object.assign({ auto: true }, earlier, {
+      before: async function () {
+        if (earlier.before) await earlier.before()
+        if (window.keepHeadingsWithContent) window.keepHeadingsWithContent()
+      }
+    })
+
     const pagedjs = document.createElement('script')
     pagedjs.src = pagerOptions.pagedjs
     pagedjs.async = false
