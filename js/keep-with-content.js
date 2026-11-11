@@ -214,6 +214,24 @@ window.keepHeadingsWithContent = function () {
     return out
   }
 
+  // The artwork or heading block the overflow begins with, when the overflow
+  // is the whole page: nothing has been left on the page at all.
+  function pageOpener (range, rendered) {
+    var before = document.createRange()
+    before.setStart(rendered, 0)
+    before.setEnd(range.startContainer, range.startOffset)
+    if (before.toString().trim() !== '' || before.cloneContents().querySelector(SOLID)) return null
+    var node = range.startContainer.nodeType === 1 ? range.startContainer.childNodes[range.startOffset] : null
+    for (var guard = 0; guard < 8 && node; guard += 1) {
+      while (node && (node.nodeType !== 1 || (node.tagName === 'A' && !node.textContent.trim()))) node = node.nextSibling
+      if (!node) return null
+      if (node.matches(ARTWORK) || node.matches(HEADING)) return node
+      if (node.tagName !== 'DIV') return null
+      node = node.firstChild
+    }
+    return null
+  }
+
   class KeepHeadings extends window.Paged.Handler {
     onOverflow (overflow, rendered, bounds, layout) {
       if (!overflow || !rendered) return
@@ -224,7 +242,16 @@ window.keepHeadingsWithContent = function () {
         // other case: it stays where it is, and the text is brought back
         // under it if a change of height will do that.
         var art = headingBefore(range, rendered, ARTWORK)
-        if (!art || !emptyBetween(art, range)) return
+        if (!art || !emptyBetween(art, range)) {
+          // Or the page is empty: the artwork that should open it has gone
+          // overleaf with the text it was taking along.
+          var opener = pageOpener(range, rendered)
+          if (!opener || !layout || typeof layout.findOverflow !== 'function') return
+          var back = settle(opener, range, rendered, bounds, layout)
+          if (back === null) return null
+          if (back) return back
+          return
+        }
         if (layout && typeof layout.findOverflow === 'function') {
           var under = settle(art, range, rendered, bounds, layout)
           if (under === null) return null
