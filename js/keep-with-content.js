@@ -33,10 +33,16 @@
 // been moved to a fresh page, the reused layout sends the whole column row
 // after it to the next page instead of starting it underneath. Measured on
 // the page: nothing about breaks, orphans, margins or the amount of text
-// changed the result, and changing the height of the block by a tenth of a
-// pixel did. So before a heading is judged stranded, it is nudged by that
-// much and the overflow is found again. Usually the text comes back under it
-// and there is nothing to move.
+// changed the result; changing the height of the block did, and the page then
+// stayed right when the height was put back. A tenth of a pixel is not
+// enough — measured, it left the page as it was — and one pixel is. So before
+// a heading is judged stranded its height is changed by a pixel and restored,
+// and the overflow is found again. Usually the text comes back under it and
+// there is nothing to move.
+//
+// A third: headings above something that cannot be divided and is too tall to
+// share a page with them — a full-page table. No page can hold both, so the
+// headings stay where they fell and the table opens the next page.
 //
 // It reads nothing from the book but the class the build already puts on
 // heading blocks, so the markup is untouched and a book with none of them is
@@ -97,27 +103,105 @@ window.keepHeadingsWithContent = function () {
     return run
   }
 
-  // Change a block's height by a tenth of a pixel, so its layout is redone.
-  function nudge (block) {
+  // Change a block's height by a pixel so its layout is redone, and put it
+  // back unless told to leave it.
+  function relayout (block, leave) {
+    var was = block.style.paddingBottom
     var now = parseFloat(window.getComputedStyle(block).paddingBottom) || 0
-    var up = block.getAttribute('data-nudged') !== 'up'
-    block.style.paddingBottom = (now + (up ? 0.1 : -0.1)) + 'px'
-    block.setAttribute('data-nudged', up ? 'up' : 'down')
+    block.style.paddingBottom = (now + 1) + 'px'
+    void block.offsetHeight
+    if (leave) return
+    block.style.paddingBottom = was
+    void block.offsetHeight
+  }
+
+  function sameStart (a, b) {
+    return a.compareBoundaryPoints(Range.START_TO_START, b) === 0
+  }
+
+  // What follows the headings is one piece that cannot be divided, and it is
+  // too tall to share a page with them. Moving the headings then gains
+  // nothing: they would open a page that the piece still cannot join, and
+  // leave white on two pages instead of one. A section title and its box
+  // above a full-page table is the case in this book.
+  //
+  // The piece is measured while it is still arriving: Paged.js looks for an
+  // overflow every so many characters, and a long table is a third rendered
+  // the first time it is found over the edge. Its height then says nothing,
+  // so the height it will reach is estimated from how much of its text has
+  // been set so far against how much the book holds.
+  function tooTallToFollow (range, run, bounds, source) {
+    if (!bounds || !bounds.height) return false
+    var next = range.startContainer.nodeType === 1
+      ? range.startContainer.childNodes[range.startOffset]
+      : null
+    while (next && (next.nodeType !== 1 || !next.getBoundingClientRect().height)) next = next.nextSibling
+    if (!next) return false
+    var solid = next.matches('table, figure, img, svg, .table-figure') ||
+      window.getComputedStyle(next).breakInside === 'avoid'
+    if (!solid) return false
+    var heads = run[0].getBoundingClientRect().bottom - run[run.length - 1].getBoundingClientRect().top
+    var height = next.getBoundingClientRect().height
+    var ref = next.getAttribute('data-ref')
+    var whole = ref && source && source.querySelector ? source.querySelector('[data-ref="' + ref + '"]') : null
+    var set = next.textContent.length
+    if (whole && set > 40 && whole.textContent.length > set) height = height * whole.textContent.length / set
+    return heads + height > bounds.height - 8
+  }
+
+  function onPage (block, rendered) {
+    var page = rendered.getBoundingClientRect()
+    var box = block.getBoundingClientRect()
+    return box.height > 0 && box.left < page.right - 1 && box.top < page.bottom - 1
+  }
+
+  // Where the overflow really begins. Paged.js has a keep of its own: a block
+  // marked to stay with the one before it takes that one along, so the
+  // overflow it reports can begin at a heading block that is sitting on the
+  // page with room to spare. That keep does not chain — it took the shaded
+  // box to its table and left the section title behind, which is one of the
+  // faults this file is here for. Heading blocks that are on the page are on
+  // the page; what happens to them is decided below, for the whole run.
+  function pastPulled (range, rendered) {
+    var out = range
+    for (var guard = 0; guard < 6; guard += 1) {
+      if (out.startContainer.nodeType !== 1) break
+      var node = out.startContainer.childNodes[out.startOffset]
+      while (node && ((node.nodeType === 3 && !node.textContent.trim()) ||
+        node.nodeType === 8 ||
+        (node.nodeType === 1 && node.tagName === 'A' && !node.textContent.trim()))) node = node.nextSibling
+      if (!node || node.nodeType !== 1 || !node.matches(HEADING) || !onPage(node, rendered)) break
+      out = out.cloneRange()
+      out.setStartAfter(node)
+    }
+    return out
   }
 
   class KeepHeadings extends window.Paged.Handler {
     onOverflow (overflow, rendered, bounds, layout) {
       if (!overflow || !rendered) return
-      var range = overflow
+      var range = pastPulled(overflow, rendered)
       var run = runAbove(range, rendered)
       if (!run.length) return
 
       if (layout && typeof layout.findOverflow === 'function') {
-        run.forEach(nudge)
+        run.forEach(function (block) { relayout(block) })
         var again = layout.findOverflow(rendered, bounds)
+        if (again) again = pastPulled(again, rendered)
+        if (again && sameStart(again, range)) {
+          // Restoring the height can restore the fault with it. Then the
+          // pixel stays: it cannot be seen, and a blank page can.
+          run.forEach(function (block) { relayout(block, true) })
+          again = layout.findOverflow(rendered, bounds)
+          if (again) again = pastPulled(again, rendered)
+        }
         // Everything fits after all: no break here, carry on filling the page.
         if (!again) return null
-        if (again.compareBoundaryPoints(Range.START_TO_START, range) !== 0) {
+        // Only a later start is an improvement. An earlier one means the
+        // fresh layout has pulled a heading block over to sit with a table
+        // too tall to follow it, which is the fault this exists to prevent;
+        // the break stays where it was first found.
+        if (again.compareBoundaryPoints(Range.START_TO_START, range) > 0) {
           range = again
           run = runAbove(range, rendered)
           if (!run.length) return range
@@ -127,7 +211,7 @@ window.keepHeadingsWithContent = function () {
       // Still the last thing on the page. Take the whole run over — unless
       // it starts the page, where moving it would change nothing.
       var top = run[run.length - 1]
-      if (!firstOnPage(top, rendered)) {
+      if (!firstOnPage(top, rendered) && !tooTallToFollow(range, run, bounds, this.chunker && this.chunker.source)) {
         var moved = range.cloneRange()
         moved.setStartBefore(top)
         range = moved
