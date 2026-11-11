@@ -412,6 +412,8 @@ if (!(current >= 0 && current < chunks.length)) current = 0;
 window.PagedConfig = {
   auto: true,
   renderTo: document.getElementById('ed-stage'),
+  // The same rule the book is paginated with: a heading goes with its content.
+  before: function(){ if (window.keepHeadingsWithContent) window.keepHeadingsWithContent(); },
   after: function(){ if (window.ED && window.ED.ready) window.ED.ready(); }
 };
 
@@ -458,6 +460,7 @@ return {
 })();
 </script>
 
+<script>/*KEEP_JS*/</script>
 <script>/*PAGED_JS*/</script>
 
 <script>
