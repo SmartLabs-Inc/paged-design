@@ -15,10 +15,28 @@
 //
 // This does it where the break is decided. When Paged.js has found what
 // overflows a page, and the last thing left on the page is a heading block,
-// the overflow is extended back to take the heading with it. Then it looks
-// again, because a section title is often followed by a shaded box that is
-// itself a heading block. A heading that is the first thing on its page is
-// never moved: there is nowhere better for it, and moving it would loop.
+// the overflow is extended back to take the heading with it — and every
+// heading block directly above it, because a section title is often followed
+// by a shaded box that is itself a heading block.
+//
+// Two things it has to get right, both learned from pages that came out wrong.
+//
+// The first version moved the blocks one at a time and stopped at one that
+// was first on its page. So a title and its box at the top of a page, with
+// their text overleaf, lost the box and kept the title: a page holding one
+// line. The run of headings is now taken as a whole, and a run that reaches
+// the top of the page is left alone — there is nowhere better for it.
+//
+// The second is why a title and box at the top of a page had their text
+// overleaf at all, with most of a page free beneath them. Chromium keeps the
+// layout of a block that spans the columns and reuses it; when the block has
+// been moved to a fresh page, the reused layout sends the whole column row
+// after it to the next page instead of starting it underneath. Measured on
+// the page: nothing about breaks, orphans, margins or the amount of text
+// changed the result, and changing the height of the block by a tenth of a
+// pixel did. So before a heading is judged stranded, it is nudged by that
+// much and the overflow is found again. Usually the text comes back under it
+// and there is nothing to move.
 //
 // It reads nothing from the book but the class the build already puts on
 // heading blocks, so the markup is untouched and a book with none of them is
@@ -61,19 +79,57 @@ window.keepHeadingsWithContent = function () {
     return null
   }
 
+  // The heading blocks stacked directly above the overflow, nearest first.
+  function runAbove (range, rendered) {
+    var run = []
+    var at = range
+    for (var guard = 0; guard < 6; guard += 1) {
+      var heading = headingBefore(at, rendered)
+      if (!heading) break
+      // A block the page break already runs through is another matter.
+      if (heading.hasAttribute('data-split-to')) break
+      if (!emptyBetween(heading, at)) break
+      run.push(heading)
+      at = document.createRange()
+      at.setStartBefore(heading)
+      at.collapse(true)
+    }
+    return run
+  }
+
+  // Change a block's height by a tenth of a pixel, so its layout is redone.
+  function nudge (block) {
+    var now = parseFloat(window.getComputedStyle(block).paddingBottom) || 0
+    var up = block.getAttribute('data-nudged') !== 'up'
+    block.style.paddingBottom = (now + (up ? 0.1 : -0.1)) + 'px'
+    block.setAttribute('data-nudged', up ? 'up' : 'down')
+  }
+
   class KeepHeadings extends window.Paged.Handler {
-    onOverflow (overflow, rendered) {
+    onOverflow (overflow, rendered, bounds, layout) {
       if (!overflow || !rendered) return
       var range = overflow
-      for (var guard = 0; guard < 4; guard += 1) {
-        var heading = headingBefore(range, rendered)
-        if (!heading) break
-        // A block the page break already runs through is another matter.
-        if (heading.hasAttribute('data-split-to')) break
-        if (!emptyBetween(heading, range)) break
-        if (firstOnPage(heading, rendered)) break
+      var run = runAbove(range, rendered)
+      if (!run.length) return
+
+      if (layout && typeof layout.findOverflow === 'function') {
+        run.forEach(nudge)
+        var again = layout.findOverflow(rendered, bounds)
+        // Everything fits after all: no break here, carry on filling the page.
+        if (!again) return null
+        if (again.compareBoundaryPoints(Range.START_TO_START, range) !== 0) {
+          range = again
+          run = runAbove(range, rendered)
+          if (!run.length) return range
+        }
+      }
+
+      // Still the last thing on the page. Take the whole run over — unless
+      // it starts the page, where moving it would change nothing.
+      var top = run[run.length - 1]
+      if (!firstOnPage(top, rendered)) {
         var moved = range.cloneRange()
-        moved.setStartBefore(heading)
+        moved.setStartBefore(top)
         range = moved
       }
       if (range !== overflow) return range
