@@ -436,12 +436,12 @@ function figure(el) {
     if (src) {
         const file = path.join(ROOT, src);
         if (fs.existsSync(file)) {
-            const png = require('./pngsize')(file);
-            const w = P.measure / 20;                       // DXA -> pt
+            const png = require('./imagesize')(file);
+            const w = P.px(P.measure);
             const h = Math.round(w * png.height / png.width);
             out.push(new Paragraph({
                 children: [new ImageRun({
-                    type: 'png', data: fs.readFileSync(file),
+                    type: png.type, data: fs.readFileSync(file),
                     transformation: { width: Math.round(w), height: h },
                 })],
                 spacing: { before: 200, after: 160 },

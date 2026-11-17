@@ -24,78 +24,31 @@
     width: 62mm;
 }
 
-.reno-first.cover #{$title-page-logo} {
-    width: 68mm;
-}
-
 // Cover
 // -----
+//
+// The cover is supplied artwork, not type set here: a flat 8.5 x 11in
+// file at 300 dpi, trimmed to the page. It is placed edge to edge
+// rather than reproduced in CSS, so the design cannot drift from the
+// file the client approved. `object-fit: cover` means artwork that is
+// not exactly the trim size fills the page without distorting.
 
 .cover {
     background-color: $reno-navy;
     overflow: hidden;
 
-    & > div {
-        height: 100%;
-    }
-
+    & > div,
     & > div > div {
         height: 100%;
-        padding: 40mm 24mm 46mm 24mm;
-        position: relative;
+        padding: 0;
     }
 
-    .cover-kicker {
-        @include label($font-size-small, $reno-gold, 700);
-        letter-spacing: 0.2em;
-        margin: 0 0 14px 0;
-    }
-
-    .cover-title {
-        color: #fff;
-        font-family: $font-display-main;
-        font-size: 38px;
-        font-weight: 600;
-        hyphens: none;
-        letter-spacing: -0.015em;
-        line-height: 42px;
-        margin: 0;
-        max-width: 88%;
-
-        span {
-            color: $reno-gold;
-            display: block;
-            font-size: 68px;
-            font-weight: 800;
-            letter-spacing: -0.035em;
-            line-height: 66px;
-            margin-top: 6px;
-        }
-    }
-
-    .cover-subtitle {
-        border-top: 3px solid $reno-gold;
-        color: $reno-navy-pale;
-        font-family: $font-text-secondary;
-        font-size: 15px;
-        font-weight: 400;
-        line-height: 21px;
-        margin: 26px 0 0 0;
-        max-width: 80%;
-        padding-top: 16px;
-    }
-
-    .cover-skyline {
-        bottom: -1px;
-        left: -24mm;
-        margin: 0;
-        position: absolute;
-        right: -24mm;
-
-        img {
-            display: block;
-            width: 100%;
-        }
+    .cover-art {
+        display: block;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        width: 100%;
     }
 }
 

@@ -76,6 +76,26 @@ than linked from Google, as the project README recommends for production: an
 upstream font change can reflow a whole book. Licences (OFL) sit alongside the
 files.
 
+## The cover
+
+The cover is supplied artwork, not type set here:
+
+```
+content/reno-first/images/reno-first-cover-2027.jpg   2550 x 3300px, 300 dpi
+```
+
+It is a flat 8.5 x 11in file at exactly the trim size, placed edge to edge by
+`.cover-art` in `partials/_frontmatter.scss`. Reproducing it in CSS would mean
+the printed cover could drift from the file the client approved, so the file
+*is* the cover; `object-fit: cover` means a replacement that is not exactly the
+trim size fills the page rather than distorting. A new cover drops in by
+replacing the file and the one `src` in `content/reno-first/index.html`.
+
+Note that the cover carries its own skyline, drawn as line art. The part pages
+still use the filled gold silhouette in `reno-skyline-gold.png`. If the line
+art is the brand's new treatment rather than a cover-only one, the part pages
+should follow it.
+
 ## The logo
 
 The mark is placed as supplied artwork, from two files:
@@ -85,10 +105,12 @@ content/reno-first/images/reno-first-logo.png           full colour, on white
 content/reno-first/images/reno-first-logo-reversed.png  on the navy ground
 ```
 
-Both are in place, supplied at 600 × 266px. There is deliberately **no
-type-set substitute**: if a file goes missing the slot stays empty rather than
-standing in a lookalike lockup. `.reno-first img.title-page-logo` sizes on
-width, so replacement artwork drops in without retouching.
+Both are in place, supplied at 600 × 266px, and are used on the title page and
+in the planner — the cover carries its own lockup inside the artwork. There is
+deliberately **no type-set substitute**: if a file goes missing the slot stays
+empty rather than standing in a lookalike lockup. `.reno-first
+img.title-page-logo` sizes on width, so replacement artwork drops in without
+retouching.
 
 At the size the mark sits on the title page (62mm) the supplied 600px files
 work out to about 245 dpi. That is fine for this placement but under the 300

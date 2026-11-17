@@ -4871,65 +4871,19 @@ section.section {
   transform: none;
   width: 62mm; }
 
-.reno-first.cover img.title-page-logo {
-  width: 68mm; }
-
 .cover {
   background-color: #02305f;
   overflow: hidden; }
-  .cover > div {
-    height: 100%; }
+  .cover > div,
   .cover > div > div {
     height: 100%;
-    padding: 40mm 24mm 46mm 24mm;
-    position: relative; }
-  .cover .cover-kicker {
-    color: #fbae06;
-    font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    line-height: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    margin: 0 0 14px 0; }
-  .cover .cover-title {
-    color: #fff;
-    font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
-    font-size: 38px;
-    font-weight: 600;
-    hyphens: none;
-    letter-spacing: -0.015em;
-    line-height: 42px;
-    margin: 0;
-    max-width: 88%; }
-    .cover .cover-title span {
-      color: #fbae06;
-      display: block;
-      font-size: 68px;
-      font-weight: 800;
-      letter-spacing: -0.035em;
-      line-height: 66px;
-      margin-top: 6px; }
-  .cover .cover-subtitle {
-    border-top: 3px solid #fbae06;
-    color: rgba(255, 255, 255, 0.74);
-    font-family: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
-    font-size: 15px;
-    font-weight: 400;
-    line-height: 21px;
-    margin: 26px 0 0 0;
-    max-width: 80%;
-    padding-top: 16px; }
-  .cover .cover-skyline {
-    bottom: -1px;
-    left: -24mm;
-    margin: 0;
-    position: absolute;
-    right: -24mm; }
-    .cover .cover-skyline img {
-      display: block;
-      width: 100%; }
+    padding: 0; }
+  .cover .cover-art {
+    display: block;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    width: 100%; }
 
 .half-title-page,
 .title-page {

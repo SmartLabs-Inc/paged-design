@@ -180,13 +180,14 @@ function addSection(children, { title, start, bare, recto } = {}) {
 
 function imageParagraph(src, widthPt, opts = {}) {
     const file = path.join(ROOT, src);
-    const png = require('./pngsize')(file);
+    const size = require('./imagesize')(file);
     return new Paragraph({
         children: [new ImageRun({
-            type: 'png', data: fs.readFileSync(file),
+            type: size.type, data: fs.readFileSync(file),
             transformation: {
                 width: widthPt,
-                height: Math.round(widthPt * png.height / png.width),
+                height: opts.heightPt
+                    || Math.round(widthPt * size.height / size.width),
             },
         })],
         spacing: { after: opts.after ?? 300 },
@@ -195,35 +196,12 @@ function imageParagraph(src, widthPt, opts = {}) {
     });
 }
 
+// The cover is supplied artwork: a flat 8.5 x 11in file at the trim
+// size. Word places the file, scaled to the text block, rather than
+// rebuilding the design out of runs that could drift from it.
 function cover() {
-    const $c = $('.cover');
-    return [B.panel(P.navy, [
-        imageParagraph('images/reno-first-logo-reversed.png', 150, { after: 700 }),
-        new Paragraph({
-            children: [new TextRun({
-                text: clean($c.find('.cover-kicker').text()).toUpperCase(),
-                font: P.display, size: 16, bold: true, color: P.gold, characterSpacing: P.track(16, 0.16),
-            })],
-            spacing: { after: 200 }, indent: null,
-        }),
-        new Paragraph({
-            children: [
-                new TextRun({ text: 'How to Start a Business in ', font: P.display,
-                              size: 64, bold: true, color: P.white }),
-                new TextRun({ text: 'Reno, Nevada', font: P.display,
-                              size: 64, bold: true, color: P.gold }),
-            ],
-            spacing: { after: 280, line: P.lh(20), lineRule: LineRuleType.AT_LEAST }, indent: null,
-        }),
-        new Paragraph({
-            children: [new TextRun({
-                text: clean($c.find('.cover-subtitle').text()),
-                font: P.display, size: 22, color: P.navyPale,
-            })],
-            spacing: { after: 600, line: P.lh(21), lineRule: LineRuleType.AT_LEAST }, indent: null,
-        }),
-        imageParagraph('images/reno-skyline-gold.png', 480, { after: 0 }),
-    ], { margins: { top: 700, bottom: 500, left: 560, right: 560 } })];
+    return [imageParagraph('images/reno-first-cover-2027.jpg',
+                           P.px(P.measure), { after: 0 })];
 }
 
 function titlePage() {
@@ -420,7 +398,7 @@ $('body > div.reno-first').each((_, div) => {
 const doc = new Document({
     creator: 'Reno First',
     title: 'How to Start a Business in Reno, Nevada',
-    description: 'The 2026 Reno Edition, including The Reno Launch Planner.',
+    description: 'The 2027 Edition, including The Reno Launch Planner.',
     evenAndOddHeaderAndFooter: true,
     features: { updateFields: true },
     styles: {

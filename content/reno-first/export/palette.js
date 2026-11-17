@@ -34,6 +34,11 @@ module.exports = {
     // the CSS values and this does the conversion.
     track: (halfPoints, em) => Math.round((halfPoints / 2) * em * 20),
 
+    // docx sizes images in pixels at 96dpi, not points, so a width
+    // given in DXA has to be converted or the image comes out at 72/96
+    // of the size asked for.
+    px: dxa => Math.round(dxa / 1440 * 96),
+
     // Page, in DXA (1440 = 1in). US Letter, the book's margins
     // averaged left/right since Word gets no marginalia column of
     // its own — the measure is held by indenting body text instead.
