@@ -117,6 +117,39 @@ work out to about 245 dpi. That is fine for this placement but under the 300
 dpi you would normally want for print — worth swapping in a larger master
 before a real print run.
 
+## The press build
+
+`themes/renofirst-press` is the same design with 0.125in bleed and crop
+marks, for the printer:
+
+```
+content/reno-first/index.html?theme=renofirst-press
+```
+
+It imports this theme wholesale and overrides three variables — `$bleed`,
+`$crop-marks` and `$font-path` — so the design has one source and the two
+builds cannot drift. Paged.js grows the sheet to 222.3 × 285.8mm and keeps the
+page box at trim, which means a page meant to print edge to edge still stops at
+the trim line; `partials/_bleed.scss` pushes the cover and the part pages out by
+the bleed distance and stops the boxes above them clipping. Anything anchored to
+the trim edges — the part pages' copy block — is moved in by the same amount so
+it does not drift toward the cut.
+
+Three things still need a decision before a file goes to a printer:
+
+- **The cover artwork has no bleed.** It is exactly 8.5 × 11in, the trim size.
+  The press build makes it fill the bleed with `object-fit: cover`, which scales
+  the design up about 3% and loses 0.125in off every edge. Nothing important sits
+  that close to the edge, so it survives — but artwork drawn at 8.75 × 11.25in
+  would be better, and is what a printer will ask for.
+- **The cover may not belong in this file at all.** Perfect-bound books are
+  usually printed as an interior PDF plus a separate cover file carrying back
+  cover, spine and front as one spread. The spine width depends on the page
+  count and the paper stock, so it cannot be set here.
+- **Two navies are in play.** The cover artwork's ground is `#012245`; the
+  interior navy, sampled from the logo files, is `#02305f`. They are visibly
+  different side by side.
+
 ## Page perfecting
 
 How a section is set off, and two typesetting rules. Both rules are checked

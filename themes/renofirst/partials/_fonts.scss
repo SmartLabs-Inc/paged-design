@@ -10,6 +10,11 @@
 //
 // Both are variable fonts, so one file covers every weight the
 // design uses.
+//
+// The path is a variable so a sibling theme — the press build — can
+// point at these same files rather than carrying a second copy.
+
+$font-path: 'fonts/' !default;
 
 @font-face {
     font-family: "Archivo";
@@ -17,8 +22,8 @@
     font-weight: 100 900;
     font-stretch: 62% 125%;
     font-display: block;
-    src: url("fonts/archivo-variable.woff2") format("woff2-variations"),
-         url("fonts/archivo-variable.woff2") format("woff2");
+    src: url("#{$font-path}archivo-variable.woff2") format("woff2-variations"),
+         url("#{$font-path}archivo-variable.woff2") format("woff2");
 }
 
 @font-face {
@@ -26,8 +31,8 @@
     font-style: normal;
     font-weight: 200 900;
     font-display: block;
-    src: url("fonts/source-serif-4-variable.woff2") format("woff2-variations"),
-         url("fonts/source-serif-4-variable.woff2") format("woff2");
+    src: url("#{$font-path}source-serif-4-variable.woff2") format("woff2-variations"),
+         url("#{$font-path}source-serif-4-variable.woff2") format("woff2");
 }
 
 @font-face {
@@ -35,6 +40,6 @@
     font-style: italic;
     font-weight: 200 900;
     font-display: block;
-    src: url("fonts/source-serif-4-italic-variable.woff2") format("woff2-variations"),
-         url("fonts/source-serif-4-italic-variable.woff2") format("woff2");
+    src: url("#{$font-path}source-serif-4-italic-variable.woff2") format("woff2-variations"),
+         url("#{$font-path}source-serif-4-italic-variable.woff2") format("woff2");
 }
