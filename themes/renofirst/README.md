@@ -135,20 +135,40 @@ the bleed distance and stops the boxes above them clipping. Anything anchored to
 the trim edges — the part pages' copy block — is moved in by the same amount so
 it does not drift toward the cut.
 
-Three things still need a decision before a file goes to a printer:
+### Before a file goes to a printer
 
-- **The cover artwork has no bleed.** It is exactly 8.5 × 11in, the trim size.
-  The press build makes it fill the bleed with `object-fit: cover`, which scales
-  the design up about 3% and loses 0.125in off every edge. Nothing important sits
-  that close to the edge, so it survives — but artwork drawn at 8.75 × 11.25in
-  would be better, and is what a printer will ask for.
-- **The cover may not belong in this file at all.** Perfect-bound books are
-  usually printed as an interior PDF plus a separate cover file carrying back
-  cover, spine and front as one spread. The spine width depends on the page
-  count and the paper stock, so it cannot be set here.
-- **Two navies are in play.** The cover artwork's ground is `#012245`; the
-  interior navy, sampled from the logo files, is `#02305f`. They are visibly
-  different side by side.
+**The cover artwork has no bleed — replacement artwork is on order.** The file
+in hand is exactly 8.5 × 11in, the trim size. Until the bleed version lands the
+press build fills the bleed with `object-fit: cover`, which scales the design
+up about 3% and loses 0.125in off every edge; nothing important sits that close
+to the edge, so it holds, but it is a stopgap and should not go to press.
+
+The replacement needs to be:
+
+| | |
+| --- | --- |
+| Artwork size | **8.75 × 11.25in** — 2625 × 3375px at 300 dpi |
+| Trim | 8.5 × 11in, centred in the artwork |
+| Bleed | 0.125in on all four sides, with the design run into it |
+| Safe area | keep the logo, the edition line and the subtitle at least 0.25in inside trim |
+| Ground | `#012245`, as supplied; ask the printer whether they want it converted to CMYK or will convert from RGB |
+| Format | PDF, or PNG/JPEG at 300 dpi |
+
+Dropping it in is a file swap and one `src` in `content/reno-first/index.html`.
+No CSS changes: the same asset serves both builds, because the review build
+crops it back to trim, which is exactly the trimmed view.
+
+**Whether the cover belongs in this file is still open.** Perfect-bound books
+are usually printed as an interior PDF plus a separate cover file carrying back
+cover, spine and front as one spread; the spine width depends on the page count
+and the paper stock, so it cannot be set here. If the printer wants it that
+way, the cover comes out of the interior build and the book starts at the
+half-title.
+
+**The navy is settled: `#02305f` stays.** The cover artwork's ground is
+`#012245`, which is a shade deeper. That is a cover-only ground, not a change
+to the brand colour, so the interior is unchanged and the cover prints as
+drawn.
 
 ## Page perfecting
 

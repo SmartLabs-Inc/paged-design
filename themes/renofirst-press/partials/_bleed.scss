@@ -38,9 +38,14 @@ $press-pages: cover, part;
 }
 
 // The cover is a single image stretched to its box, so growing the box
-// is all it needs — but the artwork supplied is exactly trim size, so
-// `object-fit: cover` is now doing real work: it scales the design up
-// by the bleed and loses that much off each edge. See the theme README.
+// is all it needs.
+//
+// STOPGAP: the artwork in hand is exactly trim size, so `object-fit:
+// cover` is doing real work here — it scales the design up by the bleed
+// and loses that much off each edge. Artwork at 8.75 x 11.25in has been
+// asked for; when it lands this rule becomes a no-op and nothing here
+// needs changing. Do not send a press file built on the trim-size
+// artwork. See "Before a file goes to a printer" in the theme README.
 .cover .cover-art {
     height: 100%;
     width: 100%;
