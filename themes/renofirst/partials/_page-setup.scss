@@ -1,0 +1,92 @@
+// _page-setup.scss
+
+// The marginalia column. Paged.js lays the @page margins out as
+// grid tracks around the page area, so the outer margin is
+// already reserved: the area only needs padding for the column
+// itself. The text block keeps its measure; notes, wide tables
+// and opener panels reach out into the column.
+
+.pagedjs_right_page .pagedjs_area {
+    padding-right: $sidebar-width;
+}
+
+.pagedjs_left_page .pagedjs_area {
+    padding-left: $sidebar-width;
+}
+
+// Pages that use the full page width rather than reserving the
+// marginalia column: the outer band collapses to the true outer
+// margin.
+// Worksheets are for writing on: they give the whole measure
+// over to the forms rather than reserving a marginalia column.
+$full-width-pages: title-page, half-title-page, copyright, contents-page,
+    map, worksheet;
+
+@each $page in $full-width-pages {
+
+    .pagedjs_#{$page}_page {
+
+        &.pagedjs_right_page .pagedjs_area {
+            padding-right: 0;
+        }
+
+        &.pagedjs_left_page .pagedjs_area {
+            padding-left: 0;
+        }
+    }
+}
+
+// Cover and part pages are printed edge to edge, so their areas
+// carry no padding at all and each sets its own inset.
+@page part {
+    margin: 0;
+    padding: 0;
+}
+
+$bleed-pages: cover, part;
+
+@each $page in $bleed-pages {
+
+    .pagedjs_#{$page}_page .pagedjs_area {
+        padding: 0;
+    }
+}
+
+// Named pages beyond the defaults.
+//
+// Note the declaration order: paged.js reads `page` and
+// `break-before` in source order and skips an explicit page
+// break when it thinks the named page is about to change
+// anyway. Naming the page first keeps both siblings on the same
+// named page, so the explicit break is honoured — with
+// `break-before` first, consecutive worksheets run together.
+
+#{$page-worksheet} {
+    page: worksheet;
+    break-before: page;
+}
+
+.contents-page {
+    page: contents-page;
+    break-before: recto;
+}
+
+.map-page {
+    page: map;
+    break-before: page;
+}
+
+.blank-page {
+    page: blank;
+}
+
+// Appendices run on from one another rather than each demanding
+// a recto, but the first one opens the endmatter.
+#{$page-endmatter} {
+    page: endmatter;
+    break-before: page;
+}
+
+#appendix-a {
+    break-before: recto;
+}

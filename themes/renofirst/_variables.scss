@@ -1,0 +1,166 @@
+// _variables.scss
+//
+// Reno First — an 8.5 × 11in guide-and-workbook design.
+//
+// These override the defaults in themes/_defaults/_variables.scss.
+
+
+// Page setup
+// ----------
+
+// US Letter, portrait. 8.5in × 11in.
+$page-width: 215.9mm;
+$page-height: 279.4mm;
+
+// A generous inside margin for perfect binding, a narrow true
+// outside margin, and a wide outer band that carries the
+// marginalia column (see $sidebar-width below).
+$margin-top: 20mm;
+$margin-bottom: 20mm;
+$margin-inside: 23mm;
+$margin-outside: 13mm;
+
+// The marginalia column. Measured from the outer edge of the
+// text block. $sidebar-position is `none` because this theme
+// sets its own page padding in partials/_page-setup.scss, so
+// that the outer margin is preserved outside the column.
+$sidebar-width: 50mm;
+$sidebar-gap: 7mm;
+$sidebar-position: none;
+
+// The width of the outer band: marginalia column + outer margin.
+$outer-band: $sidebar-width + $margin-outside;
+
+// Text measure: 215.9 − 23 − 63 = 129.9mm, about 5.1in.
+$measure: $page-width - $margin-inside - $outer-band;
+
+$crop-marks: none;
+
+
+// Type
+// ----
+
+// Paged.js measures in px, so type is set in px for predictable
+// line breaking. 14px ≈ 10.5pt; 19px ≈ 14.25pt.
+$font-text-main: "Source Serif 4", Georgia, serif;
+$font-text-secondary: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
+$font-display-main: "Archivo", "Helvetica Neue", Helvetica, sans-serif;
+$font-display-secondary: "Source Serif 4", Georgia, serif;
+
+$font-size-default: 14px;
+$line-height-default: 19px;
+$font-size-small: 12px;
+$font-size-tiny: 10.5px;
+$line-height-small: 15px;
+$line-height-tiny: 13px;
+
+$text-align-default: left;
+
+$font-size-smaller: 0.82;
+$font-size-larger: 1.5;
+
+// Paragraphs are spaced, not indented: this is a reference book
+// people skim and a workbook they write in, not a novel.
+$paragraphs: spaced;
+$text-indent: 0;
+$text-spacing: $line-height-default * 0.5;
+
+
+// Page breaks
+// -----------
+
+$chapters-start-on: recto;
+
+
+// Running headers and footers
+// ---------------------------
+
+$frontmatter-page-numbers: lower-roman;
+
+// Chapters: chapter title outside-top, folio inside-top.
+$verso-top: normal;
+$verso-top-left: counter(page);
+$verso-top-right: string(h1-text, first);
+$verso-bottom: normal;
+
+$recto-top: normal;
+$recto-top-left: string(h1-text, first);
+$recto-top-right: counter(page);
+$recto-bottom: normal;
+
+$verso-top-frontmatter: normal;
+$verso-top-left-frontmatter: counter(page, $frontmatter-page-numbers);
+$verso-top-right-frontmatter: string(h1-text, first);
+$verso-bottom-frontmatter: normal;
+
+$recto-top-frontmatter: normal;
+$recto-top-left-frontmatter: string(h1-text, first);
+$recto-top-right-frontmatter: counter(page, $frontmatter-page-numbers);
+$recto-bottom-frontmatter: normal;
+
+
+// Design
+// ------
+
+$colorspace: rgb;
+
+// Brand palette.
+//
+// Two colours, both from the Reno First mark: the gold and the
+// navy. Nothing else is invented. Every other value below is one
+// of those two mixed with white or black, or laid over the page
+// at reduced opacity — so the whole book can be re-tuned by
+// editing these two lines, and no third hue can creep in.
+//
+// Both sampled from the supplied artwork in
+// content/reno-first/images/reno-first-logo.png: the gold is 96%
+// of the mark's warm pixels in one cluster, the navy is the flat
+// fill of the skyline and the script.
+$reno-gold: #fbae06;
+$reno-navy: #02305f;
+
+// Gold, at strength. Every piece of gold *type* in the book is the
+// brand gold itself, undarkened — nothing stands in for it. The
+// one exception is the drawn tick box, whose 1px outline needs a
+// notch more weight to read on white. The washes are the gold at
+// low opacity, which is what fills every panel the reader writes
+// on.
+$reno-gold-tick: darken($reno-gold, 13%);
+$reno-gold-rule: rgba($reno-gold, 0.45);
+$reno-gold-wash: rgba($reno-gold, 0.13);      // surfaces to write on
+$reno-gold-wash-deep: rgba($reno-gold, 0.19); // panels to read
+
+// Navy, mixed toward white for secondary type and hairlines, and
+// toward black for body text.
+$reno-ink: mix($reno-navy, #000, 58%);
+$reno-slate: mix($reno-navy, #fff, 68%);
+$reno-slate-pale: mix($reno-navy, #fff, 45%);
+$reno-rule: mix($reno-navy, #fff, 26%);
+$reno-mist: mix($reno-navy, #fff, 17%);
+$reno-tint: mix($reno-navy, #fff, 6%);
+
+// Reversed out of a navy ground.
+$reno-navy-pale: rgba(#fff, 0.74);
+
+$color-text-main: $reno-ink;
+$color-text-secondary: $reno-slate;
+$color-light: $reno-gold-wash;
+$color-mid: $reno-rule;
+$color-accent: $reno-gold;
+$color-links: $reno-navy;
+
+$start-depth: 0;
+$border-radius: 0;
+$rule-thickness: 0.5pt;
+$text-divider: "\25C7"; // ◇
+
+$locales-page: "page";
+
+
+// Hyphenation
+// -----------
+
+$hyphenation: auto;
+$hyphenate-after: 3;
+$hyphenate-before: 3;
+$hyphenate-lines: 2;

@@ -1,0 +1,115 @@
+// _part-page.scss
+//
+// Part pages borrow the cover's language: one enormous gold form that
+// runs off the trimmed edge, a tracked label at a fraction of its size,
+// and the line-art skyline along the foot. The scale jump and the bleed
+// are what make the page move; everything else is held quietly to the
+// lower left so the two never compete.
+//
+// Both parts open recto, so "outer edge" is the right-hand one and the
+// numeral can be anchored there.
+
+.part-page {
+    background-color: $reno-navy;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    & > div {
+        height: 100%;
+    }
+
+    & > div > div {
+        height: 100%;
+        padding: 0 24mm;
+        position: relative;
+    }
+
+    // The numeral. Big enough to be read as a shape rather than a
+    // figure, cropped by the outer edge and the head — the same trick
+    // the cover plays with RENO.
+    &::before {
+        color: rgba($reno-gold, 0.16);
+        content: attr(data-numeral);
+        font-family: $font-display-main;
+        font-size: 500px;
+        font-weight: 800;
+        letter-spacing: -0.06em;
+        line-height: 0.74;
+        position: absolute;
+        right: -12mm;
+        top: -4mm;
+    }
+
+    // Everything readable sits in the lower third, clear of the
+    // numeral and above the skyline.
+    .part-number {
+        @include label($font-size-small, $reno-navy-pale, 700);
+        letter-spacing: 0.3em;
+        margin: 0 0 18px 0;
+        position: relative;
+    }
+
+    h1 {
+        color: $reno-gold;
+        font-family: $font-display-main;
+        font-size: 62px;
+        font-weight: 800;
+        hyphens: none;
+        letter-spacing: -0.032em;
+        line-height: 60px;
+        margin: 0;
+        max-width: 80%;
+        position: relative;
+    }
+
+    // A bar rather than a border: it runs off the inside edge, which
+    // sets the whole block off-centre and stops the page squaring up.
+    .part-rule {
+        background-color: $reno-gold;
+        height: 4px;
+        margin: 26px 0 0 -24mm;
+        position: relative;
+        width: 54mm;
+    }
+
+    .part-blurb {
+        color: $reno-navy-pale;
+        font-family: $font-text-secondary;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 21px;
+        margin: 18px 0 0 0;
+        max-width: 60%;
+        position: relative;
+        text-align: left;
+    }
+
+    // The block is positioned rather than flowed so the composition
+    // holds whatever length the title and blurb run to.
+    .part-copy {
+        bottom: 96mm;
+        left: 24mm;
+        position: absolute;
+        right: 24mm;
+    }
+
+    // The skyline from the cover, keyed out of its ground so it can sit
+    // on this navy. Full width, running off both edges and the foot.
+    .part-skyline {
+        bottom: 0;
+        left: -24mm;
+        margin: 0;
+        opacity: 0.38;
+        position: absolute;
+        right: -24mm;
+
+        img {
+            display: block;
+            width: 100%;
+        }
+    }
+}

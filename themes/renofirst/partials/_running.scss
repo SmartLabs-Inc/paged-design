@@ -1,0 +1,161 @@
+// _running.scss
+//
+// Running heads: the folio on the inside edge in a gold rule,
+// the section title on the outside edge, over a hairline that
+// runs the full width of the text block and margin column.
+
+@mixin runner-common() {
+    border-bottom: 2px solid $reno-gold;
+    height: $line-height-default;
+    margin-top: $margin-top - 14mm;
+    padding-bottom: 5px;
+    vertical-align: bottom;
+}
+
+@mixin runner-folio() {
+    @include label($font-size-tiny, $reno-navy, 700);
+    letter-spacing: 0.06em;
+}
+
+@mixin runner-title() {
+    // A notch smaller and less tracked than the folio, so that the
+    // longest title in the book — "Forms You'll Need to Get
+    // Started" — still sets on one line in the margin box.
+    @include label(9.5px, $reno-slate, 600);
+    letter-spacing: 0.06em;
+}
+
+@page :left {
+
+    @top-left {
+        @include runner-common();
+        @include runner-folio();
+        text-align: left;
+    }
+
+    @top-center {
+        @include runner-common();
+        content: "";
+    }
+
+    @top-right {
+        @include runner-common();
+        @include runner-title();
+        text-align: right;
+    }
+}
+
+@page :right {
+
+    @top-left {
+        @include runner-common();
+        @include runner-title();
+        text-align: left;
+    }
+
+    @top-center {
+        @include runner-common();
+        content: "";
+    }
+
+    @top-right {
+        @include runner-common();
+        @include runner-folio();
+        text-align: right;
+    }
+}
+
+// Worksheet pages carry their own running head: the planner
+// name outside, the folio inside.
+@page worksheet:left {
+
+    @top-left {
+        content: counter(page);
+    }
+
+    @top-right {
+        content: "The Reno Launch Planner";
+    }
+}
+
+@page worksheet:right {
+
+    @top-left {
+        content: "The Reno Launch Planner";
+    }
+
+    @top-right {
+        content: counter(page);
+    }
+}
+
+@page endmatter:left {
+
+    @top-left {
+        content: counter(page);
+    }
+
+    @top-right {
+        content: string(h1-text, first);
+    }
+}
+
+@page endmatter:right {
+
+    @top-left {
+        content: string(h1-text, first);
+    }
+
+    @top-right {
+        content: counter(page);
+    }
+}
+
+@page map:left {
+
+    @top-left {
+        content: counter(page);
+    }
+
+    @top-right {
+        content: "Welcome to Reno, Nevada";
+    }
+}
+
+@page map:right {
+
+    @top-left {
+        content: "Welcome to Reno, Nevada";
+    }
+
+    @top-right {
+        content: counter(page);
+    }
+}
+
+// The first page of a chapter, appendix or worksheet carries the
+// opener, so it needs no running head at all.
+$pages-without-runners: cover, half-title-page, title-page, copyright,
+    contents-page, part, blank;
+
+@each $page in $pages-without-runners {
+
+    .pagedjs_#{$page}_page .pagedjs_margin {
+        border-bottom: 0 !important;
+    }
+}
+
+[class*="_first_page"] .pagedjs_margin-top .pagedjs_margin {
+    border-bottom: 0 !important;
+}
+
+// Blank versos between parts should be genuinely blank.
+@page :blank {
+
+    @top-left { content: normal; }
+    @top-center { content: normal; }
+    @top-right { content: normal; }
+    @bottom-left { content: normal; }
+    @bottom-center { content: normal; }
+    @bottom-right { content: normal; }
+}

@@ -1,0 +1,85 @@
+// _mixins.scss
+
+// A small uppercase label in the display face. Used for
+// eyebrows, table heads, field labels and running heads.
+@mixin label($size: $font-size-tiny, $color: $reno-slate, $weight: 700) {
+    color: $color;
+    font-family: $font-text-secondary;
+    font-size: $size;
+    font-weight: $weight;
+    letter-spacing: 0.09em;
+    line-height: $line-height-tiny;
+    text-transform: uppercase;
+}
+
+// The gold eyebrow above a title.
+@mixin eyebrow() {
+    @include label($font-size-tiny, $reno-gold, 700);
+    margin: 0 0 6px 0;
+}
+
+// Move an element out into the marginalia column, on the
+// outside edge of the page. This theme sets its own page
+// padding, so we can keep a true outer margin beyond the column.
+@mixin in-margin-column($selector) {
+
+    .pagedjs_right_page .pagedjs_area #{$selector} {
+        clear: right;
+        float: right;
+        margin-left: $sidebar-gap;
+        margin-right: -$sidebar-width;
+        width: $sidebar-width - $sidebar-gap;
+    }
+
+    .pagedjs_left_page .pagedjs_area #{$selector} {
+        clear: left;
+        float: left;
+        margin-left: -$sidebar-width;
+        margin-right: $sidebar-gap;
+        width: $sidebar-width - $sidebar-gap;
+    }
+}
+
+// Let an element run the full width of the text block plus the
+// marginalia column, stopping at the true outer margin. Used for
+// wide tables, chapter opener panels and full-measure figures.
+//
+// The width has to be widened as well as the margin pulled out:
+// an element with `width: 100%` — every table here — resolves
+// that percentage against the text block and would otherwise
+// just shift outwards, leaving a gap on the inside edge.
+@mixin full-measure($selector) {
+
+    .pagedjs_right_page .pagedjs_area #{$selector} {
+        box-sizing: border-box;
+        margin-right: -$sidebar-width;
+        width: calc(100% + #{$sidebar-width});
+    }
+
+    .pagedjs_left_page .pagedjs_area #{$selector} {
+        box-sizing: border-box;
+        margin-left: -$sidebar-width;
+        width: calc(100% + #{$sidebar-width});
+    }
+}
+
+// A drawn tick box for checklists and check-column tables.
+@mixin tick-box($size: 11px) {
+    border: 1px solid $reno-slate-pale;
+    content: "";
+    display: inline-block;
+    height: $size;
+    width: $size;
+}
+
+// A hairline writing rule.
+@mixin writing-rule($color: $reno-rule) {
+    border-bottom: 0.75px solid $color;
+    display: block;
+    height: $line-height-default * 1.15;
+}
+
+@mixin no-break() {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}

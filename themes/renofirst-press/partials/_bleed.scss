@@ -1,0 +1,71 @@
+// _bleed.scss
+//
+// Paged.js grows the sheet to the bleed size and keeps the page box at
+// trim, so a page designed to print edge to edge still stops at the
+// trim line: cut it and you get a white sliver down the edge wherever
+// the knife lands outside the mark. Every full-bleed element therefore
+// has to be pushed out past the trim by the bleed distance, and the
+// boxes above it told not to clip.
+//
+// The pages this applies to are the cover and the two part pages —
+// the same list as $bleed-pages in the review theme.
+
+$press-pages: cover, part;
+
+@each $page in $press-pages {
+
+    .pagedjs_#{$page}_page {
+
+        // Without this the artwork is clipped back to the trim and the
+        // push below does nothing.
+        .pagedjs_pagebox,
+        .pagedjs_area {
+            overflow: visible;
+        }
+    }
+}
+
+// Both are already the full page; this takes them the extra 3.175mm
+// on each side. They are positioned rather than margined so the inner
+// layout — which measures from the page edges — is unaffected.
+.cover,
+#{$page-part} {
+    bottom: -$bleed;
+    left: -$bleed;
+    position: absolute;
+    right: -$bleed;
+    top: -$bleed;
+}
+
+// The cover is a single image stretched to its box, so growing the box
+// is all it needs.
+//
+// STOPGAP: the artwork in hand is exactly trim size, so `object-fit:
+// cover` is doing real work here — it scales the design up by the bleed
+// and loses that much off each edge. Artwork at 8.75 x 11.25in has been
+// asked for; when it lands this rule becomes a no-op and nothing here
+// needs changing. Do not send a press file built on the trim-size
+// artwork. See "Before a file goes to a printer" in the theme README.
+.cover .cover-art {
+    height: 100%;
+    width: 100%;
+}
+
+// The part pages' own full-bleed children measure from their parent's
+// edges, which have just moved outward, so the skyline and the numeral
+// follow without further adjustment. The copy block does not: it is
+// anchored to the trim edges, and must stay there or it drifts into
+// the bleed and prints closer to the cut than intended.
+#{$page-part} {
+
+    .part-copy {
+        bottom: 96mm + $bleed;
+        left: 24mm + $bleed;
+        right: 24mm + $bleed;
+    }
+
+    &::before {
+        right: -12mm + $bleed;
+        top: -4mm + $bleed;
+    }
+}

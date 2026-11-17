@@ -1,0 +1,19 @@
+// _variables.scss
+//
+// Reno First, press build.
+//
+// Everything is inherited from themes/renofirst. Only what the
+// printer needs is set here, so the two builds cannot drift: edit the
+// design in renofirst and this follows.
+
+// 0.125in (3.175mm) on all four sides is the US trade standard, and
+// what most short-run book printers ask for. Confirm with the printer
+// before the file goes out — some want 3mm, a few want 0.25in.
+$bleed: 0.125in;
+
+// Crop marks sit in the bleed area and mark the trim.
+$crop-marks: crop;
+
+// The fonts live with the review theme; this build points at them
+// rather than carrying a second 304KB copy.
+$font-path: '../renofirst/fonts/';
