@@ -3118,6 +3118,19 @@ h4 + .standfirst,
 }
 
 
+// A short paragraph standing alone between two blocks that span the columns —
+// a sentence introducing a table, under a shaded box — set across the full
+// width. In two columns it is a row of its own, and under the three-line rule
+// four lines can only fall 3 and 1.
+//
+// Marked by hand, paragraph by paragraph. It is a decision about one place on
+// one page, not a rule: the same paragraph a line longer balances well enough
+// in two columns, and whether it should be changed is the designer's call.
+.across {
+    column-span: all;
+    text-align-last: auto;
+}
+
 // A reference list is apparatus and reads as a block, not as two columns of
 // unlike things broken mid-citation.
 .references,
