@@ -166,10 +166,31 @@ function flatten () {
       fresh.setAttribute('data-nav', '')
     }
   })
+  let section = 0
   document.querySelectorAll('.keep-lead.section-opener').forEach(function (box) {
     const h = box.querySelector('.section-head')
-    if (h) { const fresh = rename(h, 'h2'); fresh.removeAttribute('title') }
+    if (h) {
+      const fresh = rename(h, 'h2')
+      fresh.removeAttribute('title')
+      section += 1
+      if (!fresh.id) fresh.id = 'section-' + section
+    }
     box.setAttribute('data-section', '')
+  })
+  // A part's opener lists its sections. In print that is a list; here each
+  // line can take the reader there.
+  document.querySelectorAll('ol.part-contents').forEach(function (list) {
+    const chapter = list.closest('.chapter')
+    const heads = {}
+    chapter.querySelectorAll('[data-section] h2').forEach(function (h) { heads[h.textContent.trim()] = h.id })
+    list.querySelectorAll('li').forEach(function (li) {
+      const id = heads[li.textContent.trim()]
+      if (!id || li.querySelector('a')) return
+      const a = document.createElement('a')
+      a.setAttribute('href', '#' + id)
+      while (li.firstChild) a.appendChild(li.firstChild)
+      li.appendChild(a)
+    })
   })
   document.querySelectorAll('.across').forEach(function (p) {
     p.classList.remove('across')

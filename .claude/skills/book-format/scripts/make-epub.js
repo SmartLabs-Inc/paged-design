@@ -23,6 +23,11 @@
 // Everything the print book expresses in page geometry, the EPUB expresses in
 // document structure — which is why the closed style vocabulary in the
 // manuscript matters more here than anywhere else.
+//
+// One exception, and it has its own script. A book that has been through
+// proof correction carries its corrections in the designed copy and nowhere
+// else. `flatten-for-epub.js` takes that copy back to the shape this script
+// reads; build from its output, still never from the designed book itself.
 'use strict'
 
 const fs = require('fs')
@@ -43,6 +48,12 @@ if (args.help || !args.content) {
     '  --title <t>       Override the title read from the book HTML.',
     '  --author <a>      Override the author read from the book HTML.',
     '  --lang <code>     Language code. Default: read from <html lang>, else en.',
+    '  --css <file>      Stylesheet to use instead of the built-in one. Fonts it',
+    '                    names as url(../fonts/<file>) are embedded from --fonts.',
+    '  --fonts <dir>     Where those font files are. Default: fonts/ in the repo.',
+    '  --publisher <p>   Publisher, for the package metadata.',
+    '  --isbn <n>        The ISBN of THIS edition. Not the print ISBN.',
+    '  --description <d> One paragraph for the store listing.',
     '',
     'Splits the book at its page components, writes one XHTML file per',
     'component, and builds the navigation from the headings inside them.'
@@ -147,8 +158,14 @@ function toXhtml (fragment) {
   // word "selected" in running prose to selected="selected".
   out = out.replace(/<([a-zA-Z][a-zA-Z0-9]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g,
     function (all, name, attrs) {
-      const fixed = attrs.replace(/(^|\s)(checked|selected|disabled|hidden|multiple|readonly)(?=\s|$)/g,
-        '$1$2="$2"')
+      // And only as an attribute's name, never inside another one's value.
+      // A figure described as delivering mRNA "to selected T cells" had its
+      // description rewritten the same way, and the file would not parse.
+      const fixed = attrs.replace(
+        /("[^"]*"|'[^']*')|(^|\s)(checked|selected|disabled|hidden|multiple|readonly)(?=\s|$)/g,
+        function (whole, quoted, lead, flag) {
+          return quoted !== undefined ? whole : lead + flag + '="' + flag + '"'
+        })
       return '<' + name + fixed + '>'
     })
   return out
@@ -209,6 +226,8 @@ tr:nth-child(even) td { background: #f5f7f8; }
 // ---------------------------------------------------------------------------
 
 const contentDir = path.resolve(args.content)
+const stylesheet = args.css ? fs.readFileSync(path.resolve(args.css), 'utf8') : CSS
+const fontDir = path.resolve(args.fonts || path.join(__dirname, '..', '..', '..', '..', 'fonts'))
 const indexFile = path.join(contentDir, 'index.html')
 if (!fs.existsSync(indexFile)) {
   console.error('No index.html in ' + contentDir)
@@ -238,10 +257,14 @@ const author = args.author || decode((authorFromPage || '').replace(/<[^>]+>/g, 
 // and a list of print page numbers is worse than no list at all.
 const files = []
 const navPoints = []
+const images = {}
 let counter = 0
+// Where the contents stood in the book. The navigation document goes there
+// in the reading order, so a reader paging from the front meets a contents.
+let contentsAt = -1
 
 parsed.forEach(function (component) {
-  if (component.classes.indexOf('contents-page') !== -1) return
+  if (component.classes.indexOf('contents-page') !== -1) { contentsAt = files.length; return }
   counter += 1
   const name = 'text/' + String(counter).padStart(3, '0') + '-' +
     (slugify(component.title || component.classes[1] || 'section') || 'section') + '.xhtml'
@@ -257,6 +280,16 @@ parsed.forEach(function (component) {
   inner = inner.replace(/<table/g, '<div class="table-wrap"><table')
     .replace(/<\/table>/g, '</table></div>')
 
+  // Pictures sit beside the text files' directory, not inside it.
+  inner = inner.replace(/(<img\b[^>]*?\bsrc=")(?!\w+:|\/|\.\.\/)([^"]+)"/g, function (all, lead, src) {
+    images[src] = true
+    return lead + '../' + src + '"'
+  })
+
+  const children = sectionsIn(inner)
+  const level = Number((/\bdata-level="(\d+)"/.exec(component.html.slice(0, component.html.indexOf('>'))) || [])[1] || 1)
+  inner = inner.replace(/\sdata-(?:nav|level|header)="[^"]*"/g, '')
+
   const heading = component.title || title
   files.push({
     name: name,
@@ -267,10 +300,11 @@ parsed.forEach(function (component) {
       '</head>\n<body epub:type="' +
       (component.classes.indexOf('frontmatter') !== -1 ? 'frontmatter'
         : component.classes.indexOf('endmatter') !== -1 ? 'backmatter' : 'bodymatter') +
-      '">\n' + toXhtml(inner) + '\n</body>\n</html>\n'
+      '">\n' + toXhtml(inner) + '\n</body>\n</html>\n',
+    classes: component.classes
   })
 
-  navPoints.push({ href: name, title: heading, children: sectionsIn(inner) })
+  navPoints.push({ href: name, title: heading, children: children, level: level })
 })
 
 // ---------------------------------------------------------------------------
@@ -337,32 +371,63 @@ files.forEach(function (file) {
 // Second-level navigation: the section heads inside a component.
 function sectionsIn (fragment) {
   const found = []
-  const heading = /<h2\b([^>]*)>([\s\S]*?)<\/h2>/g
+  // A heading marked `data-nav` is a navigation point whatever its level; a
+  // book that marks none gets its second-level headings, as before.
+  const marked = /<h[1-6]\b([^>]*\bdata-nav\b[^>]*)>([\s\S]*?)<\/h[1-6]>/g
   let match
+  while ((match = marked.exec(fragment)) !== null) {
+    const id = (/\bid="([^"]*)"/.exec(match[1]) || [])[1]
+    if (id) found.push({ id: id, text: decode(match[2].replace(/<[^>]+>/g, '').trim()) })
+  }
+  if (found.length || /\bdata-nav\b/.test(fragment)) return found
+  const heading = /<h2\b([^>]*)>([\s\S]*?)<\/h2>/g
   while ((match = heading.exec(fragment)) !== null) {
     if (/\bclass="[^"]*\bindex-letter\b/.test(match[1])) continue
     const id = (/\bid="([^"]*)"/.exec(match[1]) || [])[1]
     if (!id) continue
-    found.push({ id: id, text: match[2].replace(/<[^>]+>/g, '').trim() })
+    found.push({ id: id, text: decode(match[2].replace(/<[^>]+>/g, '').trim()) })
   }
   return found
 }
 
-const navList = navPoints.map(function (point) {
-  const children = point.children.length
-    ? '\n      <ol>\n' + point.children.map(function (c) {
-      return '        <li><a href="' + point.href + '#' + c.id + '">' + escapeXml(c.text) + '</a></li>'
-    }).join('\n') + '\n      </ol>\n    '
-    : ''
-  return '    <li><a href="' + point.href + '">' + escapeXml(point.title) + '</a>' + children + '</li>'
-}).join('\n')
+// A component marked level 2 belongs to the level-1 component before it: a
+// section to its part. That gives part, section, topic — three levels, which
+// is as deep as a reader's contents panel shows usefully.
+const tree = []
+navPoints.forEach(function (point) {
+  const node = {
+    href: point.href,
+    title: point.title,
+    items: point.children.map(function (c) { return { href: point.href + '#' + c.id, title: c.text, items: [] } })
+  }
+  if (point.level > 1 && tree.length) tree[tree.length - 1].items.push(node)
+  else tree.push(node)
+})
+
+function navItems (items, indent) {
+  return items.map(function (item) {
+    const inner = item.items.length
+      ? '\n' + indent + '  <ol>\n' + navItems(item.items, indent + '    ') + '\n' + indent + '  </ol>\n' + indent
+      : ''
+    return indent + '<li><a href="' + item.href + '">' + escapeXml(item.title) + '</a>' + inner + '</li>'
+  }).join('\n')
+}
+
+const firstBody = files.filter(function (f) {
+  return f.classes.indexOf('frontmatter') === -1 && f.classes.indexOf('title-page') === -1
+})[0] || files[0]
 
 const nav = '<?xml version="1.0" encoding="utf-8"?>\n' +
   '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="' +
   lang + '" lang="' + lang + '">\n<head>\n  <title>Contents</title>\n' +
   '  <link rel="stylesheet" type="text/css" href="styles/book.css" />\n</head>\n<body>\n' +
-  '  <nav epub:type="toc" id="toc">\n  <h1>Contents</h1>\n  <ol>\n' + navList +
-  '\n  </ol>\n  </nav>\n</body>\n</html>\n'
+  '  <nav epub:type="toc" id="toc">\n  <h1>Contents</h1>\n  <ol>\n' + navItems(tree, '    ') +
+  '\n  </ol>\n  </nav>\n' +
+  // Where a reader's "go to" menu lands: the contents, and the start of the text.
+  '  <nav epub:type="landmarks" id="landmarks" hidden="hidden">\n  <h2>Guide</h2>\n  <ol>\n' +
+  '    <li><a epub:type="toc" href="nav.xhtml#toc">Contents</a></li>\n' +
+  '    <li><a epub:type="bodymatter" href="' + firstBody.name + '">Start of the text</a></li>\n' +
+  '  </ol>\n  </nav>\n</body>\n</html>\n'
 
 const identifier = 'urn:uuid:' + require('crypto')
   .createHash('sha1').update(title + '|' + author).digest('hex')
@@ -372,20 +437,74 @@ const modified = new Date().toISOString().replace(/\.\d+Z$/, 'Z')
 const manifest = files.map(function (file, i) {
   return '    <item id="t' + (i + 1) + '" href="' + file.name + '" media-type="application/xhtml+xml"/>'
 }).join('\n')
-const spine = files.map(function (file, i) { return '    <itemref idref="t' + (i + 1) + '"/>' }).join('\n')
+
+// The contents takes its place in the reading order where the print contents
+// stood; a book without one gets it after the front matter it has.
+const order = files.map(function (file, i) { return '    <itemref idref="t' + (i + 1) + '"/>' })
+order.splice(contentsAt === -1 ? Math.min(1, order.length) : contentsAt, 0, '    <itemref idref="nav"/>')
+const spine = order.join('\n')
+
+// Pictures and fonts.
+const TYPES = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', svg: 'image/svg+xml', webp: 'image/webp' }
+const cover = (/<meta name="cover" content="([^"]+)"/.exec(html) || [])[1]
+if (cover) images[cover] = true
+const assets = []
+Object.keys(images).forEach(function (src, i) {
+  const file = path.join(contentDir, src)
+  if (!fs.existsSync(file)) { console.error('  WARNING: picture not found: ' + src); return }
+  assets.push({
+    name: src,
+    data: fs.readFileSync(file),
+    item: '    <item id="img' + (i + 1) + '" href="' + src + '" media-type="' +
+      (TYPES[path.extname(src).slice(1).toLowerCase()] || 'application/octet-stream') + '"' +
+      (src === cover ? ' properties="cover-image"' : '') + '/>'
+  })
+})
+const fonts = []
+stylesheet.replace(/url\(\s*["']?\.\.\/fonts\/([^"')]+)["']?\s*\)/g, function (all, name) {
+  if (fonts.indexOf(name) === -1) fonts.push(name)
+  return all
+})
+fonts.forEach(function (name, i) {
+  const file = path.join(fontDir, name)
+  if (!fs.existsSync(file)) { console.error('  WARNING: font not found: ' + name); return }
+  assets.push({
+    name: 'fonts/' + name,
+    data: fs.readFileSync(file),
+    item: '    <item id="font' + (i + 1) + '" href="fonts/' + name + '" media-type="' +
+      (/\.otf$/i.test(name) ? 'font/otf' : /\.woff2$/i.test(name) ? 'font/woff2' : /\.woff$/i.test(name) ? 'font/woff' : 'font/ttf') + '"/>'
+  })
+})
+
+// An ISBN is this edition's or nobody's. Given one, it is the identifier;
+// without one the book is identified by a number made from its title.
+const isbn = args.isbn ? String(args.isbn).replace(/[^0-9Xx]/g, '') : ''
 
 const opf = '<?xml version="1.0" encoding="utf-8"?>\n' +
   '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="pub-id" xml:lang="' + lang + '">\n' +
   '  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n' +
-  '    <dc:identifier id="pub-id">' + identifier + '</dc:identifier>\n' +
+  '    <dc:identifier id="pub-id">' + (isbn ? 'urn:isbn:' + isbn : identifier) + '</dc:identifier>\n' +
   '    <dc:title>' + escapeXml(title) + '</dc:title>\n' +
   '    <dc:language>' + lang + '</dc:language>\n' +
   (author ? '    <dc:creator>' + escapeXml(author) + '</dc:creator>\n' : '') +
+  (args.publisher ? '    <dc:publisher>' + escapeXml(String(args.publisher)) + '</dc:publisher>\n' : '') +
+  (args.description ? '    <dc:description>' + escapeXml(String(args.description)) + '</dc:description>\n' : '') +
   '    <meta property="dcterms:modified">' + modified + '</meta>\n' +
+  // What a reader with a screen reader or a store's accessibility panel is
+  // told. Each line is true of what this script writes and no more.
+  '    <meta property="schema:accessMode">textual</meta>\n' +
+  (assets.some(function (a) { return /^images\//.test(a.name) }) ? '    <meta property="schema:accessMode">visual</meta>\n' : '') +
+  '    <meta property="schema:accessModeSufficient">textual</meta>\n' +
+  '    <meta property="schema:accessibilityFeature">structuralNavigation</meta>\n' +
+  '    <meta property="schema:accessibilityFeature">tableOfContents</meta>\n' +
+  '    <meta property="schema:accessibilityFeature">readingOrder</meta>\n' +
+  '    <meta property="schema:accessibilityHazard">none</meta>\n' +
+  (cover ? '    <meta name="cover" content="img' + (Object.keys(images).indexOf(cover) + 1) + '"/>\n' : '') +
   '  </metadata>\n  <manifest>\n' +
   '    <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>\n' +
   '    <item id="css" href="styles/book.css" media-type="text/css"/>\n' +
-  manifest + '\n  </manifest>\n  <spine>\n' + spine + '\n  </spine>\n</package>\n'
+  manifest + '\n' + assets.map(function (a) { return a.item }).join('\n') +
+  '\n  </manifest>\n  <spine>\n' + spine + '\n  </spine>\n</package>\n'
 
 const entries = [
   // The mimetype must be first and uncompressed, or a reader will not open it.
@@ -399,9 +518,11 @@ const entries = [
   },
   { name: 'OEBPS/content.opf', data: opf },
   { name: 'OEBPS/nav.xhtml', data: nav },
-  { name: 'OEBPS/styles/book.css', data: CSS }
+  { name: 'OEBPS/styles/book.css', data: stylesheet }
 ]
 files.forEach(function (file) { entries.push({ name: 'OEBPS/' + file.name, data: file.data }) })
+// Already compressed, all of them: stored as they are.
+assets.forEach(function (asset) { entries.push({ name: 'OEBPS/' + asset.name, data: asset.data, store: true }) })
 
 const outFile = path.resolve(args.out || path.join(contentDir, path.basename(contentDir) + '.epub'))
 fs.writeFileSync(outFile, writeZip(entries))
@@ -410,6 +531,9 @@ const size = fs.statSync(outFile).size
 console.log('Wrote ' + path.relative(process.cwd(), outFile) + ' — ' + files.length +
   ' documents, ' + (size / 1024).toFixed(0) + ' KB')
 console.log('  links pointed at the document holding their target: ' + retargeted)
+console.log('  pictures ' + assets.filter(function (a) { return /^images\//.test(a.name) }).length +
+  ', fonts ' + assets.filter(function (a) { return /^fonts\//.test(a.name) }).length +
+  (isbn ? ', ISBN ' + isbn : ', no ISBN (identified by a generated number)'))
 if (duplicates) console.log('  duplicate ids removed from empty anchors: ' + duplicates)
 if (unresolved) console.log('  WARNING: ' + unresolved + ' fragment links whose target is in no document')
 console.log('  title  ' + title)
