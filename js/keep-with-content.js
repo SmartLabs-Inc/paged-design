@@ -265,9 +265,152 @@ window.keepHeadingsWithContent = function () {
     return null
   }
 
+  // --- A paragraph's last lines above a heading -----------------------------
+  //
+  // The other half of the three-line rule. A paragraph that breaks over a
+  // page may carry as few as three lines, and when those lines are the last
+  // text before a heading they are a row of their own at the top of the next
+  // page: a scrap above the title. They also cannot be shared between the
+  // columns — three lines each side of a break is the rule — so four go 3 and
+  // 1 and five go 3 and 2. Six go 3 and 3.
+  //
+  // So when the text from the page break to the next thing that spans the
+  // columns comes to fewer than six lines, the page before gives up enough of
+  // the paragraph to make six, as long as three of its lines stay behind.
+  // The page it leaves runs a line or two short; that is the trade a
+  // compositor makes by hand.
+  //
+  // How much text follows is not on the page yet — Paged.js lays out a little
+  // ahead of the break and no further — so it is read from the book and
+  // turned into lines at the rate this paragraph is setting.
+  var TAIL = 6
+  var NOT_PROSE = '.label, .lead-head, .topic-head, .run-head, .table-caption, .figure-caption, .standfirst, .entry-name'
+  var SPANS = HEADING + ', ' + ARTWORK + ', .references, .apparatus-head'
+
+  function feetOf (rects) {
+    var feet = []
+    rects.map(function (r) { return r.bottom }).sort(function (a, b) { return a - b })
+      .forEach(function (b) { if (!feet.length || b - feet[feet.length - 1] > 7) feet.push(b) })
+    return feet
+  }
+
+  // Lines still to come between a point in the book and the next block that
+  // spans the columns, counting no further than it needs to.
+  function linesToNextSpan (from, perLine, sofar) {
+    var lines = sofar
+    var node = from
+    for (var guard = 0; guard < 40 && lines < TAIL; guard += 1) {
+      var next = node.nextSibling
+      var up = node
+      while (!next) {
+        up = up.parentNode
+        if (!up || up.nodeType !== 1 || up.matches('.chapter')) return lines
+        next = up.nextSibling
+      }
+      node = next
+      if (node.nodeType === 3) {
+        if (node.textContent.trim()) lines += Math.ceil(node.textContent.length / perLine)
+        continue
+      }
+      if (node.nodeType !== 1 || (node.tagName === 'A' && !node.textContent.trim())) continue
+      if (node.matches(SPANS)) return lines
+      var inner = node.querySelector(SPANS)
+      if (inner) {
+        var upTo = document.createRange()
+        upTo.setStart(node, 0)
+        upTo.setEndBefore(inner)
+        return lines + Math.ceil(upTo.toString().trim().length / perLine)
+      }
+      // Each block ends its last line early; a label is a line of its own.
+      var blocks = node.querySelectorAll('p').length || 1
+      lines += Math.ceil(node.textContent.trim().length / perLine) + Math.floor(blocks / 2)
+    }
+    return lines
+  }
+
+  function shortTail (overflow, rendered, source) {
+    if (!source || !source.querySelector) return
+    var page = rendered.getBoundingClientRect()
+    var mid = page.left + page.width / 2
+    if (overflow.startContainer.nodeType !== 3) return
+    var para = overflow.startContainer.parentNode.closest('p')
+    if (!para || !rendered.contains(para) || para.matches(NOT_PROSE)) return
+    if (para.closest(HEADING + ', ' + ARTWORK + ', table, li')) return
+
+    var ref = para.getAttribute('data-ref')
+    var whole = ref && source.querySelector('[data-ref="' + ref + '"]')
+    if (!whole) return
+
+    // The paragraph as it stands on this page, up to the break.
+    var before = document.createRange()
+    before.selectNodeContents(para)
+    before.setEnd(overflow.startContainer, overflow.startOffset)
+    var rects = Array.prototype.filter.call(before.getClientRects(), function (r) {
+      return r.height >= 9 && r.width > 0 && r.left < page.right - 1
+    })
+    if (!rects.length) return
+    var right = rects[rects.length - 1].left >= mid
+    var here = feetOf(rects.filter(function (r) { return (r.left >= mid) === right }))
+    var across = feetOf(rects.filter(function (r) { return r.left < mid })).length +
+      feetOf(rects.filter(function (r) { return r.left >= mid })).length
+    var set = before.toString()
+    var perLine = Math.max(28, set.length / Math.max(1, across))
+
+    // What is left of this paragraph, then what follows it.
+    var key = set.slice(-48)
+    var at = whole.textContent.indexOf(key)
+    if (at < 0) return
+    var rest = whole.textContent.length - (at + key.length)
+    var tail = linesToNextSpan(whole, perLine, Math.ceil(rest / perLine))
+    if (tail >= TAIL) return
+
+    // As many lines as it takes, while three stay behind.
+    var move = Math.min(TAIL - tail, here.length - 3)
+    if (move < 1) return
+
+    // The first character of the first line to go: walk back from the break
+    // until a character is found on an earlier line.
+    var foot = here[here.length - move]
+    function stays (node, offset) {
+      var one = document.createRange()
+      one.setStart(node, offset)
+      one.setEnd(node, offset + 1)
+      var r = one.getClientRects()[0]
+      if (!r || (!r.width && !r.height)) return null
+      if (right ? r.left >= page.right - 1 : r.left >= mid) return false
+      if ((r.left >= mid) !== right) return true
+      return r.bottom < foot - 4
+    }
+    var texts = []
+    var all = document.createTreeWalker(para, NodeFilter.SHOW_TEXT)
+    var each
+    while ((each = all.nextNode())) {
+      texts.push(each)
+      if (each === overflow.startContainer) break
+    }
+    var scanned = 0
+    for (var t = texts.length - 1; t >= 0; t -= 1) {
+      var node = texts[t]
+      var end = node === overflow.startContainer ? overflow.startOffset : node.textContent.length
+      for (var i = end - 1; i >= 0; i -= 1) {
+        scanned += 1
+        if (scanned > 900) return
+        if (stays(node, i) === true) {
+          var out = overflow.cloneRange()
+          out.setStart(node, i + 1)
+          return out
+        }
+      }
+    }
+  }
+
   class KeepHeadings extends window.Paged.Handler {
     onOverflow (overflow, rendered, bounds, layout) {
       if (!overflow || !rendered) return
+      var source = this.chunker && this.chunker.source
+      // A break inside a paragraph has no heading to keep; the one question
+      // is whether too little of the paragraph is going over.
+      if (overflow.startContainer.nodeType === 3) return shortTail(overflow, rendered, source)
       var range = pastPulled(overflow, rendered)
       // Everything is on the page: Paged.js was looking at an empty wrapper.
       if (range === null) return null
