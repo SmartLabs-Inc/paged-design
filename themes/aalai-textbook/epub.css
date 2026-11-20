@@ -1,0 +1,279 @@
+/* The textbook, reflowable.
+ *
+ * The print theme sets a page. This sets a document and leaves the page to
+ * the reader: their device chooses the measure, they choose the size, and
+ * most of them can change the face. What is carried over is what makes the
+ * book recognisable — the teal, the sans labels over a serif text, the
+ * numbered entry names, the washed boxes, the navy table heads.
+ *
+ * Three rules this file keeps, each learned from a reader that broke one.
+ *
+ * Every size is relative. An absolute size is a size the reader cannot
+ * change, and on a phone 9.6pt is not a size at all.
+ *
+ * Nothing depends on the page being white. Night mode turns the text light
+ * and leaves a pale background where it was, and a washed box becomes white
+ * type on a white wash. So text is never given a dark colour of its own,
+ * washes are a few per cent of teal over whatever is behind them, and a
+ * colour is only ever fixed where its background is fixed with it — table
+ * heads, the entry number, the part openers.
+ *
+ * No licensed type. Charis SIL and Source Sans 3 are open-licensed and are
+ * embedded. Windorse, the print display face, is not: putting the file in
+ * an EPUB is handing it to everyone who buys the book.
+ */
+
+@font-face { font-family: "Charis SIL"; font-weight: normal; font-style: normal; src: url(../fonts/CharisSIL-Regular.ttf); }
+@font-face { font-family: "Charis SIL"; font-weight: normal; font-style: italic; src: url(../fonts/CharisSIL-Italic.ttf); }
+@font-face { font-family: "Charis SIL"; font-weight: bold; font-style: normal; src: url(../fonts/CharisSIL-Bold.ttf); }
+@font-face { font-family: "Charis SIL"; font-weight: bold; font-style: italic; src: url(../fonts/CharisSIL-BoldItalic.ttf); }
+@font-face { font-family: "Source Sans 3"; font-weight: normal; font-style: normal; src: url(../fonts/SourceSans3-Regular.ttf); }
+@font-face { font-family: "Source Sans 3"; font-weight: 600; font-style: normal; src: url(../fonts/SourceSans3-Semibold.ttf); }
+@font-face { font-family: "Source Sans 3"; font-weight: bold; font-style: normal; src: url(../fonts/SourceSans3-Bold.ttf); }
+
+html { font-size: 100%; }
+body {
+  margin: 0 4%;
+  font-family: "Charis SIL", Georgia, "Times New Roman", serif;
+  line-height: 1.5;
+  widows: 2;
+  orphans: 2;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+p { margin: 0 0 0.75em; text-indent: 0; }
+strong { font-weight: bold; }
+a { color: #137C7A; text-decoration: none; }
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.22;
+  -webkit-hyphens: none;
+  hyphens: none;
+  page-break-after: avoid;
+  break-after: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* A chapter title in the front and back matter. */
+h1 {
+  font-size: 1.7em;
+  font-weight: normal;
+  margin: 1.4em 0 0.8em;
+  padding-top: 0.45em;
+  border-top: 0.16em solid #137C7A;
+}
+
+/* A section: "II. Tissue Repair, Skin, and Anti-Aging". */
+h2 {
+  font-size: 1.5em;
+  font-weight: normal;
+  margin: 1.2em 0 0.8em;
+  padding-top: 0.45em;
+  border-top: 0.16em solid #137C7A;
+}
+
+/* --- the washed box under a section title ------------------------------- */
+.panel {
+  margin: 1.2em 0 1.3em;
+  padding: 0.8em 1em 0.2em;
+  border-left: 0.22em solid #137C7A;
+  background-color: rgba(19, 124, 122, 0.09);
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+.panel h3 {
+  font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.95em;
+  font-weight: bold;
+  color: #137C7A;
+  margin: 0 0 0.5em;
+}
+p.standfirst { font-style: italic; }
+
+/* --- an entry ------------------------------------------------------------- */
+.entry { margin: 0 0 1.6em; }
+h4.entry-name {
+  font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.12em;
+  font-weight: bold;
+  margin: 1.8em 0 0.5em;
+  padding-bottom: 0.25em;
+  border-bottom: 0.06em solid #137C7A;
+}
+.entry-number {
+  display: inline-block;
+  min-width: 1.5em;
+  padding: 0.05em 0.3em;
+  margin-right: 0.35em;
+  font-size: 0.72em;
+  line-height: 1.5;
+  text-align: center;
+  vertical-align: 0.12em;
+  color: #FFFFFF;
+  background-color: #137C7A;
+}
+
+/* The tracked label over a group of paragraphs: APPLICATIONS. */
+h5.label {
+  font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.72em;
+  font-weight: bold;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #137C7A;
+  margin: 1.5em 0 0.4em;
+}
+
+sup.cite, sup {
+  font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.68em;
+  font-weight: 600;
+  line-height: 0;
+  vertical-align: super;
+  color: #137C7A;
+}
+
+/* --- tables --------------------------------------------------------------- */
+/* A wide table cannot reflow, so it scrolls sideways rather than being cut. */
+.table-figure { margin: 1.4em 0 1.6em; }
+.table-wrap { overflow-x: auto; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0;
+  font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.84em;
+  line-height: 1.38;
+  -webkit-hyphens: none;
+  hyphens: none;
+}
+th {
+  padding: 0.5em 0.6em;
+  text-align: left;
+  vertical-align: bottom;
+  font-size: 0.82em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  background-color: #0D2035;
+}
+th strong { font-weight: bold; }
+td {
+  padding: 0.5em 0.6em;
+  vertical-align: top;
+  border-bottom: 0.06em solid rgba(102, 113, 124, 0.45);
+}
+tr:nth-child(even) td { background-color: rgba(19, 124, 122, 0.06); }
+td a { font-weight: 600; }
+p.table-caption, p.figure-caption {
+  font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.82em;
+  line-height: 1.4;
+  -webkit-hyphens: none;
+  hyphens: none;
+}
+p.table-caption { margin: 0 0 0.45em; page-break-after: avoid; break-after: avoid; }
+
+/* --- figures -------------------------------------------------------------- */
+.figure { margin: 1.5em 0 1.6em; text-align: center; page-break-inside: avoid; break-inside: avoid; }
+img.figure-art { max-width: 100%; height: auto; }
+p.figure-caption { margin: 0.6em 0 0; text-align: left; }
+p.figure-caption em { font-style: normal; font-weight: bold; }
+
+/* --- part openers --------------------------------------------------------- */
+/* The print opener is a page of colour. Here it is a block of it, as tall as
+   its own content, because nothing in a reflowing book is a page. */
+.part-opener {
+  margin: 1em 0 1.5em;
+  padding: 2.2em 1.4em 1.8em;
+  color: #FFFFFF;
+  background-color: #137C7A;
+}
+.part-opener.part-2 { background-color: #23806C; }
+.part-opener.part-3 { background-color: #315E91; }
+.part-opener.part-4 { background-color: #B0741C; }
+.part-opener.part-5 { background-color: #8E7434; }
+img.part-emblem { display: block; width: 46%; max-width: 14em; height: auto; margin: 0 0 2.4em; }
+p.part-eyebrow {
+  font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.78em;
+  font-weight: bold;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  margin: 0 0 0.5em;
+}
+.part-opener h1 {
+  font-size: 2.2em;
+  font-weight: normal;
+  line-height: 1.1;
+  color: #FFFFFF;
+  margin: 0 0 0.9em;
+  padding: 0 0 0.7em;
+  border: 0;
+  border-bottom: 0.05em solid rgba(255, 255, 255, 0.55);
+}
+ol.part-contents {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.95em;
+  -webkit-hyphens: none;
+  hyphens: none;
+}
+ol.part-contents li { margin: 0 0 0.45em; color: #FFFFFF; }
+ol.part-contents a { color: #FFFFFF; }
+
+/* --- front matter --------------------------------------------------------- */
+.title-page { text-align: center; margin-top: 18%; }
+.title-page h1 { font-size: 2.3em; line-height: 1.12; border: 0; padding: 0; margin: 0 0 0.7em; }
+p.title-page-subtitle { font-style: italic; font-size: 1.08em; line-height: 1.4; margin: 0 6% 2.6em; -webkit-hyphens: none; hyphens: none; }
+p.title-page-author {
+  font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.95em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.copyright-page p { font-size: 0.88em; -webkit-hyphens: none; hyphens: none; }
+.dedication-page { text-align: center; margin-top: 16%; }
+.dedication-page h1 { border: 0; padding: 0; font-size: 1em; font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif; font-weight: bold; letter-spacing: 0.14em; text-transform: uppercase; color: #137C7A; margin-bottom: 2em; }
+.dedication-page p { font-style: italic; margin-bottom: 1.4em; -webkit-hyphens: none; hyphens: none; }
+
+dl.abbrev-list { margin: 0; }
+dl.abbrev-list dt {
+  font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  font-weight: bold;
+  margin: 0.7em 0 0;
+}
+dl.abbrev-list dd { margin: 0 0 0 1.2em; }
+
+ul { padding-left: 1.3em; margin: 0 0 0.9em; }
+li { margin: 0 0 0.3em; }
+
+/* --- the index and the contents ------------------------------------------- */
+h2.index-letter {
+  display: inline-block;
+  border: 0;
+  margin: 1.4em 0 0.5em;
+  padding: 0.1em 0.55em;
+  font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  font-size: 1em;
+  font-weight: bold;
+  color: #FFFFFF;
+  background-color: #137C7A;
+}
+ul.index-list { list-style: none; margin: 0 0 0.6em; padding: 0; -webkit-hyphens: none; hyphens: none; }
+ul.index-list li { margin: 0 0 0.35em; }
+
+p.references-url { font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif; font-weight: 600; }
+
+nav ol { list-style: none; margin: 0; padding: 0; -webkit-hyphens: none; hyphens: none; }
+nav ol ol { margin: 0.3em 0 0.6em 1.2em; }
+nav li { margin: 0 0 0.4em; }
+nav > ol > li { font-family: "Source Sans 3", "Helvetica Neue", Arial, sans-serif; font-weight: 600; }
+nav ol ol li { font-weight: normal; }
+nav ol ol ol li { font-family: "Charis SIL", Georgia, serif; font-size: 0.94em; }

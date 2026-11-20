@@ -1,3 +1,42 @@
 .sass-cache/
 node_modules
 package-lock.json
+
+# Client work carries names, pricing, terms and schedules. Kept out of the
+# repository — the design and the tooling are the reusable asset, not the
+# documents built from them.
+content/proposal-*/
+content/checklist-*/
+content/client-*/
+# Built books from client manuscripts. The theme, the passes and the style map
+# are the asset and belong here; the author's text does not. `content/aet-raw/`
+# and `content/aet-tail/` predate this rule and are still tracked — see the
+# note in CLAUDE.md about client material.
+# Any built book from a client manuscript, whatever it is called this week.
+# A narrow list of slugs is how a 4 MB copy of the author's text ended up in
+# the branch twice: the rule has to cover the next name too, not the last one.
+content/aet*/
+content/book-*/
+content/client-*/
+# Slices of a manuscript cut for timing a render. Same rule, same reason.
+content/test-*/
+# Debug reproductions. A Paged.js fault that will not show in a synthetic page
+# shows at once in a region cut out of the real book, so cutting one out is the
+# right move — but what comes out is the author's text, and `git add -A` does
+# not know that. 116 KB of the manuscript reached the branch this way, in a
+# commit about something else entirely. Whatever the scratch directory is
+# called, it goes here first.
+content/repro*/
+content/spantest*/
+content/ack-tmp/
+content/scratch-*/
+
+
+# Deal files carry client names, fees and terms. The template they fill in is
+# committed; the values are not. `proposals/example-deal.json` is the exception.
+.claude/skills/book-format/proposals/deals/
+
+
+# Python bytecode, which has been turning up as a change on every run
+__pycache__/
+*.pyc
