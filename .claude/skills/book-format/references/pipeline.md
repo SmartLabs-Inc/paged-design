@@ -49,6 +49,35 @@ So the two formats fork from the same source and never from each other. What
 print says with page geometry, the EPUB says with document structure — which
 is why the closed style vocabulary in the manuscript is load-bearing.
 
+### When the corrections are in the print copy
+
+That rule holds until proof correction. After it, the designed book carries
+things the converter's output does not — restored punctuation, a rebuilt
+contents, redrawn figures — and rebuilding the EPUB from the manuscript would
+ship a book the proofs had already fixed.
+
+`flatten-for-epub.js` takes the corrected print book back to plain structure:
+it rejoins the split paragraphs, strips the soft hyphens, running heads and
+keep boxes, cuts each part into one component per section, and draws the
+figures to PNG. Its output is what `make-epub.js` reads.
+
+```bash
+node scripts/flatten-for-epub.js --content content/<book> --out content/<book>-epub
+node scripts/make-epub.js --content content/<book>-epub \
+  --css themes/aalai-textbook/epub.css --out <book>.epub
+java -jar epubcheck.jar <book>.epub      # not in the repository; fetch it
+```
+
+The EPUB still never forks from the designed book directly. It forks from the
+designed book *with the design taken back out*, which is a different thing and
+is checked as one: the flattening reports how many paragraphs it rejoined and
+how many of those seams fell at a hyphen, and a word count of the EPUB against
+the print book should find nothing missing.
+
+The stylesheet keeps three rules — relative sizes, nothing that assumes a white
+page, no licensed type — and says why at its head. Windorse draws the cover,
+which is a picture; the font file does not go in.
+
 ## Stage 1: one style, one meaning
 
 A manuscript that arrives with seven Word styles doing sixteen jobs makes every
