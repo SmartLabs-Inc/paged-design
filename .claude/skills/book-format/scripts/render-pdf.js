@@ -24,6 +24,8 @@ if (args.help || !args.content) {
     '  --out <file>      Output PDF. Default: <content>/<dir-name>.pdf.',
     '  --timeout <ms>    How long to wait for pagination. Default: 300000.',
     '  --renumber        Front matter in roman, body restarting at 1.',
+    '  --outline         Also write <out>.outline.json: the bookmarks and the',
+    '                    front-matter count, for finish-pdf.py to put in.',
     '  --no-build        Skip rebuilding the theme CSS first.',
     '  --allow-remote    Let the page fetch remote resources (web fonts).',
     '                    Off by default: an unreachable font host hangs',
@@ -138,6 +140,44 @@ async function main () {
       report.refsResolved + ' page references rewritten' +
       (report.refsUnresolved ? ', ' + report.refsUnresolved + ' unresolved' : ''))
     if (report.refsUnresolved) console.log('  unresolved: ' + report.unresolvedSample.join(', '))
+    if (report.refShapes && report.refShapes.length) console.log('  numbers set by: ' + report.refShapes.join('  '))
+  }
+
+  // What a reader of the PDF needs and a printer does not: a bookmark for every
+  // part, section, topic and entry, and the count of front-matter pages so the
+  // viewer's page box can be made to show the numbers printed on the pages.
+  // Written beside the PDF; `finish-pdf.py` puts it in.
+  if (args.outline) {
+    const outline = await page.evaluate(function () {
+      const pages = Array.prototype.slice.call(document.querySelectorAll('.pagedjs_page'))
+      const body = pages.findIndex(function (pg) { return /pagedjs_part\d+_page/.test(pg.className) })
+      const clean = function (t) { return t.split('\u00AD').join('').replace(/\s+/g, ' ').trim() }
+      const items = []
+      document.querySelectorAll('.pagedjs_page_content h1, .pagedjs_page_content h2, .pagedjs_page_content h3, .pagedjs_page_content h4, .pagedjs_page_content h5').forEach(function (h) {
+        if (h.closest('[data-split-from]') && h.closest('[data-split-from]') !== h.closest('.chapter')) return
+        if (h.getBoundingClientRect().height < 1) return
+        const sheet = pages.indexOf(h.closest('.pagedjs_page')) + 1
+        let level = 0
+        let title = clean(h.textContent)
+        if (h.matches('.title-page-title, .heading-2')) level = 1
+        else if (h.matches('.part-title')) {
+          level = 1
+          const chapter = h.closest('.chapter')
+          title = clean((chapter && chapter.getAttribute('data-header')) || title)
+        } else if (h.matches('.section-head')) level = 2
+        else if (h.matches('.entry-name')) {
+          level = 4
+          const number = h.querySelector('.entry-number')
+          if (number) title = clean(number.textContent) + '  ' + clean(title.slice(clean(number.textContent).length))
+        } else if (h.closest('.lead-section')) level = 3
+        else if (h.closest('.index')) return
+        if (!level || !title) return
+        items.push({ level: level, title: title, sheet: sheet })
+      })
+      return { frontMatterPages: body < 0 ? 0 : body, sheets: pages.length, items: items }
+    })
+    fs.writeFileSync(outFile.replace(/\.pdf$/i, '') + '.outline.json', JSON.stringify(outline))
+    console.log('  outline: ' + outline.items.length + ' bookmarks noted for finish-pdf.py')
   }
 
   await page.pdf({

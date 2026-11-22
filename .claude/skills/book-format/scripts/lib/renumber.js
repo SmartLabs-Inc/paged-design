@@ -112,6 +112,7 @@ function inBrowser (opts) {
 
   var links = document.querySelectorAll(opts.refSelector)
   var resolved = 0, unresolved = []
+  var shapes = [], rules = []
   Array.prototype.forEach.call(links, function (a) {
     var href = a.getAttribute('href') || ''
     if (href.charAt(0) !== '#') return
@@ -124,16 +125,39 @@ function inBrowser (opts) {
     if (idx < 0) { unresolved.push(id); return }
     a.setAttribute('data-folio', folioFor(idx))
     resolved += 1
+    wearing(a, '::before', 'data-folio-before')
+    wearing(a, '::after', 'data-folio-after')
   })
+
+  // The number goes where the theme already prints one, and nowhere else.
+  //
+  // This used to set it on `::after` of every link and on `::before` of every
+  // index link, on the grounds that those are the two places a theme puts a
+  // page number. The textbook's index prints its numbers after the entry and
+  // sets `::before` to nothing — and this rule, marked important, overrode
+  // that and printed the number in front as well: "124Obestatin 124", on
+  // every line of thirteen pages, in every proof from the one that introduced
+  // roman numerals onward.
+  //
+  // So each link is asked what it is already wearing. Paged.js leaves a
+  // `counter(...)` in the computed content wherever a theme wrote
+  // `target-counter`; that token is swapped for the folio and whatever the
+  // theme put round it — the two spaces before an index number — is kept.
+  function wearing (a, pseudo, mark) {
+    var content = window.getComputedStyle(a, pseudo).content
+    if (!content || content === 'none' || content === 'normal') return
+    if (!/counter\(/.test(content)) return
+    var shape = content.replace(/counter\([^)]*\)/g, 'attr(data-folio)')
+    var key = shapes.indexOf(pseudo + shape)
+    if (key === -1) { shapes.push(pseudo + shape); key = shapes.length - 1; rules.push('a[' + mark + '="' + key + '"]' + pseudo + '{content:' + shape + '!important}') }
+    a.setAttribute(mark, String(key))
+  }
 
   var style = document.createElement('style')
   style.id = 'pagedjs-renumber'
   style.textContent =
     '.pagedjs_margin-content[data-folio]::after{content:attr(data-folio)!important}\n' +
-    'a[data-folio]::after{content:attr(data-folio)!important}\n' +
-    '.index a[data-folio]::before,.reference-index a[data-folio]::before' +
-      '{content:attr(data-folio)!important}\n' +
-    '.index.index li > a[href][data-folio]::after{content:"  "attr(data-folio)!important}'
+    rules.join('\n')
   document.head.appendChild(style)
 
   return {
@@ -144,6 +168,7 @@ function inBrowser (opts) {
     bodyPages: pages.length - bodyStart,
     foliosStamped: stamped,
     refsResolved: resolved,
+    refShapes: rules,
     refsUnresolved: unresolved.length,
     unresolvedSample: unresolved.slice(0, 8)
   }

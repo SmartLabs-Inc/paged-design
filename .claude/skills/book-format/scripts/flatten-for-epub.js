@@ -148,7 +148,7 @@ function flatten () {
   })
 
   // --- boxes and headings ----------------------------------------------------
-  document.querySelectorAll('.keep-label, .entry-lead').forEach(unwrap)
+  document.querySelectorAll('.keep-label, .entry-lead, .keep-index').forEach(unwrap)
   document.querySelectorAll('p.label').forEach(function (p) { rename(p, 'h5') })
   document.querySelectorAll('h5.entry-name').forEach(function (h) {
     const number = h.querySelector('.entry-number')

@@ -3118,6 +3118,14 @@ h4 + .standfirst,
 }
 
 
+// A letter in the index stays with the first entries under it. Paged.js takes
+// `break-after: avoid` out of the stylesheet, so the letter is boxed with its
+// first two entries and the box is told not to break; "Q" had been left at the
+// foot of a column and "M" at the foot of a page.
+.keep-index {
+    break-inside: avoid;
+}
+
 // A short paragraph standing alone between two blocks that span the columns —
 // a sentence introducing a table, under a shaded box — set across the full
 // width. In two columns it is a row of its own, and under the three-line rule

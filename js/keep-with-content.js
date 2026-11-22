@@ -62,7 +62,10 @@ window.keepHeadingsWithContent = function () {
   if (!window.Paged || window.keepHeadingsWithContent.registered) return
   window.keepHeadingsWithContent.registered = true
 
-  var HEADING = '.keep-lead'
+  // A heading block, and a label that the build did not manage to box with
+  // the paragraph under it. Both introduce what follows and neither may be
+  // the last thing on a page.
+  var HEADING = '.keep-lead, p.label'
   // Artwork and tables that span the columns. They are not headings and are
   // never moved, but the text after them goes missing the same way.
   var ARTWORK = '.figure, .table-figure'
@@ -161,7 +164,9 @@ window.keepHeadingsWithContent = function () {
     var solid = next.matches('table, .table-figure') ||
       window.getComputedStyle(next).breakInside === 'avoid'
     if (!solid || next.matches(HEADING) || next.querySelector('svg, img')) return null
-    var heads = run[0].getBoundingClientRect().bottom - run[run.length - 1].getBoundingClientRect().top
+    var heads = run.length
+      ? run[0].getBoundingClientRect().bottom - run[run.length - 1].getBoundingClientRect().top
+      : 0
     var height = next.getBoundingClientRect().height
     var ref = next.getAttribute('data-ref')
     var whole = ref && source && source.querySelector ? source.querySelector('[data-ref="' + ref + '"]') : null
@@ -404,6 +409,35 @@ window.keepHeadingsWithContent = function () {
     }
   }
 
+  // A table too tall for any page, with no heading over it.
+  //
+  // Such a table has to divide somewhere. Held whole, it leaves the page it
+  // was on and opens the next one — and takes along the paragraph that
+  // introduces it, because Paged.js keeps a table with the block before it.
+  // One page in the book stopped a quarter of the way down for that reason,
+  // with a single word of the list above carried over to it. Allowed to
+  // divide, the table starts where it falls, under its paragraph.
+  function tallTable (range, rendered, bounds, source) {
+    if (range.startContainer.nodeType !== 1) return null
+    var node = range.startContainer.childNodes[range.startOffset]
+    while (node && idle(node)) node = node.nextSibling
+    if (!node || node.nodeType !== 1) return null
+    var table = null
+    if (node.matches('.table-figure')) {
+      table = node
+    } else if (onPage(node, rendered)) {
+      // The block Paged.js is taking along with it.
+      var after = node.nextSibling
+      while (after && idle(after)) after = after.nextSibling
+      if (after && after.nodeType === 1 && after.matches('.table-figure')) table = after
+    }
+    if (!table || table.style.breakInside === 'auto') return null
+    var at = document.createRange()
+    at.setStartBefore(table)
+    at.collapse(true)
+    return tooTallToFollow(at, [], bounds, source) === table ? table : null
+  }
+
   class KeepHeadings extends window.Paged.Handler {
     onOverflow (overflow, rendered, bounds, layout) {
       if (!overflow || !rendered) return
@@ -415,6 +449,19 @@ window.keepHeadingsWithContent = function () {
       // Everything is on the page: Paged.js was looking at an empty wrapper.
       if (range === null) return null
       var run = runAbove(range, rendered)
+      if (!run.length && layout && typeof layout.findOverflow === 'function') {
+        var long = tallTable(range, rendered, bounds, source)
+        if (long) {
+          long.style.breakInside = 'auto'
+          void long.offsetHeight
+          var cut = layout.findOverflow(rendered, bounds)
+          if (!cut) return null
+          cut = pastPulled(cut, rendered)
+          if (cut === null) return null
+          if (cut.compareBoundaryPoints(Range.START_TO_START, range) > 0) return cut
+          long.style.breakInside = ''
+        }
+      }
       if (!run.length) {
         // Not a heading. Artwork with nothing after it on the page is the
         // other case: it stays where it is, and the text is brought back

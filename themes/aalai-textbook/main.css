@@ -7392,6 +7392,9 @@ h4 + .standfirst,
 .entry-whole {
   break-inside: avoid; }
 
+.keep-index {
+  break-inside: avoid; }
+
 .across {
   column-span: all;
   text-align-last: auto; }
