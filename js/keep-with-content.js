@@ -252,8 +252,8 @@ window.keepHeadingsWithContent = function () {
     return out
   }
 
-  // The artwork or heading block the overflow begins with, when the overflow
-  // is the whole page: nothing has been left on the page at all.
+  // The block the overflow begins with, when the overflow is the whole page:
+  // nothing has been left on the page at all.
   function pageOpener (range, rendered) {
     var before = document.createRange()
     before.setStart(rendered, 0)
@@ -264,7 +264,9 @@ window.keepHeadingsWithContent = function () {
       while (node && (node.nodeType !== 1 || (node.tagName === 'A' && !node.textContent.trim()))) node = node.nextSibling
       if (!node) return null
       if (node.matches(ARTWORK) || node.matches(HEADING)) return node
-      if (node.tagName !== 'DIV') return null
+      // Any block will do. The index opened on an empty page with its title
+      // and every entry overleaf, and no artwork anywhere near it.
+      if (!wrapper(node)) return node
       node = node.firstChild
     }
     return null

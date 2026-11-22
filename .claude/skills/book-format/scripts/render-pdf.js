@@ -154,7 +154,8 @@ async function main () {
       const clean = function (t) { return t.split('\u00AD').join('').replace(/\s+/g, ' ').trim() }
       const items = []
       document.querySelectorAll('.pagedjs_page_content h1, .pagedjs_page_content h2, .pagedjs_page_content h3, .pagedjs_page_content h4, .pagedjs_page_content h5').forEach(function (h) {
-        if (h.closest('[data-split-from]') && h.closest('[data-split-from]') !== h.closest('.chapter')) return
+        // The second half of a heading that broke over a page is not a heading.
+        if (h.hasAttribute('data-split-from')) return
         if (h.getBoundingClientRect().height < 1) return
         const sheet = pages.indexOf(h.closest('.pagedjs_page')) + 1
         let level = 0
