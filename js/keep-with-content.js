@@ -340,9 +340,9 @@ window.keepHeadingsWithContent = function () {
     var page = rendered.getBoundingClientRect()
     var mid = page.left + page.width / 2
     if (overflow.startContainer.nodeType !== 3) return
-    var para = overflow.startContainer.parentNode.closest('p')
+    var para = overflow.startContainer.parentNode.closest('p, li')
     if (!para || !rendered.contains(para) || para.matches(NOT_PROSE)) return
-    if (para.closest(HEADING + ', ' + ARTWORK + ', table, li')) return
+    if (para.closest(HEADING + ', ' + ARTWORK + ', table')) return
 
     var ref = para.getAttribute('data-ref')
     var whole = ref && source.querySelector('[data-ref="' + ref + '"]')
@@ -363,52 +363,82 @@ window.keepHeadingsWithContent = function () {
     var set = before.toString()
     var perLine = Math.max(28, set.length / Math.max(1, across))
 
-    // What is left of this paragraph, then what follows it.
+    // What is left of this paragraph.
     var key = set.slice(-48)
     var at = whole.textContent.indexOf(key)
     if (at < 0) return
     var rest = whole.textContent.length - (at + key.length)
-    var tail = linesToNextSpan(whole, perLine, Math.ceil(rest / perLine))
+    var left = Math.ceil(rest / perLine)
+
+    // The start of the line that is `move` lines up from the break: walk back
+    // from the break until a character is found on an earlier line.
+    function cutAbove (move) {
+      var foot = here[here.length - move]
+      function stays (node, offset) {
+        var one = document.createRange()
+        one.setStart(node, offset)
+        one.setEnd(node, offset + 1)
+        var r = one.getClientRects()[0]
+        if (!r || (!r.width && !r.height)) return null
+        if (right ? r.left >= page.right - 1 : r.left >= mid) return false
+        if ((r.left >= mid) !== right) return true
+        return r.bottom < foot - 4
+      }
+      var texts = []
+      var all = document.createTreeWalker(para, NodeFilter.SHOW_TEXT)
+      var each
+      while ((each = all.nextNode())) {
+        texts.push(each)
+        if (each === overflow.startContainer) break
+      }
+      var scanned = 0
+      for (var t = texts.length - 1; t >= 0; t -= 1) {
+        var node = texts[t]
+        var end = node === overflow.startContainer ? overflow.startOffset : node.textContent.length
+        for (var i = end - 1; i >= 0; i -= 1) {
+          scanned += 1
+          if (scanned > 900) return
+          if (stays(node, i) === true) {
+            var out = overflow.cloneRange()
+            out.setStart(node, i + 1)
+            return out
+          }
+        }
+      }
+    }
+
+    // First, the rule itself. Chromium keeps three lines either side of a
+    // break when it can and breaks anyway when it cannot — a list item of
+    // five lines at the foot of a page went over as four and one, the one
+    // being a single word. Where fewer than three lines would be carried,
+    // more are sent with them; where that would leave fewer than three
+    // behind and the block is short, the whole block goes.
+    if (rest > 0 && left < 3) {
+      var more = 3 - left
+      if (here.length - more >= 3) return cutAbove(more)
+      if (here.length + left <= 6 && !para.hasAttribute('data-split-from') && across === here.length) {
+        var first = document.createRange()
+        first.setStart(rendered, 0)
+        first.setEndBefore(para)
+        // Not if it opens the page: there is nowhere to send it.
+        if (first.toString().trim() !== '') {
+          var all = overflow.cloneRange()
+          all.setStartBefore(para)
+          return all
+        }
+      }
+      return
+    }
+
+    // Then the row above a heading, which is for paragraphs only.
+    if (para.tagName !== 'P') return
+    var tail = linesToNextSpan(whole, perLine, left)
     if (tail >= TAIL) return
 
     // As many lines as it takes, while three stay behind.
     var move = Math.min(TAIL - tail, here.length - 3)
     if (move < 1) return
-
-    // The first character of the first line to go: walk back from the break
-    // until a character is found on an earlier line.
-    var foot = here[here.length - move]
-    function stays (node, offset) {
-      var one = document.createRange()
-      one.setStart(node, offset)
-      one.setEnd(node, offset + 1)
-      var r = one.getClientRects()[0]
-      if (!r || (!r.width && !r.height)) return null
-      if (right ? r.left >= page.right - 1 : r.left >= mid) return false
-      if ((r.left >= mid) !== right) return true
-      return r.bottom < foot - 4
-    }
-    var texts = []
-    var all = document.createTreeWalker(para, NodeFilter.SHOW_TEXT)
-    var each
-    while ((each = all.nextNode())) {
-      texts.push(each)
-      if (each === overflow.startContainer) break
-    }
-    var scanned = 0
-    for (var t = texts.length - 1; t >= 0; t -= 1) {
-      var node = texts[t]
-      var end = node === overflow.startContainer ? overflow.startOffset : node.textContent.length
-      for (var i = end - 1; i >= 0; i -= 1) {
-        scanned += 1
-        if (scanned > 900) return
-        if (stays(node, i) === true) {
-          var out = overflow.cloneRange()
-          out.setStart(node, i + 1)
-          return out
-        }
-      }
-    }
+    return cutAbove(move)
   }
 
   // A table too tall for any page, with no heading over it.
