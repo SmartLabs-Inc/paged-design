@@ -18,7 +18,7 @@
 //      between its words, in ems;
 //   3. a paragraph whose worst line is at or over --hole (default 1 em) is
 //      tried at each tracking from --tight (default -20) to --loose (default
-//      +20) in steps of 5, live, in the page, and measured again each time;
+//      0) in steps of 5, live, in the page, and measured again each time;
 //   4. the tracking that gives the smallest worst line is kept if it is a
 //      real gain (--gain, default 20 per cent better) and breaks nothing:
 //      no run of more than two hyphenated lines that was not there before,
@@ -31,6 +31,12 @@
 // half of a paragraph the build cut in two (`.lead-head`): its cut has to stay
 // at the end of a line. So is a paragraph divided between two pages: only half of it is in front of the measure, and
 // the next pass will find it whole or not at all.
+//
+// Tightening only, unless --loose says otherwise. Letting it loosen as well
+// closes a quarter more holes, and the first run of this did. It also put a
+// paragraph at +20 beside one at -15 on the author's own page, where the two
+// read as different type. The press standard this was written to is "tracking
+// may tighten, to -20", and it is right.
 //
 // It is a fit, not a cure. The measure is narrow and the words are long;
 // most holes have no tracking within reason that closes them, and those are
@@ -58,7 +64,7 @@ if (args.help || !args.content) {
     '  --also <dir>     A second copy of the book to change the same way.',
     '  --hole <em>      Average word gap on a line that makes it a hole. Default 1.',
     '  --tight <n>      Tightest tracking to try, thousandths of an em. Default -20.',
-    '  --loose <n>      Loosest tracking to try. Default 20.',
+    '  --loose <n>      Loosest tracking to try. Default 0: tighten only.',
     '  --gain <pct>     How much better the worst line must get. Default 20.',
     '  --seams          Also close the seams: where the first half of a cut',
     '                   paragraph no longer ends at a line end, track it until',
@@ -77,7 +83,7 @@ const options = {
   seamFull: Number(args['seam-full'] || 82) / 100,
   hole: Number(args.hole || 1),
   tight: Number(args.tight || -20),
-  loose: Number(args.loose || 20),
+  loose: Number(args.loose || 0),
   gain: Number(args.gain || 20) / 100
 }
 
