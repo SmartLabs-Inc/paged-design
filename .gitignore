@@ -9,9 +9,7 @@ content/proposal-*/
 content/checklist-*/
 content/client-*/
 # Built books from client manuscripts. The theme, the passes and the style map
-# are the asset and belong here; the author's text does not. `content/aet-raw/`
-# and `content/aet-tail/` predate this rule and are still tracked — see the
-# note in CLAUDE.md about client material.
+# are the asset and belong here; the author's text does not.
 # Any built book from a client manuscript, whatever it is called this week.
 # A narrow list of slugs is how a 4 MB copy of the author's text ended up in
 # the branch twice: the rule has to cover the next name too, not the last one.
