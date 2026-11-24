@@ -304,7 +304,9 @@ function textOf (html) {
   const skipTo = (close) => { const end = html.indexOf(close, i); i = end < 0 ? html.length : end + close.length }
   while (i < html.length) {
     const ch = html[i]
-    if (ch === '<') {
+    // A "<" opens a tag only before a letter, "/" or "!". The text has
+    // "(p<0.001)" in it, unescaped, and a browser reads that as text.
+    if (ch === '<' && /[A-Za-z\/!]/.test(html[i + 1] || '')) {
       if (html.startsWith('<!--', i)) { skipTo('-->'); continue }
       const lower = html.slice(i, i + 8).toLowerCase()
       if (lower.startsWith('<script')) { skipTo('</script>'); continue }

@@ -470,13 +470,52 @@ window.keepHeadingsWithContent = function () {
     return tooTallToFollow(at, [], bounds, source) === table ? table : null
   }
 
+  // --- A word is not divided between two pages --------------------------------
+  //
+  // When the last line of a page ends in a hyphenated word, Paged.js looks for
+  // the first letter that is over the edge and breaks there. It asks each
+  // letter for one box. The first letter after a hyphen that was used has
+  // two — one where the hyphen was drawn, at the end of the line above, and
+  // one where the letter is — and the box round both starts on the page. So
+  // that letter is taken to be on the page, the break is put after it, and a
+  // hyphen is added: a page ending "restit-" with "ution" overleaf, where
+  // the word breaks resti-tution. Twenty-two page turns in the textbook.
+  //
+  // Putting the break back where the hyphen is would be right and still leave
+  // a word split across a page turn, which a reader has to carry in their
+  // head while the page is turned. The word goes over whole instead. The line
+  // it leaves is the last of its piece of the paragraph and is spread to the
+  // measure like the others.
+  //
+  // A break after a real hyphen, in a compound, is not inside a word and is
+  // left where it is.
+  var SOFT_HYPHEN = '\u00AD'
+  function wholeWord (overflow) {
+    var node = overflow.startContainer
+    if (node.nodeType !== 3) return overflow
+    var text = node.textContent
+    var at = overflow.startOffset
+    var inWord = function (ch) { return !!ch && (ch === SOFT_HYPHEN || /[A-Za-z\u00C0-\u024F]/.test(ch)) }
+    if (!inWord(text[at - 1]) || !inWord(text[at])) return overflow
+    var start = at
+    while (start > 0 && inWord(text[start - 1])) start -= 1
+    var out = overflow.cloneRange()
+    out.setStart(node, start)
+    return out
+  }
+
   class KeepHeadings extends window.Paged.Handler {
     onOverflow (overflow, rendered, bounds, layout) {
       if (!overflow || !rendered) return
       var source = this.chunker && this.chunker.source
       // A break inside a paragraph has no heading to keep; the one question
       // is whether too little of the paragraph is going over.
-      if (overflow.startContainer.nodeType === 3) return shortTail(overflow, rendered, source)
+      if (overflow.startContainer.nodeType === 3) {
+        var whole = wholeWord(overflow)
+        var tail = shortTail(whole, rendered, source)
+        if (tail) return tail
+        return whole !== overflow ? whole : undefined
+      }
       var range = pastPulled(overflow, rendered)
       // Everything is on the page: Paged.js was looking at an empty wrapper.
       if (range === null) return null
