@@ -52,6 +52,9 @@ const contentDir = path.resolve(args.content)
   const report = await page.evaluate(function () {
     const pages = Array.prototype.slice.call(document.querySelectorAll('.pagedjs_page'))
     const foot = {}, top = {}, where = {}
+    // The breaks that break the rule, by name: a tally of one says there is a
+    // fault and not where.
+    const short = []
     let splits = 0
     const bump = function (tally, n) { const k = n >= 5 ? '5+' : String(n); tally[k] = (tally[k] || 0) + 1 }
     pages.forEach(function (pg, index) {
@@ -81,7 +84,7 @@ const contentDir = path.resolve(args.content)
           bottoms.forEach(function (b) { if (b - last > 9) { n += 1; last = b } })
           return n
         }
-        const wide = el.getBoundingClientRect().width > area.getBoundingClientRect().width * 0.7
+        const wide = el.getBoundingClientRect().width > area.getBoundingClientRect().width * 0.55
         const pieces = wide ? [count(cols[0].concat(cols[1]))]
           : cols.map(count).filter(Boolean)
         if (!pieces.length) return
@@ -91,12 +94,12 @@ const contentDir = path.resolve(args.content)
         // A piece with more of the paragraph after it leaves lines at a foot;
         // a piece with more before it carries lines to a top.
         pieces.forEach(function (n, i) {
-          if (i < pieces.length - 1 || to) bump(foot, n)
-          if (i > 0 || from) bump(top, n)
+          if (i < pieces.length - 1 || to) { bump(foot, n); if (n < 3) short.push({ sheet: index + 1, lines: n, at: 'left at the foot', text: text.slice(0, 80), end: text.slice(-60) }) }
+          if (i > 0 || from) { bump(top, n); if (n < 3) short.push({ sheet: index + 1, lines: n, at: 'carried to the top', text: text.slice(0, 80), end: text.slice(-60) }) }
         })
       })
     })
-    return { sheets: pages.length, splits: splits, foot: foot, top: top, where: where }
+    return { sheets: pages.length, splits: splits, foot: foot, top: top, where: where, short: short }
   })
   await browser.close()
   await server.close()
@@ -105,5 +108,8 @@ const contentDir = path.resolve(args.content)
   console.log(report.sheets + ' sheets; ' + report.splits + ' paragraph breaks')
   console.log('left at the foot of a column   ' + row(report.foot))
   console.log('carried to the top of the next ' + row(report.top))
+  report.short.forEach(function (s) {
+    console.log('  sheet ' + s.sheet + ': ' + s.lines + ' line' + (s.lines === 1 ? '' : 's') + ' ' + s.at + ' — “' + s.text.split('\u00AD').join('') + '” … “' + s.end.split('\u00AD').join('') + '”')
+  })
   if (args.out) fs.writeFileSync(path.resolve(args.out), JSON.stringify(report))
 })().catch(function (e) { console.error(e); process.exit(1) })

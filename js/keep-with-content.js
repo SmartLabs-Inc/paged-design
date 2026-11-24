@@ -473,7 +473,7 @@ window.keepHeadingsWithContent = function () {
     return tooTallToFollow(at, [], bounds, source) === table ? table : null
   }
 
-  // --- A word is not divided between two pages --------------------------------
+  // --- A word divided between two pages --------------------------------------
   //
   // When the last line of a page ends in a hyphenated word, Paged.js looks for
   // the first letter that is over the edge and breaks there. It asks each
@@ -484,25 +484,92 @@ window.keepHeadingsWithContent = function () {
   // hyphen is added: a page ending "restit-" with "ution" overleaf, where
   // the word breaks resti-tution. Twenty-two page turns in the textbook.
   //
-  // Putting the break back where the hyphen is would be right and still leave
-  // a word split across a page turn, which a reader has to carry in their
-  // head while the page is turned. The word goes over whole instead. The line
-  // it leaves is the last of its piece of the paragraph and is spread to the
-  // measure like the others.
+  // Two ways to put it right, and which is better depends on the line.
+  //
+  // The word can go over whole. Nobody then has to carry half a word across
+  // a page turn. But the line it leaves is the last of its piece of the
+  // paragraph, it is spread to the measure like the others, and it has just
+  // lost a third of what was on it: tried on every case, this produced the
+  // fourteen worst lines in the book, three words to a column.
+  //
+  // Or the break can be put where the hyphen is, which is simply correct.
+  //
+  // So the line decides. If the words left on it can be spread to the measure
+  // with gaps of no more than an em, the word goes over whole; if not, it is
+  // divided at its hyphen.
   //
   // A break after a real hyphen, in a compound, is not inside a word and is
   // left where it is.
   var SOFT_HYPHEN = '\u00AD'
+  function inWord (ch) { return !!ch && (ch === SOFT_HYPHEN || /[A-Za-z\u00C0-\u024F]/.test(ch)) }
+
+  function boxOf (node, offset, wide) {
+    var one = document.createRange()
+    one.setStart(node, offset)
+    one.setEnd(node, offset + 1)
+    var list = one.getClientRects()
+    for (var i = list.length - 1; i >= 0; i -= 1) {
+      if (list[i].height > 0 && (wide ? list[i].width > 0.5 : list[i].width > 0)) return list[i]
+    }
+    return null
+  }
+
+  // Can the line spare the piece of a word that runs from `start` to the soft
+  // hyphen at `soft`? True, false, or null when it cannot be measured.
+  function absorbs (node, start, soft) {
+    var text = node.textContent
+    var para = node.parentNode && node.parentNode.closest ? node.parentNode.closest('p, li, dd') : null
+    if (!para) return null
+    var first = boxOf(node, start)
+    var hyphen = boxOf(node, soft, true)
+    if (!first || !hyphen) return null
+    // The column this line is in.
+    var column = null
+    Array.prototype.forEach.call(para.getClientRects(), function (r) {
+      if (first.left >= r.left - 1 && first.left <= r.right + 1 && first.top >= r.top - 2 && first.bottom <= r.bottom + 2) column = r
+    })
+    if (!column) return null
+    var gaps = 0
+    var gap = null
+    for (var i = start - 1; i >= 0; i -= 1) {
+      if (text[i] === SOFT_HYPHEN) continue
+      var box = boxOf(node, i)
+      if (/\s/.test(text[i])) {
+        // a space on this line: the letter after it is on this line
+        gaps += 1
+        continue
+      }
+      if (!box) continue
+      if (Math.abs(box.top - first.top) > 3) {
+        // The line above: the space just counted ended it and is not a gap.
+        if (i + 1 < start && /\s/.test(text[i + 1])) gaps -= 1
+        var em = parseFloat(window.getComputedStyle(para).fontSize) || 12.8
+        if (gap === null || gaps < 2) return false
+        var wordsWidth = (first.left - column.left) - gaps * gap
+        var spread = (column.width - wordsWidth) / (gaps - 1)
+        return spread <= em
+      }
+      if (gap === null) gap = first.left - box.right
+    }
+    // Ran out of this run of text while still on the line.
+    return null
+  }
+
   function wholeWord (overflow) {
     var node = overflow.startContainer
     if (node.nodeType !== 3) return overflow
     var text = node.textContent
     var at = overflow.startOffset
-    var inWord = function (ch) { return !!ch && (ch === SOFT_HYPHEN || /[A-Za-z\u00C0-\u024F]/.test(ch)) }
     if (!inWord(text[at - 1]) || !inWord(text[at])) return overflow
     var start = at
     while (start > 0 && inWord(text[start - 1])) start -= 1
     var out = overflow.cloneRange()
+    // The hyphen the browser used: the last one before the break.
+    var soft = text.lastIndexOf(SOFT_HYPHEN, at - 1)
+    if (soft > start && absorbs(node, start, soft) !== true) {
+      out.setStart(node, soft + 1)
+      return out
+    }
     out.setStart(node, start)
     return out
   }

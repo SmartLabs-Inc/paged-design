@@ -50,6 +50,8 @@ if (args.help || !args.content || (!args.report && !args['all-names'])) {
     '  --all-names      No report needed: make every name and title in the',
     '                   running text unbreakable, broken at present or not.',
     '  --also <dir>     A second copy of the book to change the same way.',
+    '  --keep <file>    Exceptions written by relax-hyphenation.js: words that',
+    '                   keep their hyphenation even in a stack.',
     '  --log <file>     Append the words changed, one per line.',
     '  --dry            Say what would change and write nothing.'
   ].join('\n'))
@@ -133,17 +135,34 @@ if (args['all-names']) {
 const report = JSON.parse(fs.readFileSync(path.resolve(args.report), 'utf8'))
 const breaks = report.breaks
 
+// Words that are to keep their hyphenation whatever stack they are in:
+// relax-hyphenation.js found that making them unbreakable opened a hole in
+// the line above, and gave it back.
+const keep = args.keep && fs.existsSync(path.resolve(args.keep)) ? JSON.parse(fs.readFileSync(path.resolve(args.keep), 'utf8')) : []
+const kept = index => {
+  const b = breaks[index]
+  const pre = b.context.slice(0, b.contextAt).split(SOFT).join('').slice(-15)
+  return keep.some(e => e.word === b.plain && Math.min(e.pre.length, pre.length) >= 5 && (pre.endsWith(e.pre) || e.pre.endsWith(pre)))
+}
+
 // Which breaks to remove.
 const chosen = new Map()
 const choose = (index, why) => { if (!chosen.has(index)) chosen.set(index, why) }
+let accepted = 0
 if (args.stacks) {
   report.stacks.forEach(run => {
-    for (let k = report.maxRun; k < run.length; k += report.maxRun + 1) choose(run[k], 'stack')
+    for (let k = report.maxRun; k < run.length; k += report.maxRun + 1) {
+      // The word that makes the run too long; if that one is to be kept, the
+      // one before it, then the one after. If all are kept the stack stays.
+      const pick = [run[k], run[k - 1], run[k + 1]].find(i => i !== undefined && !kept(i))
+      if (pick === undefined) accepted += 1
+      else choose(pick, 'stack')
+    }
   })
 }
 breaks.forEach((b, index) => {
   if (args.names && !b.head && /^[A-Z]/.test(b.plain) && b.mid && !b.bold) choose(index, 'name')
-  if (args.short && !b.head && (b.plain.length < report.minWord || b.left < 2 || b.right < 3)) choose(index, 'short')
+  if (args.short && !b.head && !b.overPage && (b.plain.length < report.minWord || b.left < 2 || b.right < 3)) choose(index, 'short')
 })
 
 // The file as running text, with the place in the file of every character.
@@ -238,6 +257,7 @@ files.forEach((file, n) => {
   console.log('  ' + chosen.size + ' breaks chosen; ' + result.done.length + ' words made unbreakable (' +
     Object.keys(by).map(k => by[k] + ' ' + k).join(', ') + '); ' + result.removed + ' soft hyphens removed' +
     (args.dry ? ' — dry run, nothing written' : ''))
+  if (n === 0 && accepted) console.log('  ' + accepted + ' stacks left as they are: every word in them is on the keep list')
   if (result.missing) console.log('  ' + result.missing + ' not found in this file (already changed, or the report is from another build)')
   if (result.unsure) console.log('  ' + result.unsure + ' left alone: the same words occur more than once and the block could not be told apart')
   if (n === 0 && args.log && !args.dry) {

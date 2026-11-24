@@ -223,6 +223,18 @@ const minWord = Number(args.min || 7)
       })
     })
 
+    // A word divided between two pages. Paged.js marks the piece and adds a
+    // hyphen of its own; it is right when the letters before it end at one of
+    // the word's hyphenation points.
+    var overPage = []
+    pages.forEach(function (pg, index) {
+      pg.querySelectorAll('.pagedjs_page_content .pagedjs_hyphen').forEach(function (el) {
+        var text = el.textContent
+        if (text[text.length - 1] !== '\u2011') return
+        overPage.push({ sheet: index + 1, right: text[text.length - 2] === SOFT, tail: text.slice(-34).split(SOFT).join('') })
+      })
+    })
+
     // Stacks.
     var stacks = []
     var run = []
@@ -233,7 +245,7 @@ const minWord = Number(args.min || 7)
     })
     close()
 
-    return { pages: pages.length, breaks: breaks, stacks: stacks }
+    return { pages: pages.length, breaks: breaks, stacks: stacks, overPage: overPage }
   }, { maxRun: maxRun })
 
   await browser.close()
@@ -241,7 +253,7 @@ const minWord = Number(args.min || 7)
 
   const breaks = report.breaks
   const seconds = Math.round((Date.now() - started) / 1000)
-  const short = breaks.filter(b => !b.head && (b.plain.length < minWord || b.left < 2 || b.right < 3))
+  const short = breaks.filter(b => !b.head && b.tag.indexOf('pagedjs_hyphen') < 0 && (b.plain.length < minWord || b.left < 2 || b.right < 3))
   const names = breaks.filter(b => !b.head && /^[A-Z]/.test(b.plain) && b.mid && !b.bold)
   const heads = breaks.filter(b => b.head)
   const sizes = {}
@@ -265,10 +277,14 @@ const minWord = Number(args.min || 7)
   list('Short words or short pieces (under ' + minWord + ' letters, or under 2 before / 3 after the break)', short)
   list('Broken names and titles (a capital in mid-sentence, outside a bold lead-in)', names)
   list('Breaks inside headings, labels and titles', heads)
+  const wrong = report.overPage.filter(o => !o.right)
+  console.log('')
+  console.log('Words divided between two pages: ' + report.overPage.length + '; not at a hyphenation point: ' + wrong.length)
+  wrong.forEach(o => console.log('  sheet ' + o.sheet + '  “…' + o.tail + '”'))
 
   if (args.json) {
     fs.writeFileSync(path.resolve(args.json), JSON.stringify({
-      pages: report.pages, maxRun: maxRun, minWord: minWord, breaks: breaks, stacks: report.stacks
+      pages: report.pages, maxRun: maxRun, minWord: minWord, breaks: breaks, stacks: report.stacks, overPage: report.overPage
     }))
     console.log('')
     console.log('Every break written to ' + args.json)
