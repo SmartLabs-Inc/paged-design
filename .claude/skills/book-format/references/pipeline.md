@@ -135,6 +135,50 @@ Not from the log. A book that stops paginating still writes a plausible PDF.
 - Page count against expectation. A book that should be 340 pages and renders
   44 has not been trimmed; it has died.
 
+## After it paginates: text that is not there, and lines that are badly set
+
+Three faults leave no trace in a log, a page count or `check-layout.js`, and
+each was found by a reader before it was found by a check.
+
+**Text that never reached a page.** `report-lost-content.js --renumber` asks
+Paged.js, block by block, whether each piece of the source was laid out, laid
+out whole, and laid out inside the text area. Run it on every proof. The index
+of the textbook lost a letter heading and four entries because page numbers
+filled in *after* a page was broken made lines wrap and pushed the foot of the
+column off the page; `js/keep-with-content.js` now numbers a reference as it
+is laid out, and this check is how that stays fixed.
+
+**Hyphenation.** The book's hyphens are soft hyphens in the source, so they
+are fitted in the source. No letter of the text changes in any of these; they
+add and remove U+00AD and nothing else.
+
+```bash
+S=.claude/skills/book-format/scripts
+node $S/fit-hyphenation.js   --content <book> --all-names        # names never break
+node $S/report-hyphenation.js --content <book> --json hy.json    # stacks, short words, names
+node $S/fit-hyphenation.js   --content <book> --report hy.json --stacks --names --short --keep keep.json
+node $S/relax-hyphenation.js --content <book> --keep keep.json   # give back what opened a hole
+```
+
+Report and fit twice: breaking up one stack re-sets the paragraph and can make
+another. `relax-hyphenation.js` is the counterweight. Making a long word
+unbreakable in a 63 mm column leaves the line above with three words spread
+across it, and three hyphens in a row is the lesser fault; the words it gives
+back are written to `keep.json`, and `--keep` stops the next fit from taking
+them away again.
+
+**Loose lines.** `report-loose-lines.py book.pdf` measures word gaps on the
+PDF against the natural space of unstretched lines in the same PDF.
+`fit-loose-lines.js` tries each paragraph that has a hole at trackings from
+-20 to +20 and keeps the one that closes it, if it is a real gain and makes no
+new stack. It marks what it sets (`data-fit="loose"`), and it leaves alone any
+paragraph somebody tracked by hand. Run it after the first hyphenation fit and
+before the last.
+
+Order matters only in that every one of these changes line breaks, so the
+proof is rendered after the last of them, and `report-lost-content.js` is run
+on that proof.
+
 ## Known gaps
 
 - **Index locators** are the author's Word page numbers, not ours. They need a
