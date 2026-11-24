@@ -7253,7 +7253,8 @@ h4 + .standfirst,
   font-size: inherit;
   font-weight: 700;
   color: #0D2035;
-  white-space: nowrap; }
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums; }
 
 .index.index li {
   line-height: 12.58px;

@@ -567,5 +567,84 @@ window.keepHeadingsWithContent = function () {
     }
   }
 
-  window.Paged.registerHandlers(KeepHeadings)
+  // --- Page references are set before the page is broken ---------------------
+  //
+  // Paged.js fills in `target-counter(attr(href), page)` after a page has been
+  // laid out and its break decided. Until then the reference prints as "0".
+  // On the pages of an index that is every line: the page is broken with a
+  // column of zeroes, the real numbers go in, the ones that are two digits
+  // longer and sat on a nearly full line wrap, the column grows by a line or
+  // two, and whatever was last in it is pushed past the foot of the page
+  // where nothing prints. The break has already been made after it, so the
+  // next page does not have it either. The textbook's index lost the letter O
+  // and four entries that way, at three of its thirteen page breaks, and the
+  // author found the first.
+  //
+  // So a reference to something already on an earlier page is given its
+  // number as it is put on the page, not after. The number is the one
+  // Paged.js will work out for itself a moment later, set the way it sets
+  // it — a counter, named as its rewritten stylesheet names it — one level
+  // up, on the link, where the generated text can see it. Nothing is changed
+  // when Paged.js then sets the same value on the generated text itself.
+  //
+  // A reference to something on a later page cannot be done this way and is
+  // left alone. A contents page is the usual case, and its numbers sit in
+  // room kept for them at the end of the line, where their width moves
+  // nothing.
+  var COUNTER = /counter\(\s*(target-counter-[\w-]+)/
+
+  class EarlyReferences extends window.Paged.Handler {
+    constructor (chunker, polisher, caller) {
+      super(chunker, polisher, caller)
+      this.counts = []
+    }
+
+    // The page counter on each sheet, worked out as Paged.js does it and kept.
+    countAt (index, pages) {
+      for (var i = this.counts.length; i <= index; i += 1) {
+        var styles = window.getComputedStyle(pages[i])
+        var reset = styles.counterReset.replace('page', '').trim()
+        var increment = styles.counterIncrement.replace('page', '').trim()
+        var count = i ? this.counts[i - 1] : 0
+        if (reset !== 'none' && !isNaN(parseInt(reset, 10))) count = parseInt(reset, 10)
+        if (increment !== 'none' && !isNaN(parseInt(increment, 10))) count += parseInt(increment, 10)
+        this.counts.push(count)
+      }
+      return this.counts[index]
+    }
+
+    // Paged.js puts a block on the page whole — a paragraph, a list — and
+    // calls this once for it, so the links are looked for inside it.
+    renderNode (node) {
+      if (!node || node.nodeType !== 1 || !node.isConnected) return
+      var area = this.chunker && this.chunker.pagesArea
+      if (!area) return
+      var links = node.tagName === 'A' ? [node] : node.querySelectorAll('a[href^="#"]')
+      for (var i = 0; i < links.length; i += 1) this.number(links[i], area)
+    }
+
+    number (link, area) {
+      var href = link.getAttribute('href')
+      if (!href || href.charAt(0) !== '#' || href.length < 2) return
+      var name = null
+      var pseudos = ['::after', '::before']
+      for (var p = 0; p < pseudos.length && !name; p += 1) {
+        var found = COUNTER.exec(window.getComputedStyle(link, pseudos[p]).content || '')
+        if (found) name = found[1]
+      }
+      if (!name) return
+      var target = document.getElementById(href.slice(1))
+      if (!target || !area.contains(target)) return
+      var sheet = target.closest('.pagedjs_page')
+      if (!sheet) return
+      var pages = area.querySelectorAll('.pagedjs_page')
+      var index = Array.prototype.indexOf.call(pages, sheet)
+      // Not the page being laid out now: its place on that page is not
+      // settled, and Paged.js will number it when it is.
+      if (index < 0 || index >= pages.length - 1) return
+      link.style.counterReset = name + ' ' + this.countAt(index, pages)
+    }
+  }
+
+  window.Paged.registerHandlers(KeepHeadings, EarlyReferences)
 }

@@ -21,7 +21,7 @@
 //   short    pieces were laid out, but they hold less text than the source
 //   clipped  it was laid out, and none of it falls inside the page's text area
 //
-// Blocks the stylesheet hides on purpose (display: none) are counted and named
+// Blocks the stylesheet hides on purpose (display: none, or no size) are counted and named
 // by class, so a hidden running-head line is not mistaken for a loss, and a
 // class that should not be hidden shows up in the list.
 'use strict'
@@ -41,6 +41,8 @@ if (args.help || !args.content) {
     '',
     '  --content <dir>  Book directory holding index.html. Never modified.',
     '  --theme <name>   Default: aalai-textbook.',
+    '  --renumber       Apply the roman / arabic numbering pass first, as',
+    '                   render-pdf.js --renumber does, and check the result.',
     '  --json <file>    Also write the full report as JSON.',
     '  --strict         Exit non-zero when anything is lost, short or clipped.',
     '',
@@ -67,6 +69,13 @@ const theme = args.theme || 'aalai-textbook'
   await page.goto(url, { waitUntil: 'load' })
   await waitForPagedJs(page, Number(args.timeout || 1800000))
 
+  // The numbering pass changes what every page reference prints, after the
+  // pages are made. Check the book as it will be printed.
+  if (args.renumber) {
+    const renumber = require('./lib/renumber')
+    await page.evaluate(renumber.source, renumber.options(args['ref-selector']))
+  }
+
   const report = await page.evaluate(function () {
     var polyfill = window.PagedPolyfill
     var source = polyfill && polyfill.chunker && polyfill.chunker.source
@@ -89,7 +98,7 @@ const theme = args.theme || 'aalai-textbook'
       })
     })
 
-    var out = { blocks: 0, lost: [], short: [], clipped: [], hidden: {}, pages: pages.length }
+    var out = { blocks: 0, lost: [], short: [], clipped: [], hidden: {}, placed: {}, pages: pages.length }
     var previousSheet = 0
     source.querySelectorAll(LEAF).forEach(function (el) {
       // A cell or item that only holds other blocks is checked through them.
@@ -111,7 +120,13 @@ const theme = args.theme || 'aalai-textbook'
         out.short.push({ what: name, sheet: got[0].sheet, missing: want.length - have.length, text: show(el.textContent) })
       }
 
-      var shown = got.filter(function (g) { return window.getComputedStyle(g.el).display !== 'none' && g.el.getClientRects().length })
+      // Not shown at all: display none, or the way a line kept only to feed
+      // the running head is hidden — no height and no type size.
+      var shown = got.filter(function (g) {
+        var style = window.getComputedStyle(g.el)
+        if (style.display === 'none' || !g.el.getClientRects().length) return false
+        return parseFloat(style.fontSize) > 0 && g.el.getBoundingClientRect().height >= 1
+      })
       if (!shown.length) {
         var key = name
         out.hidden[key] = (out.hidden[key] || 0) + 1
@@ -128,7 +143,19 @@ const theme = args.theme || 'aalai-textbook'
           return x >= g.box.left - 2 && x <= g.box.right + 2 && y >= g.box.top - 2 && y <= g.box.bottom + 2
         })
       })
-      if (!inside) out.clipped.push({ what: name, sheet: shown[0].sheet, text: show(el.textContent) })
+      if (inside) return
+      // Put somewhere else on purpose: a running head lifted into the margin,
+      // a part title set on the full sheet. Anything positioned, or drawn
+      // inside the sheet by something positioned, is the stylesheet's doing.
+      var placed = shown.some(function (g) {
+        for (var up = g.el; up && up !== document.body; up = up.parentElement) {
+          if (up.classList && up.classList.contains('pagedjs_page_content')) break
+          if (window.getComputedStyle(up).position !== 'static') return true
+        }
+        return false
+      })
+      if (placed) { out.placed[name] = (out.placed[name] || 0) + 1; return }
+      out.clipped.push({ what: name, sheet: shown[0].sheet, text: show(el.textContent) })
     })
     return out
   })
@@ -159,6 +186,11 @@ const theme = args.theme || 'aalai-textbook'
   console.log('')
   console.log('Hidden by the stylesheet: ' + hidden.reduce(function (n, k) { return n + report.hidden[k] }, 0))
   hidden.forEach(function (k) { console.log('  ' + report.hidden[k] + ' × ' + k) })
+
+  const placed = Object.keys(report.placed)
+  console.log('')
+  console.log('Placed outside the text area by the stylesheet: ' + placed.reduce(function (n, k) { return n + report.placed[k] }, 0))
+  placed.forEach(function (k) { console.log('  ' + report.placed[k] + ' × ' + k) })
 
   if (args.json) fs.writeFileSync(path.resolve(args.json), JSON.stringify(report, null, 2))
   const faults = report.lost.length + report.short.length + report.clipped.length

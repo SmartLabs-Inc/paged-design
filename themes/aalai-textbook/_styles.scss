@@ -2770,6 +2770,12 @@ h4 + .standfirst,
     font-weight: 700;
     color: $color-navy;
     white-space: nowrap;
+    // Every figure the same width. The number printed here is changed after
+    // the pages are made — sheet 674 becomes page 650 — and a number that
+    // came out a hair wider would wrap its line and push the foot of the
+    // column off the page. See the note on page references in
+    // js/keep-with-content.js.
+    font-variant-numeric: tabular-nums;
 }
 
 // Single spaced. An index is a column of look-up lines, and the air between
