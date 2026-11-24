@@ -170,7 +170,14 @@ const minimum = Number(args.min || 7)
     if (!m) return
     const core = m[0]
     if (core.length < minimum || /^[A-ZÀ-Þ]/.test(core) || /\d/.test(c.word)) return
-    const broken = hyphenateSync(core, { hyphenChar: SOFT })
+    // The same rule hyphenate.js keeps: no break that leaves fewer than three
+    // letters on either side.
+    const pieces = hyphenateSync(core, { hyphenChar: SOFT }).split(SOFT)
+    let broken = pieces[0]
+    for (let k = 1; k < pieces.length; k += 1) {
+      if (broken.split(SOFT).join('').length >= 3 && pieces.slice(k).join('').length >= 3) broken += SOFT
+      broken += pieces[k]
+    }
     if (broken.indexOf(SOFT) < 0) return
     changes.push({ context: c.context, at: c.contextAt + m.index, core: core, broken: broken, sheet: c.sheet, gap: c.gap, line: c.line })
   })

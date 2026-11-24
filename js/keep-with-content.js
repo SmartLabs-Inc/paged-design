@@ -575,7 +575,36 @@ window.keepHeadingsWithContent = function () {
   }
 
   class KeepHeadings extends window.Paged.Handler {
+    // Whatever is decided below, a break that lands inside a word is put
+    // right before it is handed back. Several of the paths ask Paged.js to
+    // look for the overflow again, and it answers with the same mistake.
     onOverflow (overflow, rendered, bounds, layout) {
+      var answer = this.decide(overflow, rendered, bounds, layout)
+      if (answer && answer.startContainer && answer.startContainer.nodeType === 3) return wholeWord(answer)
+      return answer
+    }
+
+    // Paged.js adds a hyphen to the foot of a page whenever the text there
+    // ends in a letter or a figure — including when what ends there is a
+    // reference number, and the page closes on "2588-". A hyphen it added
+    // after anything but a word's own hyphenation point is taken off.
+    afterPageLayout (pageElement) {
+      if (!pageElement || !pageElement.querySelectorAll) return
+      pageElement.querySelectorAll('.pagedjs_hyphen').forEach(function (el) {
+        var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
+        var last = null
+        var node
+        while ((node = walker.nextNode())) if (node.textContent) last = node
+        if (!last) return
+        var text = last.textContent
+        if (text[text.length - 1] !== '\u2011') return
+        if (text[text.length - 2] === SOFT_HYPHEN) return
+        last.textContent = text.slice(0, -1)
+        el.classList.remove('pagedjs_hyphen')
+      })
+    }
+
+    decide (overflow, rendered, bounds, layout) {
       if (!overflow || !rendered) return
       var source = this.chunker && this.chunker.source
       // A break inside a paragraph has no heading to keep; the one question
