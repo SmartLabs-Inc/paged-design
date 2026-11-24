@@ -33,8 +33,23 @@ async function writeThemeData () {
 
     if (directoryCounter === themeDirectories.length) {
       const pathToThemesJSON = path.normalize('js/themes.json')
-      const themesJSON = JSON.stringify(themesData)
-      fsPromises.writeFile(pathToThemesJSON, themesJSON, { encoding: 'utf-8' })
+      // Sorted, because the themes are read in whatever order the filesystem
+      // hands them back and the order changes between runs. Unsorted, this
+      // generated file shows up as a change to the repository after every
+      // build, with nothing in it actually different.
+      // Sorted by building a new object in key order, not by handing
+      // JSON.stringify an array of keys: that argument is a replacer, and a
+      // replacer filters property names at *every* level. Used that way it
+      // wrote {"aalai":{},"beatrix":{}} — every theme present, every name
+      // gone, and the theme switcher with nothing to show.
+      const sorted = {}
+      Object.keys(themesData).sort().forEach(function (key) { sorted[key] = themesData[key] })
+      const themesJSON = JSON.stringify(sorted)
+      // Awaited, so the file is on disk before the process exits. Without it
+      // the build can finish, the shell can move on, and the write lands
+      // afterwards — which is how a freshly built file gets committed in its
+      // previous state.
+      await fsPromises.writeFile(pathToThemesJSON, themesJSON, { encoding: 'utf-8' })
     }
   })
 }

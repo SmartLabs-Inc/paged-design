@@ -1,0 +1,10 @@
+// _selectors.scss — inherited from aalai, with one correction.
+//
+// The converter gives the book title a plain `h1` inside the title page and
+// puts classes only on the subtitle and the author line. The default selector
+// names a `.title-page-title` class that this book's HTML does not carry, so
+// every rule and every `string-set` hung off it matched nothing: the title set
+// in the text face rather than the display one, and the `book-title` named
+// string — which the running foot reads on right-hand pages — was never set.
+$title-page-title: '.title-page h1';
+$half-title-page-title: '.title-page h1';
