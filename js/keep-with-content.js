@@ -439,7 +439,16 @@ window.keepHeadingsWithContent = function () {
     if (rest > 0 && left < 3) {
       var more = 3 - left
       if (here.length - more >= 3) return cutAbove(more)
-      if (here.length + left <= 6 && !para.hasAttribute('data-split-from') && across === here.length) {
+      // Too few lines in this column to give any up and keep three. If the
+      // paragraph began in the column before and has three lines or more
+      // there, everything it has in this column goes over with the rest:
+      // the column runs a few lines short, and nothing is left as a scrap
+      // on either side of the turn.
+      if (across - here.length >= 3 && here.length <= 4) {
+        var column = cutAbove(here.length)
+        if (column) return column
+      }
+      if (across + left <= 7 && !para.hasAttribute('data-split-from')) {
         var first = document.createRange()
         first.setStart(rendered, 0)
         first.setEndBefore(para)
@@ -700,8 +709,21 @@ window.keepHeadingsWithContent = function () {
         if (!divided) return null
         divided = pastPulled(divided, rendered)
         if (divided === null) return null
-        if (divided.compareBoundaryPoints(Range.START_TO_START, range) > 0) return divided
+        // Dividing it is only an answer if a row of it stays under the
+        // headings. A cut that falls before its first row leaves them on this
+        // page over an empty table and the table overleaf: a section title
+        // and its shaded panel at the foot of a page, which is the fault this
+        // file exists to prevent.
+        var keeps = document.createRange()
+        keeps.setStart(tall, 0)
+        keeps.setEnd(divided.startContainer, divided.startOffset)
+        var cells = keeps.cloneContents().querySelectorAll('td')
+        var row = Array.prototype.some.call(cells, function (cell) { return cell.textContent.trim() !== '' })
+        if (row && divided.compareBoundaryPoints(Range.START_TO_START, range) > 0) return divided
         tall.style.breakInside = ''
+        // Nothing of it fits here. The headings go over with it, and on the
+        // page they open it will be divided beneath them.
+        tall = firstOnPage(top, rendered) ? tall : null
       }
 
       // Still the last thing on the page. Take the whole run over — unless
