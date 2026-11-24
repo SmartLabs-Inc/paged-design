@@ -38,7 +38,7 @@ const { parseArgs } = require('./common')
 const args = parseArgs(process.argv)
 const SOFT = '­'
 
-if (args.help || !args.content || !args.report) {
+if (args.help || !args.content || (!args.report && !args['all-names'])) {
   console.log([
     'Usage: node fit-hyphenation.js --content <dir> --report <json> [--stacks] [--names] [--short] [--also <dir>] [--dry]',
     '',
@@ -47,11 +47,87 @@ if (args.help || !args.content || !args.report) {
     '  --stacks         Break up runs of hyphenated lines.',
     '  --names          Make broken names and titles unbreakable.',
     '  --short          Make short broken words unbreakable.',
+    '  --all-names      No report needed: make every name and title in the',
+    '                   running text unbreakable, broken at present or not.',
     '  --also <dir>     A second copy of the book to change the same way.',
     '  --log <file>     Append the words changed, one per line.',
     '  --dry            Say what would change and write nothing.'
   ].join('\n'))
   process.exit(args.help ? 0 : 1)
+}
+
+// --- Every name, whether or not it is broken today --------------------------
+//
+// --names cures the names that are broken in the build that was measured.
+// Any later change to a paragraph — a tracking, a correction — can break a
+// different one. The rule is that a name never breaks, so this takes the soft
+// hyphens out of all of them once, in the file, by the same test the report
+// uses: a word with a capital that follows a letter, a figure, a comma, a
+// semicolon or a closing bracket or quote, outside a bold lead-in and outside
+// a heading. A capital after a full stop or a colon is the start of a
+// sentence and is left to break like any other word.
+function allNames (file) {
+  const html = fs.readFileSync(file, 'utf8')
+  const out = []
+  let i = Math.max(0, html.indexOf('<body'))
+  out.push(html.slice(0, i))
+  let bold = 0
+  let quiet = 0          // inside a heading, a script, a style
+  let previous = ''      // the last character of running text that is not a space
+  let spaced = false     // white space since then
+  let words = 0
+  let removed = 0
+  const BLOCK = /^(p|li|td|th|dd|dt|div|h[1-6]|figcaption|caption|ul|ol|table|tr|section|blockquote)$/
+  const letter = /[A-Za-z\u00C0-\u024F]/
+  while (i < html.length) {
+    if (html[i] === '<') {
+      const end = html.indexOf('>', i)
+      const tag = html.slice(i, end + 1)
+      const m = /^<(\/?)([A-Za-z][A-Za-z0-9]*)/.exec(tag)
+      if (m) {
+        const name = m[2].toLowerCase()
+        const closing = m[1] === '/'
+        if (name === 'strong' || name === 'b') bold += closing ? -1 : 1
+        if (/^(h[1-6]|script|style|svg)$/.test(name)) quiet += closing ? -1 : 1
+        if (BLOCK.test(name)) { previous = ''; spaced = false }
+      }
+      out.push(tag)
+      i = end + 1
+      continue
+    }
+    if (letter.test(html[i]) && !quiet) {
+      let j = i
+      while (j < html.length && (letter.test(html[j]) || html[j] === SOFT)) j += 1
+      let word = html.slice(i, j)
+      const name = /^[A-Z\u00C0-\u00DE]/.test(word) && spaced && /[A-Za-z0-9,;)\u2019\u201D]/.test(previous) && bold <= 0
+      if (name && word.indexOf(SOFT) >= 0) {
+        removed += word.split(SOFT).length - 1
+        word = word.split(SOFT).join('')
+        words += 1
+      }
+      out.push(word)
+      previous = word[word.length - 1]
+      spaced = false
+      i = j
+      continue
+    }
+    if (/\s/.test(html[i])) spaced = true
+    else if (html[i] !== SOFT) { previous = html[i]; spaced = false }
+    out.push(html[i])
+    i += 1
+  }
+  if (!args.dry && removed) fs.writeFileSync(file, out.join(''))
+  return { words, removed }
+}
+
+if (args['all-names']) {
+  [args.content].concat(args.also ? [args.also] : []).forEach(dir => {
+    const file = path.join(path.resolve(dir), 'index.html')
+    const result = allNames(file)
+    console.log(path.relative(process.cwd(), file) + ': ' + result.words + ' names and titles made unbreakable; ' +
+      result.removed + ' soft hyphens removed' + (args.dry ? ' — dry run, nothing written' : ''))
+  })
+  if (!args.report) process.exit(0)
 }
 
 const report = JSON.parse(fs.readFileSync(path.resolve(args.report), 'utf8'))
