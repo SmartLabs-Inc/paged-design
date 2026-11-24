@@ -378,7 +378,10 @@ window.keepHeadingsWithContent = function () {
         var one = document.createRange()
         one.setStart(node, offset)
         one.setEnd(node, offset + 1)
-        var r = one.getClientRects()[0]
+        // The last box, not the first: the letter after a hyphen that was
+        // used has one where the hyphen is drawn as well as its own.
+        var list = one.getClientRects()
+        var r = list[list.length - 1]
         if (!r || (!r.width && !r.height)) return null
         if (right ? r.left >= page.right - 1 : r.left >= mid) return false
         if ((r.left >= mid) !== right) return true
@@ -513,7 +516,7 @@ window.keepHeadingsWithContent = function () {
       if (overflow.startContainer.nodeType === 3) {
         var whole = wholeWord(overflow)
         var tail = shortTail(whole, rendered, source)
-        if (tail) return tail
+        if (tail) return wholeWord(tail)
         return whole !== overflow ? whole : undefined
       }
       var range = pastPulled(overflow, rendered)
