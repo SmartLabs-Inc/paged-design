@@ -27,8 +27,9 @@
 //      paragraph, and to a log.
 //
 // A paragraph that already carries a letter-spacing of its own — one somebody
-// tracked by hand in the editor — is left exactly as it is. So is a paragraph
-// divided between two pages: only half of it is in front of the measure, and
+// tracked by hand in the editor — is left exactly as it is. So is the first
+// half of a paragraph the build cut in two (`.lead-head`): its cut has to stay
+// at the end of a line. So is a paragraph divided between two pages: only half of it is in front of the measure, and
 // the next pass will find it whole or not at all.
 //
 // It is a fit, not a cure. The measure is narrow and the words are long;
@@ -59,6 +60,9 @@ if (args.help || !args.content) {
     '  --tight <n>      Tightest tracking to try, thousandths of an em. Default -20.',
     '  --loose <n>      Loosest tracking to try. Default 20.',
     '  --gain <pct>     How much better the worst line must get. Default 20.',
+    '  --seams          Also close the seams: where the first half of a cut',
+    '                   paragraph no longer ends at a line end, track it until',
+    '                   it does. --seams-only does nothing else.',
     '  --json <file>    Write every paragraph tried and what was chosen.',
     '  --dry            Measure and choose, write nothing.'
   ].join('\n'))
@@ -68,6 +72,9 @@ if (args.help || !args.content) {
 const root = requireRepoRoot()
 const theme = args.theme || 'aalai-textbook'
 const options = {
+  seams: !!args.seams || !!args['seams-only'],
+  seamsOnly: !!args['seams-only'],
+  seamFull: Number(args['seam-full'] || 82) / 100,
   hole: Number(args.hole || 1),
   tight: Number(args.tight || -20),
   loose: Number(args.loose || 20),
@@ -184,7 +191,45 @@ const options = {
     for (var t = opts.tight; t <= opts.loose; t += 5) if (t !== 0) steps.push(t)
     steps.sort(function (x, y) { return Math.abs(x) - Math.abs(y) })
 
-    var out = { judged: 0, holes: 0, fitted: [], left: 0, skipped: { tracked: 0, divided: 0 }, bands: {} }
+    // How full the last line of a block is, set naturally: the block is
+    // asked to stop spreading its last line for the moment of the measure.
+    function lastLineFull (el, box, mid, across) {
+      var was = el.style.textAlignLast
+      el.style.textAlignLast = 'left'
+      var words = []
+      var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
+      var node
+      while ((node = walker.nextNode())) {
+        var text = node.textContent
+        var re = /\S+/g
+        var m
+        while ((m = re.exec(text))) {
+          var end = m.index + m[0].length - 1
+          while (end > m.index && text[end] === SOFT) end -= 1
+          var b = lastRect(node, end)
+          if (b) words.push(b)
+        }
+      }
+      el.style.textAlignLast = was
+      if (!el.getAttribute('style')) el.removeAttribute('style')
+      if (!words.length) return null
+      var last = words[words.length - 1]
+      var left = box.left
+      var column = across ? box.width : el.getBoundingClientRect().width
+      // the column this line is in: the block's own box in that column
+      var rects = el.getClientRects()
+      for (var i = 0; i < rects.length; i += 1) {
+        if (last.top >= rects[i].top - 2 && last.bottom <= rects[i].bottom + 2 && last.left >= rects[i].left - 2 && last.right <= rects[i].right + 2) {
+          left = rects[i].left
+          column = rects[i].width
+        }
+      }
+      var tops = {}
+      words.forEach(function (w) { tops[Math.round(w.left >= mid && !across ? 1e5 + w.top / 4 : w.top / 4)] = 1 })
+      return { full: (last.right - left) / column, lines: Object.keys(tops).length }
+    }
+
+    var out = { judged: 0, holes: 0, fitted: [], left: 0, skipped: { tracked: 0, divided: 0 }, bands: {}, seams: { judged: 0, showing: 0, closed: 0, open: 0 } }
     var pages = Array.prototype.slice.call(document.querySelectorAll('.pagedjs_page'))
     pages.forEach(function (pg, index) {
       var area = pg.querySelector('.pagedjs_page_content')
@@ -193,6 +238,42 @@ const options = {
       var mid = box.left + box.width / 2
       area.querySelectorAll(BLOCKS).forEach(function (el) {
         if (el.querySelector(BLOCKS) || el.closest(SKIP)) return
+        // The first half of a paragraph the build cut in two ends where a
+        // line ended when it was cut. Track it and its lines break somewhere
+        // else, the cut is left in mid-line, and that line — justified, so
+        // the cut cannot be seen — becomes three words across the measure.
+        // Tracked here, such halves made the fourteen worst lines in the book.
+        if (el.classList.contains('lead-head') && !el.classList.contains('lead-whole')) {
+          // What can be done for one is the opposite job: where its cut has
+          // come to rest in mid-line, find the tracking that brings the end
+          // of its text back to the end of a line.
+          if (!opts.seams || el.style.letterSpacing || el.hasAttribute('data-split-from') || el.hasAttribute('data-split-to')) return
+          var seamBox = el.getBoundingClientRect().width > box.width * 0.75
+          var now = lastLineFull(el, box, mid, seamBox)
+          if (!now) return
+          out.seams.judged += 1
+          if (now.full >= opts.seamFull) return
+          out.seams.showing += 1
+          var chosen = null
+          steps.forEach(function (step) {
+            if (chosen && chosen.got.full >= 0.93) return
+            el.style.letterSpacing = (step / 1000) + 'em'
+            var got = lastLineFull(el, box, mid, seamBox)
+            if (got && got.lines === now.lines && got.full > now.full + 0.05 && (!chosen || got.full > chosen.got.full)) chosen = { step: step, got: got }
+          })
+          el.style.letterSpacing = ''
+          if (!el.getAttribute('style')) el.removeAttribute('style')
+          if (!chosen || chosen.got.full < opts.seamFull) { out.seams.open += 1; return }
+          out.seams.closed += 1
+          out.fitted.push({
+            sheet: index + 1, tracking: chosen.step, seam: true,
+            before: Math.round(now.full * 100) / 100, after: Math.round(chosen.got.full * 100) / 100,
+            lines: [now.lines, chosen.got.lines], tag: el.tagName.toLowerCase(),
+            lead: el.textContent.slice(0, 90), tail: el.textContent.slice(-40), length: el.textContent.length
+          })
+          return
+        }
+        if (opts.seamsOnly) return
         var style = window.getComputedStyle(el)
         if (style.textAlign !== 'justify' || !el.getClientRects().length) return
         if (el.textContent.length < 80) return
@@ -247,11 +328,16 @@ const options = {
   Object.keys(result.bands).sort().forEach(k => console.log('  ' + result.bands[k] + '  worst line ' + k))
   console.log(result.fitted.length + ' can be improved by tracking; ' + result.left + ' cannot within ' + options.tight + ' to +' + options.loose +
     '; ' + result.skipped.tracked + ' already tracked by hand, ' + result.skipped.divided + ' divided between pages (left alone)')
+  if (options.seams) {
+    console.log(result.seams.judged + ' cut paragraphs measured; ' + result.seams.showing + ' end short of a line end (under ' +
+      Math.round(options.seamFull * 100) + '% full); ' + result.seams.closed + ' closed by tracking, ' + result.seams.open + ' not')
+  }
   const by = {}
   result.fitted.forEach(f => { by[f.tracking] = (by[f.tracking] || 0) + 1 })
   console.log('  tracking chosen: ' + Object.keys(by).map(Number).sort((a, b) => a - b).map(k => (k > 0 ? '+' : '') + k + ': ' + by[k]).join(', '))
   const mean = list => list.length ? (list.reduce((s, x) => s + x, 0) / list.length).toFixed(2) : '0'
-  console.log('  their worst line, on average: ' + mean(result.fitted.map(f => f.before)) + ' em before, ' + mean(result.fitted.map(f => f.after)) + ' em after')
+  const holes = result.fitted.filter(f => !f.seam)
+  console.log('  their worst line, on average: ' + mean(holes.map(f => f.before)) + ' em before, ' + mean(holes.map(f => f.after)) + ' em after')
   if (args.json) fs.writeFileSync(path.resolve(args.json), JSON.stringify(result, null, 1))
 
   // --- write it into the book ------------------------------------------------
@@ -282,7 +368,7 @@ const options = {
         ? tag.replace(/\sstyle="([^"]*)"/, (m, existing) => ' style="' + existing.replace(/;?\s*$/, '') + '; ' + value + '"')
         : tag.replace(/>$/, ' style="' + value + '">')
       // Marked, so a tracking this pass chose can be told from one set by hand.
-      fresh = fresh.replace(/>$/, ' data-fit="loose">')
+      fresh = fresh.replace(/>$/, ' data-fit="' + (f.seam ? 'seam' : 'loose') + '">')
       edits.push({ open, close, fresh })
     })
     edits.sort((x, y) => y.open - x.open).forEach(e => { html = html.slice(0, e.open) + e.fresh + html.slice(e.close + 1) })

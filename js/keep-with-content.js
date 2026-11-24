@@ -370,6 +370,26 @@ window.keepHeadingsWithContent = function () {
     var rest = whole.textContent.length - (at + key.length)
     var left = Math.ceil(rest / perLine)
 
+    // That is an estimate, and a run of reference numbers at the end of a
+    // paragraph throws it: they are many characters and little width, so two
+    // lines were counted as three and went over on their own. Paged.js lays
+    // out a little past the edge of the page, and when the whole paragraph is
+    // already there the lines can simply be counted.
+    if (rest > 0 && para.textContent.length >= whole.textContent.length) {
+      var beyond = document.createRange()
+      beyond.selectNodeContents(para)
+      beyond.setStart(overflow.startContainer, overflow.startOffset)
+      var columns = {}
+      Array.prototype.forEach.call(beyond.getClientRects(), function (r) {
+        if (r.height < 14 || r.width <= 0) return
+        var column = Math.floor((r.left - page.left + 2) / (page.width / 2 + 9))
+        ;(columns[column] = columns[column] || []).push(r)
+      })
+      var counted = 0
+      Object.keys(columns).forEach(function (c) { counted += feetOf(columns[c]).length })
+      if (counted > 0) left = counted
+    }
+
     // The start of the line that is `move` lines up from the break: walk back
     // from the break until a character is found on an earlier line.
     function cutAbove (move) {

@@ -62,7 +62,9 @@ const outDir = path.resolve(args.out || args.content)
 const limit = Number(args.below || 82) / 100
 const scratch = path.join(root, 'content', 'scratch-seams')
 
-const PAIR = /<p class="lead-head">((?:(?!<\/p>)[\s\S])*)<\/p>(\s*<\/div>\s*(?:<a id="[^"]*"><\/a>\s*)*<p class="[^"]*\blead-rest\b[^"]*">)((?:(?!<\/p>)[\s\S])*)<\/p>/g
+// The second half may carry attributes of its own after its class — a
+// tracking set by fit-loose-lines.js, for one.
+const PAIR = /<p class="lead-head">((?:(?!<\/p>)[\s\S])*)<\/p>(\s*<\/div>\s*(?:<a id="[^"]*"><\/a>\s*)*<p class="[^"]*\blead-rest\b[^"]*"[^>]*>)((?:(?!<\/p>)[\s\S])*)<\/p>/g
 // Space as the renderer and the source both see it. A no-break space joins
 // its neighbours on the page and is spelled two ways in a file, so it is not
 // a separator on either side.
@@ -93,7 +95,7 @@ function cutPoint (inner, words) {
   let n = 0
   let stamped = source.replace(/<p class="lead-head">/g, function () { n += 1; return '<p class="lead-head" data-seam="' + n + '">' })
   let r = 0
-  stamped = stamped.replace(/<p class="([^"]*\blead-rest\b[^"]*)">/g, function (m, cls) { r += 1; return '<p class="' + cls + '" data-seam-rest="' + r + '">' })
+  stamped = stamped.replace(/<p class="([^"]*\blead-rest\b[^"]*)"([^>]*)>/g, function (m, cls, more) { r += 1; return '<p class="' + cls + '"' + more + ' data-seam-rest="' + r + '">' })
   if (r !== n) { console.error('First and second halves do not pair up: ' + n + ' against ' + r); process.exit(1) }
   fs.mkdirSync(scratch, { recursive: true })
   fs.writeFileSync(path.join(scratch, 'index.html'), stamped)
